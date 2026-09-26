@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- ═══════════════════════════════════════════════════════════
+       ✏️ 个性化修改指南（改完这一处，全站生效）：
+       1. 全站搜索「CCCAD」，替换成你自己的名字（共 5 处）
+       2. 邮箱：搜索 chenmidiy@163.com 替换成你的邮箱（共 3 处）
+       3. 社交链接：搜索 github.com/yourname，换成你的主页
+       4. 项目 / 技能 / 经历：找到对应 section 直接改文字即可
+       ═══════════════════════════════════════════════════════════ -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="CCCAD的个人主页 —— 记录项目、技能与想法的数字小站。" />
+  <title>CCCAD | 个人主页</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 顶部滚动进度条 -->
+  <div class="progress" id="progress"></div>
+
+  <!-- 背景装饰：网格 + 光晕 -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow-1" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow-2" aria-hidden="true"></div>
+
+  <!-- ══════════ 导航栏 ══════════ -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#hero" class="logo"><span class="logo-path">~/</span>CCCAD<span class="caret">▋</span></a>
+
+      <nav class="nav-links" id="navLinks" aria-label="主导航">
+        <a href="#about"><span class="nav-num">01.</span>关于</a>
+        <a href="#skills"><span class="nav-num">02.</span>技能</a>
+        <a href="#projects"><span class="nav-num">03.</span>项目</a>
+        <a href="#timeline"><span class="nav-num">04.</span>经历</a>
+        <a href="#pages"><span class="nav-num">05.</span>页面</a>
+        <a href="#contact"><span class="nav-num">06.</span>联系</a>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ══════════ 首屏 Hero ══════════ -->
+    <section id="hero" class="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <p class="hero-hello">// Hello World 👋</p>
+          <h1 class="hero-title">你好，我是<br /><span class="grad-text">CCCAD</span></h1>
+          <p class="hero-role"><span class="prompt">&gt;</span> <span id="typed"></span><span class="caret">▋</span></p>
+          <p class="hero-desc">
+            欢迎来到我的数字小站。我在这里记录自己做过和正在做的事：
+            一些项目、一些想法，以及一路上的成长痕迹。
+          </p>
+          <div class="hero-actions">
+            <a href="#projects" class="btn btn-primary">查看项目 →</a>
+            <a href="#contact" class="btn btn-ghost">联系我</a>
+          </div>
+          <div class="socials">
+            <a class="icon-btn" href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a class="icon-btn" href="https://x.com/yourname" target="_blank" rel="noopener" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/></svg>
+            </a>
+            <a class="icon-btn" href="mailto:chenmidiy@163.com" aria-label="邮箱">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-terminal">
+          <div class="terminal reveal" style="--d:.15s">
+            <div class="terminal-header">
+              <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+              <span class="terminal-title">你@localhost: ~</span>
+            </div>
+            <div class="terminal-body" id="terminalBody"></div>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#about" aria-label="向下滚动">▾</a>
+    </section>
+
+    <!-- ══════════ 01 关于 ══════════ -->
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">01.</span>关于我</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p>
+              你好！我是<strong class="accent-text">CCCAD</strong>，一名对世界充满好奇的探索者。
+              我喜欢动手把想法变成现实——可能是一段代码、一个工具，
+              也可能是一篇文章或一张照片。
+            </p>
+            <p>
+              这个网站是我的自留地：我会在这里放一些自己满意的作品，
+              偶尔写下学习笔记和思考。如果你也想聊聊技术、设计，
+              或者任何有意思的事情，欢迎随时联系我。
+            </p>
+            <p class="about-quote">「 保持好奇，持续创造。 」</p>
+          </div>
+
+          <div class="code-card reveal" style="--d:.15s">
+            <div class="code-card-head"><span>about_me.js</span></div>
+            <pre><code><span class="c-key">const</span> <span class="c-var">me</span> = {
+  name: <span class="c-str">"CCCAD"</span>,
+  location: <span class="c-str">"地球 · 某个城市"</span>,
+  status: <span class="c-str">"探索中 🚀"</span>,
+  interests: [<span class="c-str">"技术"</span>, <span class="c-str">"设计"</span>, <span class="c-str">"阅读"</span>],
+  skills: [<span class="c-str">"好奇心"</span>, <span class="c-str">"执行力"</span>, <span class="c-str">"持续学习"</span>],
+  contact: <span class="c-str">"chenmidiy@163.com"</span>,
+  motto: <span class="c-str">"保持好奇，持续创造。"</span>,
+};</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 02 技能 ══════════ -->
+    <section id="skills" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">02.</span>技能</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-card reveal">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3>前端开发</h3>
+            <p>使用现代框架构建流畅、美观的页面与交互体验。</p>
+            <div class="chips"><span class="chip">HTML / CSS</span><span class="chip">JavaScript</span><span class="chip">Vue / React</span></div>
+          </div>
+
+          <div class="skill-card reveal" style="--d:.08s">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            </div>
+            <h3>后端开发</h3>
+            <p>搭建稳定的服务端与 API，处理好数据与业务逻辑。</p>
+            <div class="chips"><span class="chip">Node.js</span><span class="chip">Python</span><span class="chip">REST API</span></div>
+          </div>
+
+          <div class="skill-card reveal" style="--d:.16s">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <h3>数据库</h3>
+            <p>设计合理的数据结构，让数据存得下、查得快。</p>
+            <div class="chips"><span class="chip">MySQL</span><span class="chip">Redis</span></div>
+          </div>
+
+          <div class="skill-card reveal" style="--d:.24s">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <h3>工具链</h3>
+            <p>用顺手的工具让开发、协作与部署更加高效。</p>
+            <div class="chips"><span class="chip">Git</span><span class="chip">Docker</span><span class="chip">Linux</span></div>
+          </div>
+
+          <div class="skill-card reveal" style="--d:.32s">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </div>
+            <h3>设计 & 创作</h3>
+            <p>关注排版、配色与体验细节，让作品更有温度。</p>
+            <div class="chips"><span class="chip">Figma</span><span class="chip">摄影</span></div>
+          </div>
+
+          <div class="skill-card reveal" style="--d:.4s">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <h3>持续学习</h3>
+            <p>保持对新事物的好奇，正在探索 AI 的各种可能。</p>
+            <div class="chips"><span class="chip">AI 工具</span><span class="chip">英语</span><span class="chip">写作</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 03 项目 ══════════ -->
+    <section id="projects" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">03.</span>项目</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="projects-grid">
+          <article class="project-card reveal">
+            <div class="project-top">
+              <span class="project-folder">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <div class="project-links">
+                <a href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="项目源码">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="#" target="_blank" rel="noopener" aria-label="在线预览">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+            <h3>智能待办</h3>
+            <p>一个简洁高效的待办事项应用，支持标签分类、提醒与多端数据同步。</p>
+            <div class="chips"><span class="chip">Vue</span><span class="chip">TypeScript</span><span class="chip">PWA</span></div>
+          </article>
+
+          <article class="project-card reveal" style="--d:.08s">
+            <div class="project-top">
+              <span class="project-folder">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <div class="project-links">
+                <a href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="项目源码">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="#" target="_blank" rel="noopener" aria-label="在线预览">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+            <h3>个人博客系统</h3>
+            <p>从零搭建的博客系统，支持 Markdown 写作、标签归档与评论功能。</p>
+            <div class="chips"><span class="chip">React</span><span class="chip">Node.js</span><span class="chip">MongoDB</span></div>
+          </article>
+
+          <article class="project-card reveal" style="--d:.16s">
+            <div class="project-top">
+              <span class="project-folder">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <div class="project-links">
+                <a href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="项目源码">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="#" target="_blank" rel="noopener" aria-label="在线预览">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+            <h3>数据可视化面板</h3>
+            <p>把枯燥的数字变成直观的图表，帮助团队一眼看清业务趋势。</p>
+            <div class="chips"><span class="chip">Python</span><span class="chip">ECharts</span><span class="chip">Flask</span></div>
+          </article>
+
+          <article class="project-card reveal" style="--d:.24s">
+            <div class="project-top">
+              <span class="project-folder">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <div class="project-links">
+                <a href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="项目源码">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="#" target="_blank" rel="noopener" aria-label="在线预览">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </div>
+            <h3>命令行小工具</h3>
+            <p>提高日常效率的命令行工具合集，开源分享，欢迎 Star 与 PR。</p>
+            <div class="chips"><span class="chip">Go</span><span class="chip">CLI</span><span class="chip">开源</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 04 经历 ══════════ -->
+    <section id="timeline" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">04.</span>经历</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <span class="timeline-date">2024 — 至今</span>
+            <h3>探索与创造</h3>
+            <p>在做自己的项目，持续学习新技术，把一个个想法变成现实。</p>
+          </div>
+          <div class="timeline-item reveal" style="--d:.1s">
+            <div class="timeline-dot"></div>
+            <span class="timeline-date">2022 — 2024</span>
+            <h3>学习与积累</h3>
+            <p>系统学习编程与设计，完成了从入门到独立做项目的过程。</p>
+          </div>
+          <div class="timeline-item reveal" style="--d:.2s">
+            <div class="timeline-dot"></div>
+            <span class="timeline-date">更早</span>
+            <h3>起点</h3>
+            <p>第一次接触到代码和互联网，从此产生了浓厚的兴趣。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 05 页面导航 ══════════
+         ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card">…</a>，
+         改掉 href（指向你的新页面）、图标 emoji 和文字即可。
+         页面还没建时保持 href="#"，点击会弹出提示。 -->
+    <section id="pages" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">05.</span>页面导航</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="pages-grid">
+          <a class="page-card reveal" href="pelican.html">
+            <span class="page-icon">🚲</span>
+            <h3>鹈鹕彩蛋</h3>
+            <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
+            <span class="page-go">打开页面 →</span>
+          </a>
+
+          <a class="page-card reveal" style="--d:.08s" href="blog.html">
+            <span class="page-icon">✍️</span>
+            <h3>博客</h3>
+            <p>记录学习笔记与一些想法</p>
+            <span class="page-go">打开页面 →</span>
+          </a>
+
+          <a class="page-card reveal" style="--d:.16s" href="gallery.html">
+            <span class="page-icon">📷</span>
+            <h3>相册</h3>
+            <p>用照片收藏生活里的瞬间</p>
+            <span class="page-go">打开页面 →</span>
+          </a>
+
+          <a class="page-card reveal" style="--d:.24s" href="tools.html">
+            <span class="page-icon">🧰</span>
+            <h3>工具箱</h3>
+            <p>6 个开箱即用的小工具</p>
+            <span class="page-go">打开页面 →</span>
+          </a>
+
+          <a class="page-card page-card-add reveal" style="--d:.32s" href="#" data-toast="新建一个 html（可复制 blog.html 的框架），再把一张卡片指向它 ✨">
+            <span class="page-icon">➕</span>
+            <h3>待续……</h3>
+            <p>新建一个 html 页面，再复制一张卡片指向它</p>
+            <span class="page-go">复制即用 →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 06 联系 ══════════ -->
+    <section id="contact" class="section section-contact">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">06.</span>联系我</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="contact-box reveal">
+          <h3 class="contact-title">一起做点有意思的事？<span class="wave">✨</span></h3>
+          <p class="contact-desc">
+            无论是项目合作、技术交流，还是单纯打个招呼——
+            我的收件箱永远向你敞开。
+          </p>
+          <div class="contact-actions">
+            <button class="btn btn-primary" id="copyEmail" data-email="chenmidiy@163.com">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              复制邮箱
+            </button>
+            <a class="btn btn-ghost" href="mailto:chenmidiy@163.com">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              发封邮件
+            </a>
+          </div>
+          <div class="socials socials-lg">
+            <a class="icon-btn" href="https://github.com/yourname" target="_blank" rel="noopener" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a class="icon-btn" href="https://x.com/yourname" target="_blank" rel="noopener" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/></svg>
+            </a>
+            <a class="icon-btn" href="mailto:chenmidiy@163.com" aria-label="邮箱">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════ 页脚 ══════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© <span id="year">2026</span> CCCAD · 用 ❤ 与代码搭建</p>
+      <a href="#hero" class="back-top">↑ 返回顶部</a>
+    </div>
+  </footer>
+
+  <!-- 复制成功提示 -->
+  <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
+
+  <script src="script.js"></script>
+</body>
+</html>

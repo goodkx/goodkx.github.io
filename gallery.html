@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="相册 —— 用照片收藏生活里的瞬间。" />
+  <title>相册 | 你的名字</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📷%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <style>
+    .photos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .photo {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .photo:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .35), 0 0 26px rgba(0, 229, 160, .07);
+    }
+    .photo .art { aspect-ratio: 3 / 2; }
+    .photo .art svg { width: 100%; height: 100%; display: block; }
+    .photo figcaption {
+      padding: 12px 16px;
+      font-size: .85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .photo .d { font-family: var(--mono); font-size: .72rem; color: var(--muted); white-space: nowrap; }
+
+    /* 灯箱（点击放大） */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(4, 8, 14, .86);
+      -webkit-backdrop-filter: blur(6px);
+              backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: auto; }
+    .lb-inner {
+      width: min(720px, 92%);
+      background: var(--card);
+      border: 1px solid var(--border-hover);
+      border-radius: 16px;
+      padding: 16px;
+      transform: scale(.94);
+      transition: transform .3s;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+    }
+    .lightbox.open .lb-inner { transform: scale(1); }
+    .lb-inner svg { width: 100%; display: block; border-radius: 10px; }
+    .lb-cap { text-align: center; margin-top: 14px; color: var(--text); font-size: .95rem; }
+    .lb-hint {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      margin-top: 8px;
+      opacity: .75;
+    }
+
+    @media (max-width: 900px) { .photos { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .photos { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">📷 gallery</span>
+  </div>
+
+  <h1>用照片收藏 <span class="grad">生活</span></h1>
+
+  <div class="wrap">
+    <!-- ✏️ 换成真实照片：把每个 .art 里的 <svg> 占位图换成
+         <img src="你的图片.jpg" alt="描述" style="width:100%;height:100%;object-fit:cover"> 即可 -->
+    <div class="photos">
+
+      <figure class="photo reveal">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="200" fill="#101c30"/>
+            <circle cx="238" cy="50" r="24" fill="#dfe9f5"/>
+            <circle cx="228" cy="43" r="21" fill="#101c30"/>
+            <circle cx="60" cy="40" r="1.6" fill="#9fb6d0"/><circle cx="112" cy="26" r="1.2" fill="#9fb6d0"/><circle cx="168" cy="54" r="1.4" fill="#9fb6d0"/>
+            <path d="M0,200 L92,86 L182,200 Z" fill="#1c2f4a"/>
+            <path d="M120,200 L215,104 L310,200 Z" fill="#15253d"/>
+          </svg>
+        </div>
+        <figcaption><span class="t">夜山</span><span class="d">2026-08</span></figcaption>
+      </figure>
+
+      <figure class="photo reveal" style="--d:.06s">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="142" fill="#1a2a44"/>
+            <circle cx="150" cy="128" r="30" fill="#f5a83c"/>
+            <circle cx="150" cy="128" r="42" fill="#f5a83c" opacity=".18"/>
+            <rect y="142" width="300" height="58" fill="#12203a"/>
+            <path d="M118,144 L182,144 L204,200 L96,200 Z" fill="#f5a83c" opacity=".22"/>
+            <rect x="30" y="156" width="52" height="3" rx="1.5" fill="#38bdf8" opacity=".45"/>
+            <rect x="216" y="170" width="44" height="3" rx="1.5" fill="#38bdf8" opacity=".35"/>
+            <rect x="64" y="184" width="36" height="3" rx="1.5" fill="#38bdf8" opacity=".3"/>
+          </svg>
+        </div>
+        <figcaption><span class="t">出海</span><span class="d">2026-07</span></figcaption>
+      </figure>
+
+      <figure class="photo reveal" style="--d:.12s">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="200" fill="#0e1828"/>
+            <circle cx="252" cy="38" r="18" fill="#dfe9f5" opacity=".9"/>
+            <circle cx="245" cy="33" r="16" fill="#0e1828"/>
+            <rect x="28" y="92" width="44" height="108" fill="#16253c"/>
+            <rect x="84" y="58" width="52" height="142" fill="#1b2c46"/>
+            <rect x="148" y="102" width="40" height="98" fill="#142238"/>
+            <rect x="200" y="70" width="58" height="130" fill="#1a2b44"/>
+            <g fill="#f5c56b">
+              <rect x="36" y="102" width="7" height="9"/><rect x="52" y="122" width="7" height="9"/>
+              <rect x="94" y="72" width="7" height="9"/><rect x="112" y="94" width="7" height="9"/><rect x="94" y="120" width="7" height="9"/>
+              <rect x="158" y="114" width="7" height="9"/><rect x="172" y="138" width="7" height="9"/>
+              <rect x="210" y="84" width="7" height="9"/><rect x="228" y="106" width="7" height="9"/><rect x="210" y="132" width="7" height="9"/>
+            </g>
+          </svg>
+        </div>
+        <figcaption><span class="t">城市夜色</span><span class="d">2026-06</span></figcaption>
+      </figure>
+
+      <figure class="photo reveal" style="--d:.18s">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="200" fill="#0c1a22"/>
+            <circle cx="60" cy="42" r="20" fill="#dfe9f5" opacity=".85"/>
+            <circle cx="52" cy="37" r="17" fill="#0c1a22"/>
+            <path d="M40,200 L70,110 L100,200 Z" fill="#123a29"/>
+            <path d="M90,200 L128,84 L166,200 Z" fill="#164a34"/>
+            <path d="M150,200 L186,116 L222,200 Z" fill="#123a29"/>
+            <path d="M210,200 L246,96 L282,200 Z" fill="#0f3325"/>
+            <ellipse cx="150" cy="196" rx="160" ry="14" fill="#9fb6d0" opacity=".08"/>
+          </svg>
+        </div>
+        <figcaption><span class="t">雾林</span><span class="d">2026-05</span></figcaption>
+      </figure>
+
+      <figure class="photo reveal" style="--d:.24s">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="200" fill="#0a1020"/>
+            <g fill="#cfe3ff">
+              <circle cx="36" cy="36" r="1.5"/><circle cx="86" cy="70" r="1.1"/><circle cx="140" cy="30" r="1.7"/>
+              <circle cx="188" cy="58" r="1.2"/><circle cx="236" cy="26" r="1.5"/><circle cx="272" cy="66" r="1.1"/>
+              <circle cx="60" cy="104" r="1.2"/><circle cx="122" cy="88" r="1"/><circle cx="206" cy="98" r="1.4"/>
+              <circle cx="258" cy="120" r="1"/><circle cx="104" cy="132" r="1.3"/><circle cx="164" cy="118" r="1"/>
+            </g>
+            <line x1="196" y1="44" x2="256" y2="20" stroke="#dfe9f5" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+            <path d="M196,44 l10,-2 l-6,-6 z" fill="#dfe9f5" opacity=".7"/>
+          </svg>
+        </div>
+        <figcaption><span class="t">流星</span><span class="d">2026-04</span></figcaption>
+      </figure>
+
+      <figure class="photo reveal" style="--d:.3s">
+        <div class="art">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="300" height="200" fill="#0d1626"/>
+            <line x1="0" y1="164" x2="300" y2="164" stroke="#223047" stroke-width="4"/>
+            <circle cx="92" cy="142" r="22" fill="none" stroke="#38bdf8" stroke-width="4"/>
+            <circle cx="208" cy="142" r="22" fill="none" stroke="#38bdf8" stroke-width="4"/>
+            <g stroke="#38bdf8" stroke-width="4" stroke-linecap="round">
+              <line x1="92" y1="142" x2="130" y2="120"/>
+              <line x1="130" y1="120" x2="170" y2="118"/>
+              <line x1="170" y1="118" x2="208" y2="142"/>
+              <line x1="130" y1="120" x2="128" y2="94"/>
+            </g>
+            <ellipse cx="122" cy="74" rx="30" ry="17" fill="#f2ead8"/>
+            <circle cx="152" cy="62" r="9" fill="#f2ead8"/>
+            <path d="M158,60 L180,66 L156,70 Z" fill="#f5a83c"/>
+            <ellipse cx="150" cy="50" rx="10" ry="5" fill="#00e5a0"/>
+            <circle cx="154" cy="60" r="1.6" fill="#1c2433"/>
+            <line x1="130" y1="88" x2="140" y2="112" stroke="#f5a83c" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <figcaption><span class="t">骑行日记 🚲</span><span class="d">2026-03</span></figcaption>
+      </figure>
+
+    </div>
+  </div>
+
+  <p class="caption">
+    占位插画为纯 SVG 手绘 ｜ 点击任意一张可放大查看 ｜
+    换成真实照片：把 <b>.art</b> 里的 <b>&lt;svg&gt;</b> 换成 <b>&lt;img&gt;</b> 即可
+  </p>
+
+  <!-- 灯箱 -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="图片放大预览">
+    <div class="lb-inner">
+      <div id="lbArt"></div>
+      <p class="lb-cap" id="lbCap"></p>
+      <p class="lb-hint">点击任意处关闭</p>
+    </div>
+  </div>
+
+  <script>
+    const $  = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      $$(".reveal").forEach((el) => io.observe(el));
+    }
+
+    function initLightbox() {
+      const lightbox = $("#lightbox");
+      $$(".photo").forEach((p) => {
+        p.addEventListener("click", () => {
+          $("#lbArt").innerHTML = p.querySelector("svg").outerHTML;
+          $("#lbCap").textContent =
+            p.querySelector(".t").textContent + " · " + p.querySelector(".d").textContent;
+          lightbox.classList.add("open");
+        });
+      });
+      lightbox.addEventListener("click", () => lightbox.classList.remove("open"));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") lightbox.classList.remove("open");
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+      initLightbox();
+    });
+  </script>
+</body>
+</html>
