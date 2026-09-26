@@ -12,7 +12,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
 /* ─────────── 终端窗口：逐字打命令 ─────────── */
 const termLines = [
   { type: "cmd", text: "whoami" },
-  { type: "out", text: "你的名字 —— 一个热爱创造的人" },
+  { type: "out", text: "CCCAD —— 一个热爱创造的人" },
   { type: "cmd", text: "cat motto.txt" },
   { type: "out", text: "保持好奇 · 持续学习 · 快速行动" },
   { type: "cmd", text: "./welcome.sh" },
