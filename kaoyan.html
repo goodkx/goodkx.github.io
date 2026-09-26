@@ -88,6 +88,40 @@
     }
     .note b { color: #1d4ed8; }
 
+    /* 下载按钮 */
+    .dl-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 0 0 26px;
+    }
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(120deg, #059669, #0891b2);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 8px 22px rgba(5, 150, 105, 0.28);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dl-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(5, 150, 105, 0.4);
+    }
+    .dl-size {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+    .dl-tip { font-size: 0.78rem; color: #8a8f99; }
+
     /* 科目区块 */
     .subject { margin-top: 44px; scroll-margin-top: 84px; }
     .subject-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -235,6 +269,14 @@
     <p class="note reveal">
       <b>学硕 vs 专硕怎么选：</b>软件工程学硕多为「英一 + 数一 + 408」；专硕（电子信息 0854 下）多为「英二 + 数二」，专业课考 408 或院校自命题（如软件工程导论）。总分 500 分，最终以<b>目标院校当年的招生专业目录</b>为准。
     </p>
+
+    <div class="dl-row reveal">
+      <a class="dl-btn" href="files/kaoyan.docx" download="软件工程专业考研全程复习指南.docx">
+        📥 下载 Word 版复习指南
+        <span class="dl-size">.docx · 约 59 KB</span>
+      </a>
+      <span class="dl-tip">点击直接下载，打开即是完整文档</span>
+    </div>
 
     <!-- ═══ 01 政治 ═══ -->
     <section id="politics" class="subject" style="--sc:#dc2626">
