@@ -10,6 +10,7 @@
 ├── blog.html    博客页（文章列表，复制 post 块即可发文）
 ├── gallery.html 相册页（点击放大，SVG 占位图可换成 <img>）
 ├── tools.html   工具箱页（6 个纯前端小工具）
+├── kaoyan.html  27 软件工程考研备考大纲
 ├── pelican.html 彩蛋页：鹈鹕骑自行车 SVG 动画
 ├── subpage.css  所有内页共用的基础样式
 ├── style.css    首页样式（配色、布局、动效）

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="27 软件工程考研全科备考大纲：政治、英语、数学、408 专业课。" />
+  <title>考研大纲 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎓%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <style>
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .ov-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+      transition: border-color .3s, transform .3s;
+    }
+    .ov-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+    .ov-card .score {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      color: var(--accent);
+      display: block;
+      margin-top: 4px;
+    }
+    .ov-card .name { font-size: .92rem; }
+    .ov-card .code { font-family: var(--mono); font-size: .7rem; color: var(--muted); display: block; margin-top: 6px; }
+
+    .note {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 34px;
+    }
+    .note b { color: var(--accent-2); }
+
+    .subject { margin-bottom: 34px; }
+    .subject > h2 {
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .subject > .meta {
+      font-family: var(--mono);
+      font-size: .74rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .topic {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color .3s;
+    }
+    .topic:hover { border-color: var(--border-hover); }
+    .topic summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 18px;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+    .topic summary::-webkit-details-marker { display: none; }
+    .topic summary::before {
+      content: "▸";
+      color: var(--accent);
+      font-family: var(--mono);
+      transition: transform .25s;
+    }
+    .topic[open] summary::before { transform: rotate(90deg); }
+    .topic ul {
+      padding: 2px 22px 16px 40px;
+      font-size: .87rem;
+      color: var(--muted);
+      line-height: 2.05;
+    }
+    .topic ul code {
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: var(--accent-2);
+    }
+
+    .tl { position: relative; padding-left: 30px; margin-top: 6px; }
+    .tl::before {
+      content: "";
+      position: absolute;
+      left: 6px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent), rgba(56,189,248,.4));
+    }
+    .tl-item { position: relative; padding-bottom: 26px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before {
+      content: "";
+      position: absolute;
+      left: -30px; top: 7px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 12px rgba(0, 229, 160, .5);
+    }
+    .tl-item .when {
+      font-family: var(--mono);
+      font-size: .76rem;
+      color: var(--accent-2);
+    }
+    .tl-item h3 { font-size: 1rem; margin: 3px 0 4px; }
+    .tl-item p { font-size: .87rem; color: var(--muted); }
+
+    @media (max-width: 860px) {
+      .overview { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🎓 kaoyan</span>
+  </div>
+
+  <h1>27 考研 · <span class="grad">软件工程</span>备考大纲</h1>
+
+  <div class="wrap">
+
+    <!-- 总览 -->
+    <div class="overview">
+      <div class="ov-card reveal"><span class="score">100</span><div class="name">🚩 思想政治理论</div><span class="code">101 · 全国统考</span></div>
+      <div class="ov-card reveal" style="--d:.06s"><span class="score">100</span><div class="name">🔤 英语</div><span class="code">201 英一 / 204 英二</span></div>
+      <div class="ov-card reveal" style="--d:.12s"><span class="score">150</span><div class="name">🧮 数学</div><span class="code">301 数一 / 302 数二</span></div>
+      <div class="ov-card reveal" style="--d:.18s"><span class="score">150</span><div class="name">💻 专业课</div><span class="code">408 统考 / 院校自命题</span></div>
+    </div>
+
+    <p class="note reveal">
+      <b>学硕 vs 专硕怎么选：</b>软件工程学硕多为「英一 + 数一 + 408」；
+      专硕（电子信息 0854 下）多为「英二 + 数二」，专业课考 408 或院校自命题（如软件工程导论）。
+      最终以<b>目标院校当年的招生专业目录</b>为准。总分 500 分。
+    </p>
+
+    <!-- 01 政治 -->
+    <section class="subject reveal">
+      <h2>🚩 思想政治理论（101）</h2>
+      <div class="meta">满分 100 · 建议暑期开始 · 后期性价比最高</div>
+      <details class="topic" open>
+        <summary>马克思主义基本原理（马原）</summary>
+        <ul>
+          <li>唯物论：物质与意识、运动与静止</li>
+          <li>辩证法：对立统一、量变质变、否定之否定</li>
+          <li>认识论：实践与认识、真理与价值</li>
+          <li>唯物史观：社会基本矛盾、人民群众</li>
+          <li>政治经济学：劳动价值论、剩余价值理论</li>
+          <li>科学社会主义</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>毛泽东思想和中国特色社会主义理论体系概论</summary>
+        <ul>
+          <li>毛泽东思想：新民主主义革命、社会主义改造与建设</li>
+          <li>中国特色社会主义理论体系：邓小平理论、「三个代表」、科学发展观</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>习近平新时代中国特色社会主义思想概论</summary>
+        <ul>
+          <li>新时代总任务与「五位一体」总体布局</li>
+          <li>新发展理念、新发展格局、高质量发展</li>
+          <li>全面从严治党与百年奋斗历史经验</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>中国近现代史纲要</summary>
+        <ul>
+          <li>旧民主主义革命时期（1840–1919）</li>
+          <li>新民主主义革命时期（1919–1949）</li>
+          <li>社会主义革命、建设与改革开放时期</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>思想道德与法治 + 形势与政策</summary>
+        <ul>
+          <li>理想信念、人生观价值观、道德观、法治观</li>
+          <li>年度国内外重大时事（考前一两个月集中背）</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 02 英语 -->
+    <section class="subject reveal">
+      <h2>🔤 英语（201 英一 / 204 英二）</h2>
+      <div class="meta">满分 100 · 贯穿全程 · 真题为王</div>
+      <details class="topic" open>
+        <summary>基础能力</summary>
+        <ul>
+          <li>词汇：大纲约 <code>5500</code> 词 + 常见词根词缀，每天滚动背诵</li>
+          <li>长难句与语法：拆解结构，为阅读和翻译打底</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>题型与分值（英一 / 英二）</summary>
+        <ul>
+          <li>完形填空 10 分：语篇逻辑 + 固定搭配</li>
+          <li>阅读理解 A 40 分：细节题、推理题、主旨题、态度题</li>
+          <li>新题型 10 分：七选五 / 排序 / 小标题（英一）、多项对应（英二）</li>
+          <li>翻译：英一 10 分（五个长难句）/ 英二 15 分（段落英译汉）</li>
+          <li>写作 30 分：小作文（书信 / 通知 10 分）+ 大作文（英一图画 20 分 / 英二图表 15 分）</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>复习要点</summary>
+        <ul>
+          <li>真题至少精读两遍（2005 年至今），逐句翻译阅读长难句</li>
+          <li>11 月起整理自己的大小作文模板并动笔默写</li>
+          <li>单词背到考前最后一天</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 03 数学 -->
+    <section class="subject reveal">
+      <h2>🧮 数学（301 数一 / 302 数二）</h2>
+      <div class="meta">满分 150 · 最重要也最拉分 · 尽早开始</div>
+      <details class="topic" open>
+        <summary>高等数学（数一约 56% / 数二约 78%）</summary>
+        <ul>
+          <li>极限与连续、导数与微分、微分中值定理及应用</li>
+          <li>不定积分、定积分、反常积分及应用</li>
+          <li>多元函数微分学、二重积分</li>
+          <li>微分方程（一阶、可降阶、二阶常系数）</li>
+          <li>仅数一：向量代数与空间解析几何、三重积分、曲线曲面积分、无穷级数</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>线性代数（约 22%）</summary>
+        <ul>
+          <li>行列式、矩阵及其运算、逆矩阵与初等变换</li>
+          <li>向量组的线性相关性、线性方程组</li>
+          <li>特征值与特征向量、相似对角化</li>
+          <li>二次型及其标准形、正定性</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>概率论与数理统计（仅数一，约 22%）</summary>
+        <ul>
+          <li>随机事件与概率、一维 / 多维随机变量及其分布</li>
+          <li>数字特征（期望、方差、协方差、相关系数）</li>
+          <li>大数定律与中心极限定理、数理统计的基本概念</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 04 408 -->
+    <section class="subject reveal">
+      <h2>💻 专业课 408 计算机学科专业基础</h2>
+      <div class="meta">满分 150 · 数据结构 45 + 计组 45 + 操作系统 35 + 计网 25</div>
+      <details class="topic" open>
+        <summary>数据结构（45 分）</summary>
+        <ul>
+          <li>线性表、栈、队列、串、数组与广义表</li>
+          <li>树与二叉树：遍历、线索二叉树、哈夫曼树与编码</li>
+          <li>图：存储、DFS/BFS、最小生成树、最短路径、拓扑排序、关键路径</li>
+          <li>查找：折半、B 树 / B+ 树、散列表及冲突处理</li>
+          <li>排序：插入 / 冒泡 / 快排 / 选择 / 堆排 / 归并 / 基数，复杂度对比</li>
+          <li>算法题：手写代码（链表、树、图、动规为主）</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>计算机组成原理（45 分）</summary>
+        <ul>
+          <li>系统概述：层次结构、性能指标</li>
+          <li>数据表示与运算：定点 / 浮点、<code>IEEE 754</code>、运算器</li>
+          <li>存储系统：主存、<code>Cache</code> 映射与替换、虚拟存储</li>
+          <li>指令系统：寻址方式、CISC / RISC</li>
+          <li>中央处理器：数据通路、硬布线与微程序、指令流水线</li>
+          <li>总线与输入输出：中断、DMA</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>操作系统（35 分）</summary>
+        <ul>
+          <li>进程与线程：状态转换、调度算法、同步与互斥（PV 操作）、死锁</li>
+          <li>内存管理：分区 / 分页 / 分段、页面置换（LRU、Clock）、虚拟内存</li>
+          <li>文件管理：目录结构、文件物理结构、磁盘调度</li>
+          <li>输入输出管理：I/O 控制方式、缓冲区</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>计算机网络（25 分）</summary>
+        <ul>
+          <li>体系结构：OSI 七层与 TCP/IP 模型、性能指标</li>
+          <li>物理层、数据链路层：差错校验（CRC）、滑动窗口、CSMA/CD</li>
+          <li>网络层：IPv4 / IPv6、子网划分、路由协议（RIP、OSPF、BGP）、ARP</li>
+          <li>传输层：<code>TCP</code> 连接管理、流量与拥塞控制；<code>UDP</code></li>
+          <li>应用层：DNS、HTTP / HTTPS、FTP、SMTP / POP3、DHCP</li>
+        </ul>
+      </details>
+      <details class="topic">
+        <summary>院校自命题（软件工程专业课，替代 408 时）</summary>
+        <ul>
+          <li>软件工程学概述、软件过程模型：瀑布 / 原型 / 增量 / 螺旋 / 敏捷</li>
+          <li>可行性研究与需求分析：结构化方法（SA）、面向对象（OOA）、用例</li>
+          <li>总体设计：模块化、耦合与内聚；详细设计：程序流程图、PDL</li>
+          <li>编码与测试：白盒 / 黑盒用例设计、单元 / 集成 / 系统 / 验收测试</li>
+          <li>软件维护、项目管理（进度、成本、质量、配置管理）、UML 建模基础</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 05 时间线 -->
+    <section class="subject reveal">
+      <h2>🗓️ 备考时间线（27 考研）</h2>
+      <div class="meta">初试预计 2026 年 12 月下旬 · 现在开始正好</div>
+      <div class="tl">
+        <div class="tl-item">
+          <span class="when">2026.09 — 10</span>
+          <h3>强化 + 真题一刷</h3>
+          <p>数学与专业课强化收尾，开始刷近十年真题；政治起步（马原 + 1000 题）；英语真题精读。10 月在研招网完成网上报名。</p>
+        </div>
+        <div class="tl-item">
+          <span class="when">2026.11</span>
+          <h3>冲刺期</h3>
+          <p>肖八出版并刷选择题，英语作文模板成型并默写，408 / 数学真题二刷错题，网上（现场）确认报名信息。</p>
+        </div>
+        <div class="tl-item">
+          <span class="when">2026.12</span>
+          <h3>决胜期</h3>
+          <p>肖四大题背诵，全真限时模考找回状态，调整作息到考试节奏，背单词到进考场前。</p>
+        </div>
+        <div class="tl-item">
+          <span class="when">2027.02 — 04</span>
+          <h3>出分与复试</h3>
+          <p>初试成绩公布 → 准备复试（机试 + 面试：数据结构手写代码、英语口语、项目经历）→ 调剂或拟录取。</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <p class="caption">
+    按 <b>2026 年 9 月</b>公开信息整理 ｜ 各科分值为常见情况 ｜
+    最终以教育部最新《考试大纲》与<b>目标院校招生简章</b>为准 ｜ 加油，岸上见 🎓
+  </p>
+
+  <script>
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+      $$(".reveal").forEach((el) => io.observe(el));
+    }
+    document.addEventListener("DOMContentLoaded", initReveal);
+  </script>
+</body>
+</html>
