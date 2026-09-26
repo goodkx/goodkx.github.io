@@ -16,6 +16,17 @@
   --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
   --sans: "Segoe UI", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   --radius: 14px;
+  --panel: rgba(13, 20, 32, 0.88);
+  --nav-bg: rgba(10, 14, 22, 0.72);
+  --sb-thumb: #223047;
+  --glow-1: rgba(0, 229, 160, 0.13);
+  --glow-2: rgba(56, 189, 248, 0.11);
+  --acc-soft-bg: rgba(0, 229, 160, 0.08);
+  --acc-soft-bd: rgba(0, 229, 160, 0.2);
+  --acc-glow: rgba(0, 229, 160, 0.18);
+  --chip-c: #7dd3fc;
+  --chip-bg: rgba(56, 189, 248, 0.08);
+  --chip-bd: rgba(56, 189, 248, 0.18);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,7 +59,7 @@ body::before {
 ::selection { background: rgba(0, 229, 160, 0.28); color: #fff; }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: #223047; border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 8px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 160, 0.5); }
 
 .top {
@@ -112,14 +123,14 @@ h1 {
   font-size: 0.74rem;
   padding: 3px 11px;
   border-radius: 999px;
-  color: #7dd3fc;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: var(--chip-c);
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-bd);
 }
 .chip.green {
   color: var(--accent);
-  background: rgba(0, 229, 160, 0.07);
-  border-color: rgba(0, 229, 160, 0.18);
+  background: var(--acc-soft-bg);
+  border-color: var(--acc-soft-bd);
 }
 
 /* 进场动画 */
@@ -140,7 +151,7 @@ h1 {
   border-radius: 10px;
   font-size: 0.88rem;
   color: var(--accent);
-  background: rgba(13, 20, 32, 0.95);
+  background: var(--panel);
   border: 1px solid var(--border-hover);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   opacity: 0;
