@@ -61,7 +61,11 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .tbtn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, 0.3); }
+    .tbtn:disabled { opacity: 0.6; cursor: wait; transform: none; }
     .hint { font-size: 0.74rem; color: var(--muted); font-family: var(--mono); }
+    #gbStatus { font-family: var(--mono); font-size: 0.72rem; padding: 3px 10px; border-radius: 999px; }
+    #gbStatus.cloud { color: var(--accent); background: var(--acc-soft-bg); border: 1px solid var(--acc-soft-bd); }
+    #gbStatus.offline { color: #fbbf24; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.25); }
 
     .glist { display: flex; flex-direction: column; gap: 14px; }
     .gmsg {
@@ -113,13 +117,13 @@
 
     <div class="gform reveal">
       <div class="row">
-        <input id="gbName" maxlength="20" placeholder="怎么称呼你？（可留空）" />
-        <span class="hint">💌 纯静态站没有服务器：留言保存在你自己的浏览器里</span>
+        <input id="gbName" maxlength="30" placeholder="怎么称呼你？（可留空）" />
+        <span id="gbStatus" class="offline">📡 连接中…</span>
       </div>
-      <textarea id="gbText" rows="3" maxlength="200" placeholder="留下你想说的话……"></textarea>
+      <textarea id="gbText" rows="3" maxlength="500" placeholder="留下你想说的话……"></textarea>
       <div class="row">
         <button class="tbtn" id="gbPost" type="button">✉️ 发布留言</button>
-        <span class="hint" id="gbCount">0 / 200</span>
+        <span class="hint" id="gbCount">0 / 500</span>
       </div>
     </div>
 
@@ -128,8 +132,8 @@
   </div>
 
   <p class="caption">
-    留言采用 <b>localStorage 本地存储</b>，仅自己可见 ｜
-    想让我真的收到？直接 <b>发封邮件</b> 给我 📮
+    留言已接入 <b>Supabase 云数据库</b>，<b>所有访客可见</b> ｜
+    你当前的网络若连不上云端，会自动进入离线模式（留言暂存本机）
   </p>
 
   <div class="toast" id="toast" role="status"></div>
@@ -143,7 +147,7 @@
       toast.textContent = msg;
       toast.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
     }
     function initReveal() {
       const io = new IntersectionObserver((entries) => {
@@ -154,24 +158,28 @@
       $$(".reveal").forEach((el) => io.observe(el));
     }
 
-    const KEY = "guestbook-msgs";
-    const AVATARS = ["🌟", "🍀", "🌙", "☕", "🎈", "🐟", "🌸", "⚡"];
+    /* ══════════ Supabase 云端配置 ══════════
+       SB_KEY 是 anon 公开密钥（安全靠后台的 RLS 策略保证），放前端是官方推荐做法 */
+    const SB_URL = "https://flykgkocxgpcudupgbp.supabase.co";
+    const SB_KEY = "sb_publishable_ZhPxj7o-5zD-juN-xI9tFA_113t27GA";
+    const SB_HEADERS = {
+      apikey: SB_KEY,
+      Authorization: "Bearer " + SB_KEY,
+      "Content-Type": "application/json",
+    };
 
-    function load() {
-      try {
-        const list = JSON.parse(localStorage.getItem(KEY) || "null");
-        if (Array.isArray(list)) return list;
-      } catch (e) {}
-      // 初始留言
-      const now = Date.now();
-      return [
-        { n: "CCCAD", m: "欢迎来到留言板！想说什么都行，我看到一定会回 👋", t: now - 86400000, seed: true },
-        { n: "鹈鹕", m: "我骑车路过的，顺便打个招呼 🚲", t: now - 3600000, seed: true },
-      ];
+    let messages = [];   // 当前展示的留言
+    let cloudOk = false; // 云端是否可达
+    const LKEY = "guestbook-local-fallback";
+
+    function loadLocal() {
+      try { return JSON.parse(localStorage.getItem(LKEY) || "null") || []; }
+      catch (e) { return []; }
     }
-    function save(list) {
-      try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+    function saveLocal(list) {
+      try { localStorage.setItem(LKEY, JSON.stringify(list)); } catch (e) {}
     }
+
     function esc(s) {
       return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
@@ -181,44 +189,110 @@
     function avatarFor(n) {
       let h = 0;
       for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-      return AVATARS[h % AVATARS.length];
+      return ["🌟", "🍀", "🌙", "☕", "🎈", "🐟", "🌸", "⚡"][h % 8];
     }
+
     function render() {
-      const list = load();
-      $("#gbList").innerHTML = list.map((m) => `
-        <div class="gmsg">
-          <div class="gh">
-            <span class="who">
-              <span class="avatar">${avatarFor(m.n)}</span>
-              <b>${esc(m.n)}</b>
-              ${m.seed ? '<span class="chip green owner">站长</span>' : ""}
-            </span>
-            <span class="time">${fmt(m.t)}</span>
-          </div>
-          <div class="gm">${esc(m.m)}</div>
-        </div>`).join("");
+      $("#gbList").innerHTML = messages.length
+        ? messages.map((m) => `
+          <div class="gmsg">
+            <div class="gh">
+              <span class="who">
+                <span class="avatar">${avatarFor(m.n)}</span>
+                <b>${esc(m.n)}</b>
+                ${m.n === "CCCAD" ? '<span class="chip green owner">站长</span>' : ""}
+              </span>
+              <span class="time">${fmt(m.t)}</span>
+            </div>
+            <div class="gm">${esc(m.m)}</div>
+          </div>`).join("")
+        : `<div class="gmsg"><div class="gm">还没有留言，来抢第一个沙发吧！</div></div>`;
+    }
+
+    function updateStatus() {
+      const s = $("#gbStatus");
+      s.className = cloudOk ? "cloud" : "offline";
+      s.textContent = cloudOk ? "☁️ 云端已连接 · 所有访客可见" : "📴 离线模式 · 留言暂存本机";
+    }
+
+    /* 从云端拉取留言；失败则回退到本机缓存 */
+    async function refresh() {
+      try {
+        const res = await fetch(
+          SB_URL + "/rest/v1/messages?select=*&order=created_at.desc&limit=100",
+          { headers: SB_HEADERS }
+        );
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const rows = await res.json();
+        messages = rows.map((r) => ({
+          n: r.name || "匿名朋友",
+          m: r.content,
+          t: new Date(r.created_at).getTime(),
+        }));
+        cloudOk = true;
+        saveLocal(messages);
+      } catch {
+        cloudOk = false;
+        messages = loadLocal();
+        if (!messages.length) {
+          messages = [
+            { n: "CCCAD", m: "欢迎来到留言板！想说什么都行，我看到一定回 👋", t: Date.now() - 86400000 },
+            { n: "鹈鹕", m: "我骑车路过的，顺便打个招呼 🚲", t: Date.now() - 3600000 },
+          ];
+        }
+      }
+      updateStatus();
+      render();
+    }
+
+    /* 发布留言：优先写云端，失败暂存本机 */
+    async function postMessage(n, m) {
+      $("#gbPost").disabled = true;
+      try {
+        const res = await fetch(SB_URL + "/rest/v1/messages", {
+          method: "POST",
+          headers: { ...SB_HEADERS, Prefer: "return=representation" },
+          body: JSON.stringify({ name: n, content: m }),
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const row = (await res.json())[0];
+        messages.unshift({ n: row.name, m: row.content, t: new Date(row.created_at).getTime() });
+        cloudOk = true;
+        saveLocal(messages);
+        render();
+        return true;
+      } catch {
+        messages.unshift({ n, m, t: Date.now() });
+        saveLocal(messages);
+        render();
+        return false;
+      } finally {
+        $("#gbPost").disabled = false;
+      }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
-      render();
+      refresh();
 
       const text = $("#gbText");
       text.addEventListener("input", () => {
-        $("#gbCount").textContent = [...text.value].length + " / 200";
+        $("#gbCount").textContent = [...text.value].length + " / 500";
       });
 
-      $("#gbPost").addEventListener("click", () => {
+      $("#gbPost").addEventListener("click", async () => {
         const n = $("#gbName").value.trim() || "匿名朋友";
         const m = text.value.trim();
         if (!m) { showToast("先写点什么再发布吧 ✍️"); return; }
-        const list = load();
-        list.unshift({ n, m, t: Date.now() });
-        save(list);
-        text.value = "";
-        $("#gbCount").textContent = "0 / 200";
-        render();
-        showToast("留言发布成功 ✓");
+        const ok = await postMessage(n, m);
+        if (ok) {
+          text.value = "";
+          $("#gbCount").textContent = "0 / 500";
+          showToast("留言已上云，所有人可见 ✓");
+        } else {
+          showToast("连不上云端，留言暂存本机（网络恢复后新留言自动上云）");
+        }
+        updateStatus();
       });
     });
   </script>
