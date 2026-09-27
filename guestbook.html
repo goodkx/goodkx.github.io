@@ -158,8 +158,10 @@
       $$(".reveal").forEach((el) => io.observe(el));
     }
 
-    /* ══════════ Supabase 云端配置 ══════════
-       SB_KEY 是 anon 公开密钥（安全靠后台的 RLS 策略保证），放前端是官方推荐做法 */
+    /* ══════════ 数据源：三级自动切换 ══════════
+       1) EdgeOne 同源接口 /api/messages（整站部署在 EdgeOne 时可用，国内直连）
+       2) Supabase 云数据库（GitHub Pages 部署且网络可达时可用）
+       3) 本机 localStorage（全部失败时的兜底） */
     const SB_URL = "https://flykgkocxgpcudupgbp.supabase.co";
     const SB_KEY = "sb_publishable_ZhPxj7o-5zD-juN-xI9tFA_113t27GA";
     const SB_HEADERS = {
@@ -169,7 +171,7 @@
     };
 
     let messages = [];   // 当前展示的留言
-    let cloudOk = false; // 云端是否可达
+    let sourceName = ""; // 当前数据源："edgeone" / "supabase" / "local"
     const LKEY = "guestbook-local-fallback";
 
     function loadLocal() {
@@ -211,60 +213,100 @@
 
     function updateStatus() {
       const s = $("#gbStatus");
-      s.className = cloudOk ? "cloud" : "offline";
-      s.textContent = cloudOk ? "☁️ 云端已连接 · 所有访客可见" : "📴 离线模式 · 留言暂存本机";
+      if (sourceName === "edgeone") {
+        s.className = "cloud";
+        s.textContent = "☁️ 云端已连接（EdgeOne）· 所有访客可见";
+      } else if (sourceName === "supabase") {
+        s.className = "cloud";
+        s.textContent = "☁️ 云端已连接（Supabase）· 所有访客可见";
+      } else {
+        s.className = "offline";
+        s.textContent = "📴 离线模式 · 留言暂存本机";
+      }
     }
 
-    /* 从云端拉取留言；失败则回退到本机缓存 */
+    async function tryEdgeOne() {
+      const res = await fetch("/api/messages");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rows = await res.json();
+      if (!Array.isArray(rows)) throw new Error("bad payload");
+      messages = rows;
+      return "edgeone";
+    }
+    async function trySupabase() {
+      const res = await fetch(
+        SB_URL + "/rest/v1/messages?select=*&order=created_at.desc&limit=100",
+        { headers: SB_HEADERS }
+      );
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rows = await res.json();
+      messages = rows.map((r) => ({
+        n: r.name || "匿名朋友",
+        m: r.content,
+        t: new Date(r.created_at).getTime(),
+      }));
+      return "supabase";
+    }
+
     async function refresh() {
-      try {
-        const res = await fetch(
-          SB_URL + "/rest/v1/messages?select=*&order=created_at.desc&limit=100",
-          { headers: SB_HEADERS }
-        );
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const rows = await res.json();
-        messages = rows.map((r) => ({
-          n: r.name || "匿名朋友",
-          m: r.content,
-          t: new Date(r.created_at).getTime(),
-        }));
-        cloudOk = true;
-        saveLocal(messages);
-      } catch {
-        cloudOk = false;
-        messages = loadLocal();
-        if (!messages.length) {
-          messages = [
-            { n: "CCCAD", m: "欢迎来到留言板！想说什么都行，我看到一定回 👋", t: Date.now() - 86400000 },
-            { n: "鹈鹕", m: "我骑车路过的，顺便打个招呼 🚲", t: Date.now() - 3600000 },
-          ];
-        }
+      for (const attempt of [tryEdgeOne, trySupabase]) {
+        try {
+          sourceName = await attempt();
+          saveLocal(messages);
+          updateStatus();
+          render();
+          return;
+        } catch (e) { /* 试下一个数据源 */ }
+      }
+      sourceName = "local";
+      messages = loadLocal();
+      if (!messages.length) {
+        messages = [
+          { n: "CCCAD", m: "欢迎来到留言板！想说什么都行，我看到一定回 👋", t: Date.now() - 86400000 },
+          { n: "鹈鹕", m: "我骑车路过的，顺便打个招呼 🚲", t: Date.now() - 3600000 },
+        ];
       }
       updateStatus();
       render();
     }
 
-    /* 发布留言：优先写云端，失败暂存本机 */
     async function postMessage(n, m) {
       $("#gbPost").disabled = true;
       try {
-        const res = await fetch(SB_URL + "/rest/v1/messages", {
-          method: "POST",
-          headers: { ...SB_HEADERS, Prefer: "return=representation" },
-          body: JSON.stringify({ name: n, content: m }),
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const row = (await res.json())[0];
-        messages.unshift({ n: row.name, m: row.content, t: new Date(row.created_at).getTime() });
-        cloudOk = true;
-        saveLocal(messages);
-        render();
-        return true;
-      } catch {
+        /* 1) EdgeOne 同源接口 */
+        try {
+          const res = await fetch("/api/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: n, content: m }),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const row = await res.json();
+          messages.unshift({ n: row.n, m: row.m, t: row.t || Date.now() });
+          sourceName = "edgeone";
+          saveLocal(messages);
+          return true;
+        } catch (e) { /* 换下一个 */ }
+
+        /* 2) Supabase */
+        try {
+          const res = await fetch(SB_URL + "/rest/v1/messages", {
+            method: "POST",
+            headers: { ...SB_HEADERS, Prefer: "return=representation" },
+            body: JSON.stringify({ name: n, content: m }),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const row = (await res.json())[0];
+          messages.unshift({ n: row.name, m: row.content, t: new Date(row.created_at).getTime() });
+          sourceName = "supabase";
+          saveLocal(messages);
+          return true;
+        } catch (e) { /* 换兜底 */ }
+
+        /* 3) 本机 */
         messages.unshift({ n, m, t: Date.now() });
+        sourceName = "local";
         saveLocal(messages);
-        render();
         return false;
       } finally {
         $("#gbPost").disabled = false;
