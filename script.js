@@ -230,6 +230,30 @@ function initYear() {
   if (y) y.textContent = new Date().getFullYear();
 }
 
+/* ─────────── 页脚每日一言（本地轮换，零依赖） ─────────── */
+const QUOTES = [
+  "保持好奇，持续创造。",
+  "行动起来，路就在脚下。",
+  "慢慢来，比较快。",
+  "先完成，再完美。",
+  "星星不发问，赶路人自答。",
+  "种一棵树最好的时间是十年前，其次是现在。",
+  "代码和生活，都需要偶尔重构。",
+  "不要忘了最初的目的。",
+  "每一次挥拳都在雕刻自己。",
+  "简单，比复杂更难，但值得。",
+  "不确定的世界里，做确定的事。",
+  "今天也要开心地写点什么呀。",
+];
+function initQuote() {
+  const el = $("#dailyQuote");
+  if (!el) return;
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const day = Math.floor((now - start) / 864e5);
+  el.textContent = "💬 " + QUOTES[day % QUOTES.length];
+}
+
 /* ─────────── 启动 ─────────── */
 document.addEventListener("DOMContentLoaded", () => {
   initReveal();
@@ -238,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPageCards();
   initCursorGlow();
   initYear();
+  initQuote();
   setTimeout(() => {
     runTerminal();
     typeRoles();

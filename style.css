@@ -668,6 +668,14 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .back-top:hover { color: var(--accent); }
 
+.daily-quote {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  opacity: 0.9;
+  text-align: center;
+}
+
 /* ─────────── Toast 提示 ─────────── */
 .toast {
   position: fixed;

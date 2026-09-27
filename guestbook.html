@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="留言板 —— 打个招呼，留下你想说的话。" />
+  <title>留言板 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💌%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="search.css" />
+  <script src="theme.js"></script>
+  <script src="search.js"></script>
+  <style>
+    .gform {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 30px;
+      transition: border-color .3s;
+    }
+    .gform:hover { border-color: var(--border-hover); }
+    .gform .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    #gbName {
+      flex: 0 0 180px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 10px 12px;
+    }
+    #gbName:focus { outline: none; border-color: var(--border-hover); }
+    #gbText {
+      width: 100%;
+      margin: 12px 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      padding: 12px 14px;
+      resize: vertical;
+    }
+    #gbText:focus { outline: none; border-color: var(--border-hover); }
+    .tbtn {
+      background: var(--gradient);
+      color: #06251a;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tbtn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, 0.3); }
+    .hint { font-size: 0.74rem; color: var(--muted); font-family: var(--mono); }
+
+    .glist { display: flex; flex-direction: column; gap: 14px; }
+    .gmsg {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: border-color .3s;
+    }
+    .gmsg:hover { border-color: var(--border-hover); }
+    .gmsg .gh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .gmsg .who { display: flex; align-items: center; gap: 8px; }
+    .gmsg .avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .gmsg .who b { color: var(--accent); font-size: 0.9rem; }
+    .gmsg .time { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .gmsg .gm { color: var(--text); font-size: 0.9rem; line-height: 1.9; word-break: break-word; }
+    .chip.owner {
+      color: var(--accent);
+      background: var(--acc-soft-bg);
+      border-color: var(--acc-soft-bd);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">💌 guestbook</span>
+  </div>
+
+  <h1>留下你的 <span class="grad">痕迹</span></h1>
+
+  <div class="wrap">
+
+    <div class="gform reveal">
+      <div class="row">
+        <input id="gbName" maxlength="20" placeholder="怎么称呼你？（可留空）" />
+        <span class="hint">💌 纯静态站没有服务器：留言保存在你自己的浏览器里</span>
+      </div>
+      <textarea id="gbText" rows="3" maxlength="200" placeholder="留下你想说的话……"></textarea>
+      <div class="row">
+        <button class="tbtn" id="gbPost" type="button">✉️ 发布留言</button>
+        <span class="hint" id="gbCount">0 / 200</span>
+      </div>
+    </div>
+
+    <div class="glist" id="gbList"></div>
+
+  </div>
+
+  <p class="caption">
+    留言采用 <b>localStorage 本地存储</b>，仅自己可见 ｜
+    想让我真的收到？直接 <b>发封邮件</b> 给我 📮
+  </p>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const $  = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = $("#toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      $$(".reveal").forEach((el) => io.observe(el));
+    }
+
+    const KEY = "guestbook-msgs";
+    const AVATARS = ["🌟", "🍀", "🌙", "☕", "🎈", "🐟", "🌸", "⚡"];
+
+    function load() {
+      try {
+        const list = JSON.parse(localStorage.getItem(KEY) || "null");
+        if (Array.isArray(list)) return list;
+      } catch (e) {}
+      // 初始留言
+      const now = Date.now();
+      return [
+        { n: "CCCAD", m: "欢迎来到留言板！想说什么都行，我看到一定会回 👋", t: now - 86400000, seed: true },
+        { n: "鹈鹕", m: "我骑车路过的，顺便打个招呼 🚲", t: now - 3600000, seed: true },
+      ];
+    }
+    function save(list) {
+      try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
+    }
+    function esc(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    function fmt(t) {
+      return new Date(t).toLocaleString("zh-CN", { hour12: false });
+    }
+    function avatarFor(n) {
+      let h = 0;
+      for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      return AVATARS[h % AVATARS.length];
+    }
+    function render() {
+      const list = load();
+      $("#gbList").innerHTML = list.map((m) => `
+        <div class="gmsg">
+          <div class="gh">
+            <span class="who">
+              <span class="avatar">${avatarFor(m.n)}</span>
+              <b>${esc(m.n)}</b>
+              ${m.seed ? '<span class="chip green owner">站长</span>' : ""}
+            </span>
+            <span class="time">${fmt(m.t)}</span>
+          </div>
+          <div class="gm">${esc(m.m)}</div>
+        </div>`).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+      render();
+
+      const text = $("#gbText");
+      text.addEventListener("input", () => {
+        $("#gbCount").textContent = [...text.value].length + " / 200";
+      });
+
+      $("#gbPost").addEventListener("click", () => {
+        const n = $("#gbName").value.trim() || "匿名朋友";
+        const m = text.value.trim();
+        if (!m) { showToast("先写点什么再发布吧 ✍️"); return; }
+        const list = load();
+        list.unshift({ n, m, t: Date.now() });
+        save(list);
+        text.value = "";
+        $("#gbCount").textContent = "0 / 200";
+        render();
+        showToast("留言发布成功 ✓");
+      });
+    });
+  </script>
+</body>
+</html>

@@ -35,6 +35,7 @@
     { t: "鹈鹕彩蛋", d: "纯 SVG 骑车动画", u: "pelican.html", k: "pelican 鹈鹕 动画 svg 彩蛋" },
     { t: "2048 小游戏", d: "方向键 / 滑动，拼出 2048", u: "game.html", k: "游戏 2048 game 玩 合成 小游戏" },
     { t: "友链", d: "朋友们的小站 · 申请友链", u: "links.html", k: "友链 friends 朋友 链接 申请" },
+    { t: "留言板", d: "留下你的痕迹 · 本地演示", u: "guestbook.html", k: "留言 guestbook 消息 打招呼 板" },
     { t: "更新日志", d: "网站进化史", u: "index.html#log", k: "更新 日志 changelog 版本 历史" },
     { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
     { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },

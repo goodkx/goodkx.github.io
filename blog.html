@@ -156,6 +156,50 @@
       color: var(--muted);
     }
     .art-body th { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+
+    /* 上下篇导航 */
+    .art-nav { display: flex; gap: 14px; margin-top: 26px; }
+    .art-nav a {
+      flex: 1;
+      min-width: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color .25s, transform .25s;
+    }
+    .art-nav a:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+    .art-nav a .dir {
+      display: block;
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .art-nav a .nt {
+      display: block;
+      font-size: .9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .art-nav a.next { text-align: right; }
+    .art-nav .placeholder { flex: 1; }
+
+    /* 阅读进度条（仅文章视图显示） */
+    #readProgress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0;
+      z-index: 1500;
+      background: var(--gradient);
+      box-shadow: 0 0 10px var(--acc-glow);
+      pointer-events: none;
+    }
     @media (max-width: 640px) {
       .post { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px; }
       .post-arrow { display: none; }
@@ -164,6 +208,8 @@
   </style>
 </head>
 <body>
+
+  <div id="readProgress"></div>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
@@ -265,6 +311,7 @@
         </div>
       </div>
       <div class="art-body" id="artBody"></div>
+      <div class="art-nav" id="artNav"></div>
     </div>
   </div>
 
@@ -462,6 +509,9 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
       }
     };
 
+    /* 文章顺序（新 → 旧），用于上下篇导航 */
+    const ORDER = ["gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     function route() {
       const m = location.hash.match(/^#\/post\/(.+)$/);
@@ -476,6 +526,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         $("#artChips").innerHTML = p.tags.map((t) => `<span class="chip green">${t}</span>`).join("");
         $("#artBody").innerHTML = p.html;
         $("#artCopy").dataset.slug = id;
+        renderArtNav(id);
         list.style.display = "none";
         art.classList.add("open");
         window.scrollTo({ top: 0 });
@@ -484,6 +535,20 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         list.style.display = "";
         art.classList.remove("open");
       }
+    }
+
+    function renderArtNav(id) {
+      const idx = ORDER.indexOf(id);
+      const prevId = ORDER[idx + 1]; // 更早一篇
+      const nextId = ORDER[idx - 1]; // 更新一篇
+      let html = "";
+      html += prevId
+        ? `<a href="#/post/${prevId}"><span class="dir">← 上一篇</span><span class="nt">${POSTS[prevId].title}</span></a>`
+        : `<span class="placeholder"></span>`;
+      html += nextId
+        ? `<a class="next" href="#/post/${nextId}"><span class="dir">下一篇 →</span><span class="nt">${POSTS[nextId].title}</span></a>`
+        : `<span class="placeholder"></span>`;
+      $("#artNav").innerHTML = html;
     }
 
     function initPosts() {
@@ -506,6 +571,19 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
       });
       window.addEventListener("hashchange", route);
       route();
+
+      // 文章阅读进度条
+      window.addEventListener("scroll", () => {
+        const bar = $("#readProgress");
+        if (!bar) return;
+        if (!$("#articleView").classList.contains("open")) {
+          bar.style.width = "0";
+          return;
+        }
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+      }, { passive: true });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
