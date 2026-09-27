@@ -178,7 +178,27 @@
 
       <!-- ✏️ 写新文章：1) 在下面 JS 的 POSTS 里加一篇文章；2) 复制一个 <a class="post"> 块，
            href 填 #/post/你的id。未写的文章保持 href="#"，点击会提示 -->
-      <a class="post reveal" href="#/post/ai-site">
+      <a class="post reveal" href="#/post/gh-pages">
+        <time class="post-time">2026-09-27</time>
+        <div class="post-body">
+          <h2>GitHub Pages 从注册到上线：10 分钟部署指南</h2>
+          <p>注册、建仓库、推送、开启 Pages 到踩坑修复——本站就是这么上线的。</p>
+          <div class="chips"><span class="chip green">建站</span><span class="chip">GitHub</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" style="--d:.05s" href="#/post/theme-css">
+        <time class="post-time">2026-09-27</time>
+        <div class="post-body">
+          <h2>一套 CSS 变量驱动全站换肤</h2>
+          <p>从写死颜色到 data-theme 一键切换，聊聊本站主题系统的实现思路。</p>
+          <div class="chips"><span class="chip green">CSS</span><span class="chip">前端</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" style="--d:.1s" href="#/post/ai-site">
         <time class="post-time">2026-09-20</time>
         <div class="post-body">
           <h2>用 AI 搭建自己的个人网站</h2>
@@ -301,6 +321,71 @@ git commit -m "更新说明"
 git push      # 一分钟后线上自动更新</pre>
           <h3>一点感受</h3>
           <p>AI 时代做个人网站，门槛已经从「会写代码」变成了「会说清楚想要什么」。剩下的事情——配色、动效、布局——交给工具，把时间留给内容本身。</p>
+        `
+      },
+      "gh-pages": {
+        title: "GitHub Pages 从注册到上线：10 分钟部署指南",
+        date: "2026-09-27",
+        tags: ["建站", "GitHub"],
+        html: `
+          <h3>为什么选 GitHub Pages</h3>
+          <p>免费、稳定、自带 HTTPS，还送一个 <code class="inline">用户名.github.io</code> 的干净域名。对纯静态站点来说，它几乎是最省心的选择——本站就跑在上面。</p>
+          <h3>四步上线</h3>
+          <ol>
+            <li><strong>注册 GitHub</strong>：想好用户名，它会出现在你的域名里</li>
+            <li><strong>建仓库</strong>：仓库名必须是 <code class="inline">用户名.github.io</code>，这是绑定域名的魔法命名</li>
+            <li><strong>推送文件</strong>：网页端拖拽上传，或命令行三连</li>
+            <li><strong>开启 Pages</strong>：<code class="inline">用户名.github.io</code> 仓库会自动开启，普通仓库名则要去 Settings → Pages 手动选分支</li>
+          </ol>
+          <pre>git add -A
+git commit -m "上线"
+git push   # 推送后约 1 分钟自动构建</pre>
+          <h3>锦上添花</h3>
+          <ul>
+            <li><strong>自定义 404</strong>：根目录放一个 404.html，GitHub 会自动用它</li>
+            <li><strong>robots.txt + sitemap.xml</strong>：让搜索引擎正确收录</li>
+            <li><strong>OG 标签</strong>：链接分享到社交平台时显示标题和摘要卡片</li>
+          </ul>
+          <h3>我踩过的坑</h3>
+          <ul>
+            <li>中文文件名在 URL 里会被编码成 %XX，静态资源尽量用英文名</li>
+            <li>Windows 下 git 提示 LF → CRLF 警告，无害，忽略即可</li>
+            <li>推送后立刻刷新可能还是旧页面——CDN 构建需要时间，等等再刷</li>
+            <li>国内访问时快时慢，属于网络波动，多试或绑定自定义域名</li>
+          </ul>
+          <blockquote>静态站的部署就该像刷新页面一样简单。三行命令，一分钟全球可见。</blockquote>
+        `
+      },
+      "theme-css": {
+        title: "一套 CSS 变量驱动全站换肤",
+        date: "2026-09-27",
+        tags: ["CSS", "前端"],
+        html: `
+          <h3>起点：写死的颜色</h3>
+          <p>站点初版的深色主题体验不错，但像 <code class="inline">rgba(0,229,160,.45)</code> 这样的颜色散落在样式表十几个角落。想出一套「暖纸日间模式」？意味着全文件搜索替换，改漏一处就是灾难。</p>
+          <h3>方案：变量抽离 + 属性覆盖</h3>
+          <p>第一步，把所有颜色收敛到 <code class="inline">:root</code>：</p>
+          <pre>:root {
+  --bg: #0a0e16;
+  --text: #e6edf3;
+  --accent: #00e5a0;
+}</pre>
+          <p>第二步，每套主题就是一组同名字段的覆盖，挂在 <code class="inline">&lt;html&gt;</code> 的属性上：</p>
+          <pre>html[data-theme="paper"] {
+  --bg: #f5f1e8;
+  --text: #1f2937;
+  --accent: #059669;
+}</pre>
+          <p>切换时 JS 只改一个属性值，整站颜色瞬间易主：</p>
+          <pre>document.documentElement.dataset.theme = "paper";
+localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
+          <h3>两个必须踩平的坑</h3>
+          <ul>
+            <li><strong>加载顺序</strong>：主题覆盖文件必须在基础样式<strong>之后</strong>加载，否则选择器同权重时会被 <code class="inline">:root</code> 反超</li>
+            <li><strong>闪色</strong>：如果等页面渲染完才设 <code class="inline">data-theme</code>，深色用户会先看到一帧白屏。解法是在 <code class="inline">&lt;head&gt;</code> 里同步执行一小段脚本，尽早设置属性</li>
+          </ul>
+          <h3>收获</h3>
+          <p>重构完成后，新增一套主题只需要十几行变量——本站的「墨金 OLED」就是这么顺手加上的。好的架构会让未来的自己感谢现在的自己。</p>
         `
       },
       "kaoyan-plan": {

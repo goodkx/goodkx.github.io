@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="友链 —— 朋友们的小站，以及申请友链的方式。" />
+  <title>友链 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤝%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="search.css" />
+  <script src="theme.js"></script>
+  <script src="search.js"></script>
+  <style>
+    .mine {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 30px;
+      transition: border-color .3s;
+    }
+    .mine:hover { border-color: var(--border-hover); }
+    .mine h3 { font-size: 1.05rem; margin-bottom: 14px; }
+    .mine pre {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 2.1;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 14px;
+    }
+    .tbtn {
+      background: var(--gradient);
+      color: #06251a;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tbtn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, 0.3); }
+
+    .flinks {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .fcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .fcard:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35), 0 0 26px rgba(0, 229, 160, 0.07);
+    }
+    .favatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      margin-bottom: 16px;
+    }
+    .fcard h3 { font-size: 1.02rem; margin-bottom: 6px; }
+    .fcard p { font-size: 0.86rem; color: var(--muted); margin-bottom: 14px; }
+    .fcard .furl {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      opacity: 0.75;
+      word-break: break-all;
+    }
+    .fcard-add {
+      background: transparent;
+      border: 1.5px dashed rgba(148, 163, 184, 0.32);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+    .fcard-add:hover { border-color: var(--border-hover); }
+
+    @media (max-width: 860px) { .flinks { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .flinks { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🤝 friends</span>
+  </div>
+
+  <h1>朋友们的 <span class="grad">链接</span></h1>
+
+  <div class="wrap">
+
+    <div class="mine reveal">
+      <h3>📬 本站信息（申请友链请带上这些）</h3>
+      <pre id="mineInfo">站名：CCCAD 的数字小站
+链接：https://goodkx.github.io
+简介：博客 · 9 个小工具 · 考研大纲 · 一只会骑车的鹈鹕</pre>
+      <button class="tbtn" id="copyMine" type="button">📋 复制本站信息</button>
+    </div>
+
+    <!-- ✏️ 添加朋友的链接：复制一个 <a class="fcard"> 块，改头像 emoji / 名字 / 简介 / 网址 -->
+    <div class="flinks">
+      <a class="fcard reveal" href="#" data-toast="示例友链 —— 把 href 和文字换成朋友的站点">
+        <div class="favatar">🌈</div>
+        <h3>彩虹小窝</h3>
+        <p>记录生活与折腾的日常，摄影爱好者。</p>
+        <span class="furl">example-friend-1.dev</span>
+      </a>
+
+      <a class="fcard reveal" style="--d:.06s" href="#" data-toast="示例友链 —— 把 href 和文字换成朋友的站点">
+        <div class="favatar">🦊</div>
+        <h3>狐狸实验室</h3>
+        <p>折腾各种开源小项目，喜欢写技术博客。</p>
+        <span class="furl">example-friend-2.dev</span>
+      </a>
+
+      <a class="fcard reveal" style="--d:.12s" href="#" data-toast="示例友链 —— 把 href 和文字换成朋友的站点">
+        <div class="favatar">🌵</div>
+        <h3>沙漠绿洲</h3>
+        <p>慢更但每篇都值得读的学习笔记。</p>
+        <span class="furl">example-friend-3.dev</span>
+      </a>
+
+      <div class="fcard fcard-add reveal" style="--d:.18s" id="applyCard" role="button" tabindex="0">
+        <div class="favatar">➕</div>
+        <h3>申请友链</h3>
+        <p>复制本站信息发给我，再附上你的站名 / 链接 / 简介，通过后就会出现在这里。</p>
+        <span class="furl">mailto:chenmidiy@163.com</span>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="caption">
+    友链纯属<b>缘分</b>，不要求回链 ｜ 上面的示例卡片记得换成真实朋友的站点 ｜
+    添加方式：编辑 <b>links.html</b>，复制一个 <b>&lt;a class="fcard"&gt;</b> 块
+  </p>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const $  = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = $("#toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      $$(".reveal").forEach((el) => io.observe(el));
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+      $("#copyMine").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText($("#mineInfo").textContent);
+          showToast("本站信息已复制 ✓");
+        } catch {
+          showToast("复制失败，请手动选择复制");
+        }
+      });
+      $$(".fcard[href='#'], .fcard-add").forEach((card) => {
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          showToast(card.dataset.toast || "编辑 links.html 添加朋友的卡片 ✨");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

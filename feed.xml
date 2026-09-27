@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CCCAD 的数字小站</title>
+    <link>https://goodkx.github.io/</link>
+    <description>博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕</description>
+    <language>zh-CN</language>
+    <atom:link href="https://goodkx.github.io/feed.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>GitHub Pages 从注册到上线：10 分钟部署指南</title>
+      <link>https://goodkx.github.io/blog.html#/post/gh-pages</link>
+      <guid>https://goodkx.github.io/blog.html#/post/gh-pages</guid>
+      <pubDate>Sun, 27 Sep 2026 00:00:00 +0800</pubDate>
+      <description>注册、建仓库、推送、开启 Pages 到踩坑修复——本站就是这么上线的。</description>
+    </item>
+    <item>
+      <title>一套 CSS 变量驱动全站换肤</title>
+      <link>https://goodkx.github.io/blog.html#/post/theme-css</link>
+      <guid>https://goodkx.github.io/blog.html#/post/theme-css</guid>
+      <pubDate>Sun, 27 Sep 2026 00:00:00 +0800</pubDate>
+      <description>从写死颜色到 data-theme 一键切换，聊聊本站主题系统的实现思路。</description>
+    </item>
+    <item>
+      <title>用 AI 搭建自己的个人网站</title>
+      <link>https://goodkx.github.io/blog.html#/post/ai-site</link>
+      <guid>https://goodkx.github.io/blog.html#/post/ai-site</guid>
+      <pubDate>Sun, 20 Sep 2026 00:00:00 +0800</pubDate>
+      <description>从设计风格到逐屏实现，聊聊怎么和 AI 协作做出深色科技感小站。</description>
+    </item>
+    <item>
+      <title>27 软件工程考研：从 0 到 1 的备考路线</title>
+      <link>https://goodkx.github.io/blog.html#/post/kaoyan-plan</link>
+      <guid>https://goodkx.github.io/blog.html#/post/kaoyan-plan</guid>
+      <pubDate>Sun, 30 Aug 2026 00:00:00 +0800</pubDate>
+      <description>科目分值、全年节奏、公共课与 408 的打法，附大纲页与 Word 指南下载。</description>
+    </item>
+    <item>
+      <title>从零开始学前端：一条不踩坑的路线</title>
+      <link>https://goodkx.github.io/blog.html#/post/frontend-road</link>
+      <guid>https://goodkx.github.io/blog.html#/post/frontend-road</guid>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0800</pubDate>
+      <description>HTML / CSS / JS 的学习顺序、项目驱动清单和常见弯路。</description>
+    </item>
+  </channel>
+</rss>

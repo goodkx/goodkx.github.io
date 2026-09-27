@@ -33,6 +33,11 @@
     { t: "考研大纲 · 备考时间线", d: "2026.9 → 2027.4 全程", u: "kaoyan.html#timeline", k: "考研 时间线 规划 复试" },
     { t: "考研 Word 指南下载", d: "软件工程专业考研全程复习指南.docx", u: "kaoyan.html#dl", k: "考研 下载 word docx 指南" },
     { t: "鹈鹕彩蛋", d: "纯 SVG 骑车动画", u: "pelican.html", k: "pelican 鹈鹕 动画 svg 彩蛋" },
+    { t: "2048 小游戏", d: "方向键 / 滑动，拼出 2048", u: "game.html", k: "游戏 2048 game 玩 合成 小游戏" },
+    { t: "友链", d: "朋友们的小站 · 申请友链", u: "links.html", k: "友链 friends 朋友 链接 申请" },
+    { t: "更新日志", d: "网站进化史", u: "index.html#log", k: "更新 日志 changelog 版本 历史" },
+    { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
+    { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },
     { t: "切换主题", d: "右下角 🎨 按钮，4 套风格", u: "", k: "主题 theme 换肤 深色 浅色 紫夜 暖纸 墨金" },
   ];
 
