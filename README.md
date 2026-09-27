@@ -7,14 +7,21 @@
 ```
 个人网站/
 ├── index.html   页面结构（内容都在这里改）
-├── blog.html    博客页（文章列表，复制 post 块即可发文）
-├── gallery.html 相册页（点击放大，SVG 占位图可换成 <img>）
-├── tools.html   工具箱页（6 个纯前端小工具）
-├── kaoyan.html  27 软件工程考研备考大纲
+├── blog.html    博客页（hash 路由文章系统，POSTS 里发文）
+├── gallery.html 相册页（灯箱支持键盘翻页，SVG 占位图可换成 <img>）
+├── tools.html   工具箱页（9 个纯前端小工具）
+├── kaoyan.html  27 软件工程考研备考大纲 + Word 指南下载
 ├── pelican.html 彩蛋页：鹈鹕骑自行车 SVG 动画
+├── 404.html     自定义 404 页
+├── theme.css    4 套主题变量（配合右下角 🎨 切换）
+├── theme.js     主题切换器注入与记忆
+├── search.css   全站搜索样式（Ctrl + K）
+├── search.js    全站搜索索引与交互
 ├── subpage.css  所有内页共用的基础样式
 ├── style.css    首页样式（配色、布局、动效）
 ├── script.js    首页交互（打字机、滚动动画等）
+├── robots.txt / sitemap.xml  SEO
+├── files/       可下载资源（kaoyan.docx）
 └── README.md    本说明
 ```
 
@@ -51,8 +58,13 @@
 
 ## 特性
 
+- 🔍 全站搜索：任意页面按 **Ctrl + K**（Mac ⌘K）搜索页面 / 工具 / 文章
+- 📝 博客内置文章系统（hash 路由，无需后端），支持复制文章链接
+- 🧰 工具箱 9 个纯前端工具：字数统计、时间戳、颜色转换、密码生成、Base64、JSON、考研倒计时、进制转换、正则测试
 - 🎨 右下角 **🎨 按钮**一键切换 4 套主题（深空绿 / 紫夜 / 暖纸日间 / 墨金 OLED），选择自动记忆
+- 🖼️ 相册灯箱支持键盘 ←/→ 翻页、Esc 关闭、序号显示
 - 响应式布局，手机 / 平板 / 电脑都适配
 - 终端打字机、角色轮播、滚动显现、鼠标跟随光晕等动效
+- 自定义 404 页 + robots.txt + sitemap.xml + OG 分享标签
 - 尊重系统「减弱动态效果」设置（prefers-reduced-motion）
 - 无任何外部依赖，离线可用，加载飞快

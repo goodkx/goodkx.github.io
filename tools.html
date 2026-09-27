@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0a0e16" />
   <meta name="description" content="工具箱 —— 一组开箱即用的浏览器小工具。" />
-  <title>工具箱 | 你的名字</title>
+  <title>工具箱 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧰%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="subpage.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="search.css" />
   <script src="theme.js"></script>
+  <link rel="stylesheet" href="search.css" />
+  <script src="search.js"></script>
+  <script src="search.js"></script>
   <style>
     .tools {
       display: grid;
@@ -22,6 +26,7 @@
       border-radius: var(--radius);
       padding: 22px;
       transition: border-color .3s, box-shadow .3s;
+      scroll-margin-top: 20px;
     }
     .tool:hover {
       border-color: var(--border-hover);
@@ -48,8 +53,7 @@
     .row:last-child { margin-bottom: 0; }
     .row label { font-size: .82rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
 
-    input[type="number"] {
-      width: 96px;
+    input[type="number"], input[type="text"], select {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -58,7 +62,10 @@
       font-size: .86rem;
       padding: 8px 10px;
     }
-    input[type="number"]:focus { outline: none; border-color: var(--border-hover); }
+    input[type="number"] { width: 96px; }
+    input[type="text"] { flex: 1; min-width: 120px; }
+    input[type="number"]:focus, input[type="text"]:focus, select:focus { outline: none; border-color: var(--border-hover); }
+    select { cursor: pointer; }
 
     input[type="color"] {
       width: 46px; height: 34px;
@@ -92,7 +99,7 @@
       color: var(--accent);
       border: 1px solid rgba(0, 229, 160, .5);
     }
-    .tbtn.ghost:hover { box-shadow: none; background: rgba(0, 229, 160, .08); }
+    .tbtn.ghost:hover { box-shadow: none; background: var(--acc-soft-bg); }
 
     .out {
       display: block;
@@ -109,6 +116,7 @@
       white-space: pre-wrap;
     }
     .out.err { color: #ff8484; }
+    .out mark { background: rgba(251, 191, 36, .35); color: inherit; border-radius: 3px; padding: 0 1px; }
 
     .stat-row {
       display: grid;
@@ -127,6 +135,18 @@
     .hint { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
     .hint code { color: var(--accent-2); }
 
+    /* 考研倒计时 */
+    .cd-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .cd-grid div { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 4px; }
+    .cd-grid b { display: block; font-family: var(--mono); font-size: 1.7rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .cd-grid span { font-size: .7rem; color: var(--muted); }
+
     @media (max-width: 860px) { .tools { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -141,7 +161,7 @@
 
   <div class="wrap tools">
 
-    <section class="tool reveal">
+    <section class="tool reveal" id="tc">
       <h3>🔤 字数统计</h3>
       <textarea id="tcIn" rows="4" placeholder="在此粘贴或输入文本……"></textarea>
       <div class="stat-row">
@@ -151,7 +171,7 @@
       </div>
     </section>
 
-    <section class="tool reveal" style="--d:.06s">
+    <section class="tool reveal" style="--d:.05s" id="ts">
       <h3>⏱️ 时间戳转换</h3>
       <div class="row">
         <input type="number" id="tsIn" placeholder="1770000000" />
@@ -161,7 +181,7 @@
       <p class="hint">当前秒级时间戳：<code id="tsNow">—</code></p>
     </section>
 
-    <section class="tool reveal" style="--d:.12s">
+    <section class="tool reveal" style="--d:.1s" id="col">
       <h3>🎨 颜色转换</h3>
       <div class="row">
         <input type="color" id="colIn" value="#00e5a0" />
@@ -170,7 +190,7 @@
       <output class="out" id="colOut">—</output>
     </section>
 
-    <section class="tool reveal" style="--d:.18s">
+    <section class="tool reveal" style="--d:.15s" id="pw">
       <h3>🔐 密码生成</h3>
       <div class="row">
         <label>长度 <input type="number" id="pwLen" value="16" min="6" max="64" /></label>
@@ -180,7 +200,7 @@
       <output class="out" id="pwOut">—</output>
     </section>
 
-    <section class="tool reveal" style="--d:.24s">
+    <section class="tool reveal" style="--d:.2s" id="b64">
       <h3>🔁 Base64 编解码</h3>
       <textarea id="b64In" rows="3" placeholder="输入要编码 / 解码的内容"></textarea>
       <div class="row">
@@ -190,11 +210,46 @@
       <output class="out" id="b64Out">—</output>
     </section>
 
-    <section class="tool reveal" style="--d:.3s">
+    <section class="tool reveal" style="--d:.25s" id="json">
       <h3>🧾 JSON 格式化</h3>
       <textarea id="jsonIn" rows="3" placeholder='{"hello":"world"}'></textarea>
       <div class="row"><button class="tbtn" id="jsonGo">格式化</button></div>
       <pre class="out" id="jsonOut">—</pre>
+    </section>
+
+    <section class="tool reveal" style="--d:.3s" id="cd">
+      <h3>🎯 考研倒计时</h3>
+      <div class="cd-grid">
+        <div><b id="cdD">—</b><span>天</span></div>
+        <div><b id="cdH">—</b><span>时</span></div>
+        <div><b id="cdM">—</b><span>分</span></div>
+        <div><b id="cdS">—</b><span>秒</span></div>
+      </div>
+      <p class="hint" id="cdMsg">—</p>
+    </section>
+
+    <section class="tool reveal" style="--d:.35s" id="radix">
+      <h3>🔢 进制转换</h3>
+      <div class="row">
+        <input type="text" id="rdIn" placeholder="输入数字，如 255" />
+        <select id="rdBase">
+          <option value="10" selected>十进制</option>
+          <option value="2">二进制</option>
+          <option value="8">八进制</option>
+          <option value="16">十六进制</option>
+        </select>
+      </div>
+      <output class="out" id="rdOut">—</output>
+    </section>
+
+    <section class="tool reveal" style="--d:.4s" id="regex">
+      <h3>🔍 正则测试</h3>
+      <div class="row">
+        <input type="text" id="rxPat" placeholder="正则表达式，如 \d{2,}" />
+        <input type="text" id="rxFlags" value="g" placeholder="标志" style="flex:none; width:70px" />
+      </div>
+      <textarea id="rxText" rows="3" placeholder="在此输入测试文本……"></textarea>
+      <output class="out" id="rxOut">输入正则与文本后自动匹配</output>
     </section>
 
   </div>
@@ -240,7 +295,6 @@
       el.addEventListener("input", () => {
         const v = el.value;
         $("#tcChars").textContent = [...v].length;
-        // 中文按字计，英文数字按词计
         const cjk = (v.match(/[\u4e00-\u9fff]/g) || []).length;
         const en  = (v.match(/[a-zA-Z0-9]+/g) || []).length;
         $("#tcWords").textContent = cjk + en;
@@ -294,7 +348,6 @@
 
     /* ── 密码生成 ── */
     function initPassword() {
-      // 去掉易混淆字符 0O1lI
       const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*-_=+";
       const gen = () => {
         let len = Math.round(Number($("#pwLen").value));
@@ -348,6 +401,83 @@
       });
     }
 
+    /* ── 考研倒计时（27 初试 · 预计 2026-12-19 08:30 开考） ── */
+    function initCountdown() {
+      const target = new Date("2026-12-19T08:30:00+08:00").getTime();
+      const tick = () => {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          ["cdD", "cdH", "cdM", "cdS"].forEach((id) => ($("#" + id).textContent = "0"));
+          $("#cdMsg").textContent = "初试时间已到 —— 祝旗开得胜，一战成硕！🎓";
+          return;
+        }
+        $("#cdD").textContent = Math.floor(diff / 864e5);
+        $("#cdH").textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, "0");
+        $("#cdM").textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, "0");
+        $("#cdS").textContent = String(Math.floor((diff % 6e4) / 1e3)).padStart(2, "0");
+        $("#cdMsg").textContent = "距离 27 考研初试（预计 2026-12-19 上午开考）";
+      };
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    /* ── 进制转换 ── */
+    function initRadix() {
+      const input = $("#rdIn");
+      const base = $("#rdBase");
+      const out = $("#rdOut");
+      const render = () => {
+        const v = input.value.trim();
+        if (!v) { out.textContent = "—"; return; }
+        const n = parseInt(v, Number(base.value));
+        if (!Number.isFinite(n) || String(n) !== String(Math.abs(n)) && n < 0) {
+          out.textContent = "✗ 无法按所选进制解析（负号单独处理）";
+          return;
+        }
+        if (Number.isNaN(n)) { out.textContent = "✗ 无法按所选进制解析"; return; }
+        out.textContent =
+          `二进制 ${n.toString(2)}\n八进制 ${n.toString(8)}\n十进制 ${n}\n十六进制 0x${n.toString(16).toUpperCase()}`;
+      };
+      input.addEventListener("input", render);
+      base.addEventListener("change", render);
+      render();
+    }
+
+    /* ── 正则测试 ── */
+    function initRegex() {
+      const pat = $("#rxPat");
+      const flags = $("#rxFlags");
+      const text = $("#rxText");
+      const out = $("#rxOut");
+      const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const run = () => {
+        const p = pat.value, f = flags.value.replace(/[^gimsuy]/g, ""), t = text.value;
+        if (!p || !t) { out.textContent = "输入正则与文本后自动匹配"; out.classList.remove("err"); return; }
+        try {
+          const re = new RegExp(p, f.includes("g") ? f : f + "g");
+          const matches = [...t.matchAll(re)];
+          if (!matches.length) {
+            out.innerHTML = "未找到匹配";
+            out.classList.remove("err");
+            return;
+          }
+          let html = "", last = 0;
+          for (const m of matches) {
+            html += esc(t.slice(last, m.index)) + "<mark>" + esc(m[0]) + "</mark>";
+            last = m.index + m[0].length;
+            if (m[0] === "") last++;
+          }
+          html += esc(t.slice(last));
+          out.innerHTML = `共 ${matches.length} 处匹配：\n` + html;
+          out.classList.remove("err");
+        } catch (e) {
+          out.textContent = "✗ " + e.message;
+          out.classList.add("err");
+        }
+      };
+      [pat, flags, text].forEach((el) => el.addEventListener("input", run));
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       initCharCount();
@@ -356,6 +486,9 @@
       initPassword();
       initBase64();
       initJson();
+      initCountdown();
+      initRadix();
+      initRegex();
     });
   </script>
 </body>

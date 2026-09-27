@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="robots" content="noindex" />
+  <title>404 · 页面走丢了 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛸%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <script src="theme.js"></script>
+  <style>
+    .nf {
+      width: min(680px, 92%);
+      margin: 8vh auto 0;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .nf-code {
+      font-family: var(--mono);
+      font-size: clamp(4.5rem, 16vw, 9rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.06em;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+              background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 10px 34px rgba(0, 229, 160, 0.25));
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .nf h1 { margin: 18px 0 10px; font-size: clamp(1.15rem, 3vw, 1.5rem); }
+    .nf p { color: var(--muted); font-size: 0.92rem; margin-bottom: 30px; }
+    .nf-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+    .nf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .nf-btn.main {
+      background: var(--gradient);
+      color: #06251a;
+      box-shadow: 0 6px 22px rgba(0, 229, 160, 0.25);
+    }
+    .nf-btn.main:hover { transform: translateY(-3px); }
+    .nf-btn.ghost {
+      color: var(--accent);
+      border: 1px solid var(--border-hover);
+      background: transparent;
+    }
+    .nf-btn.ghost:hover { background: var(--acc-soft-bg); transform: translateY(-3px); }
+    .nf-tip {
+      margin-top: 40px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="nf">
+    <div class="nf-code">404</div>
+    <h1>页面迷失在了数字宇宙……🛸</h1>
+    <p>你要找的页面不存在，或者已经被移到了别的地方。</p>
+    <div class="nf-actions">
+      <a class="nf-btn main" href="index.html">← 回到首页</a>
+      <a class="nf-btn ghost" href="blog.html">去逛逛博客</a>
+    </div>
+    <p class="nf-tip">小贴士：全站任意页面按 Ctrl + K 可以搜索内容</p>
+  </div>
+</body>
+</html>
