@@ -23,42 +23,79 @@
     }
     .gform:hover { border-color: var(--border-hover); }
 
-    /* 兔小巢入口横幅 */
-    .txc-banner {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: linear-gradient(120deg, rgba(0, 229, 160, 0.12), rgba(56, 189, 248, 0.1));
+    /* 兔小巢主入口 */
+    .txc-hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(120deg, rgba(0, 229, 160, 0.14), rgba(56, 189, 248, 0.10));
       border: 1px solid var(--border-hover);
       border-radius: var(--radius);
-      padding: 18px 22px;
-      margin-bottom: 26px;
-      text-decoration: none;
-      color: var(--text);
-      transition: transform 0.25s, box-shadow 0.25s;
+      padding: 26px 26px 24px;
+      margin-bottom: 36px;
+      transition: border-color .3s;
     }
-    .txc-banner:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0, 229, 160, 0.2);
+    .txc-hero:hover { border-color: var(--accent); }
+    .txc-hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 230px;
+      height: 230px;
+      background: radial-gradient(circle, rgba(0, 229, 160, 0.18), transparent 65%);
+      pointer-events: none;
     }
-    .txc-icon {
-      font-size: 1.8rem;
-      flex: none;
+    .txc-hero-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      color: var(--accent);
+      background: var(--acc-soft-bg);
+      border: 1px solid var(--acc-soft-bd);
+      border-radius: 999px;
+      padding: 3px 12px;
+      margin-bottom: 14px;
     }
+    .txc-hero-main { display: flex; align-items: center; gap: 16px; }
+    .txc-icon { font-size: 2.4rem; flex: none; }
     .txc-text {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
       min-width: 0;
     }
-    .txc-text b { font-size: 1rem; }
-    .txc-text span { font-size: 0.8rem; color: var(--muted); }
-    .txc-go {
+    .txc-text b { font-size: 1.25rem; }
+    .txc-text span { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+    .txc-btn {
+      display: inline-block;
+      margin-top: 18px;
+      background: var(--gradient);
+      color: #06251a;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 10px;
+      padding: 12px 34px;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .txc-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0, 229, 160, 0.35); }
+    /* 备用区隔断线 */
+    .backup-h {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 4px 0 18px;
       font-family: var(--mono);
-      font-size: 0.85rem;
-      color: var(--accent);
-      flex: none;
+      font-size: 0.74rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .backup-h::before, .backup-h::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    @media (max-width: 640px) {
+      .txc-hero-main { flex-direction: column; text-align: center; }
+      .txc-btn { width: 100%; text-align: center; }
     }
     .gform .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
     #gbName {
@@ -153,14 +190,20 @@
 
   <div class="wrap">
 
-    <a class="txc-banner reveal" href="https://support.qq.com/products/802123" target="_blank" rel="noopener">
-      <span class="txc-icon">💬</span>
-      <span class="txc-text">
-        <b>去兔小巢留言板</b>
-        <span>QQ / 微信登录即可留言，留言全员可见 · 腾讯官方服务，国内直连</span>
-      </span>
-      <span class="txc-go">前往 →</span>
-    </a>
+    <!-- 兔小巢主入口：腾讯官方 · 国内直连 · 全员可见 -->
+    <div class="txc-hero reveal">
+      <span class="txc-hero-badge">🟢 官方推荐 · 国内直连 · 留言全员可见</span>
+      <div class="txc-hero-main">
+        <span class="txc-icon">💬</span>
+        <div class="txc-text">
+          <b>兔小巢留言板</b>
+          <span>腾讯官方留言服务：QQ / 微信一键登录即可发言，手机电脑都好用，留言所有人可见。</span>
+        </div>
+      </div>
+      <a class="txc-btn" href="https://support.qq.com/products/802123" target="_blank" rel="noopener">🚀 打开留言板</a>
+    </div>
+
+    <div class="backup-h">备用 · 本站直连留言板（无需登录）</div>
 
     <div class="gform reveal">
       <div class="row">
@@ -179,8 +222,8 @@
   </div>
 
   <p class="caption">
-    留言已接入 <b>Supabase 云数据库</b>，<b>所有访客可见</b> ｜
-    你当前的网络若连不上云端，会自动进入离线模式（留言暂存本机）
+    <b>推荐使用上方兔小巢留言</b>（腾讯官方 · 国内直连 · 全员可见）｜
+    下方备用留言板自动切换数据源：EdgeOne 云接口 → textdb 免注册云库 → Supabase 云库 → 本机暂存
   </p>
 
   <div class="toast" id="toast" role="status"></div>
@@ -205,10 +248,12 @@
       $$(".reveal").forEach((el) => io.observe(el));
     }
 
-    /* ══════════ 数据源：三级自动切换 ══════════
+    /* ══════════ 数据源：四级自动切换 ══════════
        1) EdgeOne 同源接口 /api/messages（整站部署在 EdgeOne 时可用，国内直连）
-       2) Supabase 云数据库（GitHub Pages 部署且网络可达时可用）
-       3) 本机 localStorage（全部失败时的兜底） */
+       2) textdb.dev 免注册云存储（国内直连，所有访客可见）
+       3) Supabase 云数据库（海外网络可达时的备用）
+       4) 本机 localStorage（全部失败时的兜底） */
+    const TDB_URL = "https://textdb.dev/api/data/cccad-gb-95592aa7";
     const SB_URL = "https://flykgkocxgpcudupgbp.supabase.co";
     const SB_KEY = "sb_publishable_ZhPxj7o-5zD-juN-xI9tFA_113t27GA";
     const SB_HEADERS = {
@@ -263,6 +308,9 @@
       if (sourceName === "edgeone") {
         s.className = "cloud";
         s.textContent = "☁️ 云端已连接（EdgeOne）· 所有访客可见";
+      } else if (sourceName === "textdb") {
+        s.className = "cloud";
+        s.textContent = "☁️ 云端已连接（textdb）· 所有访客可见";
       } else if (sourceName === "supabase") {
         s.className = "cloud";
         s.textContent = "☁️ 云端已连接（Supabase）· 所有访客可见";
@@ -280,6 +328,26 @@
       messages = rows;
       return "edgeone";
     }
+    /* textdb 服务端只接受 ASCII 安全的 JSON，中文需转义为 \uXXXX */
+    function asciiJson(obj) {
+      return JSON.stringify(obj).replace(/[\u0080-\uFFFF]/g, (ch) =>
+        "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0")
+      );
+    }
+
+    async function tryTextDb() {
+      const res = await fetch(TDB_URL);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = JSON.parse(await res.text());
+      const rows = Array.isArray(data.messages)
+        ? data.messages
+        : Array.isArray(data._json)
+          ? data._json
+          : [];
+      messages = rows.slice(-200).reverse(); /* 存储正序，展示最新在前 */
+      return "textdb";
+    }
+
     async function trySupabase() {
       const res = await fetch(
         SB_URL + "/rest/v1/messages?select=*&order=created_at.desc&limit=100",
@@ -296,7 +364,7 @@
     }
 
     async function refresh() {
-      for (const attempt of [tryEdgeOne, trySupabase]) {
+      for (const attempt of [tryEdgeOne, tryTextDb, trySupabase]) {
         try {
           sourceName = await attempt();
           saveLocal(messages);
@@ -335,7 +403,31 @@
           return true;
         } catch (e) { /* 换下一个 */ }
 
-        /* 2) Supabase */
+        /* 2) textdb.dev：读 → 追加 → 整体写回（免注册云存储，国内直连） */
+        try {
+          let cur = [];
+          try {
+            const r0 = await fetch(TDB_URL);
+            if (r0.ok) {
+              const d0 = JSON.parse(await r0.text());
+              if (Array.isArray(d0.messages)) cur = d0.messages;
+              else if (Array.isArray(d0._json)) cur = d0._json;
+            }
+          } catch (e) {}
+          const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
+          const res = await fetch(TDB_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: asciiJson({ messages: next }),
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          messages = next.slice().reverse();
+          sourceName = "textdb";
+          saveLocal(messages);
+          return true;
+        } catch (e) { /* 换下一个 */ }
+
+        /* 3) Supabase */
         try {
           const res = await fetch(SB_URL + "/rest/v1/messages", {
             method: "POST",
@@ -350,7 +442,7 @@
           return true;
         } catch (e) { /* 换兜底 */ }
 
-        /* 3) 本机 */
+        /* 4) 本机 */
         messages.unshift({ n, m, t: Date.now() });
         sourceName = "local";
         saveLocal(messages);
