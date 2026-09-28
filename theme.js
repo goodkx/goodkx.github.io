@@ -14,7 +14,14 @@
   // 解析到本脚本时立即应用（此时正文尚未渲染）
   let saved = "";
   try { saved = localStorage.getItem(KEY) || ""; } catch (e) {}
-  if (saved) document.documentElement.dataset.theme = saved;
+  if (saved) {
+    document.documentElement.dataset.theme = saved;
+  } else {
+    /* 从未手动选过主题：白天用暖纸（浅色），夜间用默认深空绿（深色）；
+       一旦手动切换过任何主题，以手动选择为准，不再自动变 */
+    const h = new Date().getHours();
+    if (h >= 7 && h < 19) document.documentElement.dataset.theme = "paper";
+  }
 
   function apply(id) {
     if (id) document.documentElement.dataset.theme = id;

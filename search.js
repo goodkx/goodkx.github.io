@@ -16,7 +16,7 @@
     { t: "文章 · 27 软件工程考研备考路线", d: "blog.html", u: "blog.html#/post/kaoyan-plan", k: "考研 408 数学 政治 英语 规划" },
     { t: "文章 · 从零开始学前端", d: "blog.html", u: "blog.html#/post/frontend-road", k: "前端 javascript css html 学习路线" },
     { t: "相册", d: "SVG 插画 · 点击放大", u: "gallery.html", k: "gallery 相册 照片 插画" },
-    { t: "工具箱", d: "9 个纯前端小工具", u: "tools.html", k: "tools 工具箱" },
+    { t: "工具箱", d: "12 个纯前端小工具", u: "tools.html", k: "tools 工具箱" },
     { t: "工具 · 字数统计", d: "字符 / 词数 / 行数", u: "tools.html#tc", k: "字数 统计 计数" },
     { t: "工具 · 时间戳转换", d: "Unix 时间戳 ↔ 日期", u: "tools.html#ts", k: "时间戳 timestamp 日期" },
     { t: "工具 · 颜色转换", d: "HEX / RGB / HSL", u: "tools.html#col", k: "颜色 color hex rgb hsl" },
@@ -26,6 +26,9 @@
     { t: "工具 · 考研倒计时", d: "距离 27 初试", u: "tools.html#cd", k: "考研 倒计时 countdown 初试" },
     { t: "工具 · 进制转换", d: "2 / 8 / 10 / 16 进制", u: "tools.html#radix", k: "进制 binary hex 转换" },
     { t: "工具 · 正则测试", d: "实时匹配与高亮", u: "tools.html#regex", k: "正则 regex regexp 匹配" },
+    { t: "工具 · 文本对比", d: "逐行差异高亮", u: "tools.html#diff", k: "文本 对比 diff 差异 比较" },
+    { t: "工具 · UUID 生成", d: "批量随机唯一 ID", u: "tools.html#uuid", k: "uuid guid 唯一 id 生成" },
+    { t: "工具 · Markdown 预览", d: "实时渲染成网页", u: "tools.html#md", k: "markdown md 预览 渲染" },
     { t: "考研大纲 · 政治（101）", d: "马原 / 毛中特 / 史纲 / 思修", u: "kaoyan.html#politics", k: "考研 政治 马原" },
     { t: "考研大纲 · 英语（201/204）", d: "题型分值与复习要点", u: "kaoyan.html#english", k: "考研 英语 单词 阅读 作文" },
     { t: "考研大纲 · 数学（301/302）", d: "高数 / 线代 / 概率", u: "kaoyan.html#math", k: "考研 数学 高数 线代 概率" },
@@ -39,6 +42,7 @@
     { t: "更新日志", d: "网站进化史", u: "index.html#log", k: "更新 日志 changelog 版本 历史" },
     { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
     { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },
+    { t: "文章 · 留言板上云踩坑记", d: "KV 审批 · 401 之谜 · 变量名 bug", u: "blog.html#/post/gb-cloud", k: "留言板 上云 踩坑 textdb kv edgeone 401 supabase" },
     { t: "切换主题", d: "右下角 🎨 按钮，4 套风格", u: "", k: "主题 theme 换肤 深色 浅色 紫夜 暖纸 墨金" },
   ];
 

@@ -116,6 +116,20 @@
     .out.err { color: #ff8484; }
     .out mark { background: rgba(251, 191, 36, .35); color: inherit; border-radius: 3px; padding: 0 1px; }
 
+    /* 文本对比 */
+    .out .df-del { color: #ff8484; }
+    .out .df-add { color: #4ade80; }
+    .out .df-eq { color: var(--muted); opacity: .75; }
+
+    /* Markdown 预览 */
+    .mdview { display: block; white-space: normal; word-break: break-word; line-height: 1.9; font-family: inherit; color: var(--text); }
+    .mdview:empty::before { content: attr(data-empty); color: var(--muted); font-size: .82rem; font-family: var(--mono); }
+    .mdview h2, .mdview h3, .mdview h4, .mdview h5 { margin: 10px 0 4px; color: var(--accent); font-size: 1rem; }
+    .mdview ul { margin: 4px 0 4px 18px; }
+    .mdview blockquote { border-left: 3px solid var(--border-hover); margin: 6px 0; padding: 2px 10px; color: var(--muted); }
+    .mdview code { font-family: var(--mono); background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+    .mdview a { color: var(--accent-2); }
+
     .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -248,6 +262,29 @@
       </div>
       <textarea id="rxText" rows="3" placeholder="在此输入测试文本……"></textarea>
       <output class="out" id="rxOut">输入正则与文本后自动匹配</output>
+    </section>
+
+    <section class="tool reveal" style="--d:.45s" id="diff">
+      <h3>🧩 文本对比</h3>
+      <textarea id="dfA" rows="4" placeholder="原始文本……"></textarea>
+      <textarea id="dfB" rows="4" placeholder="修改后的文本……"></textarea>
+      <output class="out" id="dfOut">两侧都输入后自动对比</output>
+    </section>
+
+    <section class="tool reveal" style="--d:.5s" id="uuid">
+      <h3>🆔 UUID 生成</h3>
+      <div class="row">
+        <input type="number" id="uuN" value="5" min="1" max="50" style="flex:none; width:70px" />
+        <button class="tbtn" id="uuGo">批量生成</button>
+        <span class="hint">生成后自动复制</span>
+      </div>
+      <output class="out" id="uuOut">点击批量生成 UUID v4</output>
+    </section>
+
+    <section class="tool reveal" style="--d:.55s" id="md">
+      <h3>📄 Markdown 预览</h3>
+      <textarea id="mdIn" rows="6" placeholder="# 标题&#10;**加粗** *斜体* `代码`&#10;- 列表项&#10;&gt; 引用"></textarea>
+      <output class="out mdview" id="mdOut" data-empty="输入 Markdown 实时预览"></output>
     </section>
 
   </div>
@@ -476,6 +513,90 @@
       [pat, flags, text].forEach((el) => el.addEventListener("input", run));
     }
 
+    /* ── 文本对比（LCS 逐行差异） ── */
+    function initDiff() {
+      const a = $("#dfA"), b = $("#dfB"), out = $("#dfOut");
+      const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const run = () => {
+        const A = a.value.split("\n"), B = b.value.split("\n");
+        if (!a.value && !b.value) { out.textContent = "两侧都输入后自动对比"; out.classList.remove("err"); return; }
+        const n = A.length, m = B.length;
+        const dp = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
+        for (let i = n - 1; i >= 0; i--)
+          for (let j = m - 1; j >= 0; j--)
+            dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        let html = "", same = 0, i = 0, j = 0;
+        while (i < n && j < m) {
+          if (A[i] === B[j]) { html += '<span class="df-eq">  ' + esc(A[i]) + "</span>\n"; same++; i++; j++; }
+          else if (dp[i + 1][j] >= dp[i][j + 1]) { html += '<span class="df-del">- ' + esc(A[i++]) + "</span>\n"; }
+          else { html += '<span class="df-add">+ ' + esc(B[j++]) + "</span>\n"; }
+        }
+        while (i < n) html += '<span class="df-del">- ' + esc(A[i++]) + "</span>\n";
+        while (j < m) html += '<span class="df-add">+ ' + esc(B[j++]) + "</span>\n";
+        const diff = n + m - same * 2;
+        out.innerHTML = (diff ? `共 ${diff} 处差异（相同 ${same} 行）：\n` : "两段文本完全相同 ✓\n") + html;
+        out.classList.remove("err");
+      };
+      [a, b].forEach((el) => el.addEventListener("input", run));
+    }
+
+    /* ── UUID 生成 ── */
+    function initUuid() {
+      $("#uuGo").addEventListener("click", () => {
+        const n = Math.min(50, Math.max(1, Number($("#uuN").value) || 5));
+        const list = [];
+        for (let i = 0; i < n; i++) {
+          list.push(crypto.randomUUID ? crypto.randomUUID()
+            : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+                const r = (Math.random() * 16) | 0;
+                return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+              }));
+        }
+        $("#uuOut").textContent = list.join("\n");
+        copyText(list.join("\n"));
+      });
+    }
+
+    /* ── Markdown 预览 ── */
+    function initMarkdown() {
+      const src = $("#mdIn"), out = $("#mdOut");
+      const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const inline = (s) => s
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      const run = () => {
+        const lines = src.value.split("\n");
+        let html = "", inUl = false, inQuote = false;
+        const closeAll = () => {
+          if (inUl) { html += "</ul>"; inUl = false; }
+          if (inQuote) { html += "</blockquote>"; inQuote = false; }
+        };
+        for (const raw of lines) {
+          const line = esc(raw);
+          const h = line.match(/^(#{1,4})\s+(.*)$/);
+          if (h) { closeAll(); html += `<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`; continue; }
+          if (/^\s*[-*]\s+/.test(line)) {
+            if (!inUl) { closeAll(); html += "<ul>"; inUl = true; }
+            html += "<li>" + inline(line.replace(/^\s*[-*]\s+/, "")) + "</li>";
+            continue;
+          }
+          if (/^&gt;\s?/.test(line)) {
+            if (!inQuote) { closeAll(); html += "<blockquote>"; inQuote = true; }
+            html += "<p>" + inline(line.replace(/^&gt;\s?/, "")) + "</p>";
+            continue;
+          }
+          if (line.trim() === "") { closeAll(); continue; }
+          closeAll();
+          html += "<p>" + inline(line) + "</p>";
+        }
+        closeAll();
+        out.innerHTML = html;
+      };
+      src.addEventListener("input", run);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       initCharCount();
@@ -487,6 +608,9 @@
       initCountdown();
       initRadix();
       initRegex();
+      initDiff();
+      initUuid();
+      initMarkdown();
     });
   </script>
 </body>
