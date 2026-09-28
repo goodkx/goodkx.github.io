@@ -445,7 +445,7 @@
           if (!cur.length && sourceName !== "local" && messages.length) {
             cur = messages.slice().reverse();
           }
-          const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
+          const next = [...cur, { n: n, m: m, t: Date.now() }].slice(-200);
 
           /* 写入自动重试 4 次（textdb 免费服务偶发抽风，跨约 9 秒窗口） */
           const payload = asciiJson({ messages: next });
