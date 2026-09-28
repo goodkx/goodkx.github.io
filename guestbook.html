@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0a0e16" />
   <meta name="description" content="留言板 —— 打个招呼，留下你想说的话。" />
   <title>留言板 | CCCAD</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💌%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💬%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="subpage.css" />
   <link rel="stylesheet" href="theme.css" />
   <link rel="stylesheet" href="search.css" />
@@ -23,65 +23,7 @@
     }
     .gform:hover { border-color: var(--border-hover); }
 
-    /* 兔小巢主入口 */
-    .txc-hero {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(120deg, rgba(0, 229, 160, 0.14), rgba(56, 189, 248, 0.10));
-      border: 1px solid var(--border-hover);
-      border-radius: var(--radius);
-      padding: 26px 26px 24px;
-      margin-bottom: 36px;
-      transition: border-color .3s;
-    }
-    .txc-hero:hover { border-color: var(--accent); }
-    .txc-hero::after {
-      content: "";
-      position: absolute;
-      right: -60px;
-      top: -60px;
-      width: 230px;
-      height: 230px;
-      background: radial-gradient(circle, rgba(0, 229, 160, 0.18), transparent 65%);
-      pointer-events: none;
-    }
-    .txc-hero-badge {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: 1px;
-      color: var(--accent);
-      background: var(--acc-soft-bg);
-      border: 1px solid var(--acc-soft-bd);
-      border-radius: 999px;
-      padding: 3px 12px;
-      margin-bottom: 14px;
-    }
-    .txc-hero-main { display: flex; align-items: center; gap: 16px; }
-    .txc-icon { font-size: 2.4rem; flex: none; }
-    .txc-text {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
-    .txc-text b { font-size: 1.25rem; }
-    .txc-text span { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
-    .txc-btn {
-      display: inline-block;
-      margin-top: 18px;
-      background: var(--gradient);
-      color: #06251a;
-      font-weight: 700;
-      font-size: 0.95rem;
-      border-radius: 10px;
-      padding: 12px 34px;
-      text-decoration: none;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .txc-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0, 229, 160, 0.35); }
-    /* 备用区隔断线 */
+    /* 隔断线 */
     .backup-h {
       display: flex;
       align-items: center;
@@ -93,10 +35,6 @@
       color: var(--muted);
     }
     .backup-h::before, .backup-h::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-    @media (max-width: 640px) {
-      .txc-hero-main { flex-direction: column; text-align: center; }
-      .txc-btn { width: 100%; text-align: center; }
-    }
     .gform .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
     #gbName {
       flex: 0 0 180px;
@@ -195,27 +133,14 @@
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
-    <span class="badge">💌 guestbook</span>
+    <span class="badge">💬 guestbook</span>
   </div>
 
   <h1>留下你的 <span class="grad">痕迹</span></h1>
 
   <div class="wrap">
 
-    <!-- 兔小巢主入口：腾讯官方 · 国内直连 · 全员可见 -->
-    <div class="txc-hero reveal">
-      <span class="txc-hero-badge">🟢 官方推荐 · 国内直连 · 留言全员可见</span>
-      <div class="txc-hero-main">
-        <span class="txc-icon">💬</span>
-        <div class="txc-text">
-          <b>兔小巢留言板</b>
-          <span>腾讯官方留言服务：QQ / 微信一键登录即可发言，手机电脑都好用，留言所有人可见。</span>
-        </div>
-      </div>
-      <a class="txc-btn" href="https://support.qq.com/products/802123" target="_blank" rel="noopener">🚀 打开留言板</a>
-    </div>
-
-    <div class="backup-h">备用 · 本站直连留言板（无需登录）</div>
+    <div class="backup-h">直连留言板 · 无需登录 · 留言全员可见</div>
 
     <div class="gform reveal">
       <div class="row">
@@ -235,8 +160,7 @@
   </div>
 
   <p class="caption">
-    <b>推荐使用上方兔小巢留言</b>（腾讯官方 · 国内直连 · 全员可见）｜
-    下方备用留言板自动切换数据源：EdgeOne 云接口 → textdb 免注册云库 → Supabase 云库 → 本机暂存
+    留言自动切换数据源：EdgeOne 云接口 → textdb 免注册云库 → Supabase 云库 → 本机暂存 ｜ <b>所有访客可见</b>
   </p>
 
   <div class="toast" id="toast" role="status"></div>
