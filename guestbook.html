@@ -426,22 +426,24 @@
 
         /* 2) textdb.dev：读 → 追加 → 整体写回（免注册云存储，国内直连） */
         try {
+          /* 先做一次带重试的读取：既拿最新列表，也"焐热"新连接
+             （textdb 会掐掉闲置几秒的连接，冷连接上的 POST 会直接失败） */
           let cur = [];
-          if (sourceName === "textdb" && messages.length) {
-            cur = messages.slice().reverse(); /* 页面刚从云端加载，直接复用，少一次请求 */
-          } else {
+          for (let i = 0; i < 2; i++) {
             try {
               const r0 = await fetchT(TDB_URL);
               if (r0.ok) {
                 const d0 = JSON.parse(await r0.text());
                 if (Array.isArray(d0.messages)) cur = d0.messages;
                 else if (Array.isArray(d0._json)) cur = d0._json;
+                break;
               }
             } catch (e) {}
-            /* 读取失败时用页面已有数据兜底，避免把云端历史覆盖掉 */
-            if (!cur.length && sourceName !== "local" && messages.length) {
-              cur = messages.slice().reverse();
-            }
+            await new Promise((r) => setTimeout(r, 1000));
+          }
+          /* 读取失败时用页面已有数据兜底，避免把云端历史覆盖掉 */
+          if (!cur.length && sourceName !== "local" && messages.length) {
+            cur = messages.slice().reverse();
           }
           const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
 
