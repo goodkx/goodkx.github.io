@@ -276,14 +276,16 @@
     };
 
     let messages = [];   // 当前展示的留言
-    let sourceName = ""; // 当前数据源："edgeone" / "supabase" / "local"
+    let sourceName = ""; // 当前数据源："edgeone" / "textdb" / "supabase" / "local"
+    let lastErr = "";    // 最近一次云端写入失败的原因
     const LKEY = "guestbook-local-fallback";
 
-    /* 带超时的 fetch：任一数据源最多等 6 秒，避免整条回退链被卡住 */
-    const fetchT = (url, opts = {}) => {
-      try { return fetch(url, { ...opts, signal: AbortSignal.timeout(6000) }); }
+    /* 带超时的 fetch：读 8 秒 / 写 15 秒，避免整条回退链被卡住 */
+    const fetchT = (url, opts = {}, ms = 8000) => {
+      try { return fetch(url, { ...opts, signal: AbortSignal.timeout(ms) }); }
       catch (e) { return fetch(url, opts); }
     };
+    const errText = (e) => (e && e.name === "TimeoutError") ? "写入超时" : String((e && e.message) || e);
 
     function loadLocal() {
       try { return JSON.parse(localStorage.getItem(LKEY) || "null") || []; }
@@ -413,14 +415,14 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: n, content: m }),
-          });
+          }, 15000);
           if (!res.ok) throw new Error("HTTP " + res.status);
           const row = await res.json();
           messages.unshift({ n: row.n, m: row.m, t: row.t || Date.now() });
           sourceName = "edgeone";
           saveLocal(messages);
           return true;
-        } catch (e) { /* 换下一个 */ }
+        } catch (e) { lastErr = errText(e); }
 
         /* 2) textdb.dev：读 → 追加 → 整体写回（免注册云存储，国内直连） */
         try {
@@ -438,13 +440,13 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: asciiJson({ messages: next }),
-          });
+          }, 15000);
           if (!res.ok) throw new Error("HTTP " + res.status);
           messages = next.slice().reverse();
           sourceName = "textdb";
           saveLocal(messages);
           return true;
-        } catch (e) { /* 换下一个 */ }
+        } catch (e) { lastErr = errText(e); }
 
         /* 3) Supabase */
         try {
@@ -452,14 +454,14 @@
             method: "POST",
             headers: { ...SB_HEADERS, Prefer: "return=representation" },
             body: JSON.stringify({ name: n, content: m }),
-          });
+          }, 15000);
           if (!res.ok) throw new Error("HTTP " + res.status);
           const row = (await res.json())[0];
           messages.unshift({ n: row.name, m: row.content, t: new Date(row.created_at).getTime() });
           sourceName = "supabase";
           saveLocal(messages);
           return true;
-        } catch (e) { /* 换兜底 */ }
+        } catch (e) { lastErr = errText(e); }
 
         /* 4) 本机 */
         messages.unshift({ n, m, t: Date.now() });
@@ -497,7 +499,7 @@
           $("#gbCount").textContent = "0 / 500";
           showToast("留言已上云，所有人可见 ✓");
         } else {
-          showToast("连不上云端，留言暂存本机（网络恢复后新留言自动上云）");
+          showToast("云端写入失败（" + lastErr + "），已暂存本机，可点「重新连接」重试");
         }
         updateStatus();
       });
