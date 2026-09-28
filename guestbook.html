@@ -141,6 +141,18 @@
     #gbStatus { font-family: var(--mono); font-size: 0.72rem; padding: 3px 10px; border-radius: 999px; }
     #gbStatus.cloud { color: var(--accent); background: var(--acc-soft-bg); border: 1px solid var(--acc-soft-bd); }
     #gbStatus.offline { color: #fbbf24; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.25); }
+    .tretry {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .tretry:hover { color: var(--accent); border-color: var(--border-hover); }
 
     .glist { display: flex; flex-direction: column; gap: 14px; }
     .gmsg {
@@ -209,6 +221,7 @@
       <div class="row">
         <input id="gbName" maxlength="30" placeholder="怎么称呼你？（可留空）" />
         <span id="gbStatus" class="offline">📡 连接中…</span>
+        <button class="tretry" id="gbRetry" type="button" title="重新尝试连接云端">🔄 重新连接</button>
       </div>
       <textarea id="gbText" rows="3" maxlength="500" placeholder="留下你想说的话……"></textarea>
       <div class="row">
@@ -266,6 +279,12 @@
     let sourceName = ""; // 当前数据源："edgeone" / "supabase" / "local"
     const LKEY = "guestbook-local-fallback";
 
+    /* 带超时的 fetch：任一数据源最多等 6 秒，避免整条回退链被卡住 */
+    const fetchT = (url, opts = {}) => {
+      try { return fetch(url, { ...opts, signal: AbortSignal.timeout(6000) }); }
+      catch (e) { return fetch(url, opts); }
+    };
+
     function loadLocal() {
       try { return JSON.parse(localStorage.getItem(LKEY) || "null") || []; }
       catch (e) { return []; }
@@ -316,12 +335,12 @@
         s.textContent = "☁️ 云端已连接（Supabase）· 所有访客可见";
       } else {
         s.className = "offline";
-        s.textContent = "📴 离线模式 · 留言暂存本机";
+        s.textContent = "📴 暂离线 · 已存本机，点「重新连接」重试";
       }
     }
 
     async function tryEdgeOne() {
-      const res = await fetch("/api/messages");
+      const res = await fetchT("/api/messages");
       if (!res.ok) throw new Error("HTTP " + res.status);
       const rows = await res.json();
       if (!Array.isArray(rows)) throw new Error("bad payload");
@@ -336,7 +355,7 @@
     }
 
     async function tryTextDb() {
-      const res = await fetch(TDB_URL);
+      const res = await fetchT(TDB_URL);
       if (!res.ok) throw new Error("HTTP " + res.status);
       const data = JSON.parse(await res.text());
       const rows = Array.isArray(data.messages)
@@ -349,7 +368,7 @@
     }
 
     async function trySupabase() {
-      const res = await fetch(
+      const res = await fetchT(
         SB_URL + "/rest/v1/messages?select=*&order=created_at.desc&limit=100",
         { headers: SB_HEADERS }
       );
@@ -390,7 +409,7 @@
       try {
         /* 1) EdgeOne 同源接口 */
         try {
-          const res = await fetch("/api/messages", {
+          const res = await fetchT("/api/messages", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: n, content: m }),
@@ -407,7 +426,7 @@
         try {
           let cur = [];
           try {
-            const r0 = await fetch(TDB_URL);
+            const r0 = await fetchT(TDB_URL);
             if (r0.ok) {
               const d0 = JSON.parse(await r0.text());
               if (Array.isArray(d0.messages)) cur = d0.messages;
@@ -415,7 +434,7 @@
             }
           } catch (e) {}
           const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
-          const res = await fetch(TDB_URL, {
+          const res = await fetchT(TDB_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: asciiJson({ messages: next }),
@@ -429,7 +448,7 @@
 
         /* 3) Supabase */
         try {
-          const res = await fetch(SB_URL + "/rest/v1/messages", {
+          const res = await fetchT(SB_URL + "/rest/v1/messages", {
             method: "POST",
             headers: { ...SB_HEADERS, Prefer: "return=representation" },
             body: JSON.stringify({ name: n, content: m }),
@@ -455,6 +474,13 @@
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       refresh();
+
+      $("#gbRetry").addEventListener("click", () => {
+        const s = $("#gbStatus");
+        s.textContent = "📡 连接中…";
+        s.className = "offline";
+        refresh();
+      });
 
       const text = $("#gbText");
       text.addEventListener("input", () => {
