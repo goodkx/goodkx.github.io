@@ -225,6 +225,28 @@
     function fmt(t) {
       return new Date(t).toLocaleString("zh-CN", { hour12: false });
     }
+    function fmtAgo(t) {
+      const s = Date.now() - t;
+      if (s < 60000) return "刚刚";
+      if (s < 3600000) return Math.floor(s / 60000) + " 分钟前";
+      if (s < 86400000) return Math.floor(s / 3600000) + " 小时前";
+      if (s < 604800000) return Math.floor(s / 86400000) + " 天前";
+      return fmt(t);
+    }
+
+    /* 记住本机发过的留言，渲染时带"我"标记 */
+    const MINE_KEY = "gb-mine";
+    function markMine(t) {
+      try {
+        const a = JSON.parse(localStorage.getItem(MINE_KEY) || "[]");
+        a.push(t);
+        localStorage.setItem(MINE_KEY, JSON.stringify(a.slice(-100)));
+      } catch (e) {}
+    }
+    function isMine(t) {
+      try { return JSON.parse(localStorage.getItem(MINE_KEY) || "[]").indexOf(t) !== -1; }
+      catch (e) { return false; }
+    }
     function avatarFor(n) {
       let h = 0;
       for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
@@ -240,8 +262,9 @@
                 <span class="avatar">${avatarFor(m.n)}</span>
                 <b>${esc(m.n)}</b>
                 ${m.n === "CCCAD" ? '<span class="chip green owner">站长</span>' : ""}
+                ${isMine(m.t) ? '<span class="chip green">我</span>' : ""}
               </span>
-              <span class="time">${fmt(m.t)}</span>
+              <span class="time">${fmtAgo(m.t)}</span>
             </div>
             <div class="gm">${esc(m.m)}</div>
           </div>`).join("")
@@ -343,6 +366,7 @@
           if (!res.ok) throw new Error("HTTP " + res.status);
           const row = await res.json();
           messages.unshift({ n: row.n, m: row.m, t: row.t || Date.now() });
+          markMine(row.t || Date.now());
           sourceName = "edgeone";
           saveLocal(messages);
           return true;
@@ -369,7 +393,8 @@
           if (!cur.length && sourceName !== "local" && messages.length) {
             cur = messages.slice().reverse();
           }
-          const next = [...cur, { n: n, m: m, t: Date.now() }].slice(-200);
+          const myT = Date.now();
+          const next = [...cur, { n: n, m: m, t: myT }].slice(-200);
 
           /* 写入自动重试 4 次（textdb 免费服务偶发抽风，跨约 9 秒窗口） */
           const payload = asciiJson({ messages: next });
@@ -392,6 +417,7 @@
           if (!res || !res.ok) throw new Error("HTTP " + (res ? res.status : "无响应"));
           messages = next.slice().reverse();
           sourceName = "textdb";
+          markMine(myT);
           saveLocal(messages);
           return true;
         } catch (e) { lastErr = errText(e); }
@@ -406,13 +432,16 @@
           if (!res.ok) throw new Error("HTTP " + res.status);
           const row = (await res.json())[0];
           messages.unshift({ n: row.name, m: row.content, t: new Date(row.created_at).getTime() });
+          markMine(new Date(row.created_at).getTime());
           sourceName = "supabase";
           saveLocal(messages);
           return true;
         } catch (e) { lastErr = errText(e); }
 
         /* 4) 本机 */
-        messages.unshift({ n, m, t: Date.now() });
+        const t0 = Date.now();
+        messages.unshift({ n, m, t: t0 });
+        markMine(t0);
         sourceName = "local";
         saveLocal(messages);
         return false;
@@ -433,8 +462,25 @@
       });
 
       const text = $("#gbText");
+
+      /* 草稿自动保存：输入一半刷新/关页也不丢 */
+      const DKEY = "gb-draft";
+      try {
+        const draft = JSON.parse(localStorage.getItem(DKEY) || "{}");
+        if (draft.name) $("#gbName").value = draft.name;
+        if (draft.text) {
+          text.value = draft.text;
+          $("#gbCount").textContent = [...text.value].length + " / 500";
+        }
+      } catch (e) {}
+      const saveDraft = () => {
+        try { localStorage.setItem(DKEY, JSON.stringify({ name: $("#gbName").value, text: text.value })); } catch (e) {}
+      };
+      $("#gbName").addEventListener("input", saveDraft);
+
       text.addEventListener("input", () => {
         $("#gbCount").textContent = [...text.value].length + " / 500";
+        saveDraft();
       });
 
       $("#gbPost").addEventListener("click", async () => {
@@ -445,6 +491,7 @@
         if (ok) {
           text.value = "";
           $("#gbCount").textContent = "0 / 500";
+          try { localStorage.removeItem("gb-draft"); } catch (e) {}
           showToast("留言已上云，所有人可见 ✓");
         } else {
           showToast("云端写入失败（" + lastErr + "），已暂存本机，可点「重新连接」重试");
