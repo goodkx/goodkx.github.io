@@ -438,7 +438,9 @@
           const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
           const res = await fetchT(TDB_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            /* text/plain 属"简单请求"，免去 CORS 预检（部分浏览器环境预检被拦）；
+               textdb 原样存储请求体，对读写无影响 */
+            headers: { "Content-Type": "text/plain" },
             body: asciiJson({ messages: next }),
           }, 15000);
           if (!res.ok) throw new Error("HTTP " + res.status);
