@@ -526,6 +526,7 @@
           showToast("云端写入失败（" + lastErr + "），已暂存本机，可点「重新连接」重试");
         }
         updateStatus();
+        render(); /* 发布后立即重绘列表 */
       });
     });
   </script>
