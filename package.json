@@ -1,0 +1,8 @@
+{
+  "name": "cccad-personal-site",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@edgeone/pages-blob": "^0.0.16"
+  }
+}

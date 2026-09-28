@@ -1,9 +1,11 @@
 /* ═══════════ EdgeOne Pages Function: 留言板 API ══════════
    线上地址: /api/messages
-   存储: EdgeOne KV（控制台绑定命名空间，变量名 KV）
+   数据源自动选择：
+     1) EdgeOne KV        —— 控制台绑定变量名 KV 后自动启用（审核通过后）
+     2) EdgeOne Blob      —— @edgeone/pages-blob SDK（无需审批，首次调用自动创建）
 
    GET  /api/messages → 最新 200 条 [{ n, m, t }]
-   POST /api/messages → body { n, m } → 新增的那条
+   POST /api/messages → body { name, content } → 返回新增的那条
 */
 
 const CORS_HEADERS = {
@@ -19,14 +21,64 @@ function json(data, status = 200) {
   });
 }
 
-async function getList(kv) {
-  const raw = (await kv.get("messages")) || "[]";
-  try {
-    const list = JSON.parse(raw);
-    return Array.isArray(list) ? list : [];
-  } catch {
-    return [];
+/* ── KV 模式（env.KV 已绑定时） ── */
+async function handleWithKv(request, kv) {
+  async function getList() {
+    try {
+      const list = JSON.parse((await kv.get("messages")) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
   }
+
+  if (request.method === "GET") {
+    const list = await getList();
+    return json(list.slice(-200).reverse());
+  }
+  if (request.method === "POST") {
+    let body = {};
+    try { body = await request.json(); } catch (e) {}
+    const name = (String(body.name || "").trim() || "匿名朋友").slice(0, 30);
+    const content = String(body.content || "").trim().slice(0, 500);
+    if (!content) return json({ error: "留言内容不能为空" }, 400);
+    const list = await getList();
+    const msg = { n: name, m: content, t: Date.now() };
+    list.push(msg);
+    await kv.put("messages", JSON.stringify(list.slice(-500)));
+    return json(msg);
+  }
+  return json({ error: "method not allowed" }, 405);
+}
+
+/* ── Blob 模式（@edgeone/pages-blob SDK） ── */
+async function handleWithBlob(request, store) {
+  async function getList() {
+    try {
+      const list = await store.get("messages", { type: "json" });
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  }
+
+  if (request.method === "GET") {
+    const list = await getList();
+    return json(list.slice(-200).reverse());
+  }
+  if (request.method === "POST") {
+    let body = {};
+    try { body = await request.json(); } catch (e) {}
+    const name = (String(body.name || "").trim() || "匿名朋友").slice(0, 30);
+    const content = String(body.content || "").trim().slice(0, 500);
+    if (!content) return json({ error: "留言内容不能为空" }, 400);
+    const list = await getList();
+    const msg = { n: name, m: content, t: Date.now() };
+    list.push(msg);
+    await store.setJSON("messages", list.slice(-500));
+    return json(msg);
+  }
+  return json({ error: "method not allowed" }, 405);
 }
 
 export async function onRequest({ request, env }) {
@@ -35,35 +87,21 @@ export async function onRequest({ request, env }) {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
-  /* ── KV 未绑定检查 ── */
-  const kv = env && env.KV;
-  if (!kv) {
-    return json({ error: "KV 变量未绑定（控制台变量名需为 KV）" }, 503);
-  }
-
-  /* ── GET：读取最新留言（最新在前，最多 200 条）── */
-  if (request.method === "GET") {
-    const list = await getList(kv);
-    return json(list.slice(-200).reverse());
-  }
-
-  /* ── POST：发布留言 ── */
-  if (request.method === "POST") {
-    let body = {};
-    try { body = await request.json(); } catch (e) {}
-
-    const name = (String(body.name || "").trim() || "匿名朋友").slice(0, 30);
-    const content = String(body.content || "").trim().slice(0, 500);
-    if (!content) {
-      return json({ error: "留言内容不能为空" }, 400);
+  try {
+    /* 优先级 1：KV 已绑定（审核通过后自动切换，代码无需再改） */
+    if (env && env.KV) {
+      return await handleWithKv(request, env.KV);
     }
-
-    const list = await getList(kv);
-    const msg = { n: name, m: content, t: Date.now() };
-    list.push(msg);
-    await kv.put("messages", JSON.stringify(list.slice(-500)));
-    return json(msg);
+    /* 优先级 2：Blob 存储（动态加载，加载失败会被外层捕获而不是炸掉部署）
+       consistency: "strong" —— 保证"发完留言立刻能读到"（绕过 CDN 缓存） */
+    const mod = await import("@edgeone/pages-blob");
+    const getStore = mod.getStore || (mod.default && mod.default.getStore);
+    if (typeof getStore !== "function") {
+      throw new Error("Blob SDK 加载异常（未找到 getStore）");
+    }
+    const store = getStore({ name: "guestbook", consistency: "strong" });
+    return await handleWithBlob(request, store);
+  } catch (e) {
+    return json({ error: "服务暂时不可用: " + ((e && e.message) || e) }, 503);
   }
-
-  return json({ error: "method not allowed" }, 405);
 }
