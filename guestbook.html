@@ -427,24 +427,28 @@
         /* 2) textdb.dev：读 → 追加 → 整体写回（免注册云存储，国内直连） */
         try {
           let cur = [];
-          try {
-            const r0 = await fetchT(TDB_URL);
-            if (r0.ok) {
-              const d0 = JSON.parse(await r0.text());
-              if (Array.isArray(d0.messages)) cur = d0.messages;
-              else if (Array.isArray(d0._json)) cur = d0._json;
+          if (sourceName === "textdb" && messages.length) {
+            cur = messages.slice().reverse(); /* 页面刚从云端加载，直接复用，少一次请求 */
+          } else {
+            try {
+              const r0 = await fetchT(TDB_URL);
+              if (r0.ok) {
+                const d0 = JSON.parse(await r0.text());
+                if (Array.isArray(d0.messages)) cur = d0.messages;
+                else if (Array.isArray(d0._json)) cur = d0._json;
+              }
+            } catch (e) {}
+            /* 读取失败时用页面已有数据兜底，避免把云端历史覆盖掉 */
+            if (!cur.length && sourceName !== "local" && messages.length) {
+              cur = messages.slice().reverse();
             }
-          } catch (e) {}
-          /* 读取失败时用页面已有数据兜底，避免把云端历史覆盖掉 */
-          if (!cur.length && sourceName !== "local" && messages.length) {
-            cur = messages.slice().reverse();
           }
           const next = [...cur, { n: name, m: content, t: Date.now() }].slice(-200);
 
-          /* 写入自动重试 3 次（textdb 免费服务偶发抽风） */
+          /* 写入自动重试 4 次（textdb 免费服务偶发抽风，跨约 9 秒窗口） */
           const payload = asciiJson({ messages: next });
           let res = null;
-          for (let i = 0; i < 3; i++) {
+          for (let i = 0; i < 4; i++) {
             try {
               res = await fetchT(TDB_URL, {
                 method: "POST",
@@ -455,9 +459,9 @@
               }, 15000);
               if (res.ok) break;
             } catch (e) {
-              if (i === 2) throw e;
+              if (i === 3) throw e;
             }
-            await new Promise((r) => setTimeout(r, 1200 * (i + 1)));
+            await new Promise((r) => setTimeout(r, 1500 * (i + 1)));
           }
           if (!res || !res.ok) throw new Error("HTTP " + (res ? res.status : "无响应"));
           messages = next.slice().reverse();
