@@ -79,6 +79,8 @@
       收藏本页，选型不迷路。
     </p>
 
+    <input id="aiFilter" type="text" placeholder="🔍 筛选：名称 / 用途 / ✅ 直连 / 🪜 …" style="width:100%; background:var(--panel); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:inherit; font-size:.88rem; padding:11px 14px; margin-bottom:6px; outline:none" />
+
     <div class="cat-title"><span class="bar"></span>💬 AI 对话助手</div>
     <div class="ai-grid">
       <a class="ai-card" href="https://chat.deepseek.com" target="_blank" rel="noopener">
@@ -246,7 +248,24 @@
       }, { threshold: 0.08 });
       document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
     }
-    document.addEventListener("DOMContentLoaded", initReveal);
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+
+      /* 实时筛选：匹配名称/描述/标签，隐藏空分类 */
+      const fi = document.getElementById("aiFilter");
+      fi.addEventListener("input", () => {
+        const q = fi.value.trim().toLowerCase();
+        document.querySelectorAll(".ai-card").forEach((c) => {
+          c.style.display = (!q || c.textContent.toLowerCase().includes(q)) ? "" : "none";
+        });
+        document.querySelectorAll(".cat-title").forEach((t) => {
+          const grid = t.nextElementSibling;
+          const any = grid && [...grid.querySelectorAll(".ai-card")].some((c) => c.style.display !== "none");
+          t.style.display = any ? "" : "none";
+          if (grid) grid.style.display = any ? "" : "none";
+        });
+      });
+    });
   </script>
 </body>
 </html>
