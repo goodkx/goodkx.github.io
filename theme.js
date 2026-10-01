@@ -108,6 +108,28 @@
       }
     });
 
+    /* 🎮 Konami 彩蛋：↑↑↓↓←→←→BA 触发自行车雨 */
+    const KSEQ = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+    let kIdx = 0;
+    document.addEventListener("keydown", (e) => {
+      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      kIdx = (k === KSEQ[kIdx]) ? kIdx + 1 : (k === KSEQ[0] ? 1 : 0);
+      if (kIdx !== KSEQ.length) return;
+      kIdx = 0;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      for (let i = 0; i < 24; i++) {
+        const p = document.createElement("div");
+        p.textContent = "🚲";
+        p.style.cssText = "position:fixed;z-index:9999;top:-40px;left:" + (Math.random() * 96).toFixed(1) +
+          "vw;font-size:" + (16 + Math.random() * 20).toFixed(0) +
+          "px;pointer-events:none;animation:konamiFall " + (2.5 + Math.random() * 3).toFixed(2) + "s linear forwards";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 6500);
+      }
+      document.title = "🚲 鹈鹕大军来袭！";
+      setTimeout(() => { document.title = prevTitle; }, 2500);
+    });
+
     const cur = document.documentElement.dataset.theme || "";
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
