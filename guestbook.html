@@ -512,22 +512,46 @@
           showToast("站长模式已关闭");
           return;
         }
-        const p = prompt("输入站长口令：");
-        if (p === null) return;
-        if (p === ADMIN_PASS) {
-          isAdmin = true;
-          try { sessionStorage.setItem("gb-admin", "1"); } catch (e) {}
-          render();
-          showToast("站长模式已开启：每条留言出现 🗑 按钮 ✓");
-        } else showToast("口令不对 🙅");
+        /* 内联口令行（不用原生 prompt，体验更好） */
+        const old = document.getElementById("gbAdminRow");
+        if (old) { old.remove(); return; }
+        const row = document.createElement("div");
+        row.id = "gbAdminRow";
+        row.className = "row";
+        row.style.marginTop = "8px";
+        row.innerHTML = '<input type="password" id="gbPass" placeholder="站长口令" style="flex:none; width:150px" />' +
+          '<button class="tbtn" id="gbUnlock" type="button">解锁</button>' +
+          '<span class="hint">口令在 guestbook.html 的 ADMIN_PASS 修改</span>';
+        $("#gbAdmin").after(row);
+        $("#gbPass").focus();
+        const tryUnlock = () => {
+          const v = ($("#gbPass").value || "").trim();
+          if (v === ADMIN_PASS) {
+            isAdmin = true;
+            try { sessionStorage.setItem("gb-admin", "1"); } catch (e) {}
+            row.remove();
+            render();
+            showToast("站长模式已开启：每条留言出现 🗑 按钮 ✓");
+          } else showToast("口令不对 🙅");
+        };
+        $("#gbUnlock").addEventListener("click", tryUnlock);
+        $("#gbPass").addEventListener("keydown", (ev) => { if (ev.key === "Enter") tryUnlock(); });
       });
 
       /* 表情回应：点一下，计数上云 */
       $("#gbList").addEventListener("click", async (e) => {
-        /* ── 站长删除 ── */
+        /* ── 站长删除（二次确认：先点变"确认删除?"，再点执行） ── */
         const del = e.target.closest(".del");
         if (del) {
-          if (!confirm("确定删除这条留言？删除后不可恢复。")) return;
+          if (del.dataset.armed !== "1") {
+            del.dataset.armed = "1";
+            del.textContent = "确认删除?";
+            del.style.color = "#ff8484";
+            setTimeout(() => {
+              if (del.isConnected) { del.dataset.armed = ""; del.textContent = "🗑"; del.style.color = ""; }
+            }, 3000);
+            return;
+          }
           const t = Number(del.dataset.t);
           const idx = messages.findIndex((x) => x.t === t);
           if (idx === -1) return;
