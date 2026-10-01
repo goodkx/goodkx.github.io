@@ -96,6 +96,18 @@
     document.body.appendChild(top);
     toggleTop();
 
+    /* 📢 标签页离开/回来的小彩蛋 */
+    let prevTitle = document.title;
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        prevTitle = document.title;
+        document.title = "(⊙_⊙) 别走呀……";
+      } else {
+        document.title = "!(^^)! 欢迎回来！";
+        setTimeout(() => { document.title = prevTitle; }, 1600);
+      }
+    });
+
     const cur = document.documentElement.dataset.theme || "";
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
