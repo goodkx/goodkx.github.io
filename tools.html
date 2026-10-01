@@ -7,11 +7,11 @@
   <meta name="description" content="工具箱 —— 一组开箱即用的浏览器小工具。" />
   <title>工具箱 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧰%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=102" />
-  <link rel="stylesheet" href="theme.css?v=102" />
-  <link rel="stylesheet" href="search.css?v=102" />
-  <script src="theme.js?v=102"></script>
-  <script src="search.js?v=102"></script>
+  <link rel="stylesheet" href="subpage.css?v=103" />
+  <link rel="stylesheet" href="theme.css?v=103" />
+  <link rel="stylesheet" href="search.css?v=103" />
+  <script src="theme.js?v=103"></script>
+  <script src="search.js?v=103"></script>
   <style>
     .tools {
       display: grid;
@@ -140,6 +140,17 @@
     .f-cal span.dn { color: var(--text); }
     .f-cal span.hit { background: var(--acc-soft-bg); border-color: var(--border-hover); color: var(--accent); font-weight: 600; }
     .f-cal span.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+    /* 网速测试 */
+    .sp-main { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .sp-big { flex: 1; text-align: center; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 4px; }
+    .sp-big b { display: block; font-family: var(--mono); font-size: 2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .sp-big span, .sp-side span { font-size: .68rem; color: var(--muted); }
+    .sp-side { display: flex; flex-direction: column; gap: 6px; }
+    .sp-side div { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; text-align: center; }
+    .sp-side b { display: inline-block; font-family: var(--mono); color: var(--accent-2); margin-right: 5px; }
+    .sp-bar { height: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+    .sp-bar i { display: block; height: 100%; width: 0; background: var(--gradient); transition: width .2s; }
 
     .stat-row {
       display: grid;
@@ -313,6 +324,20 @@
       </div>
       <div class="f-cal" id="fCal"></div>
       <p class="hint">打卡记录仅存本机 · 语录按日轮换</p>
+    </section>
+
+    <section class="tool reveal" style="--d:.65s" id="speed">
+      <h3>📶 网速测试</h3>
+      <div class="sp-main">
+        <div class="sp-big"><b id="spVal">--</b><span>Mbps 下载</span></div>
+        <div class="sp-side">
+          <div><b id="spPing">--</b><span>延迟 ms</span></div>
+          <div><b id="spUp">--</b><span>Mbps 上传</span></div>
+        </div>
+      </div>
+      <div class="sp-bar"><i id="spBar"></i></div>
+      <p class="hint" id="spState">点击开始，全程约 15 秒，消耗约 25MB 流量</p>
+      <div class="row"><button class="tbtn" id="spGo">🚀 开始测速</button></div>
     </section>
 
   </div>
@@ -695,6 +720,93 @@
       draw();
     }
 
+    /* ── 网速测试 ── */
+    function initSpeed() {
+      const CF = "https://speed.cloudflare.com";
+      const go = $("#spGo"), val = $("#spVal"), pingEl = $("#spPing"), upEl = $("#spUp"), bar = $("#spBar"), state = $("#spState");
+      let busy = false;
+
+      async function ping() {
+        let best = Infinity;
+        for (let i = 0; i < 5; i++) {
+          const t0 = performance.now();
+          try {
+            await fetch(CF + "/__down?bytes=0&p=" + Math.random(), { cache: "no-store" });
+            best = Math.min(best, performance.now() - t0);
+          } catch (e) { /* 忽略单次失败 */ }
+        }
+        return best === Infinity ? null : Math.round(best);
+      }
+
+      async function download() {
+        const t0 = performance.now();
+        const res = await fetch(CF + "/__down?bytes=25000000&p=" + Math.random(), { cache: "no-store" });
+        const reader = res.body.getReader();
+        let bytes = 0, warmBytes = 0, warmT = 0;
+        const warm = 1.5;
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          bytes += chunk.value.length;
+          const el = (performance.now() - t0) / 1000;
+          if (el > warm && !warmT) { warmT = el; warmBytes = bytes; }
+          if (el > warm) {
+            val.textContent = (((bytes - warmBytes) * 8) / ((el - warmT) * 1e6)).toFixed(1);
+          }
+          bar.style.width = Math.min(100, (el / 8) * 100) + "%";
+          state.textContent = "下载测速中… 已接收 " + (bytes / 1048576).toFixed(1) + " MB";
+          if (el > 8) { try { await reader.cancel(); } catch (e) {} break; }
+        }
+        const el = (performance.now() - t0) / 1000;
+        if (warmT && el > warm) return ((bytes - warmBytes) * 8) / ((el - warmT) * 1e6);
+        return bytes > 0 ? (bytes * 8) / (el * 1e6) : 0;
+      }
+
+      async function upload() {
+        const blob = new Blob([new Uint8Array(2 * 1048576)], { type: "text/plain" });
+        let best = 0;
+        for (let i = 0; i < 2; i++) {
+          const t0 = performance.now();
+          await fetch(CF + "/__up", { method: "POST", body: blob });
+          best = Math.max(best, (blob.size * 8) / ((performance.now() - t0) / 1000) / 1e6);
+          bar.style.width = (65 + i * 18) + "%";
+        }
+        return best;
+      }
+
+      go.addEventListener("click", async () => {
+        if (busy) return;
+        busy = true;
+        go.disabled = true;
+        val.textContent = "--"; upEl.textContent = "--"; pingEl.textContent = "--";
+        bar.style.width = "6%";
+        try {
+          state.textContent = "测量延迟…";
+          const p = await ping();
+          pingEl.textContent = p === null ? "--" : p;
+          bar.style.width = "15%";
+          state.textContent = "下载测速中…";
+          const d = await download();
+          val.textContent = d.toFixed(1);
+          bar.style.width = "62%";
+          state.textContent = "上传测速中…";
+          try {
+            const u = await upload();
+            upEl.textContent = u.toFixed(1);
+          } catch (e) { upEl.textContent = "--"; }
+          bar.style.width = "100%";
+          const grade = d > 50 ? "🚀 飞快" : d > 20 ? "✅ 流畅" : d > 5 ? "👌 一般" : "🐢 较慢";
+          state.textContent = "完成！" + grade + "（节点：Cloudflare · 本次消耗约 25MB 流量）";
+        } catch (e) {
+          state.textContent = "测速服务不可达（可能被网络拦截）——可尝试切换网络后重试";
+          val.textContent = "--";
+          bar.style.width = "100%";
+        }
+        go.disabled = false;
+        busy = false;
+      });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       initCharCount();
@@ -710,6 +822,7 @@
       initUuid();
       initMarkdown();
       initFish();
+      initSpeed();
     });
   </script>
 </body>
