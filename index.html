@@ -27,6 +27,7 @@
   <meta property="og:url" content="https://goodkx.github.io/" />
   <meta name="twitter:card" content="summary" />
   <link rel="preconnect" href="https://textdb.dev" />
+  <link rel="alternate" type="application/rss+xml" title="CCCAD 的数字小站 RSS" href="feed.xml" />
   <script src="theme.js"></script>
   <link rel="stylesheet" href="search.css" />
   <script src="search.js"></script>
@@ -557,6 +558,12 @@
         const n = Number(localStorage.getItem(KEY)) || 1;
         const note = document.getElementById("visitNote");
         if (note) note.textContent = n <= 1 ? "👋 第一次来访，欢迎回家" : "👋 这是你的第 " + n + " 次来访";
+        /* 节日问候：国庆周（10.1–10.7）换打招呼语 */
+        const dd = new Date();
+        if (dd.getMonth() === 9 && dd.getDate() <= 7) {
+          const hello = document.querySelector(".hero-hello");
+          if (hello) hello.textContent = "// Happy National Day 🇨🇳";
+        }
       } catch (e) {}
     });
   </script>
