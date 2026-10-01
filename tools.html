@@ -130,6 +130,17 @@
     .mdview code { font-family: var(--mono); background: var(--panel); padding: 1px 5px; border-radius: 4px; }
     .mdview a { color: var(--accent-2); }
 
+    /* 摸鱼日历 */
+    .f-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+    .f-cal span {
+      font-family: var(--mono); font-size: .68rem; text-align: center;
+      padding: 5px 0; border-radius: 6px; color: var(--muted);
+      background: var(--panel); border: 1px solid var(--border);
+    }
+    .f-cal span.dn { color: var(--text); }
+    .f-cal span.hit { background: var(--acc-soft-bg); border-color: var(--border-hover); color: var(--accent); font-weight: 600; }
+    .f-cal span.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
     .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -285,6 +296,23 @@
       <h3>📄 Markdown 预览</h3>
       <textarea id="mdIn" rows="6" placeholder="# 标题&#10;**加粗** *斜体* `代码`&#10;- 列表项&#10;&gt; 引用"></textarea>
       <output class="out mdview" id="mdOut" data-empty="输入 Markdown 实时预览"></output>
+    </section>
+
+    <section class="tool reveal" style="--d:.6s" id="fish">
+      <h3>🐟 摸鱼日历 & 签到</h3>
+      <div class="cd-grid">
+        <div><b id="fWk">-</b><span>今天周几</span></div>
+        <div><b id="fWkd">-</b><span>距周末</span></div>
+        <div><b id="fOff">-</b><span>距下班 18:00</span></div>
+        <div><b id="fNy">-</b><span>距春节</span></div>
+      </div>
+      <p class="hint" id="fQuote" style="margin-bottom:10px"></p>
+      <div class="row">
+        <button class="tbtn" id="fGo">今日打卡 ✓</button>
+        <span class="hint" id="fStreak">今天还没打卡</span>
+      </div>
+      <div class="f-cal" id="fCal"></div>
+      <p class="hint">打卡记录仅存本机 · 语录按日轮换</p>
     </section>
 
   </div>
@@ -597,6 +625,76 @@
       src.addEventListener("input", run);
     }
 
+    /* ── 摸鱼日历 & 签到 ── */
+    function initFish() {
+      const FKEY = "fish-checkin";
+      const QUOTES = [
+        "摸鱼不是懒惰，是给灵魂放风",
+        "只要我摸得够快，KPI 就追不上我",
+        "带薪如厕，一日三巡，谓之修行",
+        "工位是我第二个家，家是我回不去的地方",
+        "今天也是元气满满（的摸鱼）的一天",
+        "所谓职业素养：摸鱼时也要开着 Excel",
+        "茶水间的咖啡，是打工人的续命水",
+        "累了吗？累了就看看窗外发会儿呆",
+        "别急，你摸的每一分钟都算数",
+        "距离下班还有一会儿，再坚持一下",
+        "认真工作，快乐摸鱼",
+        "愿天下打工人早日上岸",
+      ];
+      const now = new Date();
+      const wd = "日一二三四五六"[now.getDay()];
+      $("#fWk").textContent = "周" + wd;
+      if (now.getDay() === 6 || now.getDay() === 0) $("#fWkd").textContent = "周末中🎉";
+      else $("#fWkd").textContent = (6 - now.getDay()) + " 天";
+      const off = new Date(now); off.setHours(18, 0, 0, 0);
+      if (now.getDay() === 0 || now.getDay() === 6) $("#fOff").textContent = "不用班🎉";
+      else if (now > off) $("#fOff").textContent = "已下班🎉";
+      else {
+        const mins = Math.floor((off - now) / 60000);
+        $("#fOff").textContent = mins >= 60 ? Math.floor(mins / 60) + "时" + (mins % 60) + "分" : mins + " 分";
+      }
+      $("#fNy").textContent = Math.ceil((new Date("2027-02-06T00:00:00+08:00") - now) / 86400000) + " 天";
+      $("#fQuote").textContent = "🐟 " + QUOTES[(now.getDate() + now.getHours()) % QUOTES.length];
+
+      const load = () => { try { return JSON.parse(localStorage.getItem(FKEY) || "[]"); } catch (e) { return []; } };
+      const dstr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+      const draw = () => {
+        const rec = load();
+        const set = new Set(rec);
+        let streak = 0;
+        const d = new Date(now);
+        if (!set.has(dstr)) d.setDate(d.getDate() - 1); /* 今天还没打，从昨天起算连续 */
+        while (set.has(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"))) {
+          streak++;
+          d.setDate(d.getDate() - 1);
+        }
+        $("#fStreak").textContent = streak > 0 ? "🔥 连续打卡 " + streak + " 天" : "今天还没打卡";
+        const y = now.getFullYear(), mo = now.getMonth();
+        const first = new Date(y, mo, 1);
+        const days = new Date(y, mo + 1, 0).getDate();
+        let html = "";
+        for (let i = 0; i < first.getDay(); i++) html += "<span></span>";
+        for (let dd = 1; dd <= days; dd++) {
+          const k = y + "-" + String(mo + 1).padStart(2, "0") + "-" + String(dd).padStart(2, "0");
+          const cls = ["dn"];
+          if (set.has(k)) cls.push("hit");
+          if (dd === now.getDate()) cls.push("today");
+          html += `<span class="${cls.join(" ")}">${dd}</span>`;
+        }
+        $("#fCal").innerHTML = html;
+      };
+      $("#fGo").addEventListener("click", () => {
+        const rec = load();
+        if (rec.includes(dstr)) { showToast("今天已经打过卡啦 ✓"); return; }
+        rec.push(dstr);
+        try { localStorage.setItem(FKEY, JSON.stringify(rec.slice(-400))); } catch (e) {}
+        showToast("打卡成功，明天见 🐟");
+        draw();
+      });
+      draw();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       initCharCount();
@@ -611,6 +709,7 @@
       initDiff();
       initUuid();
       initMarkdown();
+      initFish();
     });
   </script>
 </body>
