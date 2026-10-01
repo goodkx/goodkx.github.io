@@ -17,10 +17,12 @@
   if (saved) {
     document.documentElement.dataset.theme = saved;
   } else {
-    /* 从未手动选过主题：白天用暖纸（浅色），夜间用默认深空绿（深色）；
+    /* 从未手动选过主题：跟随系统深浅色偏好 + 白天因子；
        一旦手动切换过任何主题，以手动选择为准，不再自动变 */
+    let sysLight = false;
+    try { sysLight = window.matchMedia("(prefers-color-scheme: light)").matches; } catch (e) {}
     const h = new Date().getHours();
-    if (h >= 7 && h < 19) document.documentElement.dataset.theme = "paper";
+    if (h >= 7 && h < 19 && sysLight) document.documentElement.dataset.theme = "paper";
   }
 
   function apply(id) {
@@ -68,6 +70,18 @@
 
     document.body.appendChild(pop);
     document.body.appendChild(btn);
+
+    /* 全站浮动返回顶部 */
+    const top = document.createElement("button");
+    top.id = "backTopBtn";
+    top.type = "button";
+    top.setAttribute("aria-label", "返回顶部");
+    top.textContent = "↑";
+    top.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    const toggleTop = () => top.classList.toggle("show", window.scrollY > 600);
+    addEventListener("scroll", toggleTop, { passive: true });
+    document.body.appendChild(top);
+    toggleTop();
 
     const cur = document.documentElement.dataset.theme || "";
     pop.querySelectorAll("button[data-t]").forEach((b) => {
