@@ -157,11 +157,11 @@ html[data-theme="amber"] {
   #themePop { right: 14px; bottom: 68px; }
 }
 
-/* 全站浮动返回顶部 */
+/* 全站浮动返回顶部（避开 🔍 搜索按钮 78px 和 🎨 主题按钮 18px） */
 #backTopBtn {
   position: fixed;
   right: 18px;
-  bottom: 72px;
+  bottom: 138px;
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -180,5 +180,5 @@ html[data-theme="amber"] {
 #backTopBtn:hover { box-shadow: 0 6px 18px rgba(0, 229, 160, .25); }
 
 @media (max-width: 640px) {
-  #backTopBtn { right: 14px; bottom: 66px; width: 38px; height: 38px; }
+  #backTopBtn { right: 14px; bottom: 122px; width: 38px; height: 38px; }
 }
