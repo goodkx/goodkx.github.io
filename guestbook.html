@@ -500,6 +500,8 @@
       initReveal();
       refresh();
       setInterval(render, 60000); /* 相对时间每分钟自动刷新 */
+      /* 带站长会话刷新时，导出按钮直接可见 */
+      document.getElementById("gbExport").style.display = isAdmin ? "" : "none";
 
       $("#gbRetry").addEventListener("click", () => {
         const s = $("#gbStatus");
