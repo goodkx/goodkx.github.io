@@ -157,27 +157,47 @@ html[data-theme="amber"] {
   #themePop { right: 14px; bottom: 68px; }
 }
 
-/* 全站浮动返回顶部（避开 🔍 搜索按钮 78px 和 🎨 主题按钮 18px） */
+/* 全站浮动返回顶部（滚动进度环，避开 🔍 78px 和 🎨 18px） */
 #backTopBtn {
   position: fixed;
   right: 18px;
   bottom: 138px;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
+  border: none;
   border-radius: 50%;
-  border: 1px solid var(--border-hover);
   background: var(--card);
-  color: var(--accent);
-  font-size: 1.1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
   cursor: pointer;
+  padding: 0;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
-  transition: opacity .25s, transform .25s;
+  transform: translateY(10px) scale(.88);
+  transition: opacity .3s, transform .3s, box-shadow .3s;
   z-index: 900;
 }
 #backTopBtn.show { opacity: 1; pointer-events: auto; transform: none; }
-#backTopBtn:hover { box-shadow: 0 6px 18px rgba(0, 229, 160, .25); }
+#backTopBtn:hover { box-shadow: 0 8px 24px rgba(0, 229, 160, .3); transform: translateY(-2px); }
+#backTopBtn .ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+#backTopBtn .ring-bg { fill: none; stroke: var(--border); stroke-width: 3; }
+#backTopBtn .ring-fg {
+  fill: none;
+  stroke: url(#btGrad);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 119.4;
+  stroke-dashoffset: 119.4;
+  transition: stroke-dashoffset .1s linear;
+}
+#backTopBtn .ar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+#backTopBtn .ar svg { display: block; }
 
 @media (max-width: 640px) {
   #backTopBtn { right: 14px; bottom: 122px; width: 38px; height: 38px; }
