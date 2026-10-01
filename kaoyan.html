@@ -251,11 +251,33 @@
       box-shadow: 0 0 10px var(--acc-glow);
       pointer-events: none;
     }
+    /* 大纲目录侧栏（宽屏） */
+    #kToc {
+      position: fixed;
+      top: 120px;
+      right: max(18px, calc((100vw - 860px) / 2 - 215px));
+      width: 190px;
+      display: none;
+      border-left: 2px solid var(--border);
+      padding-left: 4px;
+    }
+    #kToc.show { display: block; }
+    #kToc a {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .78rem; color: var(--muted); text-decoration: none;
+      padding: 5px 8px; cursor: pointer; border-radius: 6px;
+      transition: color .2s, background .2s;
+    }
+    #kToc a:hover { color: var(--text); background: var(--acc-soft-bg); }
+    #kToc a.on { color: var(--accent); background: var(--acc-soft-bg); }
+    #kToc a .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    @media (max-width: 1180px) { #kToc { display: none !important; } }
   </style>
 </head>
 <body>
 
   <div id="readProgress"></div>
+  <nav id="kToc" aria-label="大纲目录"></nav>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
@@ -522,6 +544,32 @@
         const max = h.scrollHeight - h.clientHeight;
         bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
       }, { passive: true });
+
+      /* 大纲目录侧栏（宽屏）+ 滚动高亮 */
+      const TOC = [
+        { id: "politics", t: "政治（101）", c: "#dc2626" },
+        { id: "english", t: "英语（201/204）", c: "#2563eb" },
+        { id: "math", t: "数学（301/302）", c: "#7c3aed" },
+        { id: "cs408", t: "专业课 408", c: "#059669" },
+        { id: "timeline", t: "备考时间线", c: "#0891b2" },
+      ];
+      const toc = document.getElementById("kToc");
+      if (toc && window.innerWidth > 1180) {
+        toc.innerHTML = TOC.map((s) => `<a data-t="${s.id}"><span class="dot" style="background:${s.c}"></span>${s.t}</a>`).join("");
+        toc.classList.add("show");
+        toc.addEventListener("click", (e) => {
+          const a = e.target.closest("a[data-t]");
+          if (a) document.getElementById(a.dataset.t).scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        window.addEventListener("scroll", () => {
+          let cur = TOC[0].id;
+          for (const s of TOC) {
+            const el = document.getElementById(s.id);
+            if (el && el.getBoundingClientRect().top <= 140) cur = s.id;
+          }
+          toc.querySelectorAll("a").forEach((a) => a.classList.toggle("on", a.dataset.t === cur));
+        }, { passive: true });
+      }
     });
   </script>
 </body>
