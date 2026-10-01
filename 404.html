@@ -68,6 +68,23 @@
       color: var(--muted);
       opacity: 0.8;
     }
+    /* 骑车的鹈鹕：横穿屏幕 */
+    .nf-rider {
+      position: fixed;
+      bottom: 22px;
+      left: -180px;
+      opacity: .9;
+      animation: ride 13s linear infinite;
+      z-index: 2;
+    }
+    .nf-rider:hover { animation-play-state: paused; }
+    @keyframes ride {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 220px)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .nf-rider { animation: none; left: auto; right: 22px; }
+    }
   </style>
 </head>
 <body>
@@ -81,5 +98,24 @@
     </div>
     <p class="nf-tip">小贴士：全站任意页面按 Ctrl + K 可以搜索内容</p>
   </div>
+
+  <a class="nf-rider" href="pelican.html" title="去找那只骑车的鹈鹕 →" aria-label="鹈鹕骑车动画">
+    <svg viewBox="0 0 120 70" width="150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="30" y1="50" x2="60" y2="50" stroke="#38bdf8" stroke-width="2.5"/>
+      <line x1="60" y1="50" x2="88" y2="50" stroke="#38bdf8" stroke-width="2.5"/>
+      <line x1="30" y1="50" x2="46" y2="26" stroke="#38bdf8" stroke-width="2.5"/>
+      <line x1="46" y1="26" x2="74" y2="26" stroke="#38bdf8" stroke-width="2.5"/>
+      <line x1="74" y1="26" x2="60" y2="50" stroke="#38bdf8" stroke-width="2.5"/>
+      <line x1="74" y1="26" x2="70" y2="17" stroke="#38bdf8" stroke-width="2.5"/>
+      <circle cx="30" cy="50" r="11" fill="none" stroke="#bfd8f2" stroke-width="2.5"/>
+      <circle cx="88" cy="50" r="11" fill="none" stroke="#bfd8f2" stroke-width="2.5"/>
+      <circle cx="30" cy="50" r="2" fill="#bfd8f2"/>
+      <circle cx="88" cy="50" r="2" fill="#bfd8f2"/>
+      <ellipse cx="46" cy="12" rx="10" ry="7.5" fill="#e8f1fa"/>
+      <circle cx="52" cy="9" r="2.6" fill="#0b1626"/>
+      <path d="M55,10 L72,13 L55,15 Z" fill="#f5a83c"/>
+      <line x1="70" y1="17" x2="52" y2="16" stroke="#e8f1fa" stroke-width="2"/>
+    </svg>
+  </a>
 </body>
 </html>
