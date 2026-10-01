@@ -517,6 +517,20 @@
   <script src="script.js"></script>
   <style>
     .visit-note { font-family: var(--mono); font-size: .74rem; color: var(--muted); opacity: .85; margin-bottom: 6px; }
+    /* 粒子连线背景 */
+    #fxParticles { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .6; }
+    /* 云端留言弹幕带 */
+    #hero { position: relative; }
+    .dm-band { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; overflow: hidden; pointer-events: none; }
+    .dm { position: absolute; left: 100%; white-space: nowrap; font-family: var(--mono); font-size: .78rem; color: var(--muted); text-decoration: none; pointer-events: auto; opacity: 0; animation: dmFly linear infinite; }
+    .dm:hover { color: var(--accent); opacity: 1; animation-play-state: paused; }
+    @keyframes dmFly {
+      0% { transform: translateX(0); opacity: 0; }
+      6% { opacity: .8; }
+      90% { opacity: .8; }
+      100% { transform: translateX(calc(-100vw - 100%)); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { .dm-band { display: none; } }
   </style>
   <script>
     /* 来访计数（仅存本机，一次浏览器会话只计一次） */
@@ -532,6 +546,85 @@
         if (note) note.textContent = n <= 1 ? "👋 第一次来访，欢迎回家" : "👋 这是你的第 " + n + " 次来访";
       } catch (e) {}
     });
+  </script>
+  <script>
+    /* ✨ 粒子连线背景（尊重减少动画偏好） */
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const cv = document.createElement("canvas");
+      cv.id = "fxParticles";
+      cv.setAttribute("aria-hidden", "true");
+      document.body.appendChild(cv);
+      const ctx = cv.getContext("2d");
+      let W, H, pts = [];
+      function resize() {
+        W = cv.width = innerWidth;
+        H = cv.height = innerHeight;
+        const count = Math.min(90, Math.round((W * H) / 18000));
+        pts = Array.from({ length: count }, () => ({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.6 + 0.6,
+        }));
+      }
+      resize();
+      addEventListener("resize", resize);
+      (function loop() {
+        ctx.clearRect(0, 0, W, H);
+        for (const p of pts) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, 7);
+          ctx.fillStyle = "rgba(0, 229, 160, .7)";
+          ctx.fill();
+        }
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 14400) {
+              ctx.strokeStyle = "rgba(56, 189, 248, " + (0.14 * (1 - d2 / 14400)).toFixed(3) + ")";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    /* 💬 云端留言弹幕带（拉取留言板数据，失败静默） */
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const hero = document.getElementById("hero");
+      if (!hero) return;
+      const band = document.createElement("div");
+      band.className = "dm-band";
+      band.setAttribute("aria-hidden", "true");
+      hero.appendChild(band);
+      fetch("https://textdb.dev/api/data/cccad-gb-95592aa7", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
+        .then((d) => {
+          const rows = (Array.isArray(d.messages) ? d.messages : []).slice(-14);
+          if (!rows.length) return;
+          rows.forEach((m, i) => {
+            const el = document.createElement("a");
+            el.className = "dm";
+            el.href = "guestbook.html";
+            el.textContent = "💬 " + String(m.m || "").slice(0, 24) + " —— " + (m.n || "匿名");
+            el.style.top = (6 + (i % 4) * 24) + "%";
+            el.style.animationDuration = (16 + Math.random() * 14).toFixed(1) + "s";
+            el.style.animationDelay = (i * 2.4).toFixed(1) + "s";
+            band.appendChild(el);
+          });
+        })
+        .catch(() => {});
+    })();
   </script>
 </body>
 </html>
