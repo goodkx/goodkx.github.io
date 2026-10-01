@@ -139,6 +139,7 @@
     }
     .rx:hover { color: var(--accent); border-color: var(--border-hover); }
     .rx.mine { color: var(--accent); border-color: var(--acc-soft-bd); background: var(--acc-soft-bg); }
+    .rx.del:hover { color: #ff8484; border-color: rgba(255, 132, 132, .45); background: rgba(255, 132, 132, .08); }
   </style>
 </head>
 <body>
@@ -159,6 +160,7 @@
         <input id="gbName" maxlength="30" placeholder="怎么称呼你？（可留空）" />
         <span id="gbStatus" class="offline">📡 连接中…</span>
         <button class="tretry" id="gbRetry" type="button" title="重新尝试连接云端">🔄 重新连接</button>
+        <button class="tretry" id="gbAdmin" type="button" title="站长管理（删除留言）">🛡️ 站长</button>
       </div>
       <textarea id="gbText" rows="3" maxlength="500" placeholder="留下你想说的话……"></textarea>
       <div class="row">
@@ -274,6 +276,11 @@
       } catch (err) {}
     }
 
+    /* ── 站长模式（删除留言） ── */
+    const ADMIN_PASS = "cccad2026"; /* ← 想换口令就改这里 */
+    let isAdmin = false;
+    try { isAdmin = sessionStorage.getItem("gb-admin") === "1"; } catch (e) {}
+
     /* 把完整留言列表写回 textdb（暖连接 + 重试），成功返回 true */
     async function cloudWriteList(list) {
       const payload = asciiJson({ messages: list });
@@ -309,6 +316,7 @@
                 ${isMine(m.t) ? '<span class="chip green">我</span>' : ""}
               </span>
               <span class="time">${fmtAgo(m.t)}</span>
+              ${isAdmin && sourceName === "textdb" ? `<button class="rx del" data-t="${m.t}" title="删除这条留言">🗑</button>` : ""}
             </div>
             <div class="gm">${esc(m.m)}</div>
             ${sourceName === "textdb" ? `
@@ -496,8 +504,42 @@
         refresh();
       });
 
+      $("#gbAdmin").addEventListener("click", () => {
+        if (isAdmin) {
+          try { sessionStorage.removeItem("gb-admin"); } catch (e) {}
+          isAdmin = false;
+          render();
+          showToast("站长模式已关闭");
+          return;
+        }
+        const p = prompt("输入站长口令：");
+        if (p === null) return;
+        if (p === ADMIN_PASS) {
+          isAdmin = true;
+          try { sessionStorage.setItem("gb-admin", "1"); } catch (e) {}
+          render();
+          showToast("站长模式已开启：每条留言出现 🗑 按钮 ✓");
+        } else showToast("口令不对 🙅");
+      });
+
       /* 表情回应：点一下，计数上云 */
       $("#gbList").addEventListener("click", async (e) => {
+        /* ── 站长删除 ── */
+        const del = e.target.closest(".del");
+        if (del) {
+          if (!confirm("确定删除这条留言？删除后不可恢复。")) return;
+          const t = Number(del.dataset.t);
+          const idx = messages.findIndex((x) => x.t === t);
+          if (idx === -1) return;
+          const removed = messages.splice(idx, 1)[0];
+          render();
+          const list = messages.slice().reverse().map((x) => { const c = { ...x }; delete c.pending; return c; });
+          const ok = await cloudWriteList(list);
+          if (ok) { saveLocal(messages); showToast("已删除 ✓"); }
+          else { messages.splice(idx, 0, removed); render(); saveLocal(messages); showToast("删除失败（" + lastErr + "），已还原"); }
+          return;
+        }
+        /* ── 表情回应 ── */
         const btn = e.target.closest(".rx");
         if (!btn) return;
         const m = messages[Number(btn.dataset.i)];
