@@ -453,6 +453,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       refresh();
+      setInterval(render, 60000); /* 相对时间每分钟自动刷新 */
 
       $("#gbRetry").addEventListener("click", () => {
         const s = $("#gbStatus");
