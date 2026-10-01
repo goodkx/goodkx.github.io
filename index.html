@@ -505,6 +505,7 @@
   <footer class="footer">
     <div class="container footer-inner">
       <p>© <span id="year">2026</span> CCCAD · 用 ❤ 与代码搭建</p>
+      <p class="visit-note" id="visitNote"></p>
       <p class="daily-quote" id="dailyQuote"></p>
       <a href="#hero" class="back-top">↑ 返回顶部</a>
     </div>
@@ -514,5 +515,23 @@
   <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
 
   <script src="script.js"></script>
+  <style>
+    .visit-note { font-family: var(--mono); font-size: .74rem; color: var(--muted); opacity: .85; margin-bottom: 6px; }
+  </style>
+  <script>
+    /* 来访计数（仅存本机，一次浏览器会话只计一次） */
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const KEY = "site-visits", FLAG = "site-counted";
+        if (!sessionStorage.getItem(FLAG)) {
+          localStorage.setItem(KEY, String((Number(localStorage.getItem(KEY)) || 0) + 1));
+          sessionStorage.setItem(FLAG, "1");
+        }
+        const n = Number(localStorage.getItem(KEY)) || 1;
+        const note = document.getElementById("visitNote");
+        if (note) note.textContent = n <= 1 ? "👋 第一次来访，欢迎回家" : "👋 这是你的第 " + n + " 次来访";
+      } catch (e) {}
+    });
+  </script>
 </body>
 </html>
