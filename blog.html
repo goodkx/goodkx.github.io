@@ -602,13 +602,14 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     const ORDER = ["gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
-    let curPostId = null, lastSave = 0;
+    let curPostId = null, lastSave = 0, routeTs = 0;
     function route() {
       const m = location.hash.match(/^#\/post\/(.+)$/);
       const id = m && POSTS[m[1]] ? m[1] : null;
       const list = $("#listView");
       const art = $("#articleView");
       curPostId = id;
+      routeTs = Date.now();
       if (id) {
         const p = POSTS[id];
         document.title = p.title + " | CCCAD";
@@ -622,13 +623,13 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         list.style.display = "none";
         art.classList.add("open");
         window.scrollTo({ top: 0 });
-        /* 恢复上次读到的地方（读过超过 600px 才恢复） */
+        /* 恢复上次读到的地方（读过超过 600px 才恢复；等排版稳定再滚） */
         const savedPos = Number(localStorage.getItem("read-pos-" + id)) || 0;
         if (savedPos > 600) {
           setTimeout(() => {
             window.scrollTo({ top: savedPos });
             showToast("已回到上次读到的地方 ✓");
-          }, 150);
+          }, 400);
         }
       } else {
         document.title = "博客 | CCCAD";
@@ -725,10 +726,10 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
           $$("#toc a").forEach((a) => a.classList.toggle("on", a.dataset.t === cur));
         }
 
-        /* 记录阅读位置（每 500ms 最多存一次） */
+        /* 记录阅读位置（每 500ms 最多存一次；进页 0.8 秒内不存，防排版钳制值覆盖） */
         if (curPostId && $("#articleView").classList.contains("open")) {
           const nowTs = Date.now();
-          if (nowTs - lastSave > 500) {
+          if (nowTs - lastSave > 500 && nowTs - routeTs > 800) {
             lastSave = nowTs;
             try { localStorage.setItem("read-pos-" + curPostId, String(window.scrollY)); } catch (e) {}
           }
