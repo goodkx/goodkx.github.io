@@ -7,6 +7,7 @@
   <meta name="description" content="留言板 —— 打个招呼，留下你想说的话。" />
   <title>留言板 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💬%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://textdb.dev" />
   <link rel="stylesheet" href="subpage.css" />
   <link rel="stylesheet" href="theme.css" />
   <link rel="stylesheet" href="search.css" />
@@ -127,6 +128,17 @@
       background: var(--acc-soft-bg);
       border-color: var(--acc-soft-bd);
     }
+
+    /* 表情回应 */
+    .gr { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .rx {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 999px;
+      color: var(--muted); font-family: var(--mono); font-size: .72rem;
+      padding: 3px 11px; cursor: pointer;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .rx:hover { color: var(--accent); border-color: var(--border-hover); }
+    .rx.mine { color: var(--accent); border-color: var(--acc-soft-bd); background: var(--acc-soft-bg); }
   </style>
 </head>
 <body>
@@ -247,6 +259,38 @@
       try { return JSON.parse(localStorage.getItem(MINE_KEY) || "[]").indexOf(t) !== -1; }
       catch (e) { return false; }
     }
+
+    /* 表情回应（每条留言每种表情每台设备只算一次） */
+    const RK = "gb-reacted";
+    function hasReacted(t, e) {
+      try { return JSON.parse(localStorage.getItem(RK) || "[]").indexOf(t + "|" + e) !== -1; }
+      catch (err) { return false; }
+    }
+    function markReacted(t, e) {
+      try {
+        const a = JSON.parse(localStorage.getItem(RK) || "[]");
+        a.push(t + "|" + e);
+        localStorage.setItem(RK, JSON.stringify(a.slice(-200)));
+      } catch (err) {}
+    }
+
+    /* 把完整留言列表写回 textdb（暖连接 + 重试），成功返回 true */
+    async function cloudWriteList(list) {
+      const payload = asciiJson({ messages: list });
+      for (let i = 0; i < 3; i++) {
+        try {
+          const r = await fetchT(TDB_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: payload,
+          }, 15000);
+          if (r.ok) { sourceName = "textdb"; return true; }
+          lastErr = "HTTP " + r.status;
+        } catch (err) { lastErr = errText(err); }
+        await new Promise((r2) => setTimeout(r2, 1500 * (i + 1)));
+      }
+      return false;
+    }
     function avatarFor(n) {
       let h = 0;
       for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
@@ -255,7 +299,7 @@
 
     function render() {
       $("#gbList").innerHTML = messages.length
-        ? messages.map((m) => `
+        ? messages.map((m, idx) => `
           <div class="gmsg">
             <div class="gh">
               <span class="who">
@@ -267,6 +311,13 @@
               <span class="time">${fmtAgo(m.t)}</span>
             </div>
             <div class="gm">${esc(m.m)}</div>
+            ${sourceName === "textdb" ? `
+            <div class="gr">
+              ${["👍", "❤️", "🔥"].map((e) => {
+                const c = (m.r && m.r[e]) || 0;
+                return `<button class="rx${hasReacted(m.t, e) ? " mine" : ""}" data-i="${idx}" data-e="${e}">${e}${c ? " " + c : ""}</button>`;
+              }).join("")}
+            </div>` : ""}
           </div>`).join("")
         : `<div class="gmsg"><div class="gm">还没有留言，来抢第一个沙发吧！</div></div>`;
     }
@@ -396,25 +447,8 @@
           const myT = Date.now();
           const next = [...cur, { n: n, m: m, t: myT }].slice(-200);
 
-          /* 写入自动重试 4 次（textdb 免费服务偶发抽风，跨约 9 秒窗口） */
-          const payload = asciiJson({ messages: next });
-          let res = null;
-          for (let i = 0; i < 4; i++) {
-            try {
-              res = await fetchT(TDB_URL, {
-                method: "POST",
-                /* text/plain 属"简单请求"，免去 CORS 预检（部分浏览器环境预检被拦）；
-                   textdb 原样存储请求体，对读写无影响 */
-                headers: { "Content-Type": "text/plain" },
-                body: payload,
-              }, 15000);
-              if (res.ok) break;
-            } catch (e) {
-              if (i === 3) throw e;
-            }
-            await new Promise((r) => setTimeout(r, 1500 * (i + 1)));
-          }
-          if (!res || !res.ok) throw new Error("HTTP " + (res ? res.status : "无响应"));
+          /* 写入自动重试（textdb 免费服务偶发抽风） */
+          if (!(await cloudWriteList(next))) throw new Error(lastErr || "写入失败");
           messages = next.slice().reverse();
           sourceName = "textdb";
           markMine(myT);
@@ -460,6 +494,24 @@
         s.textContent = "📡 连接中…";
         s.className = "offline";
         refresh();
+      });
+
+      /* 表情回应：点一下，计数上云 */
+      $("#gbList").addEventListener("click", async (e) => {
+        const btn = e.target.closest(".rx");
+        if (!btn) return;
+        const m = messages[Number(btn.dataset.i)];
+        if (!m) return;
+        const emo = btn.dataset.e;
+        if (hasReacted(m.t, emo)) { showToast("这个回应已经点过啦 ✓"); return; }
+        m.r = m.r || {};
+        m.r[emo] = (m.r[emo] || 0) + 1;
+        markReacted(m.t, emo);
+        render();
+        const list = messages.slice().reverse().map((x) => { const c = { ...x }; delete c.pending; return c; });
+        const ok = await cloudWriteList(list);
+        if (ok) { saveLocal(messages); showToast("回应已上云 ✓"); }
+        else showToast("回应暂存本机（" + lastErr + "）");
       });
 
       const text = $("#gbText");
