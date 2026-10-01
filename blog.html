@@ -98,6 +98,40 @@
       transition: border-color .25s;
     }
     .art-copy:hover { border-color: var(--border-hover); }
+    .art-read {
+      font-family: var(--mono);
+      font-size: .76rem;
+      color: var(--muted);
+    }
+
+    /* 文章目录（宽屏浮动） */
+    #toc {
+      position: fixed;
+      top: 120px;
+      right: max(18px, calc((100vw - 720px) / 2 - 235px));
+      width: 205px;
+      display: none;
+      border-left: 2px solid var(--border);
+      max-height: 68vh;
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+    #toc.show { display: block; }
+    #toc a {
+      display: block;
+      cursor: pointer;
+      font-size: .78rem;
+      line-height: 1.5;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 4px 0 4px 12px;
+      border-left: 2px solid transparent;
+      margin-left: -2px;
+      transition: color .2s, border-color .2s;
+    }
+    #toc a:hover { color: var(--text); }
+    #toc a.on { color: var(--accent); border-left-color: var(--accent); }
+    @media (max-width: 1180px) { #toc { display: none !important; } }
     .art-body {
       background: var(--card);
       border: 1px solid var(--border);
@@ -310,6 +344,7 @@
 
   <!-- ══════════ 文章阅读视图 ══════════ -->
   <div id="articleView">
+    <nav id="toc" aria-label="文章目录"></nav>
     <div class="wrap">
       <a class="art-back" href="#/">← 返回文章列表</a>
       <div class="art-head">
@@ -574,6 +609,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         $("#artDate").textContent = p.date;
         $("#artChips").innerHTML = p.tags.map((t) => `<span class="chip green">${t}</span>`).join("");
         $("#artBody").innerHTML = p.html;
+        buildToc();
         $("#artCopy").dataset.slug = id;
         renderArtNav(id);
         list.style.display = "none";
@@ -583,6 +619,8 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         document.title = "博客 | CCCAD";
         list.style.display = "";
         art.classList.remove("open");
+        const toc = $("#toc");
+        if (toc) toc.classList.remove("show");
       }
     }
 
@@ -598,6 +636,35 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         ? `<a class="next" href="#/post/${nextId}"><span class="dir">下一篇 →</span><span class="nt">${POSTS[nextId].title}</span></a>`
         : `<span class="placeholder"></span>`;
       $("#artNav").innerHTML = html;
+    }
+
+    /* ── 文章目录（TOC）+ 阅读时长 ── */
+    function buildToc() {
+      const body = $("#artBody");
+      const toc = $("#toc");
+      const heads = $$("#artBody h3");
+      heads.forEach((h, i) => { h.id = "sec-" + i; });
+      let read = $("#artRead");
+      if (!read) {
+        read = document.createElement("span");
+        read.className = "art-read";
+        read.id = "artRead";
+        document.querySelector("#articleView .art-meta").appendChild(read);
+      }
+      read.textContent = "📖 约 " + Math.max(1, Math.round(body.textContent.replace(/\s/g, "").length / 400)) + " 分钟读完";
+      if (heads.length >= 3 && window.innerWidth > 1180) {
+        toc.innerHTML = heads.map((h, i) => `<a data-t="sec-${i}">${h.textContent}</a>`).join("");
+        toc.classList.add("show");
+        toc.onclick = (e) => {
+          const a = e.target.closest("a[data-t]");
+          if (!a) return;
+          const t = document.getElementById(a.dataset.t);
+          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+      } else {
+        toc.innerHTML = "";
+        toc.classList.remove("show");
+      }
     }
 
     function initPosts() {
@@ -621,7 +688,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
       window.addEventListener("hashchange", route);
       route();
 
-      // 文章阅读进度条
+      // 文章阅读进度条 + 目录高亮
       window.addEventListener("scroll", () => {
         const bar = $("#readProgress");
         if (!bar) return;
@@ -632,6 +699,16 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         const h = document.documentElement;
         const max = h.scrollHeight - h.clientHeight;
         bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+
+        const toc = $("#toc");
+        if (toc && toc.classList.contains("show")) {
+          const heads = $$("#artBody h3[id]");
+          let cur = heads.length ? heads[0].id : "";
+          for (const x of heads) {
+            if (x.getBoundingClientRect().top <= 130) cur = x.id; else break;
+          }
+          $$("#toc a").forEach((a) => a.classList.toggle("on", a.dataset.t === cur));
+        }
       }, { passive: true });
     }
 
