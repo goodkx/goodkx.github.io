@@ -71,14 +71,27 @@
     document.body.appendChild(pop);
     document.body.appendChild(btn);
 
-    /* 全站浮动返回顶部 */
+    /* 全站浮动返回顶部（滚动进度环） */
     const top = document.createElement("button");
     top.id = "backTopBtn";
     top.type = "button";
     top.setAttribute("aria-label", "返回顶部");
-    top.textContent = "↑";
+    top.innerHTML = '<svg class="ring" viewBox="0 0 44 44" aria-hidden="true">' +
+      '<defs><linearGradient id="btGrad" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#00e5a0"/><stop offset="1" stop-color="#38bdf8"/>' +
+      '</linearGradient></defs>' +
+      '<circle class="ring-bg" cx="22" cy="22" r="19"/>' +
+      '<circle class="ring-fg" cx="22" cy="22" r="19"/></svg>' +
+      '<span class="ar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></span>';
     top.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-    const toggleTop = () => top.classList.toggle("show", window.scrollY > 600);
+    const toggleTop = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? Math.min(1, h.scrollTop / max) : 0;
+      top.classList.toggle("show", window.scrollY > 300);
+      const fg = top.querySelector(".ring-fg");
+      if (fg) fg.style.strokeDashoffset = String((119.4 * (1 - p)).toFixed(1));
+    };
     addEventListener("scroll", toggleTop, { passive: true });
     document.body.appendChild(top);
     toggleTop();
