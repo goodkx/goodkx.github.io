@@ -540,6 +540,19 @@
         const n = $("#gbName").value.trim() || "匿名朋友";
         const m = text.value.trim();
         if (!m) { showToast("先写点什么再发布吧 ✍️"); return; }
+
+        /* ── 内容安全三件套（防捣乱） ── */
+        const BANNED = ["赌博", "博彩", "色情", "代开发票", "刷单", "办证", "约炮", "加微信", "加qq", "贷款"];
+        const low = m.toLowerCase();
+        for (const w of BANNED) {
+          if (low.includes(w)) { showToast("留言包含不合适的内容，换个说法吧 🙅"); return; }
+        }
+        const lastT = Number(localStorage.getItem("gb-lastpost")) || 0;
+        const waitSec = Math.ceil((30000 - (Date.now() - lastT)) / 1000);
+        if (waitSec > 0) { showToast("发言太频繁啦，" + waitSec + " 秒后再发 🐢"); return; }
+        if ((m.match(/https?:\/\//g) || []).length > 2) { showToast("留言里链接太多啦 🙅"); return; }
+        try { localStorage.setItem("gb-lastpost", String(Date.now())); } catch (e) {}
+
         const ok = await postMessage(n, m);
         if (ok) {
           text.value = "";
