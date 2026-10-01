@@ -239,8 +239,23 @@
       .topic ul { padding-left: 30px; }
     }
   </style>
+  <style>
+    /* 阅读进度条 */
+    #readProgress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0;
+      z-index: 1500;
+      background: var(--gradient);
+      box-shadow: 0 0 10px var(--acc-glow);
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
+
+  <div id="readProgress"></div>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
@@ -498,7 +513,16 @@
       }, { threshold: 0.08 });
       $$(".reveal").forEach((el) => io.observe(el));
     }
-    document.addEventListener("DOMContentLoaded", initReveal);
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+      window.addEventListener("scroll", () => {
+        const bar = document.getElementById("readProgress");
+        if (!bar) return;
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+      }, { passive: true });
+    });
   </script>
 </body>
 </html>
