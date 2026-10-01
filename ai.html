@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="AI 工具导航 —— 2026 年还在当打的 AI 工具精选，按用途分类，标注国内可达性。" />
+  <meta property="og:title" content="AI 工具导航 | CCCAD" />
+  <meta property="og:description" content="25+ 当红 AI 工具精选：对话、编程、图像、视频、效率，标注国内可达性。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://goodkx.github.io/ai.html" />
+  <meta name="twitter:card" content="summary" />
+  <title>AI 工具导航 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css" />
+  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="search.css" />
+  <script src="theme.js"></script>
+  <script src="search.js"></script>
+  <style>
+    .lede { color: var(--muted); font-size: .9rem; line-height: 1.9; margin-bottom: 26px; }
+    .lede b { color: var(--text); }
+
+    .cat-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.05rem; margin: 34px 0 14px; color: var(--text);
+    }
+    .cat-title .bar { width: 4px; height: 18px; border-radius: 2px; background: var(--gradient); }
+
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .ai-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 16px 14px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .ai-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0, 229, 160, 0.12);
+    }
+    .ai-name { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95rem; }
+    .ai-name .ico { font-size: 1.1rem; }
+    .ai-desc { font-size: .8rem; color: var(--muted); line-height: 1.75; flex: 1; }
+    .ai-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ai-tags .chip { font-size: .68rem; padding: 2px 9px; }
+    .chip.cn { color: var(--accent); background: var(--acc-soft-bg); border-color: var(--acc-soft-bd); }
+    .chip.ladder { color: #fbbf24; background: rgba(251, 191, 36, .08); border-color: rgba(251, 191, 36, .25); }
+    .chip.local { color: #38bdf8; background: rgba(56, 189, 248, .08); border-color: rgba(56, 189, 248, .25); }
+
+    @media (max-width: 640px) { .ai-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🤖 ai-tools</span>
+  </div>
+
+  <h1>我的 AI <span class="grad">军火库</span></h1>
+
+  <div class="wrap">
+    <p class="lede">
+      2026 年仍在当打的 AI 工具精选，按用途分类，持续淘汰过气选手。
+      标注说明：<span class="chip cn">✅ 国内直连</span> 打开就能用 ·
+      <span class="chip ladder">🪜 需网络环境</span> 要点手段 ·
+      <span class="chip local">💻 本地部署</span> 跑在自己的电脑上。
+      收藏本页，选型不迷路。
+    </p>
+
+    <div class="cat-title"><span class="bar"></span>💬 AI 对话助手</div>
+    <div class="ai-grid">
+      <a class="ai-card" href="https://chat.deepseek.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🐋</span>DeepSeek</span>
+        <span class="ai-desc">国产推理天花板，数学与代码尤其能打，免费额度大方。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://kimi.moonshot.cn" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🌙</span>Kimi</span>
+        <span class="ai-desc">长文档阅读专家，丢一本 PDF 让它帮你总结提炼。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://chatgpt.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🧠</span>ChatGPT</span>
+        <span class="ai-desc">综合能力标杆，生态最全；免费版也够日常问答。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span></span>
+      </a>
+      <a class="ai-card" href="https://claude.ai" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">📜</span>Claude</span>
+        <span class="ai-desc">长文写作与代码口碑极佳，语气自然不机翻。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span></span>
+      </a>
+      <a class="ai-card" href="https://gemini.google.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">♊</span>Gemini</span>
+        <span class="ai-desc">谷歌全家桶多模态，长上下文窗口豪横。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://www.doubao.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🫘</span>豆包</span>
+        <span class="ai-desc">字节出品，日常问答与语音对话体验顺滑。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://www.tongyi.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">☁️</span>通义千问</span>
+        <span class="ai-desc">阿里系全家桶联动，开源模型背后的那一位。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://yuanbao.tencent.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🪙</span>腾讯元宝</span>
+        <span class="ai-desc">混元大模型，微信公众号生态检索是独门绝活。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+    </div>
+
+    <div class="cat-title"><span class="bar"></span>👨‍💻 编程开发</div>
+    <div class="ai-grid">
+      <a class="ai-card" href="https://cursor.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🖱️</span>Cursor</span>
+        <span class="ai-desc">AI 编辑器顶流，整库理解 + 对话改码，上手就回不去。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费额度</span></span>
+      </a>
+      <a class="ai-card" href="https://github.com/features/copilot" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🐙</span>GitHub Copilot</span>
+        <span class="ai-desc">编辑器里的自动补全鼻祖，学生党可白嫖。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span></span>
+      </a>
+      <a class="ai-card" href="https://code.claude.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">⌨️</span>Claude Code</span>
+        <span class="ai-desc">终端里的编程 Agent，读仓库、改文件、跑命令一条龙。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span></span>
+      </a>
+      <a class="ai-card" href="https://lingma.aliyun.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🧭</span>通义灵码</span>
+        <span class="ai-desc">国产 AI 编程助手，IDE 插件齐全，国内网络无忧。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://v0.dev" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🧱</span>v0</span>
+        <span class="ai-desc">一句话生成前端界面，出稿即组件代码。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费额度</span></span>
+      </a>
+    </div>
+
+    <div class="cat-title"><span class="bar"></span>🎨 图像设计</div>
+    <div class="ai-grid">
+      <a class="ai-card" href="https://jimeng.jianying.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🎬</span>即梦</span>
+        <span class="ai-desc">字节系 AI 绘画，中文理解好，出图速度快。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费额度</span></span>
+      </a>
+      <a class="ai-card" href="https://www.midjourney.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🎨</span>Midjourney</span>
+        <span class="ai-desc">AI 绘画美学天花板，出片质感依旧能打。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">付费</span></span>
+      </a>
+      <a class="ai-card" href="https://github.com/comfyanonymous/ComfyUI" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🧩</span>ComfyUI</span>
+        <span class="ai-desc">开源节点式 AI 绘图工作流，本地部署的极客玩法。</span>
+        <span class="ai-tags"><span class="chip local">💻 本地部署</span><span class="chip">开源</span></span>
+      </a>
+      <a class="ai-card" href="https://tongyi.aliyun.com/wanxiang" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🖌️</span>通义万相</span>
+        <span class="ai-desc">阿里文生图，国风题材有意外的惊喜。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span></span>
+      </a>
+    </div>
+
+    <div class="cat-title"><span class="bar"></span>🎬 视频音频</div>
+    <div class="ai-grid">
+      <a class="ai-card" href="https://klingai.kuaishou.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🐉</span>可灵</span>
+        <span class="ai-desc">快手系视频生成，图生视频动作自然，国内第一梯队。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费额度</span></span>
+      </a>
+      <a class="ai-card" href="https://www.suno.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🎵</span>Suno</span>
+        <span class="ai-desc">AI 写歌：给一句歌词，还你一整首带人声的单曲。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费额度</span></span>
+      </a>
+      <a class="ai-card" href="https://www.jianying.com" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">✂️</span>剪映</span>
+        <span class="ai-desc">AI 字幕、数字人、图文成片，剪辑民工的救命稻草。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span></span>
+      </a>
+      <a class="ai-card" href="https://elevenlabs.io" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🗣️</span>ElevenLabs</span>
+        <span class="ai-desc">语音克隆与配音天花板，多语言情感到位。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费额度</span></span>
+      </a>
+    </div>
+
+    <div class="cat-title"><span class="bar"></span>📦 效率办公</div>
+    <div class="ai-grid">
+      <a class="ai-card" href="https://metaso.cn" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🔎</span>秘塔 AI 搜索</span>
+        <span class="ai-desc">国内 AI 搜索代表，自动梳理来源、生成大纲。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span><span class="chip">免费</span></span>
+      </a>
+      <a class="ai-card" href="https://www.perplexity.ai" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">💡</span>Perplexity</span>
+        <span class="ai-desc">AI 搜索鼻祖，答案带引用源，查资料利器。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">免费额度</span></span>
+      </a>
+      <a class="ai-card" href="https://www.feishu.cn" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">🕊️</span>飞书智能伙伴</span>
+        <span class="ai-desc">文档总结、会议纪要、表格问答，办公全家桶。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span></span>
+      </a>
+      <a class="ai-card" href="https://ai.wps.cn" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">📝</span>WPS AI</span>
+        <span class="ai-desc">PPT 一键生成、文档润色，学生党报告神器。</span>
+        <span class="ai-tags"><span class="chip cn">✅ 国内直连</span></span>
+      </a>
+      <a class="ai-card" href="https://www.notion.so" target="_blank" rel="noopener">
+        <span class="ai-name"><span class="ico">📓</span>Notion AI</span>
+        <span class="ai-desc">笔记里随手召唤 AI，知识库问答顺滑。</span>
+        <span class="ai-tags"><span class="chip ladder">🪜 需网络环境</span><span class="chip">付费</span></span>
+      </a>
+    </div>
+  </div>
+
+  <p class="caption">
+    收录原则：<b>2026 年仍在积极运营</b>且口碑在线 ｜ 可达性可能随网络环境变化 ｜
+    用 <b>Ctrl + K</b> 可以全站搜索
+  </p>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    }
+    document.addEventListener("DOMContentLoaded", initReveal);
+  </script>
+</body>
+</html>
