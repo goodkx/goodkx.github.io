@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="记忆翻牌 —— 找出小站主题的八对图案，挑战最少步数。" />
+  <title>记忆翻牌 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧠%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=106" />
+  <link rel="stylesheet" href="theme.css?v=106" />
+  <link rel="stylesheet" href="search.css?v=106" />
+  <script src="theme.js?v=106"></script>
+  <script src="search.js?v=106"></script>
+  <style>
+    .hud {
+      display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .hud div {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 18px; text-align: center; font-family: var(--mono);
+    }
+    .hud b { display: block; font-size: 1.2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .hud span { font-size: .68rem; color: var(--muted); }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-width: 480px;
+      margin: 0 auto 22px;
+    }
+    .card {
+      perspective: 700px; background: none; border: none; padding: 0;
+      cursor: pointer; aspect-ratio: 3 / 3.4; font-family: inherit;
+    }
+    .card .inner {
+      position: relative; width: 100%; height: 100%;
+      transition: transform .45s cubic-bezier(.2, .8, .3, 1.1);
+      transform-style: preserve-3d;
+    }
+    .card.flip .inner, .card.done .inner { transform: rotateY(180deg); }
+    .face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .face.back {
+      background: linear-gradient(135deg, rgba(0, 229, 160, .16), rgba(56, 189, 248, .12));
+      border: 1px solid var(--border-hover);
+      font-size: 1.5rem; color: var(--accent);
+    }
+    .card:hover .face.back { border-color: var(--accent); }
+    .face.front {
+      background: var(--card);
+      border: 1px solid var(--border);
+      transform: rotateY(180deg);
+      font-size: 2.2rem;
+    }
+    .card.done { cursor: default; }
+    .card.done .face.front { border-color: var(--acc-soft-bd); background: var(--acc-soft-bg); }
+    .card.mismatch .face.front { border-color: rgba(255, 132, 132, .5); animation: shake .3s; }
+    @keyframes shake {
+      0%, 100% { transform: rotateY(180deg) translateX(0); }
+      25% { transform: rotateY(180deg) translateX(-4px); }
+      75% { transform: rotateY(180deg) translateX(4px); }
+    }
+
+    .win-panel {
+      display: none;
+      background: linear-gradient(120deg, rgba(0, 229, 160, .14), rgba(56, 189, 248, .10));
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius);
+      padding: 26px;
+      text-align: center;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .win-panel.show { display: block; }
+    .win-panel h2 { margin-bottom: 8px; }
+    .win-panel p { color: var(--muted); font-size: .88rem; margin-bottom: 16px; }
+    .record { color: var(--accent); font-family: var(--mono); font-size: .8rem; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🧠 memory</span>
+  </div>
+
+  <h1>记忆 <span class="grad">翻牌</span></h1>
+
+  <div class="wrap">
+    <div class="hud">
+      <div><b id="mMoves">0</b><span>步数</span></div>
+      <div><b id="mTime">0s</b><span>用时</span></div>
+      <div><b id="mPair">0/8</b><span>已配对</span></div>
+      <div><b id="mBest">--</b><span>最佳纪录</span></div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="win-panel" id="winPanel">
+      <h2>🎉 全部配对！</h2>
+      <p id="winText"></p>
+      <span class="record" id="winRecord"></span>
+      <div class="row" style="justify-content:center; margin-top:16px">
+        <button class="tbtn" id="mRestart">🔄 再来一局</button>
+      </div>
+    </div>
+
+    <p class="caption">翻开两张相同的图案即配对成功 · 用最少步数挑战自己 · 纪录保存在本机</p>
+  </div>
+
+  <script>
+    const $ = (s, el = document) => el.querySelector(s);
+    const EMO = ["🚲", "🐟", "💬", "🎨", "🧰", "📊", "🤖", "🎓"];
+    const BKEY = "memory-best";
+    let first = null, lock = false, moves = 0, matched = 0, t0 = 0, timer = null;
+
+    function fmtTime(s) { return s < 60 ? s + "s" : Math.floor(s / 60) + "分" + (s % 60) + "s"; }
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function draw() {
+      first = null; lock = false; moves = 0; matched = 0; t0 = 0;
+      clearInterval(timer);
+      $("#mMoves").textContent = "0";
+      $("#mTime").textContent = "0s";
+      $("#mPair").textContent = "0/8";
+      $("#winPanel").classList.remove("show");
+      const deck = shuffle([...EMO, ...EMO]);
+      $("#board").innerHTML = deck.map((e, i) =>
+        `<button class="card" data-e="${e}" data-i="${i}" type="button" aria-label="翻牌">
+           <div class="inner">
+             <div class="face back">✦</div>
+             <div class="face front">${e}</div>
+           </div>
+         </button>`).join("");
+      [...$("#board").children].forEach((c) => c.addEventListener("click", () => flip(c)));
+      const best = jget(BKEY, null);
+      $("#mBest").textContent = best ? best.moves + "步/" + best.secs + "s" : "--";
+    }
+
+    function jget(k, fb) {
+      try { return JSON.parse(localStorage.getItem(k) || fb); } catch (e) { return fb; }
+    }
+
+    function flip(card) {
+      if (lock || card.classList.contains("flip") || card.classList.contains("done")) return;
+      if (!t0) {
+        t0 = Date.now();
+        timer = setInterval(() => { $("#mTime").textContent = fmtTime(Math.floor((Date.now() - t0) / 1000)); }, 500);
+      }
+      card.classList.add("flip");
+      if (!first) { first = card; return; }
+
+      moves++;
+      $("#mMoves").textContent = moves;
+      const a = first, b = card;
+      first = null;
+
+      if (a.dataset.e === b.dataset.e) {
+        a.classList.add("done"); b.classList.add("done");
+        a.classList.remove("flip"); b.classList.remove("flip");
+        matched++;
+        $("#mPair").textContent = matched + "/8";
+        if (matched === 8) win();
+      } else {
+        lock = true;
+        a.classList.add("mismatch"); b.classList.add("mismatch");
+        setTimeout(() => {
+          a.classList.remove("flip", "mismatch");
+          b.classList.remove("flip", "mismatch");
+          lock = false;
+        }, 700);
+      }
+    }
+
+    function win() {
+      clearInterval(timer);
+      const secs = Math.floor((Date.now() - t0) / 1000);
+      $("#mTime").textContent = fmtTime(secs);
+      const best = jget(BKEY, null);
+      const isRecord = !best || moves < best.moves || (moves === best.moves && secs < best.secs);
+      if (isRecord) {
+        try { localStorage.setItem(BKEY, JSON.stringify({ moves, secs })); } catch (e) {}
+        $("#mBest").textContent = moves + "步/" + secs + "s";
+      }
+      $("#winText").textContent = moves + " 步 · " + fmtTime(secs) + " 完成 —— " +
+        (moves <= 10 ? "记忆超群 🧠" : moves <= 14 ? "发挥稳健 👍" : "重在参与 😄");
+      $("#winRecord").textContent = isRecord ? "🌟 新纪录！" : "最佳纪录：" + best.moves + " 步 / " + fmtTime(best.secs);
+      $("#winPanel").classList.add("show");
+    }
+
+    document.getElementById("mRestart").addEventListener("click", draw);
+    document.addEventListener("DOMContentLoaded", draw);
+  </script>
+</body>
+</html>
