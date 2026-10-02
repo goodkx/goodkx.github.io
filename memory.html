@@ -7,11 +7,11 @@
   <meta name="description" content="记忆翻牌 —— 找出小站主题的八对图案，挑战最少步数。" />
   <title>记忆翻牌 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧠%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=106" />
-  <link rel="stylesheet" href="theme.css?v=106" />
-  <link rel="stylesheet" href="search.css?v=106" />
-  <script src="theme.js?v=106"></script>
-  <script src="search.js?v=106"></script>
+  <link rel="stylesheet" href="subpage.css?v=107" />
+  <link rel="stylesheet" href="theme.css?v=107" />
+  <link rel="stylesheet" href="search.css?v=107" />
+  <script src="theme.js?v=107"></script>
+  <script src="search.js?v=107"></script>
   <style>
     .hud {
       display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
@@ -23,6 +23,14 @@
     }
     .hud b { display: block; font-size: 1.2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
     .hud span { font-size: .68rem; color: var(--muted); }
+
+    .mode-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+    .mode-row button {
+      background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+      color: var(--muted); font-family: inherit; font-size: .8rem;
+      padding: 7px 18px; cursor: pointer; transition: all .2s;
+    }
+    .mode-row button.on { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
 
     .board {
       display: grid;
@@ -94,6 +102,10 @@
   <h1>记忆 <span class="grad">翻牌</span></h1>
 
   <div class="wrap">
+    <div class="mode-row">
+      <button type="button" data-m="easy" class="on">🙂 简单 4×4</button>
+      <button type="button" data-m="hard">🔥 困难 6×6</button>
+    </div>
     <div class="hud">
       <div><b id="mMoves">0</b><span>步数</span></div>
       <div><b id="mTime">0s</b><span>用时</span></div>
@@ -117,8 +129,10 @@
 
   <script>
     const $ = (s, el = document) => el.querySelector(s);
-    const EMO = ["🚲", "🐟", "💬", "🎨", "🧰", "📊", "🤖", "🎓"];
-    const BKEY = "memory-best";
+    const EMO = ["🚲", "🐟", "💬", "🎨", "🧰", "📊", "🤖", "🎓", "🚀", "🎮", "📶", "📈", "🧠", "⚙️", "🌟", "☕", "🌙", "⚡"];
+    const MODES = { easy: { pairs: 8, cols: 4 }, hard: { pairs: 18, cols: 6 } };
+    let mode = "easy";
+    const BKEY = () => "memory-best-" + mode;
     let first = null, lock = false, moves = 0, matched = 0, t0 = 0, timer = null;
 
     function fmtTime(s) { return s < 60 ? s + "s" : Math.floor(s / 60) + "分" + (s % 60) + "s"; }
@@ -134,11 +148,15 @@
     function draw() {
       first = null; lock = false; moves = 0; matched = 0; t0 = 0;
       clearInterval(timer);
+      const cfg = MODES[mode];
       $("#mMoves").textContent = "0";
       $("#mTime").textContent = "0s";
-      $("#mPair").textContent = "0/8";
+      $("#mPair").textContent = "0/" + cfg.pairs;
       $("#winPanel").classList.remove("show");
-      const deck = shuffle([...EMO, ...EMO]);
+      $("#board").style.gridTemplateColumns = "repeat(" + cfg.cols + ", 1fr)";
+      $("#board").style.maxWidth = mode === "hard" ? "640px" : "480px";
+      const base = EMO.slice(0, cfg.pairs);
+      const deck = shuffle([...base, ...base]);
       $("#board").innerHTML = deck.map((e, i) =>
         `<button class="card" data-e="${e}" data-i="${i}" type="button" aria-label="翻牌">
            <div class="inner">
@@ -147,8 +165,10 @@
            </div>
          </button>`).join("");
       [...$("#board").children].forEach((c) => c.addEventListener("click", () => flip(c)));
-      const best = jget(BKEY, null);
+      const best = jget(BKEY(), null);
       $("#mBest").textContent = best ? best.moves + "步/" + best.secs + "s" : "--";
+      document.querySelectorAll(".mode-row button").forEach((b) =>
+        b.classList.toggle("on", b.dataset.m === mode));
     }
 
     function jget(k, fb) {
@@ -173,7 +193,7 @@
         a.classList.add("done"); b.classList.add("done");
         a.classList.remove("flip"); b.classList.remove("flip");
         matched++;
-        $("#mPair").textContent = matched + "/8";
+        $("#mPair").textContent = matched + "/" + MODES[mode].pairs;
         if (matched === 8) win();
       } else {
         lock = true;
@@ -190,10 +210,10 @@
       clearInterval(timer);
       const secs = Math.floor((Date.now() - t0) / 1000);
       $("#mTime").textContent = fmtTime(secs);
-      const best = jget(BKEY, null);
+      const best = jget(BKEY(), null);
       const isRecord = !best || moves < best.moves || (moves === best.moves && secs < best.secs);
       if (isRecord) {
-        try { localStorage.setItem(BKEY, JSON.stringify({ moves, secs })); } catch (e) {}
+        try { localStorage.setItem(BKEY(), JSON.stringify({ moves, secs })); } catch (e) {}
         $("#mBest").textContent = moves + "步/" + secs + "s";
       }
       $("#winText").textContent = moves + " 步 · " + fmtTime(secs) + " 完成 —— " +
@@ -203,6 +223,8 @@
     }
 
     document.getElementById("mRestart").addEventListener("click", draw);
+    document.querySelectorAll(".mode-row button").forEach((b) =>
+      b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
     document.addEventListener("DOMContentLoaded", draw);
   </script>
 </body>
