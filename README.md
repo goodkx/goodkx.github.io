@@ -15,7 +15,8 @@
 ├── ai.html         AI 工具导航（26+ 当红工具，标注国内可达性）
 ├── kaoyan.html     27 软件工程考研大纲 + Word 下载 + 目录侧栏
 ├── game.html       2048 小游戏（键盘 / 触屏）
-├── memory.html     记忆翻牌小游戏（配对 + 最佳纪录）
+├── snake.html      贪吃蛇（键盘 / 触屏 / 虚拟方向键）
+├── memory.html     记忆翻牌小游戏（简单 4×4 / 困难 6×6，最佳纪录）
 ├── links.html      友链页（本站信息一键复制）
 ├── guestbook.html  云留言板（免登录发布 / 表情回应 / 站长管理）
 ├── pelican.html    彩蛋页：鹈鹕骑自行车 SVG 动画
