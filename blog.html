@@ -16,11 +16,11 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://goodkx.github.io/blog.html" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="subpage.css?v=109" />
-  <link rel="stylesheet" href="theme.css?v=109" />
-  <link rel="stylesheet" href="search.css?v=109" />
-  <script src="theme.js?v=109"></script>
-  <script src="search.js?v=109"></script>
+  <link rel="stylesheet" href="subpage.css?v=110" />
+  <link rel="stylesheet" href="theme.css?v=110" />
+  <link rel="stylesheet" href="search.css?v=110" />
+  <script src="theme.js?v=110"></script>
+  <script src="search.js?v=110"></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
     .post {
@@ -187,7 +187,24 @@
       line-height: 1.9;
       color: #9fe8d0;
       margin: 14px 0;
+      position: relative;
     }
+    .pre-copy {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .68rem;
+      padding: 3px 10px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity .2s, color .2s, border-color .2s;
+    }
+    .art-body pre:hover .pre-copy { opacity: 1; }
+    .pre-copy:hover { color: var(--accent); border-color: var(--border-hover); }
     .art-body code.inline {
       font-family: var(--mono);
       font-size: .8rem;
@@ -639,6 +656,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         art.style.setProperty("--art-c1", pc[0]);
         art.style.setProperty("--art-c2", pc[1]);
         buildToc();
+        addCopyButtons();
         $("#artCopy").dataset.slug = id;
         renderArtNav(id);
         list.style.display = "none";
@@ -659,6 +677,26 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         const toc = $("#toc");
         if (toc) toc.classList.remove("show");
       }
+    }
+
+    /* ── 代码块一键复制 ── */
+    function addCopyButtons() {
+      $$("#artBody pre").forEach((pre) => {
+        if (pre.querySelector(".pre-copy")) return;
+        const code = pre.textContent;
+        const btn = document.createElement("button");
+        btn.className = "pre-copy";
+        btn.type = "button";
+        btn.textContent = "复制";
+        btn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = "已复制 ✓";
+            setTimeout(() => { btn.textContent = "复制"; }, 1500);
+          } catch (e) { btn.textContent = "复制失败"; }
+        });
+        pre.appendChild(btn);
+      });
     }
 
     function renderArtNav(id) {
