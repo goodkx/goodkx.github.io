@@ -43,6 +43,7 @@
     { t: "留言板", d: "留下你的痕迹 · 云端同步 · 全员可见", u: "guestbook.html", k: "留言 guestbook 消息 打招呼 板" },
     { t: "AI 工具导航", d: "25+ 当红 AI 工具精选", u: "ai.html", k: "ai 工具 chatgpt claude deepseek kimi 豆包 cursor 导航 军火库" },
     { t: "我的年报", d: "来访/打卡/留言足迹报告", u: "report.html", k: "年报 report 数据 统计 足迹 打卡 留言" },
+    { t: "记忆翻牌", d: "配对小站图案 · 挑战最少步数", u: "memory.html", k: "记忆 翻牌 配对 游戏 memory 消消乐" },
     { t: "更新日志", d: "网站进化史", u: "index.html#log", k: "更新 日志 changelog 版本 历史" },
     { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
     { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },
