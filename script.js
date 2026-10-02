@@ -62,7 +62,7 @@ async function runTerminal() {
 }
 
 /* ─────────── Hero 角色打字轮播 ─────────── */
-const roles = ["开发者", "设计爱好者", "终身学习者", "问题解决者"];
+const roles = ["造轮子的人", "AI 结对搭子", "踩坑记录员", "把想法做成真东西"];
 
 async function typeRoles() {
   const el = $("#typed");
