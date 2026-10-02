@@ -7,11 +7,11 @@
   <meta name="description" content="贪吃蛇 —— 方向键 / WASD / 触屏操控，吃鱼长大，挑战最高分。" />
   <title>贪吃蛇 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐍%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=107" />
-  <link rel="stylesheet" href="theme.css?v=107" />
-  <link rel="stylesheet" href="search.css?v=107" />
-  <script src="theme.js?v=107"></script>
-  <script src="search.js?v=107"></script>
+  <link rel="stylesheet" href="subpage.css?v=108" />
+  <link rel="stylesheet" href="theme.css?v=108" />
+  <link rel="stylesheet" href="search.css?v=108" />
+  <script src="theme.js?v=108"></script>
+  <script src="search.js?v=108"></script>
   <style>
     .hud {
       display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
@@ -81,6 +81,10 @@
         <p id="sFinal"></p>
         <button class="tbtn" id="sAgain">🔄 再来一局</button>
       </div>
+      <div class="over" id="sStart">
+        <h2>🐍 准备好了吗？</h2>
+        <p>按 方向键 / WASD 开始 · 触屏滑动也可以</p>
+      </div>
     </div>
 
     <div class="dpad" aria-label="方向控制">
@@ -99,7 +103,7 @@
     const $ = (s, el = document) => el.querySelector(s);
     const CS = 20, N = 21; /* 21×21 格，每格 20px */
     const cv = $("#snk"), ctx = cv.getContext("2d");
-    let snake, dir, nextDir, food, score, speed, timer = null, paused = false, dead = true;
+    let snake, dir, nextDir, food, score, speed, timer = null, paused = false, dead = true, running = false;
     let best = 0;
     try { best = Number(localStorage.getItem("snake-best")) || 0; } catch (e) {}
     $("#sBest").textContent = best;
@@ -130,7 +134,7 @@
     }
 
     function tick() {
-      if (paused || dead) return;
+      if (paused || dead || !running) return;
       dir = nextDir;
       const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
       if (head.x < 0 || head.y < 0 || head.x >= N || head.y >= N ||
@@ -155,24 +159,36 @@
       const nd = map[d];
       if (!nd || (nd.x === -dir.x && nd.y === -dir.y)) return; /* 禁止原地掉头 */
       nextDir = nd;
+      beginRun();
     }
 
     function start() {
       snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
       dir = nextDir = { x: 1, y: 0 };
-      score = 0; speed = 140; dead = false; paused = false;
+      score = 0; speed = 140; dead = false; paused = false; running = false;
       $("#sScore").textContent = "0";
       $("#sLen").textContent = "3";
       $("#sOver").classList.remove("show");
+      $("#sStart").classList.add("show");
       spawnFood();
       draw();
+      clearInterval(timer);
+    }
+
+    /* 首次按方向键才真正开跑 */
+    function beginRun() {
+      if (dead || running) return;
+      running = true;
+      $("#sStart").classList.remove("show");
       clearInterval(timer);
       timer = setInterval(tick, speed);
     }
 
     function die() {
       dead = true;
+      running = false;
       clearInterval(timer);
+      $("#sStart").classList.remove("show");
       if (score > best) {
         best = score;
         $("#sBest").textContent = best;
