@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="我的小站年报 —— 来访、打卡、留言、回应，你在小站留下的一切痕迹。" />
+  <title>我的小站年报 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=106" />
+  <link rel="stylesheet" href="theme.css?v=106" />
+  <link rel="stylesheet" href="search.css?v=106" />
+  <script src="theme.js?v=106"></script>
+  <script src="search.js?v=106"></script>
+  <style>
+    .lede { color: var(--muted); font-size: .9rem; line-height: 1.9; margin-bottom: 26px; }
+    .lede b { color: var(--text); }
+
+    .yr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+    .yr-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      text-align: center;
+      transition: border-color .25s;
+    }
+    .yr-card:hover { border-color: var(--border-hover); }
+    .yr-card .ico { font-size: 1.6rem; display: block; margin-bottom: 8px; }
+    .yr-card b { display: block; font-family: var(--mono); font-size: 2.1rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .yr-card span { font-size: .72rem; color: var(--muted); }
+
+    .yr-chart {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px 16px;
+      margin-bottom: 30px;
+    }
+    .yr-chart h3 { margin-bottom: 16px; font-size: .95rem; }
+    .bars { display: flex; align-items: flex-end; gap: 6px; height: 140px; }
+    .bars .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .bars .col i {
+      display: block; width: 100%; max-width: 34px;
+      background: var(--gradient); border-radius: 5px 5px 0 0;
+      min-height: 2px; opacity: .9;
+      transition: height .8s cubic-bezier(.2, .8, .2, 1);
+    }
+    .bars .col em { font-family: var(--mono); font-style: normal; font-size: .62rem; color: var(--muted); }
+
+    .yr-title-card {
+      background: linear-gradient(120deg, rgba(0, 229, 160, 0.14), rgba(56, 189, 248, 0.10));
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius);
+      padding: 26px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .yr-title-card .badge-line {
+      font-family: var(--mono); font-size: .7rem; letter-spacing: 1px;
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .yr-title-card h2 { font-size: clamp(1.3rem, 4vw, 1.8rem); margin-bottom: 8px; }
+    .yr-title-card p { color: var(--muted); font-size: .86rem; line-height: 1.8; }
+
+    .yr-note { font-size: .74rem; color: var(--muted); font-family: var(--mono); opacity: .8; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">📊 report</span>
+  </div>
+
+  <h1>我的小站 <span class="grad">年报</span></h1>
+
+  <div class="wrap">
+    <p class="lede">
+      这里的每个数字都来自<b>你自己的浏览器</b>（localStorage），只属于你。
+      来访、打卡、留言、回应——你在小站留下的一切痕迹，都在这页里。
+    </p>
+
+    <div class="yr-title-card">
+      <div class="badge-line">✦ <span id="yrYear">2026</span> 年度称号 ✦</div>
+      <h2 id="yrTitle">🌱 新晋居民</h2>
+      <p id="yrWord">数据还在积累中，多来逛逛、多留言，称号会升级哦。</p>
+    </div>
+
+    <div class="yr-grid">
+      <div class="yr-card"><span class="ico">👋</span><b id="stVisits">0</b><span>次来访</span></div>
+      <div class="yr-card"><span class="ico">🐟</span><b id="stFish">0</b><span>天摸鱼打卡</span></div>
+      <div class="yr-card"><span class="ico">💬</span><b id="stMsg">0</b><span>条留言发出</span></div>
+      <div class="yr-card"><span class="ico">❤️</span><b id="stReact">0</b><span>个回应送出</span></div>
+    </div>
+
+    <div class="yr-chart">
+      <h3>📬 我的留言月度分布（<span id="yrYear2">2026</span>）</h3>
+      <div class="bars" id="yrBars"></div>
+    </div>
+
+    <p class="yr-note">* 数据仅存于本机浏览器，清除浏览器数据后归零 · 换设备不会合并统计</p>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    function initReveal() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll(".reveal, .yr-card").forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+    }
+
+    function jget(k, fb) {
+      try { return JSON.parse(localStorage.getItem(k) || fb); } catch (e) { return fb; }
+    }
+
+    /* 最长连续打卡（遍历全部历史日期） */
+    function bestStreak(dates) {
+      const set = new Set(dates);
+      let best = 0;
+      for (const d0 of set) {
+        const d = new Date(d0 + "T00:00:00");
+        if (set.has(new Date(d.getTime() - 86400000).toISOString().slice(0, 10))) continue; /* 不是起点 */
+        let len = 0;
+        while (set.has(d.toISOString().slice(0, 10))) { len++; d.setDate(d.getDate() + 1); }
+        best = Math.max(best, len);
+      }
+      return best;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initReveal();
+      const now = new Date();
+      const Y = now.getFullYear();
+      document.getElementById("yrYear").textContent = Y;
+      document.getElementById("yrYear2").textContent = Y;
+
+      const visits = Number(localStorage.getItem("site-visits")) || 0;
+      const fish = jget("fish-checkin", "[]");
+      const mine = jget("gb-mine", "[]");
+      const reacted = jget("gb-reacted", "[]");
+
+      document.getElementById("stVisits").textContent = visits;
+      document.getElementById("stFish").textContent = fish.length;
+      document.getElementById("stMsg").textContent = mine.length;
+      document.getElementById("stReact").textContent = reacted.length;
+
+      /* 月度留言柱状图 */
+      const months = Array.from({ length: 12 }, () => 0);
+      for (const t of mine) {
+        const d = new Date(t);
+        if (d.getFullYear() === Y) months[d.getMonth()]++;
+      }
+      const max = Math.max(...months, 1);
+      const names = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+      document.getElementById("yrBars").innerHTML = months.map((v, i) => {
+        const h = v ? Math.round((v / max) * 100) : 0;
+        return `<div class="col"><i style="height:${h}%"></i><em>${names[i]}</em></div>`;
+      }).join("");
+
+      /* 称号 */
+      const streak = bestStreak(fish);
+      let title = "🌱 新晋居民";
+      let word = "数据还在积累中，多来逛逛、多留言，称号会升级哦。";
+      if (visits >= 3) { title = "🌿 常来的朋友"; word = "小站记得你的每一次到来。"; }
+      if (visits >= 10 || mine.length >= 3) { title = "🏅 资深常客"; word = "你已经是小站的重要成员了。"; }
+      if (visits >= 50 || mine.length >= 10 || streak >= 7) { title = "🏆 骨灰级居民"; word = "这份坚持，小站铭记在心。"; }
+      if (streak >= 3) word += " 连续打卡 " + streak + " 天，摸鱼之手从未停歇 🐟";
+      document.getElementById("yrTitle").textContent = title;
+      document.getElementById("yrWord").textContent = word;
+    });
+  </script>
+</body>
+</html>
