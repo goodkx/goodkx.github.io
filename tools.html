@@ -7,11 +7,11 @@
   <meta name="description" content="工具箱 —— 一组开箱即用的浏览器小工具。" />
   <title>工具箱 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧰%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=109" />
-  <link rel="stylesheet" href="theme.css?v=109" />
-  <link rel="stylesheet" href="search.css?v=109" />
-  <script src="theme.js?v=109"></script>
-  <script src="search.js?v=109"></script>
+  <link rel="stylesheet" href="subpage.css?v=110" />
+  <link rel="stylesheet" href="theme.css?v=110" />
+  <link rel="stylesheet" href="search.css?v=110" />
+  <script src="theme.js?v=110"></script>
+  <script src="search.js?v=110"></script>
   <style>
     .tools {
       display: grid;
@@ -169,6 +169,26 @@
     .hint { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
     .hint code { color: var(--accent-2); }
 
+    /* 工具目录侧栏（宽屏） */
+    #tToc {
+      position: fixed;
+      top: 110px;
+      right: max(18px, calc((100vw - 1100px) / 2 - 200px));
+      width: 184px;
+      display: none;
+    }
+    #tToc.show { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    #tToc a {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .68rem; color: var(--muted); text-decoration: none;
+      padding: 4px 6px; cursor: pointer; border-radius: 6px;
+      transition: color .2s, background .2s;
+      white-space: nowrap;
+    }
+    #tToc a:hover { color: var(--text); background: var(--acc-soft-bg); }
+    #tToc a.on { color: var(--accent); background: var(--acc-soft-bg); }
+    @media (max-width: 1280px) { #tToc { display: none !important; } }
+
     /* 考研倒计时 */
     .cd-grid {
       display: grid;
@@ -190,6 +210,8 @@
     <a class="back" href="index.html">← 返回首页</a>
     <span class="badge">🧰 toolbox</span>
   </div>
+
+  <nav id="tToc" aria-label="工具目录"></nav>
 
   <h1>好用的 <span class="grad">小工具</span></h1>
 
@@ -823,6 +845,31 @@
       initMarkdown();
       initFish();
       initSpeed();
+
+      /* 工具目录侧栏（宽屏）+ 滚动高亮 */
+      const TOC = [
+        ["tc", "🔤 字数"], ["ts", "⏱️ 时间戳"], ["col", "🎨 颜色"], ["pw", "🔐 密码"],
+        ["b64", "🔁 Base64"], ["json", "🧾 JSON"], ["cd", "🎯 倒计时"], ["radix", "🔢 进制"],
+        ["regex", "🔍 正则"], ["diff", "🧩 对比"], ["uuid", "🆔 UUID"], ["md", "📄 MD"],
+        ["fish", "🐟 摸鱼"], ["speed", "📶 网速"],
+      ];
+      const toc = document.getElementById("tToc");
+      if (toc && window.innerWidth > 1280) {
+        toc.innerHTML = TOC.map(([id, t]) => `<a data-t="${id}">${t}</a>`).join("");
+        toc.classList.add("show");
+        toc.addEventListener("click", (e) => {
+          const a = e.target.closest("a[data-t]");
+          if (a) document.getElementById(a.dataset.t).scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        window.addEventListener("scroll", () => {
+          let cur = TOC[0][0];
+          for (const [id] of TOC) {
+            const el = document.getElementById(id);
+            if (el && el.getBoundingClientRect().top <= 140) cur = id;
+          }
+          toc.querySelectorAll("a").forEach((a) => a.classList.toggle("on", a.dataset.t === cur));
+        }, { passive: true });
+      }
     });
   </script>
 </body>
