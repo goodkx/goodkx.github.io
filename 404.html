@@ -7,9 +7,9 @@
   <meta name="robots" content="noindex" />
   <title>404 · 页面走丢了 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛸%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=105" />
-  <link rel="stylesheet" href="theme.css?v=105" />
-  <script src="theme.js?v=105"></script>
+  <link rel="stylesheet" href="subpage.css?v=106" />
+  <link rel="stylesheet" href="theme.css?v=106" />
+  <script src="theme.js?v=106"></script>
   <style>
     .nf {
       width: min(680px, 92%);
@@ -68,6 +68,20 @@
       color: var(--muted);
       opacity: 0.8;
     }
+    .nf-suggest {
+      margin-bottom: 26px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .nf-suggest a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--border-hover);
+      padding-bottom: 1px;
+      margin: 0 3px;
+    }
+    .nf-suggest a:hover { border-bottom-style: solid; }
     /* 骑车的鹈鹕：横穿屏幕 */
     .nf-rider {
       position: fixed;
@@ -117,5 +131,30 @@
       <line x1="70" y1="17" x2="52" y2="16" stroke="#e8f1fa" stroke-width="2"/>
     </svg>
   </a>
+  <script>
+    /* 智能建议：从迷路的地址里猜你想去的页面 */
+    (function () {
+      const MAP = [
+        { kw: ["tool", "fish", "uuid", "diff", "speed", "md"], name: "工具箱", url: "tools.html" },
+        { kw: ["blog", "post", "article"], name: "博客", url: "blog.html" },
+        { kw: ["ai", "chatgpt", "deepseek", "claude"], name: "AI 工具导航", url: "ai.html" },
+        { kw: ["gallery", "photo", "art"], name: "相册", url: "gallery.html" },
+        { kw: ["kaoyan", "408", "exam"], name: "考研大纲", url: "kaoyan.html" },
+        { kw: ["guest", "message", "board"], name: "留言板", url: "guestbook.html" },
+        { kw: ["game", "2048"], name: "2048 小游戏", url: "game.html" },
+        { kw: ["link", "friend"], name: "友链", url: "links.html" },
+        { kw: ["pelican", "bike", "bird"], name: "鹈鹕彩蛋", url: "pelican.html" },
+      ];
+      let path = "";
+      try { path = decodeURIComponent(location.pathname.toLowerCase()); } catch (e) { path = location.pathname.toLowerCase(); }
+      const hits = MAP.filter((x) => x.kw.some((k) => path.includes(k))).slice(0, 2);
+      if (!hits.length) return;
+      const box = document.createElement("p");
+      box.className = "nf-suggest";
+      box.innerHTML = "💡 你是不是想找：" + hits.map((h) => `<a href="${h.url}">${h.name}</a>`).join(" · ");
+      const actions = document.querySelector(".nf-actions");
+      if (actions) actions.parentNode.insertBefore(box, actions);
+    })();
+  </script>
 </body>
 </html>
