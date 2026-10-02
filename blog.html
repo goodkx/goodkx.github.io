@@ -16,11 +16,11 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://goodkx.github.io/blog.html" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="subpage.css?v=105" />
-  <link rel="stylesheet" href="theme.css?v=105" />
-  <link rel="stylesheet" href="search.css?v=105" />
-  <script src="theme.js?v=105"></script>
-  <script src="search.js?v=105"></script>
+  <link rel="stylesheet" href="subpage.css?v=106" />
+  <link rel="stylesheet" href="theme.css?v=106" />
+  <link rel="stylesheet" href="search.css?v=106" />
+  <script src="theme.js?v=106"></script>
+  <script src="search.js?v=106"></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
     .post {
@@ -81,6 +81,15 @@
     }
     .art-back:hover { color: var(--accent); }
     .art-head { margin-bottom: 26px; }
+    .art-head::before {
+      content: "";
+      display: block;
+      height: 4px;
+      width: 64px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--art-c1, #00e5a0), var(--art-c2, #38bdf8));
+      margin-bottom: 16px;
+    }
     .art-head h2 { font-size: clamp(1.3rem, 3vw, 1.7rem); line-height: 1.4; margin-bottom: 10px; }
     .art-meta {
       display: flex;
@@ -617,6 +626,18 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         $("#artDate").textContent = p.date;
         $("#artChips").innerHTML = p.tags.map((t) => `<span class="chip green">${t}</span>`).join("");
         $("#artBody").innerHTML = p.html;
+        /* 每篇专属渐变条 */
+        const PAL = {
+          "gb-cloud": ["#fbbf24", "#f472b6"],
+          "gh-pages": ["#00e5a0", "#38bdf8"],
+          "theme-css": ["#a78bfa", "#f472b6"],
+          "ai-site": ["#38bdf8", "#818cf8"],
+          "kaoyan-plan": ["#dc2626", "#f59e0b"],
+          "frontend-road": ["#059669", "#0891b2"],
+        };
+        const pc = PAL[id] || ["#00e5a0", "#38bdf8"];
+        art.style.setProperty("--art-c1", pc[0]);
+        art.style.setProperty("--art-c2", pc[1]);
         buildToc();
         $("#artCopy").dataset.slug = id;
         renderArtNav(id);
