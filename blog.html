@@ -47,6 +47,12 @@
       white-space: nowrap;
       min-width: 88px;
     }
+    .post-views {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
     .post-body { flex: 1; }
     .post-body h2 { font-size: 1.08rem; margin-bottom: 6px; }
     .post-body p { font-size: .9rem; color: var(--muted); margin-bottom: 12px; }
@@ -742,6 +748,11 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
       const art = $("#articleView");
       curPostId = id;
       routeTs = Date.now();
+      /* 阅读次数 +1（本机统计） */
+      try {
+        const vk = "views-" + id;
+        localStorage.setItem(vk, String((Number(localStorage.getItem(vk)) || 0) + 1));
+      } catch (e) {}
       if (id) {
         const p = POSTS[id];
         document.title = p.title + " | CCCAD";
@@ -934,6 +945,16 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     document.addEventListener("DOMContentLoaded", () => {
       initReveal();
       initPosts();
+
+      /* 列表卡片显示阅读次数（有过阅读才显示） */
+      $$("#listView a.post").forEach((a) => {
+        const id = (a.getAttribute("href") || "").replace("#/post/", "");
+        const v = Number(localStorage.getItem("views-" + id)) || 0;
+        if (v) {
+          const t = a.querySelector(".post-time");
+          if (t) t.insertAdjacentHTML("afterend", `<span class="post-views">👁 ${v}</span>`);
+        }
+      });
     });
   </script>
 </body>
