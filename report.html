@@ -118,7 +118,18 @@
       <div class="yr-games" id="yrGames"></div>
     </div>
 
-    <p class="yr-note">* 数据仅存于本机浏览器，清除浏览器数据后归零 · 换设备不会合并统计</p>
+    <div class="yr-chart">
+      <h3>🌍 全站共同记录 · 与所有访客共享</h3>
+      <div class="yr-grid" style="margin-bottom: 12px;">
+        <div class="yr-card"><span class="ico">🌐</span><b id="shVisits">…</b><span>总来访次数</span></div>
+        <div class="yr-card"><span class="ico">🐟</span><b id="shCheckin">…</b><span>累计打卡人次</span></div>
+        <div class="yr-card"><span class="ico">💬</span><b id="shMsg">…</b><span>留言板留言</span></div>
+        <div class="yr-card"><span class="ico">❤️</span><b id="shReact">…</b><span>收到的回应</span></div>
+      </div>
+      <p class="hint" style="margin: 0;">数据存于小站云端 · 每位访客的来访与打卡都会汇入这里 · 匿名统计，无任何个人信息</p>
+    </div>
+
+    <p class="yr-note">* 「我的足迹」部分仅存于本机浏览器，清除浏览器数据后归零 · 换设备不会合并统计</p>
   </div>
 
   <div class="toast" id="toast" role="status"></div>
@@ -202,6 +213,65 @@
       if (streak >= 3) word += " 连续打卡 " + streak + " 天，摸鱼之手从未停歇 🐟";
       document.getElementById("yrTitle").textContent = title;
       document.getElementById("yrWord").textContent = word;
+
+      /* ── 全站共同记录（textdb 云端，与所有访客共享） ── */
+      const STATS_URL = "https://textdb.dev/api/data/cccad-site-stats";
+      const GB_URL = "https://textdb.dev/api/data/cccad-gb-95592aa7";
+      async function fetchJson(url) {
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }
+      async function putStats(obj) {
+        const r = await fetch(STATS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(obj),
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+      }
+      async function sharedSection() {
+        const out = { visits: "…", checkinTotal: "…", msg: "…", react: "…" };
+        /* 留言与回应（来自留言板云库） */
+        try {
+          const gb = await fetchJson(GB_URL);
+          const msgs = Array.isArray(gb.messages) ? gb.messages : [];
+          out.msg = msgs.length;
+          out.react = msgs.reduce((s, m) => {
+            const r = m.r || {};
+            return s + Object.keys(r).reduce((a, k) => a + (r[k] || 0), 0);
+          }, 0);
+        } catch (e) {}
+        /* 共同统计：本会话来访 +1，并汇入今日打卡 */
+        let stats = null;
+        try { stats = await fetchJson(STATS_URL); } catch (e) { stats = null; }
+        try {
+          if (!sessionStorage.getItem("sh-counted")) {
+            if (!stats) stats = { visits: 0, checkins: {}, checkinTotal: 0 };
+            stats.visits = (stats.visits || 0) + 1;
+            const today = now.toISOString().slice(0, 10);
+            const localFish = jget("fish-checkin", "[]");
+            if (localFish.includes(today)) {
+              stats.checkins = stats.checkins || {};
+              if (!stats.checkins[today]) {
+                stats.checkins[today] = 1;
+                stats.checkinTotal = (stats.checkinTotal || 0) + 1;
+              }
+            }
+            await putStats(stats);
+            try { sessionStorage.setItem("sh-counted", "1"); } catch (e) {}
+          }
+        } catch (e) {}
+        if (stats) {
+          out.visits = stats.visits;
+          out.checkinTotal = stats.checkinTotal || 0;
+        }
+        document.getElementById("shVisits").textContent = out.visits;
+        document.getElementById("shCheckin").textContent = out.checkinTotal;
+        document.getElementById("shMsg").textContent = out.msg;
+        document.getElementById("shReact").textContent = out.react;
+      }
+      sharedSection();
     });
   </script>
 </body>
