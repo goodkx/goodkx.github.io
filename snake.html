@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="search.css?v=111" />
   <script src="theme.js?v=111"></script>
   <script src="search.js?v=111"></script>
+  <script src="leaderboard.js?v=111"></script>
   <style>
     .hud {
       display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
@@ -56,6 +57,24 @@
     @media (pointer: coarse) { .dpad { display: grid; } }
 
     .sp-hint { text-align: center; font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+
+    /* 全站排名 */
+    .lb-panel { max-width: 420px; margin: 0 auto 16px; text-align: left; }
+    .lb-head { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-bottom: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-bottom: 1px dashed var(--border); font-family: var(--mono); font-size: .74rem; }
+    .lb-row.first { background: var(--acc-soft-bg); border-radius: 6px; }
+    .lb-row .rk { width: 20px; color: var(--accent); }
+    .lb-row .nm { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: var(--accent); }
+    .lb-row .dt { color: var(--muted); font-size: .62rem; }
+    .lb-submit { display: none; align-items: center; gap: 8px; margin: 12px 0; }
+    .lb-submit.show { display: flex; }
+    .lb-submit input {
+      flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit; font-size: .8rem; padding: 8px 10px; outline: none;
+    }
+    .lb-submit input:focus { border-color: var(--border-hover); }
+    .lb-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
   </style>
 </head>
 <body>
@@ -79,6 +98,10 @@
       <div class="over" id="sOver">
         <h2>💀 游戏结束</h2>
         <p id="sFinal"></p>
+        <div class="lb-submit" id="sLb">
+          <input type="text" id="sLbName" maxlength="10" placeholder="昵称（10 字内）" />
+          <button class="tbtn" id="sLbGo" type="button">🏆 上榜</button>
+        </div>
         <button class="tbtn" id="sAgain">🔄 再来一局</button>
       </div>
       <div class="over" id="sStart">
@@ -86,6 +109,8 @@
         <p>按 方向键 / WASD 开始 · 触屏滑动也可以</p>
       </div>
     </div>
+
+    <div class="lb-panel" id="snakeLb"></div>
 
     <div class="dpad" aria-label="方向控制">
       <span></span>
@@ -195,6 +220,13 @@
         try { localStorage.setItem("snake-best", String(best)); } catch (e) {}
       }
       $("#sFinal").textContent = "本局 " + score + " 分 · 蛇长 " + snake.length + " · 最佳 " + best;
+      const lb = $("#sLb");
+      if (score > 0) {
+        lb.classList.add("show");
+        $("#sLbName").value = LB.getName();
+      } else {
+        lb.classList.remove("show");
+      }
       $("#sOver").classList.add("show");
     }
 
@@ -224,6 +256,23 @@
     }, { passive: true });
 
     $("#sAgain").addEventListener("click", start);
+
+    /* 🏆 全站排名 */
+    LB.render("snake", "#snakeLb", "分");
+    $("#sLbGo").addEventListener("click", async () => {
+      const btn = $("#sLbGo");
+      btn.disabled = true;
+      try {
+        const name = $("#sLbName").value;
+        LB.saveName(name);
+        const res = await LB.submit("snake", name, score);
+        $("#sLb").innerHTML = '<span class="lb-ok">🏆 已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
+        LB.render("snake", "#snakeLb", "分");
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = "失败 · 重试";
+      }
+    });
 
     start();
   </script>
