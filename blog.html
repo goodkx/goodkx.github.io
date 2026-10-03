@@ -16,11 +16,11 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://goodkx.github.io/blog.html" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="subpage.css?v=110" />
-  <link rel="stylesheet" href="theme.css?v=110" />
-  <link rel="stylesheet" href="search.css?v=110" />
-  <script src="theme.js?v=110"></script>
-  <script src="search.js?v=110"></script>
+  <link rel="stylesheet" href="subpage.css?v=111" />
+  <link rel="stylesheet" href="theme.css?v=111" />
+  <link rel="stylesheet" href="search.css?v=111" />
+  <script src="theme.js?v=111"></script>
+  <script src="search.js?v=111"></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
     .post {
@@ -289,7 +289,37 @@
 
       <!-- ✏️ 写新文章：1) 在下面 JS 的 POSTS 里加一篇文章；2) 复制一个 <a class="post"> 块，
            href 填 #/post/你的id。未写的文章保持 href="#"，点击会提示 -->
-      <a class="post reveal" href="#/post/gb-cloud">
+      <a class="post reveal" href="#/post/fish-notes">
+        <time class="post-time">2026-10-01</time>
+        <div class="post-body">
+          <h2>摸鱼日历的开发笔记：一个倒计时的边界问题</h2>
+          <p>连续打卡从哪天起算？一个小工具里的边界思考与实现细节。</p>
+          <div class="chips"><span class="chip green">前端</span><span class="chip">工具</span><span class="chip">摸鱼</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" style="--d:.04s" href="#/post/ai-learn">
+        <time class="post-time">2026-10-01</time>
+        <div class="post-body">
+          <h2>我如何用 AI 学习前端：不做伸手党</h2>
+          <p>三步工作法 + 一个真实的教训——本站就是这套方法的作品。</p>
+          <div class="chips"><span class="chip green">AI</span><span class="chip">学习</span><span class="chip">前端</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" style="--d:.08s" href="#/post/toolbox-principles">
+        <time class="post-time">2026-10-01</time>
+        <div class="post-body">
+          <h2>十四件小工具背后的共同原则</h2>
+          <p>本地优先、零依赖、解决真问题——以及一次例外。</p>
+          <div class="chips"><span class="chip green">工具</span><span class="chip">隐私</span><span class="chip">产品</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" style="--d:.12s" href="#/post/gb-cloud">
         <time class="post-time">2026-09-28</time>
         <div class="post-body">
           <h2>留言板上云踩坑记：从审批罗生门到一个变量名</h2>
@@ -415,6 +445,69 @@
 
     /* ══════════ 文章数据（想发新文章在这里加一条） ══════════ */
     const POSTS = {
+      "fish-notes": {
+        title: "摸鱼日历的开发笔记：一个倒计时的边界问题",
+        date: "2026-10-01",
+        tags: ["前端", "工具", "摸鱼"],
+        html: `
+          <h3>需求很简单？</h3>
+          <p>摸鱼日历的核心功能一句话就能说完：显示今天周几、距离周末和下班还有多久、点个打卡。但真动手写，边界情况一个接一个冒出来。</p>
+          <h3>最有趣的边界：连续打卡从哪天起算</h3>
+          <p>「连续打卡 N 天」听起来清晰，实现时却有个经典陷阱：如果用户今天还没打卡，连续天数应该<strong>从昨天往前算</strong>；打过卡，才从今天起算。漏掉这个判断，每天早上打开页面都会看到「连续 0 天」——坚持了很久的记录一夜清零，非常劝退。</p>
+          <pre>// 今天没打卡？从昨天开始数
+if (!set.has(today)) d.setDate(d.getDate() - 1);
+while (set.has(key(d))) { streak++; d.setDate(d.getDate() - 1); }</pre>
+          <h3>其他小设计</h3>
+          <ul>
+            <li><strong>距下班</strong>：过了 18:00 显示「已下班 🎉」，周末直接显示「不用班 🎉」——工具要有情绪</li>
+            <li><strong>语录轮换</strong>：按「日期 + 小时」取模，同一天内稳定、隔天自动换，不需要随机数</li>
+            <li><strong>数据结构</strong>：打卡记录就是 <code class="inline">["2026-10-01", ...]</code> 字符串数组，存取、查重、算连续都最简单</li>
+          </ul>
+          <h3>结语</h3>
+          <p>小工具的魅力就在这：需求一行字，实现一百行，而每一行边界都是一次小小的产品思考。去工具箱摸一局试试？</p>
+        `
+      },
+      "ai-learn": {
+        title: "我如何用 AI 学习前端：不做伸手党",
+        date: "2026-10-01",
+        tags: ["AI", "学习", "前端"],
+        html: `
+          <h3>先说结论</h3>
+          <p>AI 是这个时代最好的学习搭子——前提是<strong>你不把它当外包</strong>。这个网站从第一行 HTML 到云留言板，全程和 AI 结对完成，全程没有抄过一段自己看不懂的代码。</p>
+          <h3>我的三步工作法</h3>
+          <ol>
+            <li><strong>把想法讲清楚</strong>：不说「帮我做个网站」，而是「我要一个深色底的 hero 区，左边文字右边终端窗口，打字机效果」——描述得越具体，产出越接近想象</li>
+            <li><strong>让 AI 写，自己验收</strong>：每一版都亲眼看效果，不对就描述差异让它改。改的过程就是学习的过程</li>
+            <li><strong>追问为什么</strong>：看到不懂的写法就问「这里为什么这么写」，AI 是个永远不烦的老师</li>
+          </ol>
+          <h3>一个真实的教训</h3>
+          <p>留言板曾经 100% 发布失败，排查了半天网络，最后发现是 AI 写的代码里引用了一个不存在的变量。那次学到的不是「AI 会犯错」，而是：<strong>验收是你的责任，永远要走一遍真实用户的路径</strong>。这件事我写成了<a href="#/post/gb-cloud">踩坑记</a>。</p>
+          <h3>给同路人的三句话</h3>
+          <ul>
+            <li>从真实需求出发——给自己做个网站，比跟着教程做 TODO List 有动力一百倍</li>
+            <li>让 AI 解释，而不只是给答案</li>
+            <li>把作品发布出去，公开的东西会逼你认真</li>
+          </ul>
+        `
+      },
+      "toolbox-principles": {
+        title: "十四件小工具背后的共同原则",
+        date: "2026-10-01",
+        tags: ["工具", "隐私", "产品"],
+        html: `
+          <h3>为什么全做成本地工具</h3>
+          <p>工具箱里的十四件东西——从字数统计到网速测试——遵守同一套原则：<strong>本地优先、零依赖、解决真问题</strong>。数据永远不出你的浏览器，没有账号、没有上传、没有追踪。</p>
+          <h3>三条原则具体是什么</h3>
+          <ul>
+            <li><strong>本地优先</strong>：密码生成、Base64、JSON 格式化……敏感操作全在浏览器里完成。代价是没有跨设备同步，换来的是绝对隐私</li>
+            <li><strong>零依赖</strong>：不引第三方库，页面加载飞快，断网也能用。代价是每个效果都手写，比如文本对比里的 LCS 算法</li>
+            <li><strong>自己会用</strong>：每一件工具都来自真实需求——摸鱼要看下班倒计时，写博客要测网速，复习要倒计时</li>
+          </ul>
+          <h3>一个例外</h3>
+          <p>网速测试需要访问测速节点，是唯一「联网」的工具。它用了 Cloudflare 的公共测速端点——即便如此，测速记录依然只存在你自己的浏览器里。</p>
+          <p>原则这东西，说起来简单，守住靠每一次「这里要不要加个上传」的取舍。</p>
+        `
+      },
       "gb-cloud": {
         title: "留言板上云踩坑记：从审批罗生门到一个变量名",
         date: "2026-09-28",
@@ -625,7 +718,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     };
 
     /* 文章顺序（新 → 旧），用于上下篇导航 */
-    const ORDER = ["gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+    const ORDER = ["fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     let curPostId = null, lastSave = 0, routeTs = 0;
