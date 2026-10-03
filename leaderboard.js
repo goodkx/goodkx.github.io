@@ -8,6 +8,7 @@
     snake: "cccad-lb-snake",
     g2048: "cccad-lb-2048",
     memory: "cccad-lb-memory",
+    tetris: "cccad-lb-tetris",
   };
   const BASE = "https://textdb.dev/api/data/";
   const CAP = 10;
