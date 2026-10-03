@@ -223,6 +223,18 @@
     .art-body th { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
 
     /* 上下篇导航 */
+    .art-rel { margin-top: 26px; border-top: 1px solid var(--border); padding-top: 16px; }
+    .art-rel h4 { font-size: .78rem; font-family: var(--mono); color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; }
+    .art-rel a {
+      display: block;
+      color: var(--accent-2);
+      text-decoration: none;
+      font-size: .86rem;
+      padding: 6px 0;
+      transition: color .2s, padding-left .2s;
+    }
+    .art-rel a:hover { color: var(--accent); padding-left: 6px; }
+
     .art-nav { display: flex; gap: 14px; margin-top: 26px; }
     .art-nav a {
       flex: 1;
@@ -418,6 +430,7 @@
       </div>
       <div class="art-body" id="artBody"></div>
       <div class="art-nav" id="artNav"></div>
+      <div class="art-rel" id="artRel"></div>
     </div>
   </div>
 
@@ -744,6 +757,9 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
           "ai-site": ["#38bdf8", "#818cf8"],
           "kaoyan-plan": ["#dc2626", "#f59e0b"],
           "frontend-road": ["#059669", "#0891b2"],
+          "fish-notes": ["#38bdf8", "#00e5a0"],
+          "ai-learn": ["#818cf8", "#f472b6"],
+          "toolbox-principles": ["#4ade80", "#38bdf8"],
         };
         const pc = PAL[id] || ["#00e5a0", "#38bdf8"];
         art.style.setProperty("--art-c1", pc[0]);
@@ -752,6 +768,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         addCopyButtons();
         $("#artCopy").dataset.slug = id;
         renderArtNav(id);
+        renderRelated(id, p);
         list.style.display = "none";
         art.classList.add("open");
         window.scrollTo({ top: 0 });
@@ -789,6 +806,31 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
           } catch (e) { btn.textContent = "复制失败"; }
         });
         pre.appendChild(btn);
+      });
+    }
+
+    /* ── 相关阅读（同标签推荐）+ 结构化数据 ── */
+    function renderRelated(id, p) {
+      const rel = ORDER.filter((x) => x !== id && POSTS[x].tags.some((t) => p.tags.includes(t))).slice(0, 3);
+      const box = $("#artRel");
+      box.innerHTML = rel.length
+        ? "<h4>📂 相关阅读</h4>" + rel.map((x) => `<a href="#/post/${x}">${POSTS[x].title}</a>`).join("")
+        : "";
+      let ld = document.getElementById("artLd");
+      if (!ld) {
+        ld = document.createElement("script");
+        ld.type = "application/ld+json";
+        ld.id = "artLd";
+        document.head.appendChild(ld);
+      }
+      ld.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: p.title,
+        datePublished: p.date,
+        keywords: p.tags.join(","),
+        author: { "@type": "Person", name: "CCCAD" },
+        url: location.origin + location.pathname + "#/post/" + id,
       });
     }
 
