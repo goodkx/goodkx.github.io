@@ -90,6 +90,24 @@
     .win-panel h2 { margin-bottom: 8px; }
     .win-panel p { color: var(--muted); font-size: .88rem; margin-bottom: 16px; }
     .record { color: var(--accent); font-family: var(--mono); font-size: .8rem; }
+
+    /* 全站排名 */
+    .lb-panel { max-width: 480px; margin: 0 auto 16px; text-align: left; }
+    .lb-head { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-bottom: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-bottom: 1px dashed var(--border); font-family: var(--mono); font-size: .74rem; }
+    .lb-row.first { background: var(--acc-soft-bg); border-radius: 6px; }
+    .lb-row .rk { width: 20px; color: var(--accent); }
+    .lb-row .nm { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: var(--accent); }
+    .lb-row .dt { color: var(--muted); font-size: .62rem; }
+    .lb-submit { display: none; align-items: center; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap; }
+    .lb-submit.show { display: flex; }
+    .lb-submit input {
+      flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit; font-size: .8rem; padding: 8px 10px; outline: none;
+    }
+    .lb-submit input:focus { border-color: var(--border-hover); }
+    .lb-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
   </style>
 </head>
 <body>
@@ -119,10 +137,16 @@
       <h2>🎉 全部配对！</h2>
       <p id="winText"></p>
       <span class="record" id="winRecord"></span>
+      <div class="lb-submit" id="mLb">
+        <input type="text" id="mLbName" maxlength="10" placeholder="昵称（10 字内）" />
+        <button class="tbtn" id="mLbGo" type="button">🏆 上榜</button>
+      </div>
       <div class="row" style="justify-content:center; margin-top:16px">
         <button class="tbtn" id="mRestart">🔄 再来一局</button>
       </div>
     </div>
+
+    <div class="lb-panel" id="memoryLb"></div>
 
     <p class="caption">翻开两张相同的图案即配对成功 · 用最少步数挑战自己 · 纪录保存在本机</p>
   </div>
@@ -219,12 +243,32 @@
       $("#winText").textContent = moves + " 步 · " + fmtTime(secs) + " 完成 —— " +
         (moves <= 10 ? "记忆超群 🧠" : moves <= 14 ? "发挥稳健 👍" : "重在参与 😄");
       $("#winRecord").textContent = isRecord ? "🌟 新纪录！" : "最佳纪录：" + best.moves + " 步 / " + fmtTime(best.secs);
+      const lb = $("#mLb");
+      lb.classList.add("show");
+      $("#mLbName").value = LB.getName();
       $("#winPanel").classList.add("show");
     }
 
     document.getElementById("mRestart").addEventListener("click", draw);
     document.querySelectorAll(".mode-row button").forEach((b) =>
       b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
+
+    /* 🏆 全站排名（步数升序） */
+    LB.render("memory", "#memoryLb", "步");
+    $("#mLbGo").addEventListener("click", async () => {
+      const btn = $("#mLbGo");
+      btn.disabled = true;
+      try {
+        const name = $("#mLbName").value;
+        LB.saveName(name);
+        const res = await LB.submit("memory", name, moves);
+        $("#mLb").innerHTML = '<span class="lb-ok">🏆 已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
+        LB.render("memory", "#memoryLb", "步");
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = "失败 · 重试";
+      }
+    });
     document.addEventListener("DOMContentLoaded", draw);
   </script>
 </body>
