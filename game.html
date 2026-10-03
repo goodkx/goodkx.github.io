@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="search.css?v=111" />
   <script src="theme.js?v=111"></script>
   <script src="search.js?v=111"></script>
+  <script src="leaderboard.js?v=111"></script>
   <style>
     .game-wrap {
       width: min(470px, 94%);
@@ -42,6 +43,24 @@
       font-variant-numeric: tabular-nums;
     }
     .score-box span { font-size: 0.7rem; color: var(--muted); }
+
+    /* 全站排名 */
+    .lb-panel { max-width: 480px; margin: 22px auto 0; text-align: left; }
+    .lb-head { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-bottom: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-bottom: 1px dashed var(--border); font-family: var(--mono); font-size: .74rem; }
+    .lb-row.first { background: var(--acc-soft-bg); border-radius: 6px; }
+    .lb-row .rk { width: 20px; color: var(--accent); }
+    .lb-row .nm { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: var(--accent); }
+    .lb-row .dt { color: var(--muted); font-size: .62rem; }
+    .lb-submit { display: none; align-items: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+    .lb-submit.show { display: flex; }
+    .lb-submit input {
+      flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit; font-size: .8rem; padding: 8px 10px; outline: none;
+    }
+    .lb-submit input:focus { border-color: var(--border-hover); }
+    .lb-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
     .gbtn {
       background: var(--gradient);
       color: #06251a;
@@ -168,9 +187,15 @@
       <div class="go" id="goOver">
         <h2>游戏结束 💀</h2>
         <p id="overScore">得分 0</p>
+        <div class="lb-submit" id="gLb">
+          <input type="text" id="gLbName" maxlength="10" placeholder="昵称（10 字内）" />
+          <button class="gbtn" id="gLbGo" type="button">🏆 上榜</button>
+        </div>
         <button class="gbtn" id="overNew" type="button">再来一局</button>
       </div>
     </div>
+
+    <div class="lb-panel" id="g2048Lb"></div>
 
     <p class="game-hint">
       <b>方向键 / WASD</b> 移动，手机上<b>滑动</b>即可<br />
@@ -268,6 +293,11 @@
         over = true;
         render(mergedSet);
         $("#overScore").textContent = "得分 " + score;
+        const lb = $("#gLb");
+        if (score > 0) {
+          lb.classList.add("show");
+          $("#gLbName").value = LB.getName();
+        } else lb.classList.remove("show");
         $("#goOver").classList.add("show");
         return;
       }
@@ -343,6 +373,24 @@
       $("#winNew").addEventListener("click", newGame);
       $("#overNew").addEventListener("click", newGame);
       $("#keepGo").addEventListener("click", () => $("#goWin").classList.remove("show"));
+
+      /* 🏆 全站排名 */
+      LB.render("g2048", "#g2048Lb", "分");
+      $("#gLbGo").addEventListener("click", async () => {
+        const btn = $("#gLbGo");
+        btn.disabled = true;
+        try {
+          const name = $("#gLbName").value;
+          LB.saveName(name);
+          const res = await LB.submit("g2048", name, score);
+          $("#gLb").innerHTML = '<span class="lb-ok">🏆 已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
+          LB.render("g2048", "#g2048Lb", "分");
+        } catch (e) {
+          btn.disabled = false;
+          btn.textContent = "失败 · 重试";
+        }
+      });
+
       newGame();
     });
   </script>
