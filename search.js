@@ -49,6 +49,9 @@
     { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
     { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },
     { t: "文章 · 留言板上云踩坑记", d: "KV 审批 · 401 之谜 · 变量名 bug", u: "blog.html#/post/gb-cloud", k: "留言板 上云 踩坑 textdb kv edgeone 401 supabase" },
+    { t: "文章 · 摸鱼日历开发笔记", d: "倒计时的边界问题", u: "blog.html#/post/fish-notes", k: "摸鱼 日历 开发 边界 打卡 倒计时" },
+    { t: "文章 · 用 AI 学习前端", d: "三步工作法 · 不做伸手党", u: "blog.html#/post/ai-learn", k: "ai 学习 前端 结对 方法 prompt" },
+    { t: "文章 · 十四件工具的共同原则", d: "本地优先 · 零依赖", u: "blog.html#/post/toolbox-principles", k: "工具 原则 隐私 本地 零依赖" },
     { t: "切换主题", d: "右下角 🎨 按钮，4 套风格", u: "", k: "主题 theme 换肤 深色 浅色 紫夜 暖纸 墨金" },
   ];
 
