@@ -19,8 +19,10 @@
   async function fetchLb(game) {
     const r = await fetch(BASE + KEYS[game] + "?p=" + Math.random(), { cache: "no-store" });
     if (r.status === 404) return []; /* 榜单尚不存在 → 空榜 */
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const d = await r.json();
+    const text = await r.text();
+    if (!text.trim()) return []; /* 空响应 → 空榜 */
+    let d;
+    try { d = JSON.parse(text); } catch (e) { return []; }
     return Array.isArray(d.list) ? d.list : [];
   }
 
