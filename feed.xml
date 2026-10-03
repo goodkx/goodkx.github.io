@@ -8,6 +8,27 @@
     <atom:link href="https://goodkx.github.io/feed.xml" rel="self" type="application/rss+xml" />
 
     <item>
+      <title>摸鱼日历的开发笔记：一个倒计时的边界问题</title>
+      <link>https://goodkx.github.io/blog.html#/post/fish-notes</link>
+      <guid>https://goodkx.github.io/blog.html#/post/fish-notes</guid>
+      <pubDate>Thu, 01 Oct 2026 00:00:00 +0800</pubDate>
+      <description>连续打卡从哪天起算？一个小工具里的边界思考与实现细节。</description>
+    </item>
+    <item>
+      <title>我如何用 AI 学习前端：不做伸手党</title>
+      <link>https://goodkx.github.io/blog.html#/post/ai-learn</link>
+      <guid>https://goodkx.github.io/blog.html#/post/ai-learn</guid>
+      <pubDate>Thu, 01 Oct 2026 00:00:00 +0800</pubDate>
+      <description>三步工作法 + 一个真实的教训——本站就是这套方法的作品。</description>
+    </item>
+    <item>
+      <title>十四件小工具背后的共同原则</title>
+      <link>https://goodkx.github.io/blog.html#/post/toolbox-principles</link>
+      <guid>https://goodkx.github.io/blog.html#/post/toolbox-principles</guid>
+      <pubDate>Thu, 01 Oct 2026 00:00:00 +0800</pubDate>
+      <description>本地优先、零依赖、解决真问题——以及一次例外。</description>
+    </item>
+    <item>
       <title>留言板上云踩坑记：从审批罗生门到一个变量名</title>
       <link>https://goodkx.github.io/blog.html#/post/gb-cloud</link>
       <guid>https://goodkx.github.io/blog.html#/post/gb-cloud</guid>
