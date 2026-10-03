@@ -219,8 +219,10 @@
       const GB_URL = "https://textdb.dev/api/data/cccad-gb-95592aa7";
       async function fetchJson(url) {
         const r = await fetch(url, { cache: "no-store" });
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
+        if (r.status === 404) return null;
+        const text = await r.text();
+        if (!text.trim()) return null;
+        try { return JSON.parse(text); } catch (e) { return null; }
       }
       async function putStats(obj) {
         const r = await fetch(STATS_URL, {
@@ -235,7 +237,8 @@
         /* 留言与回应（来自留言板云库） */
         try {
           const gb = await fetchJson(GB_URL);
-          const msgs = Array.isArray(gb.messages) ? gb.messages : [];
+          const msgs = gb && Array.isArray(gb.messages) ? gb.messages : [];
+          if (!msgs.length) throw new Error("empty");
           out.msg = msgs.length;
           out.react = msgs.reduce((s, m) => {
             const r = m.r || {};
