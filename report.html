@@ -54,6 +54,14 @@
     }
     .bars .col em { font-family: var(--mono); font-style: normal; font-size: .62rem; color: var(--muted); }
 
+    .yr-games { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .yr-games > div {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-family: var(--mono); font-size: .68rem; color: var(--muted);
+      line-height: 1.8;
+    }
+    .yr-games b { color: var(--accent); font-size: .95rem; }
+
     .yr-title-card {
       background: linear-gradient(120deg, rgba(0, 229, 160, 0.14), rgba(56, 189, 248, 0.10));
       border: 1px solid var(--border-hover);
@@ -103,6 +111,11 @@
     <div class="yr-chart">
       <h3>📬 我的留言月度分布（<span id="yrYear2">2026</span>）</h3>
       <div class="bars" id="yrBars"></div>
+    </div>
+
+    <div class="yr-chart">
+      <h3>🎮 游戏成就</h3>
+      <div class="yr-games" id="yrGames"></div>
     </div>
 
     <p class="yr-note">* 数据仅存于本机浏览器，清除浏览器数据后归零 · 换设备不会合并统计</p>
@@ -167,6 +180,17 @@
         const h = v ? Math.round((v / max) * 100) : 0;
         return `<div class="col"><i style="height:${h}%"></i><em>${names[i]}</em></div>`;
       }).join("");
+
+      /* 游戏成就 */
+      const g2048 = Number(localStorage.getItem("game2048-best")) || 0;
+      const gSnake = Number(localStorage.getItem("snake-best")) || 0;
+      const memE = jget("memory-best-easy", null);
+      const memH = jget("memory-best-hard", null);
+      document.getElementById("yrGames").innerHTML =
+        `<div>🎮 2048 最高分<br /><b>${g2048 || "—"}</b></div>` +
+        `<div>🐍 贪吃蛇最高分<br /><b>${gSnake || "—"}</b></div>` +
+        `<div>🧠 翻牌 · 简单<br /><b>${memE ? memE.moves + " 步" : "—"}</b></div>` +
+        `<div>🧠 翻牌 · 困难<br /><b>${memH ? memH.moves + " 步" : "—"}</b></div>`;
 
       /* 称号 */
       const streak = bestStreak(fish);
