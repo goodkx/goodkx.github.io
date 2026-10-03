@@ -151,6 +151,9 @@
     .sp-side b { display: inline-block; font-family: var(--mono); color: var(--accent-2); margin-right: 5px; }
     .sp-bar { height: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
     .sp-bar i { display: block; height: 100%; width: 0; background: var(--gradient); transition: width .2s; }
+    .sp-hist { margin-top: 12px; font-family: var(--mono); font-size: .7rem; color: var(--muted); }
+    .sp-hist div { padding: 4px 0; border-bottom: 1px dashed var(--border); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .sp-hist b { color: var(--accent); font-weight: 400; }
 
     .stat-row {
       display: grid;
@@ -360,6 +363,7 @@
       <div class="sp-bar"><i id="spBar"></i></div>
       <p class="hint" id="spState">点击开始，全程约 15 秒，消耗约 25MB 流量</p>
       <div class="row"><button class="tbtn" id="spGo">🚀 开始测速</button></div>
+      <div class="sp-hist" id="spHist"></div>
     </section>
 
   </div>
@@ -812,13 +816,27 @@
           val.textContent = d.toFixed(1);
           bar.style.width = "62%";
           state.textContent = "上传测速中…";
+          let upVal = null;
           try {
             const u = await upload();
+            upVal = u;
             upEl.textContent = u.toFixed(1);
           } catch (e) { upEl.textContent = "--"; }
           bar.style.width = "100%";
           const grade = d > 50 ? "🚀 飞快" : d > 20 ? "✅ 流畅" : d > 5 ? "👌 一般" : "🐢 较慢";
           state.textContent = "完成！" + grade + "（节点：Cloudflare · 本次消耗约 25MB 流量）";
+          /* 保存历史（本机最近 5 次） */
+          try {
+            const list = JSON.parse(localStorage.getItem("speed-history") || "[]");
+            list.unshift({
+              when: new Date().toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }),
+              dl: +d.toFixed(1),
+              up: upVal === null ? "--" : +upVal.toFixed(1),
+              ping: p === null ? "--" : p,
+            });
+            localStorage.setItem("speed-history", JSON.stringify(list.slice(0, 5)));
+          } catch (e) {}
+          if (typeof renderHist === "function") renderHist();
         } catch (e) {
           state.textContent = "测速服务不可达（可能被网络拦截）——可尝试切换网络后重试";
           val.textContent = "--";
@@ -827,6 +845,18 @@
         go.disabled = false;
         busy = false;
       });
+
+      /* 历史记录渲染（本机最近 5 次） */
+      function renderHist() {
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem("speed-history") || "[]"); } catch (e) {}
+        const el = $("#spHist");
+        if (!el) return;
+        el.innerHTML = list.length
+          ? list.map((x) => `<div><span>${x.when}</span><span><b>${x.dl}</b> Mbps ↓ · <b>${x.up}</b> Mbps ↑ · ${x.ping} ms</span></div>`).join("")
+          : "";
+      }
+      renderHist();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
