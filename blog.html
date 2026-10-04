@@ -307,6 +307,16 @@
 
       <!-- ✏️ 写新文章：1) 在下面 JS 的 POSTS 里加一篇文章；2) 复制一个 <a class="post"> 块，
            href 填 #/post/你的id。未写的文章保持 href="#"，点击会提示 -->
+      <a class="post reveal" href="#/post/github-tutorial">
+        <time class="post-time">2026-10-04</time>
+        <div class="post-body">
+          <h2>GitHub 注册使用教程：从零开始玩转仓库</h2>
+          <p>注册账号、三个核心概念、网页端操作、CLI 三连、免费建站——一篇全搞定。</p>
+          <div class="chips"><span class="chip green">建站</span><span class="chip">GitHub</span><span class="chip">入门</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
       <a class="post reveal" href="#/post/fish-notes">
         <time class="post-time">2026-10-01</time>
         <div class="post-body">
@@ -464,6 +474,44 @@
 
     /* ══════════ 文章数据（想发新文章在这里加一条） ══════════ */
     const POSTS = {
+      "github-tutorial": {
+        title: "GitHub 注册使用教程：从零开始玩转仓库",
+        date: "2026-10-04",
+        tags: ["建站", "GitHub", "入门"],
+        html: `
+          <h3>为什么每个建站的人都该有个 GitHub</h3>
+          <p>一句话：<strong>免费的代码仓库 + 免费的静态网站托管 + 全球可访问</strong>。本站就托管在 GitHub Pages 上。注册只需要一个邮箱，五分钟搞定。</p>
+          <h3>第一步：注册账号</h3>
+          <ol>
+            <li>打开 <code class="inline">github.com</code> → 右上角 <strong>Sign up</strong></li>
+            <li>填邮箱 → 设密码 → 起用户名（<strong>想好再起</strong>：它会出现在你的主页网址和所有仓库地址里，注册后改名很麻烦）</li>
+            <li>邮箱收验证码确认，完成</li>
+          </ol>
+          <h3>第二步：认识三个核心概念</h3>
+          <ul>
+            <li><strong>仓库（Repository）</strong>：放项目文件的地方，公开（免费建站必需）或私有都可以</li>
+            <li><strong>Commit（提交）</strong>：一次存档点，记录「改了什么」，随时可以回退</li>
+            <li><strong>Push（推送）</strong>：把本地的存档上传到 GitHub 云端</li>
+          </ul>
+          <h3>第三步：网页端就能干活</h3>
+          <p>不装任何软件也能完成基本操作：<strong>New repository</strong> 建仓库 → <strong>Add file → Upload files</strong> 拖拽上传 → 自动保存为一次 commit。本站第一天就是网页端拖拽上线的。</p>
+          <h3>第四步：命令行三连（进阶）</h3>
+          <pre>git add -A
+git commit -m "更新内容"
+git push</pre>
+          <p>想更省事可以装 <strong>GitHub CLI</strong>：<code class="inline">gh auth login</code> 走设备码授权——浏览器里输入六个字母就登录，不用配 SSH 密钥。</p>
+          <h3>第五步：免费建站</h3>
+          <p>仓库命名 <code class="inline">用户名.github.io</code> → 上传网页文件 → Settings → Pages → 一分钟后 <code class="inline">用户名.github.io</code> 全球可访问。详细部署步骤见<a href="#/post/gh-pages">上一篇部署指南</a>。</p>
+          <h3>常见坑</h3>
+          <ul>
+            <li>用户名起得太随意——它就是你的技术名片，想好再注册</li>
+            <li>推送后立刻刷新看不到更新——CDN 构建需要一两分钟，等等再刷</li>
+            <li>API 令牌（Token）相当于密码，泄露了立刻去 Settings → Developer settings 撤销重建</li>
+            <li>免费账号必须<strong>公开仓库</strong>才能用 Pages 建站</li>
+          </ul>
+          <p>注册好之后，欢迎去<a href="#/post/gh-pages">部署指南</a>把你的第一个网站挂上去。</p>
+        `
+      },
       "fish-notes": {
         title: "摸鱼日历的开发笔记：一个倒计时的边界问题",
         date: "2026-10-01",
@@ -737,7 +785,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     };
 
     /* 文章顺序（新 → 旧），用于上下篇导航 */
-    const ORDER = ["fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+    const ORDER = ["github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     let curPostId = null, lastSave = 0, routeTs = 0;
