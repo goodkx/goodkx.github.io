@@ -22,17 +22,27 @@
       background: var(--card); border: 1px solid var(--border); border-radius: 10px;
       padding: 8px 18px; text-align: center; font-family: var(--mono);
     }
-    .hud b { display: block; font-size: 1.2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .hud b { display: block; font-size: 1.2rem; color: var(--accent); font-variant-numeric: tabular-nums; text-shadow: 0 0 16px rgba(0, 229, 160, .45); }
     .hud span { font-size: .68rem; color: var(--muted); }
 
     .stage-wrap { display: flex; gap: 18px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
     .stage { position: relative; }
+    /* 科技感四角框 */
+    .stage::before, .stage::after {
+      content: ""; position: absolute; width: 26px; height: 26px;
+      border: 2px solid var(--accent); pointer-events: none; z-index: 6;
+    }
+    .stage::before { top: -7px; left: -7px; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+    .stage::after { bottom: -7px; right: -7px; border-left: none; border-top: none; border-bottom-right-radius: 8px; }
     canvas {
       display: block;
       background: var(--panel);
       border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 0 34px rgba(0, 229, 160, .1), inset 0 0 60px rgba(0, 0, 0, .3);
       touch-action: none;
+      transition: filter .15s;
     }
+    #board.flash { filter: brightness(1.8) saturate(1.4); }
     .side {
       display: flex; flex-direction: column; gap: 14px;
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
@@ -44,8 +54,9 @@
     .overlay {
       position: absolute; inset: 0;
       display: none; align-items: center; justify-content: center; flex-direction: column; gap: 12px;
-      background: rgba(10, 14, 22, .85); border-radius: 12px;
-      text-align: center; backdrop-filter: blur(2px); padding: 16px;
+      background: rgba(10, 14, 22, .86); border-radius: 12px;
+      text-align: center; backdrop-filter: blur(4px); padding: 16px;
+      border: 1px solid var(--border);
     }
     .overlay.show { display: flex; }
     .overlay h2 { font-size: 1.3rem; }
@@ -217,6 +228,8 @@
         $("#tLines").textContent = lines;
         $("#tLevel").textContent = level;
         $("#tScore").textContent = score;
+        cv.classList.add("flash");
+        setTimeout(() => cv.classList.remove("flash"), 140);
         reSpeed();
       }
       spawn();
