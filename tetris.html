@@ -274,30 +274,54 @@
       }
     }
 
-    function drawCell(c, x, y, size, pad) {
-      c.fillStyle = "rgba(255, 255, 255, .12)";
-      c.fillRect(x + size - pad - 2, y + pad + 2, 2, size - pad * 2 - 2);
-      c.fillRect(x + pad + 2, y + size - pad - 2, size - pad * 2 - 2, 2);
-      c.fillStyle = "rgba(0, 0, 0, .25)";
-      c.fillRect(x + pad + 2, y + pad + 2, size - pad * 2 - 2, 2);
+    /* 材质工具：颜色明暗 + 圆角路径 */
+    function shade(hex, amt) {
+      const n = parseInt(hex.slice(1), 16);
+      const r = Math.min(255, Math.max(0, (n >> 16) + amt));
+      const g = Math.min(255, Math.max(0, ((n >> 8) & 255) + amt));
+      const b = Math.min(255, Math.max(0, (n & 255) + amt));
+      return "rgb(" + r + "," + g + "," + b + ")";
+    }
+    function rr(c, x, y, w, h, r) {
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.arcTo(x + w, y, x + w, y + h, r);
+      c.arcTo(x + w, y + h, x, y + h, r);
+      c.arcTo(x, y + h, x, y, r);
+      c.arcTo(x, y, x + w, y, r);
+      c.closePath();
+    }
+
+    /* 方块材质：渐变圆角 + 高光边 + 同色微光 */
+    function drawCell(c, x, y, size, color) {
+      const p = 1.5, s = size - p * 2, rad = 6;
+      const g = c.createLinearGradient(x, y, x + size, y + size);
+      g.addColorStop(0, shade(color, 55));
+      g.addColorStop(0.5, color);
+      g.addColorStop(1, shade(color, -45));
+      c.shadowColor = color;
+      c.shadowBlur = 9;
+      c.fillStyle = g;
+      rr(c, x + p, y + p, s, s, rad);
+      c.fill();
+      c.shadowBlur = 0;
+      c.strokeStyle = "rgba(255, 255, 255, .3)";
+      c.lineWidth = 1.5;
+      rr(c, x + p + 1.5, y + p + 1.5, s - 3, s - 3, rad - 2);
+      c.stroke();
+      c.strokeStyle = "rgba(0, 0, 0, .35)";
+      rr(c, x + p, y + p, s, s, rad);
+      c.stroke();
     }
 
     function draw() {
       ctx.clearRect(0, 0, cv.width, cv.height);
       board.forEach((row, y) => row.forEach((v, x) => {
-        if (v) {
-          ctx.fillStyle = v;
-          ctx.fillRect(x * CELL + 1, y * CELL + 1, CELL - 2, CELL - 2);
-          drawCell(ctx, x * CELL, y * CELL, CELL, 4);
-        }
+        if (v) drawCell(ctx, x * CELL, y * CELL, CELL, v);
       }));
       if (!over && cur) {
         cur.m.forEach((row, y) => row.forEach((v, x) => {
-          if (v && cur.y + y >= 0) {
-            ctx.fillStyle = cur.c;
-            ctx.fillRect((cur.x + x) * CELL + 1, (cur.y + y) * CELL + 1, CELL - 2, CELL - 2);
-            drawCell(ctx, (cur.x + x) * CELL, (cur.y + y) * CELL, CELL, 4);
-          }
+          if (v && cur.y + y >= 0) drawCell(ctx, (cur.x + x) * CELL, (cur.y + y) * CELL, CELL, cur.c);
         }));
       }
     }
@@ -309,7 +333,7 @@
       const ox = Math.floor((ncv.width - m[0].length * s) / 2);
       const oy = Math.floor((ncv.height - m.length * s) / 2);
       m.forEach((row, y) => row.forEach((v, x) => {
-        if (v) { nctx.fillStyle = c; nctx.fillRect(ox + x * s + 1, oy + y * s + 1, s - 2, s - 2); }
+        if (v) drawCell(nctx, ox + x * s, oy + y * s, s, c);
       }));
     }
 
