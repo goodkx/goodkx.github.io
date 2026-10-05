@@ -586,8 +586,17 @@
     #fxParticles { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .6; }
     /* 云端留言弹幕带 */
     #hero { position: relative; }
-    .dm-band { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; overflow: hidden; pointer-events: none; }
-    .dm { position: absolute; left: 100%; white-space: nowrap; font-family: var(--mono); font-size: .78rem; color: var(--muted); text-decoration: none; pointer-events: auto; opacity: 0; animation: dmFly linear infinite; }
+    /* 云端留言弹幕：全屏固定层，不随页面滚动 */
+    .dm-band {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 10;              /* 低于导航(900)与侧栏按钮，不挡交互 */
+    }
+    .dm { position: absolute; left: 100%; white-space: nowrap; font-family: var(--mono); font-size: .78rem; color: var(--muted); text-decoration: none; pointer-events: auto; opacity: 0; animation: dmFly linear infinite; text-shadow: 0 1px 3px rgba(5, 8, 14, .85), 0 0 12px rgba(5, 8, 14, .6); }
     .dm:hover { color: var(--accent); opacity: 1; animation-play-state: paused; }
     @keyframes dmFly {
       0% { transform: translateX(0); opacity: 0; }
@@ -996,15 +1005,13 @@
       })();
     })();
 
-    /* 💬 云端留言弹幕带（拉取留言板数据，失败静默） */
+    /* 💬 云端留言弹幕：全屏固定层，不随页面滚动（拉取留言板数据，失败静默） */
     (function () {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const hero = document.getElementById("hero");
-      if (!hero) return;
       const band = document.createElement("div");
       band.className = "dm-band";
       band.setAttribute("aria-hidden", "true");
-      hero.appendChild(band);
+      document.body.appendChild(band);       // 挂到 body：全屏固定，不随滚动移动
       fetch("https://textdb.dev/api/data/cccad-gb-95592aa7", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
         .then((d) => {
@@ -1017,13 +1024,15 @@
             rows.length + '</b> 条留言飘在空中 · <a href="guestbook.html">去留言 →</a>';
           const ht = document.querySelector(".hero-text");
           if (ht) ht.appendChild(stats);
+          /* 全屏高度内分 6 条轨道，避开最顶部导航与最底部按钮 */
+          const LANES = 6;
           rows.forEach((m, i) => {
             const el = document.createElement("a");
             el.className = "dm";
             el.href = "guestbook.html";
             el.textContent = "💬 " + String(m.m || "").slice(0, 24) + " —— " + (m.n || "匿名");
-            el.style.top = (6 + (i % 4) * 24) + "%";
-            el.style.animationDuration = (16 + Math.random() * 14).toFixed(1) + "s";
+            el.style.top = (12 + (i % LANES) * 13) + "%";
+            el.style.animationDuration = (18 + Math.random() * 14).toFixed(1) + "s";
             el.style.animationDelay = (i * 2.4).toFixed(1) + "s";
             band.appendChild(el);
           });
