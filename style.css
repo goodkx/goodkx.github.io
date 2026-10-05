@@ -729,6 +729,87 @@ main, .nav, .footer { position: relative; z-index: 1; }
   .hscroll-item:hover { transform: none; }
 }
 
+/* ─────────── 技能 / 项目 / 页面导航：横向滚动选卡 ─────────── */
+:is(.skills-grid, .projects-grid, .pages-grid).hscroll {
+  display: flex;
+  grid-template-columns: none;
+  align-items: stretch;
+}
+:is(.skills-grid, .projects-grid, .pages-grid) > :is(.skill-card, .project-card, .page-card) {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: min(330px, 76vw);
+  height: auto;
+  margin: 0;
+}
+.projects-grid > .project-card { width: min(390px, 82vw); }
+
+/* 悬停时卡片抬升 + 描边发光，强化“选中”感 */
+:is(.skill-card, .project-card, .page-card).hscroll-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .38), 0 0 0 1px rgba(0, 229, 160, .30),
+              0 0 34px rgba(0, 229, 160, .14);
+}
+/* 键盘聚焦同样可见 */
+.hscroll-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 「查看全部」按钮 */
+.hscroll-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0 auto;
+  width: fit-content;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: .74rem;
+  padding: 5px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .25s, border-color .25s, background .25s, transform .15s;
+}
+.hscroll-toggle:hover {
+  color: var(--accent);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+.hscroll-toggle .arrow { transition: transform .3s; }
+.hscroll-toggle.is-open { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
+.hscroll-toggle.is-open .arrow { transform: rotate(180deg); }
+
+/* 就地展开：横滑容器变为完整网格（再点一次收起） */
+.hscroll.is-open {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  overflow-x: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
+  cursor: auto;
+  scroll-snap-type: none;
+  animation: hsExpand .32s ease;
+}
+.hscroll.is-open > .hscroll-item {
+  width: auto;
+  scroll-snap-align: none;
+}
+@keyframes hsExpand {
+  from { opacity: .6; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+/* 展开后进度条与操作提示不再需要 */
+.hscroll.is-open ~ .hscroll-bar,
+.hscroll.is-open ~ .hscroll-hint { display: none; }
+
+@media (max-width: 640px) {
+  .hscroll.is-open { grid-template-columns: 1fr; }
+}
+
 /* ─────────── 联系 ─────────── */
 .section-contact { padding-bottom: 130px; }
 .contact-box {
