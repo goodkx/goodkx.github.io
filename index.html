@@ -868,6 +868,8 @@
 
     /* ↔ 横向连续滚动：拖动 / 方向键 / 进度条 / 一键展开全部 */
     (function () {
+      /* 旋转木马自动滚动速度（px/秒）。想更快/更慢，只改这一个数字。 */
+      const CAROUSEL_SPEED = 95;
       document.querySelectorAll(".hscroll").forEach((box) => {
 
         /* 进度条：由 JS 注入，避免在 HTML 里重复维护 */
@@ -1013,7 +1015,7 @@
           /* 注意 1：scroll-snap 生效时会忽略/拉回直接赋值，必须用 scrollTo
              注意 2：每帧增量可能不足 1px（亚像素会被浏览器舍入丢弃），
                      所以先累加，攒够 1px 再滚，否则会永远卡住不动 */
-          acc += 26 * dt;                          // 约 26px/秒，缓慢巡游
+          acc += CAROUSEL_SPEED * dt;              // 见顶部 CAROUSEL_SPEED
           if (acc >= 1) {
             const step = Math.floor(acc);
             acc -= step;
