@@ -243,7 +243,7 @@
             <h3>${esc(p.n)}</h3>
             <div class="p-desc">${esc(p.d || "")}</div>
             <div class="p-foot">
-              <span class="p-price">¥${p.p}</span>
+              <span class="p-price">¥${Number(p.p).toFixed(3)}</span>
               <button class="buy-btn" data-buy="${p.id}">🛒 购买</button>
             </div>
             ${isAdmin ? `<button class="abtn" style="width:100%;margin-top:8px" data-toggle="${p.id}">${p.on ? "下架" : "上架"}</button>` : ""}
@@ -287,7 +287,7 @@
       if (!p) return;
       curBuy = p;
       $("#bmName").textContent = p.n;
-      $("#bmPrice").textContent = p.p;
+      $("#bmPrice").textContent = Number(p.p).toFixed(3);
       showQr("wechat");
       $("#buyMask").classList.add("show");
     }
@@ -393,7 +393,7 @@
               ${o.done ? "" : `<button type="button" data-done="${o.id}">✓ 已处理</button>`}
               <button type="button" data-del="${o.id}">🗑</button>
             </div>
-            <b>${esc(o.pn)}</b> · ¥${o.pp} · ${esc(o.t)}<br />
+            <b>${esc(o.pn)}</b> · ¥${Number(o.pp).toFixed(3)} · ${esc(o.t)}<br />
             买家：${esc(o.n)} · 联系：${esc(o.c)}${o.m ? "<br />备注：" + esc(o.m) : ""}
           </div>`).join("")
         : "还没有订单（买家下单后会出现在这里）";
