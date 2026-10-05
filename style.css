@@ -612,6 +612,123 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .timeline-item h3 { font-size: 1.1rem; margin: 4px 0 6px; }
 .timeline-item p { font-size: 0.92rem; color: var(--muted); }
 
+/* ─────────── 横向连续滚动（经历 / 更新日志） ─────────── */
+.hscroll {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 4px 20px;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: 4px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) transparent;
+  cursor: grab;
+  /* 渐隐遮罩，暗示右侧还有内容 */
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 46px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 46px), transparent 100%);
+}
+.hscroll.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.hscroll.is-dragging * { user-select: none; }
+.hscroll::-webkit-scrollbar { height: 6px; }
+.hscroll::-webkit-scrollbar-track { background: transparent; }
+.hscroll::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 999px; }
+.hscroll::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* 卡片：横向排布，与纵向时间线的圆点/竖线解耦 */
+.hscroll-item {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(340px, 78vw);
+  padding: 20px 22px 22px 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  scroll-snap-align: start;
+  overflow: hidden;
+  transition: transform .3s, border-color .3s, box-shadow .3s;
+}
+.hscroll-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .32);
+}
+/* 左侧强调条 */
+.hscroll-item::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  opacity: .85;
+}
+/* 右上角序号水印 */
+.hscroll-item::after {
+  content: attr(data-idx);
+  position: absolute;
+  right: 14px; top: 8px;
+  font-family: var(--mono);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: .13;
+  pointer-events: none;
+}
+.hscroll-item .timeline-dot {
+  position: static;
+  display: inline-block;
+  width: 9px; height: 9px;
+  margin-right: 9px;
+  vertical-align: middle;
+  border-width: 2px;
+  box-shadow: 0 0 10px rgba(0, 229, 160, .45);
+}
+.hscroll-item .timeline-date {
+  display: inline-block;
+  vertical-align: middle;
+  letter-spacing: .04em;
+}
+.hscroll-item h3 { font-size: 1.02rem; margin: 10px 0 7px; line-height: 1.45; }
+.hscroll-item p { font-size: 0.87rem; line-height: 1.75; margin: 0; }
+
+/* 滚动进度条 */
+.hscroll-bar {
+  position: relative;
+  height: 3px;
+  margin: 6px 0 0;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.hscroll-bar > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width .12s linear;
+}
+.hscroll-hint {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+  opacity: .8;
+}
+
+@media (max-width: 640px) {
+  .hscroll { gap: 14px; }
+  .hscroll-item { width: min(300px, 84vw); padding: 18px 18px 20px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hscroll { scroll-behavior: auto; }
+  .hscroll-item { transition: none; }
+  .hscroll-item:hover { transform: none; }
+}
+
 /* ─────────── 联系 ─────────── */
 .section-contact { padding-bottom: 130px; }
 .contact-box {
