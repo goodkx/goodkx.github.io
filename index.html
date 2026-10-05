@@ -110,39 +110,6 @@
       <a class="scroll-hint" href="#skills" aria-label="向下滚动">▾</a>
     </section>
 
-    <!-- 💬 留言板快捷条（数据与留言板云库同步） -->
-    <section class="gb-strip" id="gbQuick">
-      <div class="container gb-inner">
-        <div class="gb-head">
-          <span class="gb-ic" aria-hidden="true">💬</span>
-          <div class="gb-ht">
-            <div class="gb-title" id="gbTitle">留言板</div>
-            <p class="gb-sub">说句话吧，会出现在全站</p>
-          </div>
-          <span class="gb-count" id="gbCount">加载中</span>
-          <a class="gb-more" href="guestbook.html">全部留言 →</a>
-        </div>
-
-        <div class="gb-recent" id="gbRecent">
-          <div class="gb-skel"></div>
-          <div class="gb-skel"></div>
-        </div>
-
-        <form class="gb-quick" id="gbForm" autocomplete="off">
-          <div class="gq-av" aria-hidden="true">✍️</div>
-          <div class="gq-field">
-            <input type="text" id="gqName" maxlength="12" placeholder="昵称（留空即匿名）" aria-label="昵称" />
-            <input type="text" id="gqText" maxlength="100" placeholder="说点什么……（发布后全站可见）" aria-label="留言内容" />
-          </div>
-          <button id="gqGo" type="submit">发布</button>
-        </form>
-        <div class="gq-meta">
-          <span class="gq-tip" id="gqTip"></span>
-          <span class="gq-len"><b id="gqLen">0</b>/100</span>
-        </div>
-      </div>
-    </section>
-
     <!-- ══════════ 01 技能 ══════════ -->
     <section id="skills" class="section">
       <div class="container">
@@ -554,6 +521,40 @@
         </div>
       </div>
     </section>
+
+    <!-- 💬 留言板快捷条（数据与留言板云库同步） -->
+    <section class="gb-strip" id="gbQuick">
+      <div class="container gb-inner">
+        <div class="gb-head">
+          <span class="gb-ic" aria-hidden="true">💬</span>
+          <div class="gb-ht">
+            <div class="gb-title" id="gbTitle">留言板</div>
+            <p class="gb-sub">说句话吧，会出现在全站</p>
+          </div>
+          <span class="gb-count" id="gbCount">加载中</span>
+          <a class="gb-more" href="guestbook.html">全部留言 →</a>
+        </div>
+
+        <div class="gb-recent" id="gbRecent">
+          <div class="gb-skel"></div>
+          <div class="gb-skel"></div>
+        </div>
+
+        <form class="gb-quick" id="gbForm" autocomplete="off">
+          <div class="gq-av" aria-hidden="true">✍️</div>
+          <div class="gq-field">
+            <input type="text" id="gqName" maxlength="12" placeholder="昵称（留空即匿名）" aria-label="昵称" />
+            <input type="text" id="gqText" maxlength="100" placeholder="说点什么……（发布后全站可见）" aria-label="留言内容" />
+          </div>
+          <button id="gqGo" type="submit">发布</button>
+        </form>
+        <div class="gq-meta">
+          <span class="gq-tip" id="gqTip"></span>
+          <span class="gq-len"><b id="gqLen">0</b>/100</span>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ══════════ 页脚 ══════════ -->
