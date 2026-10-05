@@ -5,7 +5,6 @@
 (function () {
   const INDEX = [
     { t: "首页 · 个人主页", d: "index.html", u: "index.html", k: "home 主页 hero 终端" },
-    { t: "关于我", d: "自我介绍 + about_me.js", u: "index.html#about", k: "about 关于 介绍" },
     { t: "技能", d: "前端 / 后端 / 数据库 / 工具链", u: "index.html#skills", k: "skills 技能栈 技术栈" },
     { t: "项目", d: "作品展示", u: "index.html#projects", k: "projects 项目 作品" },
     { t: "经历", d: "时间线", u: "index.html#timeline", k: "timeline 经历 时间线" },
