@@ -787,8 +787,27 @@ main, .nav, .footer { position: relative; z-index: 1; }
 /* 展开后操作提示不再需要 */
 .hscroll.is-open ~ .hscroll-hint { display: none; }
 
+/* ─────────── 双行同时滚动（04 页面导航） ─────────── */
+.hscroll-rows { display: flex; flex-direction: column; gap: 14px; }
+.hscroll.pages-row { padding-top: 0; padding-bottom: 0; }
+.hscroll-toggle { margin-top: 12px; }
+
+/* 展开时两行合并成一个完整网格 */
+.hscroll-rows:has(> .hscroll.is-open) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+.hscroll-rows:has(> .hscroll.is-open) > .hscroll.is-open {
+  display: contents;
+}
+/* 模板卡片（➕ 待续…）始终隐藏，不参与轮播与网格 */
+.hscroll-rows > .page-card-add,
+.hscroll > .page-card-add { display: none; }
+
 @media (max-width: 640px) {
   .hscroll.is-open { grid-template-columns: 1fr; }
+  .hscroll-rows { gap: 10px; }
 }
 
 /* 自动滚动（旋转木马）：鼠标悬停 / 聚焦 / 手动操作时暂停 */

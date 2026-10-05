@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=116" />
+  <link rel="stylesheet" href="style.css?v=117" />
   <link rel="stylesheet" href="theme.css?v=112" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
@@ -315,106 +315,97 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="pages-grid hscroll" id="pages-list">
-          <a class="page-card reveal hscroll-item" href="blog.html" data-idx="01">
-            <span class="page-icon">✍️</span>
-            <h3>博客</h3>
-            <p>记录学习笔记与一些想法</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="gallery.html" data-idx="02">
-            <span class="page-icon">📷</span>
-            <h3>相册</h3>
-            <p>用照片收藏生活里的瞬间</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="tools.html" data-idx="03">
-            <span class="page-icon">🧰</span>
-            <h3>工具箱</h3>
-            <p>14 个开箱即用的小工具</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="ai.html" data-idx="04">
-            <span class="page-icon">🤖</span>
-            <h3>AI 军火库</h3>
-            <p>25+ 当红 AI 工具精选</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="kaoyan.html" data-idx="05">
-            <span class="page-icon">🎓</span>
-            <h3>考研大纲</h3>
-            <p>27 软件工程考研全科备考大纲</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="guestbook.html" data-idx="06">
-            <span class="page-icon">💬</span>
-            <h3>留言板</h3>
-            <p>留下你的痕迹，打个招呼</p>
-            <span class="page-go">去留言 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="game.html" data-idx="07">
-            <span class="page-icon">🎮</span>
-            <h3>2048 小游戏</h3>
-            <p>方向键合并数字，本地记录最佳分</p>
-            <span class="page-go">开始游戏 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="tetris.html" data-idx="08">
-            <span class="page-icon">🧱</span>
-            <h3>俄罗斯方块</h3>
-            <p>旋转、消行、等级加速 · 全站排名</p>
-            <span class="page-go">开始游戏 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="memory.html" data-idx="09">
-            <span class="page-icon">🧠</span>
-            <h3>记忆翻牌</h3>
-            <p>找出八对小站图案，挑战最少的步数</p>
-            <span class="page-go">来一局 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="report.html" data-idx="10">
-            <span class="page-icon">📊</span>
-            <h3>我的年报</h3>
-            <p>来访、打卡、留言——你的小站足迹</p>
-            <span class="page-go">查看报告 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="shop.html" data-idx="11">
-            <span class="page-icon">🛒</span>
-            <h3>小卖部</h3>
-            <p>站长手作好物 · 扫码付款</p>
-            <span class="page-go">去逛逛 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="links.html" data-idx="12">
-            <span class="page-icon">🤝</span>
-            <h3>友链</h3>
-            <p>朋友们的小站，以及申请友链</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card reveal hscroll-item" href="pelican.html" data-idx="13">
-            <span class="page-icon">🚲</span>
-            <h3>鹈鹕彩蛋</h3>
-            <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
-            <span class="page-go">打开页面 →</span>
-          </a>
-
-          <a class="page-card page-card-add reveal" style="--d:.72s" href="#" data-toast="新建一个 html（可复制 blog.html 的框架），再把一张卡片指向它 ✨">
+        <div class="hscroll-rows" id="pages-rows">
+          <div class="hscroll pages-row" id="pages-list" data-group="pages">
+            <a class="page-card reveal hscroll-item" href="blog.html" data-idx="01">
+              <span class="page-icon">✍️</span>
+              <h3>博客</h3>
+              <p>记录学习笔记与一些想法</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="gallery.html" data-idx="02">
+              <span class="page-icon">📷</span>
+              <h3>相册</h3>
+              <p>用照片收藏生活里的瞬间</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="tools.html" data-idx="03">
+              <span class="page-icon">🧰</span>
+              <h3>工具箱</h3>
+              <p>14 个开箱即用的小工具</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="ai.html" data-idx="04">
+              <span class="page-icon">🤖</span>
+              <h3>AI 军火库</h3>
+              <p>25+ 当红 AI 工具精选</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="kaoyan.html" data-idx="05">
+              <span class="page-icon">🎓</span>
+              <h3>考研大纲</h3>
+              <p>27 软件工程考研全科备考大纲</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="guestbook.html" data-idx="06">
+              <span class="page-icon">💬</span>
+              <h3>留言板</h3>
+              <p>留下你的痕迹，打个招呼</p>
+              <span class="page-go">去留言 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="game.html" data-idx="07">
+              <span class="page-icon">🎮</span>
+              <h3>2048 小游戏</h3>
+              <p>方向键合并数字，本地记录最佳分</p>
+              <span class="page-go">开始游戏 →</span>
+            </a>
+          </div>
+          <div class="hscroll pages-row" id="pages-list-b" data-group="pages">
+            <a style="--d:0.06" class="page-card reveal hscroll-item" href="tetris.html" data-idx="08">
+              <span class="page-icon">🧱</span>
+              <h3>俄罗斯方块</h3>
+              <p>旋转、消行、等级加速 · 全站排名</p>
+              <span class="page-go">开始游戏 →</span>
+            </a>
+            <a style="--d:0.12" class="page-card reveal hscroll-item" href="memory.html" data-idx="09">
+              <span class="page-icon">🧠</span>
+              <h3>记忆翻牌</h3>
+              <p>找出八对小站图案，挑战最少的步数</p>
+              <span class="page-go">来一局 →</span>
+            </a>
+            <a style="--d:0.18" class="page-card reveal hscroll-item" href="report.html" data-idx="10">
+              <span class="page-icon">📊</span>
+              <h3>我的年报</h3>
+              <p>来访、打卡、留言——你的小站足迹</p>
+              <span class="page-go">查看报告 →</span>
+            </a>
+            <a style="--d:0.24" class="page-card reveal hscroll-item" href="shop.html" data-idx="11">
+              <span class="page-icon">🛒</span>
+              <h3>小卖部</h3>
+              <p>站长手作好物 · 扫码付款</p>
+              <span class="page-go">去逛逛 →</span>
+            </a>
+            <a style="--d:0.30" class="page-card reveal hscroll-item" href="links.html" data-idx="12">
+              <span class="page-icon">🤝</span>
+              <h3>友链</h3>
+              <p>朋友们的小站，以及申请友链</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a style="--d:0.36" class="page-card reveal hscroll-item" href="pelican.html" data-idx="13">
+              <span class="page-icon">🚲</span>
+              <h3>鹈鹕彩蛋</h3>
+              <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+          </div>
+          <a class="page-card page-card-add reveal" style="--d:0.42" href="#" data-toast="新建一个 html（可复制 blog.html 的框架），再把一张卡片指向它 ✨">
             <span class="page-icon">➕</span>
             <h3>待续……</h3>
             <p>新建一个 html 页面，再复制一张卡片指向它</p>
             <span class="page-go">复制即用 →</span>
           </a>
         </div>
-        <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
+        <p class="hscroll-hint">↔ 两行同时滚动 · 拖动查看全部</p>
       </div>
     </section>
 
@@ -1130,33 +1121,48 @@
           else if (e.key === "End") { box.scrollTo({ left: box.scrollWidth, behavior: "smooth" }); e.preventDefault(); }
         });
 
-        /* 一键查看全部：就地展开成完整网格，再点收起（不跳页） */
-        const total = box.querySelectorAll(".hscroll-item").length;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "hscroll-toggle";
-        btn.setAttribute("aria-expanded", "false");
-        btn.setAttribute("aria-label", "查看全部");
-        btn.innerHTML = '查看全部 ' + total + ' 张 <span class="arrow">↓</span>';
+        /* 一键查看全部：就地展开成完整网格，再点收起（不跳页）
+           同一 data-group 的多行（如 04 的双行）共享一个按钮，
+           由最后一行的位置创建；其余行照常初始化轮播，不跳过 */
+        const group = box.getAttribute("data-group");
+        let groupBoxes = [box];
+        let isAnchor = true;
+        if (group) {
+          groupBoxes = [...document.querySelectorAll('.hscroll[data-group="' + group + '"]')];
+          isAnchor = groupBoxes[groupBoxes.length - 1] === box;
+        }
 
-        const toggle = () => {
-          const on = box.classList.toggle("is-open");
-          btn.classList.toggle("is-open", on);
-          btn.setAttribute("aria-expanded", on ? "true" : "false");
-          btn.setAttribute("aria-label", on ? "收起" : "查看全部");
-          btn.innerHTML = on
-            ? '收起全部 <span class="arrow">↑</span>'
-            : '查看全部 ' + total + ' 张 <span class="arrow">↓</span>';
-          if (on) {
-            stripClones();          // 网格里只保留原件，避免重复
-            pauseFor(600);
-          } else {
-            box.scrollTo({ left: 0, behavior: "auto" });
-            rebuildClones();        // 恢复无缝循环
-          }
-        };
-        btn.addEventListener("click", toggle);
-        box.parentElement.insertBefore(btn, box.nextSibling);
+        if (isAnchor) {
+          const grpTotal = groupBoxes.reduce(
+            (n, b) => n + b.querySelectorAll(".hscroll-item:not([data-clone])").length, 0);
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "hscroll-toggle";
+          btn.setAttribute("aria-expanded", "false");
+          btn.setAttribute("aria-label", "查看全部");
+          btn.innerHTML = '查看全部 ' + grpTotal + ' 张 <span class="arrow">↓</span>';
+
+          const toggle = () => {
+            const on = !groupBoxes[0].classList.contains("is-open");
+            groupBoxes.forEach((b) => {
+              b.classList.toggle("is-open", on);
+              if (on) { b.style.scrollSnapType = ""; b.scrollTo({ left: 0, behavior: "auto" }); }
+            });
+            btn.classList.toggle("is-open", on);
+            btn.setAttribute("aria-expanded", on ? "true" : "false");
+            btn.setAttribute("aria-label", on ? "收起" : "查看全部");
+            btn.innerHTML = on
+              ? '收起全部 <span class="arrow">↑</span>'
+              : '查看全部 ' + grpTotal + ' 张 <span class="arrow">↓</span>';
+            if (on) pauseFor(600);
+          };
+          btn.addEventListener("click", toggle);
+          /* 分组时按钮放到整个行容器之后，与单行区块位置保持一致 */
+          const btnHost = group ? box.parentElement.parentElement : box.parentElement;
+          const btnAfter = group ? box.parentElement : box;
+          btnHost.insertBefore(btn, btnAfter.nextSibling);
+        }
 
         /* ── 旋转木马：无限循环自动滚动，鼠标不在上面时自动前进 ── */
         let auto = 0;
