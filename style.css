@@ -810,6 +810,21 @@ main, .nav, .footer { position: relative; z-index: 1; }
   .hscroll.is-open { grid-template-columns: 1fr; }
 }
 
+/* 自动滚动（旋转木马）：鼠标悬停 / 聚焦 / 手动操作时暂停 */
+.hscroll.is-paused { scroll-behavior: auto; }
+.hscroll.is-dragging { cursor: grabbing; }
+
+/* 复制的卡片仅用于无缝循环，不参与交互与朗读 */
+.hscroll-item[data-clone] { pointer-events: none; }
+.hscroll-item[data-clone] a { pointer-events: none; }
+
+/* 展开态下隐藏复制卡片，网格里只显示原件 */
+.hscroll.is-open > .hscroll-item[data-clone] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hscroll { scroll-behavior: auto; }
+}
+
 /* ─────────── 联系 ─────────── */
 .section-contact { padding-bottom: 130px; }
 .contact-box {

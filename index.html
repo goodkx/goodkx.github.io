@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=114" />
+  <link rel="stylesheet" href="style.css?v=115" />
   <link rel="stylesheet" href="theme.css?v=112" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
@@ -947,13 +947,96 @@
           btn.innerHTML = on
             ? '收起全部 <span class="arrow">↑</span>'
             : '查看全部 ' + total + ' 张 <span class="arrow">↓</span>';
-          if (!on) {
+          if (on) {
+            stripClones();          // 网格里只保留原件，避免重复
+            pauseFor(600);
+          } else {
             box.scrollLeft = 0;
+            rebuildClones();        // 恢复无缝循环
             requestAnimationFrame(sync);
           }
         };
         btn.addEventListener("click", toggle);
         bar.parentNode.insertBefore(btn, bar.nextSibling);
+
+        /* ── 旋转木马：无限循环自动滚动，鼠标不在上面时自动前进 ── */
+        let auto = 0;
+        let cloning = false;
+        let acc = 0;
+        let hovered = false, focused = false, pausedUntil = 0;
+        const pauseFor = (ms) => { pausedUntil = performance.now() + ms; };
+
+        function buildClones() {
+          if (cloning) return;
+          cloning = true;
+          const items = [...box.children];
+          items.forEach((el) => {
+            const c = el.cloneNode(true);
+            c.setAttribute("data-clone", "");
+            c.setAttribute("aria-hidden", "true");
+            c.classList.remove("reveal", "visible");
+            c.removeAttribute("tabindex");
+            c.querySelectorAll("a,button,input,textarea,select").forEach((n) => n.setAttribute("tabindex", "-1"));
+            box.appendChild(c);
+          });
+          cloning = false;
+        }
+        function stripClones() {
+          box.querySelectorAll("[data-clone]").forEach((n) => n.remove());
+        }
+        function rebuildClones() {
+          stripClones();
+          buildClones();
+        }
+
+        function loopPx() {
+          let w = 0;
+          for (const el of box.children) {
+            if (el.hasAttribute("data-clone")) break;
+            w += el.getBoundingClientRect().width + 18;
+          }
+          return w;
+        }
+        function tick(now) {
+          auto = requestAnimationFrame(tick);
+          if (box.classList.contains("is-open")) return;
+          const prev = tick._t || now;
+          tick._t = now;
+          const dt = Math.min((now - prev) / 1000, 0.05);
+          const paused = hovered || focused || pausedUntil > now || down;
+          /* 自动播放期间临时关闭滚动吸附，避免吸附把推进的位置反复拉回；
+             暂停（鼠标悬停/手动操作）时恢复吸附，保留贴边手感 */
+          box.style.scrollSnapType = paused ? "" : "none";
+          if (paused) return;
+          const L = loopPx();
+          if (L < 40 || box.scrollWidth <= box.clientWidth + 4) return;
+          /* 注意 1：scroll-snap 生效时会忽略/拉回直接赋值，必须用 scrollTo
+             注意 2：每帧增量可能不足 1px（亚像素会被浏览器舍入丢弃），
+                     所以先累加，攒够 1px 再滚，否则会永远卡住不动 */
+          acc += 26 * dt;                          // 约 26px/秒，缓慢巡游
+          if (acc >= 1) {
+            const step = Math.floor(acc);
+            acc -= step;
+            let next = box.scrollLeft + step;
+            if (next >= L) next -= L;              // 无缝回绕
+            box.scrollTo({ left: next, behavior: "auto" });
+          }
+        }
+
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          buildClones();
+          /* 鼠标进入暂停、移出恢复 */
+          box.addEventListener("pointerenter", () => { hovered = true; });
+          box.addEventListener("pointerleave", () => { hovered = false; });
+          /* 键盘焦点暂停（与悬停分开判断，否则页面滚动会把容器聚焦后一直暂停） */
+          box.addEventListener("focusin", () => { focused = true; });
+          box.addEventListener("focusout", () => { focused = false; });
+          /* 手动滚轮 / 触摸后短暂让位 */
+          box.addEventListener("wheel", () => pauseFor(2500), { passive: true });
+          box.addEventListener("touchstart", () => pauseFor(2500), { passive: true });
+          auto = requestAnimationFrame(tick);
+          addEventListener("resize", () => { rebuildClones(); box.scrollLeft = 0; });
+        }
 
         sync();
       });
