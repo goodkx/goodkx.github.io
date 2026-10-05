@@ -180,6 +180,12 @@
     <div class="shop-grid" id="shopGrid"></div>
     <div class="empty-shop" id="emptyShop" style="display:none">🛠 小卖部筹备中，敬请期待……</div>
 
+    <button class="abtn" id="shopAdmin" style="display:block;margin:0 auto 20px">🛡️ 站长入口（订单 / 商品管理）</button>
+    <div class="admin-form" id="loginRow">
+      <input type="password" id="shopPass" placeholder="站长口令" style="max-width:200px" />
+      <button class="abtn" id="shopUnlock" type="button">解锁</button>
+    </div>
+
     <p class="caption">所有商品由站长上架 · 下单 = 扫码付款 + 提交订单 · 简单直接，无中间商</p>
   </div>
 
@@ -365,6 +371,36 @@
     });
     $("#abAdd").addEventListener("click", () => { $("#addForm").classList.toggle("show"); $("#ordersForm").classList.remove("show"); });
     $("#abOrders").addEventListener("click", () => { $("#ordersForm").classList.toggle("show"); $("#addForm").classList.remove("show"); loadOrders(); });
+
+    /* ── 站长入口：解锁后显示管理栏 ── */
+    $("#shopAdmin").addEventListener("click", () => {
+      if (isAdmin) {
+        try { sessionStorage.removeItem("shop-admin"); } catch (e) {}
+        isAdmin = false;
+        $("#adminBar").classList.remove("show");
+        $("#addForm").classList.remove("show");
+        $("#ordersForm").classList.remove("show");
+        render();
+        showToast("已退出站长模式");
+        return;
+      }
+      const row = $("#loginRow");
+      const open = row.style.display === "flex";
+      row.style.display = open ? "none" : "flex";
+      if (!open) $("#shopPass").focus();
+    });
+    $("#shopUnlock").addEventListener("click", () => {
+      const v = $("#shopPass").value.trim();
+      if (v !== ADMIN_PASS) { showToast("口令不对 🙅"); return; }
+      isAdmin = true;
+      try { sessionStorage.setItem("shop-admin", "1"); } catch (e) {}
+      $("#loginRow").style.display = "none";
+      $("#adminBar").classList.add("show");
+      loadOrders();
+      render();
+      showToast("站长模式已开启 ✓");
+    });
+    $("#shopPass").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#shopUnlock").click(); });
 
     $("#nfGo").addEventListener("click", async () => {
       const e = $("#nfEmoji").value.trim() || "🎁";
