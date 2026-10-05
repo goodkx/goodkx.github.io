@@ -113,12 +113,32 @@
     <!-- 💬 留言板快捷条（数据与留言板云库同步） -->
     <section class="gb-strip" id="gbQuick">
       <div class="container gb-inner">
-        <div class="gb-title">💬 留言板 <a href="guestbook.html">全部留言 →</a></div>
-        <div class="gb-recent" id="gbRecent"></div>
-        <div class="gb-quick">
-          <input type="text" id="gqName" maxlength="12" placeholder="昵称（可匿名）" />
-          <input type="text" id="gqText" maxlength="100" placeholder="说点什么……（发布后全站可见）" />
-          <button id="gqGo" type="button">发布 ↑</button>
+        <div class="gb-head">
+          <span class="gb-ic" aria-hidden="true">💬</span>
+          <div class="gb-ht">
+            <div class="gb-title" id="gbTitle">留言板</div>
+            <p class="gb-sub">说句话吧，会出现在全站</p>
+          </div>
+          <span class="gb-count" id="gbCount">加载中</span>
+          <a class="gb-more" href="guestbook.html">全部留言 →</a>
+        </div>
+
+        <div class="gb-recent" id="gbRecent">
+          <div class="gb-skel"></div>
+          <div class="gb-skel"></div>
+        </div>
+
+        <form class="gb-quick" id="gbForm" autocomplete="off">
+          <div class="gq-av" aria-hidden="true">✍️</div>
+          <div class="gq-field">
+            <input type="text" id="gqName" maxlength="12" placeholder="昵称（留空即匿名）" aria-label="昵称" />
+            <input type="text" id="gqText" maxlength="100" placeholder="说点什么……（发布后全站可见）" aria-label="留言内容" />
+          </div>
+          <button id="gqGo" type="submit">发布</button>
+        </form>
+        <div class="gq-meta">
+          <span class="gq-tip" id="gqTip"></span>
+          <span class="gq-len"><b id="gqLen">0</b>/100</span>
         </div>
       </div>
     </section>
@@ -676,29 +696,230 @@
     .ms-item .mb:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 229, 160, .3); }
     .ms-loading { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
 
-    /* ── 留言板快捷条 ── */
-    .gb-strip { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 10px; }
-    .gb-title { font-weight: 700; margin-bottom: 14px; }
-    .gb-title a { font-size: .74rem; color: var(--accent-2); text-decoration: none; margin-left: 10px; font-family: var(--mono); }
-    .gb-recent { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-    .gb-recent .gr-item {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-      padding: 9px 12px; font-size: .8rem; color: var(--muted); line-height: 1.7;
+    /* ── 主页留言板（聊天卡片风格） ── */
+    .gb-strip {
+      position: relative;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px 20px;
+      margin-bottom: 10px;
     }
-    .gb-recent .gr-item b { color: var(--text); margin-right: 8px; }
-    .gb-quick { display: flex; gap: 8px; flex-wrap: wrap; }
-    .gb-quick input {
-      flex: 1; min-width: 140px;
-      background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
-      color: var(--text); font-family: inherit; font-size: .8rem; padding: 9px 11px; outline: none;
+    /* 右上角柔光，呼应站点渐变主题 */
+    .gb-strip::before {
+      content: "";
+      position: absolute;
+      top: -70px; right: -50px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, var(--acc-soft-bg), transparent 70%);
+      pointer-events: none;
     }
-    .gb-quick input:focus { border-color: var(--border-hover); }
+    .gb-strip > * { position: relative; }
+
+    /* 标题行 */
+    .gb-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .gb-ic {
+      display: grid;
+      place-items: center;
+      width: 38px; height: 38px;
+      font-size: 1.05rem;
+      border-radius: 11px;
+      background: var(--acc-soft-bg);
+      border: 1px solid var(--acc-soft-bd);
+      flex: 0 0 auto;
+    }
+    .gb-ht { min-width: 0; }
+    .gb-title { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+    .gb-sub { margin: 2px 0 0; font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+    .gb-count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--accent);
+      background: var(--acc-soft-bg);
+      border: 1px solid var(--acc-soft-bd);
+      border-radius: 999px;
+      padding: 3px 10px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .gb-more {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color .2s;
+      flex: 0 0 auto;
+    }
+    .gb-more:hover { color: var(--accent); }
+
+    /* 留言列表 */
+    .gb-recent { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+    .gr-item { display: flex; gap: 10px; align-items: flex-start; }
+    /* 头像：取昵称首字（emoji 也能正常显示） */
+    .gr-av {
+      flex: 0 0 auto;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: .82rem;
+      font-weight: 700;
+      color: #06251a;
+      background: var(--gradient);
+      box-shadow: 0 3px 10px rgba(0, 229, 160, .22);
+      user-select: none;
+    }
+    .gr-body { min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+    .gr-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; width: 100%; }
+    .gr-name {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .gr-time { font-family: var(--mono); font-size: .66rem; color: var(--muted); opacity: .8; flex: 0 0 auto; }
+    .gr-text {
+      position: relative;
+      margin: 0;
+      /* 气泡按内容伸缩：短留言紧凑，长留言最多占满可用宽度 */
+      max-width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px 12px 12px 12px;
+      padding: 8px 13px;
+      font-size: .82rem;
+      color: var(--text);
+      line-height: 1.7;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    /* 气泡指向头像的小尖角 */
+    .gr-text::before {
+      content: "";
+      position: absolute;
+      left: -5px; top: 10px;
+      width: 9px; height: 9px;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transform: rotate(45deg);
+      border-radius: 0 0 0 2px;
+    }
+    /* 骨架屏 */
+    .gb-skel {
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--panel) 25%, var(--border) 37%, var(--panel) 63%);
+      background-size: 400% 100%;
+      animation: gbShimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes gbShimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+    .gb-empty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .82rem;
+      color: var(--muted);
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+    .gb-empty span { font-size: 1rem; }
+
+    /* 输入区 */
+    .gb-quick {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px 8px 8px 10px;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .gb-quick:focus-within {
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 3px var(--acc-soft-bg);
+    }
+    .gq-av {
+      flex: 0 0 auto;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: .85rem;
+      background: var(--acc-soft-bg);
+      border: 1px solid var(--acc-soft-bd);
+      user-select: none;
+    }
+    .gq-field { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .gq-field input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: inherit;
+      padding: 3px 2px;
+      min-width: 0;
+      width: 100%;
+    }
+    #gqName { font-size: .78rem; font-weight: 700; }
+    #gqText { font-size: .84rem; }
+    .gq-field input::placeholder { color: var(--muted); opacity: .85; font-weight: 400; }
     .gb-quick button {
-      background: var(--gradient); color: #06251a; border: none; border-radius: 8px;
-      font-family: inherit; font-size: .78rem; font-weight: 700; padding: 9px 18px; cursor: pointer;
-      transition: transform .15s, box-shadow .2s;
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--gradient);
+      color: #06251a;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .2s, opacity .2s;
     }
-    .gb-quick button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 229, 160, .3); }
+    .gb-quick button::after { content: "↑"; font-size: .9rem; }
+    .gb-quick button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 229, 160, .3); }
+    .gb-quick button:disabled { opacity: .6; cursor: default; }
+
+    /* 底部提示与字数 */
+    .gq-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      padding: 0 2px;
+      min-height: 16px;
+    }
+    .gq-tip { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
+    .gq-tip.ok { color: var(--accent); }
+    .gq-tip.err { color: #f87171; }
+    .gq-len { font-family: var(--mono); font-size: .68rem; color: var(--muted); flex: 0 0 auto; }
+    .gq-len b { color: var(--muted); font-weight: 400; }
+    .gq-len.warn b { color: var(--accent-2); }
+
+    @media (max-width: 560px) {
+      .gb-strip { padding: 18px 16px 16px; }
+      .gb-sub { display: none; }
+      .gb-count { display: none; }
+      .gb-quick { flex-wrap: wrap; }
+      .gb-quick button { width: 100%; justify-content: center; }
+      .gq-av { display: none; }
+    }
   </style>
   <script>
     /* 来访计数（仅存本机，一次浏览器会话只计一次） */
@@ -1089,34 +1310,96 @@
         const r = await fetch(GB_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body });
         if (!r.ok) throw new Error("HTTP " + r.status);
       }
+      /* 昵称取首字做头像；emoji 也能正常显示 */
+      function initial(name) {
+        const s = String(name || "").trim();
+        if (!s) return "匿";
+        const cp = Array.from(s);
+        return cp[0];
+      }
+      function fmtTime(t) {
+        const n = Number(t);
+        if (!n) return "";
+        const d = new Date(n);
+        const diff = Date.now() - n;
+        if (diff < 60000) return "刚刚";
+        if (diff < 3600000) return Math.floor(diff / 60000) + " 分钟前";
+        if (diff < 86400000) return Math.floor(diff / 3600000) + " 小时前";
+        return (d.getMonth() + 1) + "/" + d.getDate();
+      }
       function renderRecent(list) {
         const box = document.getElementById("gbRecent");
+        const cnt = document.getElementById("gbCount");
+        if (cnt) cnt.textContent = list.length ? list.length + " 条" : "还没有";
         if (!box) return;
         const latest = list.slice(-2).reverse();
-        box.innerHTML = latest.length ? latest.map((m) => `
-          <div class="gr-item"><b>${esc(m.n || "匿名朋友")}</b>${esc(m.m || "")}</div>`).join("")
-        : "";
+        box.innerHTML = latest.length ? latest.map((m) => {
+          const nm = esc(m.n || "匿名朋友");
+          return `<div class="gr-item">
+            <div class="gr-av" aria-hidden="true">${esc(initial(m.n))}</div>
+            <div class="gr-body">
+              <div class="gr-top">
+                <span class="gr-name">${nm}</span>
+                <span class="gr-time">${esc(fmtTime(m.t))}</span>
+              </div>
+              <p class="gr-text">${esc(m.m || "")}</p>
+            </div>
+          </div>`;
+        }).join("") : `<div class="gb-empty"><span>🌱</span>还没有人留言，来做第一个吧</div>`;
       }
-      getMsgs().then(renderRecent).catch(() => {});
+      getMsgs().then(renderRecent).catch(() => {
+        const box = document.getElementById("gbRecent");
+        if (box) box.innerHTML = `<div class="gb-empty"><span>📡</span>暂时没连上留言库，可以直接发布试试</div>`;
+        const cnt = document.getElementById("gbCount");
+        if (cnt) cnt.textContent = "离线";
+      });
+
+      /* 字数统计与状态提示 */
+      const textEl = document.getElementById("gqText");
+      const nameEl = document.getElementById("gqName");
+      const lenEl = document.getElementById("gqLen");
+      const tipEl = document.getElementById("gqTip");
+      if (textEl && lenEl) {
+        const upd = () => {
+          const n = Array.from(textEl.value).length;
+          lenEl.textContent = n;
+          const wrap = lenEl.parentElement;
+          if (wrap) wrap.classList.toggle("warn", n >= 90);
+        };
+        textEl.addEventListener("input", upd);
+        upd();
+      }
+      const tip = (msg, kind) => {
+        if (!tipEl) return;
+        tipEl.textContent = msg || "";
+        tipEl.className = "gq-tip" + (kind ? " " + kind : "");
+      };
+
+      const form = document.getElementById("gbForm");
+      if (form) form.addEventListener("submit", (e) => e.preventDefault());
+
       const gqGo = document.getElementById("gqGo");
       if (!gqGo) return;
       gqGo.addEventListener("click", async () => {
-        const nameEl = document.getElementById("gqName");
-        const textEl = document.getElementById("gqText");
         const m = textEl.value.trim();
-        if (!m) { textEl.focus(); return; }
+        if (!m) { textEl.focus(); tip("先写点什么再发布吧", "err"); return; }
         const n = nameEl.value.trim() || "匿名朋友";
-        gqGo.disabled = true; gqGo.textContent = "发布中…";
+        gqGo.disabled = true; gqGo.textContent = "发布中";
+        tip("");
         try {
           const list = await getMsgs();
           list.push({ n, m, t: Date.now() });
           await putMsgs(list.slice(-200));
           textEl.value = "";
-          gqGo.textContent = "✓ 已发布";
-          setTimeout(() => { gqGo.textContent = "发布 ↑"; gqGo.disabled = false; }, 1600);
+          if (lenEl) lenEl.textContent = "0";
+          gqGo.textContent = "已发布";
+          tip("发布成功，感谢留言 ✓", "ok");
+          setTimeout(() => { gqGo.textContent = "发布"; gqGo.disabled = false; }, 1600);
           renderRecent(list);
         } catch (e) {
-          gqGo.disabled = false; gqGo.textContent = "失败 · 重试";
+          gqGo.textContent = "重试";
+          gqGo.disabled = false;
+          tip("发布失败，请稍后再试", "err");
         }
       });
     })();
