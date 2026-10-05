@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=113" />
+  <link rel="stylesheet" href="style.css?v=114" />
   <link rel="stylesheet" href="theme.css?v=112" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
@@ -131,8 +131,8 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="skills-grid">
-          <div class="skill-card reveal">
+        <div class="skills-grid hscroll" id="skills-list">
+          <div class="skill-card reveal hscroll-item" data-idx="01">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             </div>
@@ -141,7 +141,7 @@
             <div class="chips"><span class="chip">HTML / CSS</span><span class="chip">JavaScript</span><span class="chip">零框架</span></div>
           </div>
 
-          <div class="skill-card reveal" style="--d:.08s">
+          <div class="skill-card reveal hscroll-item" data-idx="02">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
             </div>
@@ -150,7 +150,7 @@
             <div class="chips"><span class="chip">Prompt</span><span class="chip">结对调试</span><span class="chip">工具选型</span></div>
           </div>
 
-          <div class="skill-card reveal" style="--d:.16s">
+          <div class="skill-card reveal hscroll-item" data-idx="03">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
             </div>
@@ -159,7 +159,7 @@
             <div class="chips"><span class="chip">布局</span><span class="chip">动效</span><span class="chip">主题系统</span></div>
           </div>
 
-          <div class="skill-card reveal" style="--d:.24s">
+          <div class="skill-card reveal hscroll-item" data-idx="04">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             </div>
@@ -168,7 +168,7 @@
             <div class="chips"><span class="chip">功能设计</span><span class="chip">本地存储</span><span class="chip">CORS</span></div>
           </div>
 
-          <div class="skill-card reveal" style="--d:.32s">
+          <div class="skill-card reveal hscroll-item" data-idx="05">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
             </div>
@@ -177,7 +177,7 @@
             <div class="chips"><span class="chip">Git</span><span class="chip">Pages</span><span class="chip">EdgeOne</span></div>
           </div>
 
-          <div class="skill-card reveal" style="--d:.4s">
+          <div class="skill-card reveal hscroll-item" data-idx="06">
             <div class="skill-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
@@ -186,6 +186,8 @@
             <div class="chips"><span class="chip">博客</span><span class="chip">RSS</span><span class="chip">写作</span></div>
           </div>
         </div>
+      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
+        <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
 
@@ -197,8 +199,8 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="projects-grid">
-          <article class="project-card reveal">
+        <div class="projects-grid hscroll" id="projects-list">
+          <article class="project-card reveal hscroll-item" data-idx="01">
             <div class="project-top">
               <span class="project-folder">
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -217,7 +219,7 @@
             <div class="chips"><span class="chip">HTML/CSS/JS</span><span class="chip">零框架</span><span class="chip">双托管</span></div>
           </article>
 
-          <article class="project-card reveal" style="--d:.08s">
+          <article class="project-card reveal hscroll-item" data-idx="02">
             <div class="project-top">
               <span class="project-folder">
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -236,7 +238,7 @@
             <div class="chips"><span class="chip">textdb</span><span class="chip">CORS</span><span class="chip">自动重试</span></div>
           </article>
 
-          <article class="project-card reveal" style="--d:.16s">
+          <article class="project-card reveal hscroll-item" data-idx="03">
             <div class="project-top">
               <span class="project-folder">
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -255,7 +257,7 @@
             <div class="chips"><span class="chip">纯前端</span><span class="chip">localStorage</span></div>
           </article>
 
-          <article class="project-card reveal" style="--d:.24s">
+          <article class="project-card reveal hscroll-item" data-idx="04">
             <div class="project-top">
               <span class="project-folder">
                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -274,6 +276,8 @@
             <div class="chips"><span class="chip">策展</span><span class="chip">持续更新</span></div>
           </article>
         </div>
+      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
+        <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
 
@@ -316,7 +320,7 @@
     </section>
 
     <!-- ══════════ 04 页面导航 ══════════
-         ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card">…</a>，
+         ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card hscroll-item" data-idx="01">…</a>，
          改掉 href（指向你的新页面）、图标 emoji 和文字即可。
          页面还没建时保持 href="#"，点击会弹出提示。 -->
     <section id="pages" class="section">
@@ -326,92 +330,92 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="pages-grid">
-          <a class="page-card reveal" href="blog.html">
+        <div class="pages-grid hscroll" id="pages-list">
+          <a class="page-card reveal hscroll-item" href="blog.html" data-idx="02">
             <span class="page-icon">✍️</span>
             <h3>博客</h3>
             <p>记录学习笔记与一些想法</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.06s" href="gallery.html">
+          <a class="page-card reveal hscroll-item" href="gallery.html" data-idx="03">
             <span class="page-icon">📷</span>
             <h3>相册</h3>
             <p>用照片收藏生活里的瞬间</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.12s" href="tools.html">
+          <a class="page-card reveal hscroll-item" href="tools.html" data-idx="04">
             <span class="page-icon">🧰</span>
             <h3>工具箱</h3>
             <p>14 个开箱即用的小工具</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.18s" href="ai.html">
+          <a class="page-card reveal hscroll-item" href="ai.html" data-idx="05">
             <span class="page-icon">🤖</span>
             <h3>AI 军火库</h3>
             <p>25+ 当红 AI 工具精选</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.24s" href="kaoyan.html">
+          <a class="page-card reveal hscroll-item" href="kaoyan.html" data-idx="06">
             <span class="page-icon">🎓</span>
             <h3>考研大纲</h3>
             <p>27 软件工程考研全科备考大纲</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.3s" href="guestbook.html">
+          <a class="page-card reveal hscroll-item" href="guestbook.html" data-idx="07">
             <span class="page-icon">💬</span>
             <h3>留言板</h3>
             <p>留下你的痕迹，打个招呼</p>
             <span class="page-go">去留言 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.36s" href="game.html">
+          <a class="page-card reveal hscroll-item" href="game.html" data-idx="08">
             <span class="page-icon">🎮</span>
             <h3>2048 小游戏</h3>
             <p>方向键合并数字，本地记录最佳分</p>
             <span class="page-go">开始游戏 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.42s" href="tetris.html">
+          <a class="page-card reveal hscroll-item" href="tetris.html" data-idx="09">
             <span class="page-icon">🧱</span>
             <h3>俄罗斯方块</h3>
             <p>旋转、消行、等级加速 · 全站排名</p>
             <span class="page-go">开始游戏 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.48s" href="memory.html">
+          <a class="page-card reveal hscroll-item" href="memory.html" data-idx="10">
             <span class="page-icon">🧠</span>
             <h3>记忆翻牌</h3>
             <p>找出八对小站图案，挑战最少的步数</p>
             <span class="page-go">来一局 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.54s" href="report.html">
+          <a class="page-card reveal hscroll-item" href="report.html" data-idx="11">
             <span class="page-icon">📊</span>
             <h3>我的年报</h3>
             <p>来访、打卡、留言——你的小站足迹</p>
             <span class="page-go">查看报告 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.58s" href="shop.html">
+          <a class="page-card reveal hscroll-item" href="shop.html" data-idx="12">
             <span class="page-icon">🛒</span>
             <h3>小卖部</h3>
             <p>站长手作好物 · 扫码付款</p>
             <span class="page-go">去逛逛 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.6s" href="links.html">
+          <a class="page-card reveal hscroll-item" href="links.html" data-idx="13">
             <span class="page-icon">🤝</span>
             <h3>友链</h3>
             <p>朋友们的小站，以及申请友链</p>
             <span class="page-go">打开页面 →</span>
           </a>
 
-          <a class="page-card reveal" style="--d:.66s" href="pelican.html">
+          <a class="page-card reveal hscroll-item" href="pelican.html" data-idx="14">
             <span class="page-icon">🚲</span>
             <h3>鹈鹕彩蛋</h3>
             <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
@@ -425,6 +429,8 @@
             <span class="page-go">复制即用 →</span>
           </a>
         </div>
+      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
+        <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
 
@@ -860,12 +866,9 @@
       }
     })();
 
-    /* ↔ 横向连续滚动：拖动 / 方向键 / 进度条（经历 · 更新日志） */
+    /* ↔ 横向连续滚动：拖动 / 方向键 / 进度条 / 一键展开全部 */
     (function () {
-      const lists = ["timeline-list", "log-list"];
-      lists.forEach((id) => {
-        const box = document.getElementById(id);
-        if (!box) return;
+      document.querySelectorAll(".hscroll").forEach((box) => {
 
         /* 进度条：由 JS 注入，避免在 HTML 里重复维护 */
         const bar = document.createElement("div");
@@ -876,6 +879,7 @@
         box.insertAdjacentElement("afterend", bar);
 
         function sync() {
+          if (box.classList.contains("is-open")) return;
           const max = box.scrollWidth - box.clientWidth;
           const ratio = max > 0 ? box.scrollLeft / max : 0;
           const visible = box.scrollWidth > 0 ? box.clientWidth / box.scrollWidth : 1;
@@ -925,6 +929,31 @@
           else if (e.key === "Home") { box.scrollTo({ left: 0, behavior: "smooth" }); e.preventDefault(); }
           else if (e.key === "End") { box.scrollTo({ left: box.scrollWidth, behavior: "smooth" }); e.preventDefault(); }
         });
+
+        /* 一键查看全部：就地展开成完整网格，再点收起（不跳页） */
+        const total = box.querySelectorAll(".hscroll-item").length;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "hscroll-toggle";
+        btn.setAttribute("aria-expanded", "false");
+        btn.setAttribute("aria-label", "查看全部");
+        btn.innerHTML = '查看全部 ' + total + ' 张 <span class="arrow">↓</span>';
+
+        const toggle = () => {
+          const on = box.classList.toggle("is-open");
+          btn.classList.toggle("is-open", on);
+          btn.setAttribute("aria-expanded", on ? "true" : "false");
+          btn.setAttribute("aria-label", on ? "收起" : "查看全部");
+          btn.innerHTML = on
+            ? '收起全部 <span class="arrow">↑</span>'
+            : '查看全部 ' + total + ' 张 <span class="arrow">↓</span>';
+          if (!on) {
+            box.scrollLeft = 0;
+            requestAnimationFrame(sync);
+          }
+        };
+        btn.addEventListener("click", toggle);
+        bar.parentNode.insertBefore(btn, bar.nextSibling);
 
         sync();
       });
