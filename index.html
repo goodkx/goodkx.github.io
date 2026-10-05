@@ -52,9 +52,10 @@
         <a href="#skills"><span class="nav-num">02.</span>技能</a>
         <a href="#projects"><span class="nav-num">03.</span>项目</a>
         <a href="#timeline"><span class="nav-num">04.</span>经历</a>
-        <a href="#pages"><span class="nav-num">05.</span>页面</a>
-        <a href="#log"><span class="nav-num">06.</span>日志</a>
-        <a href="#contact"><span class="nav-num">07.</span>联系</a>
+        <a href="#shop"><span class="nav-num">05.</span>小卖部</a>
+        <a href="#pages"><span class="nav-num">06.</span>页面</a>
+        <a href="#log"><span class="nav-num">07.</span>日志</a>
+        <a href="#contact"><span class="nav-num">08.</span>联系</a>
       </nav>
 
       <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
@@ -337,14 +338,29 @@
       </div>
     </section>
 
-    <!-- ══════════ 05 页面导航 ══════════
+    <!-- ══════════ 05 小卖部 ══════════ -->
+    <section id="shop" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">05.</span>小卖部</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="shop-strip reveal">
+          <p class="shop-lede">站长手作好物 · 扫码付款 · 下单后留言板吱一声 <a href="shop.html" style="color:var(--accent-2)">完整小卖部 →</a></p>
+          <div class="shop-mini" id="homeShop"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ 06 页面导航 ══════════
          ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card">…</a>，
          改掉 href（指向你的新页面）、图标 emoji 和文字即可。
          页面还没建时保持 href="#"，点击会弹出提示。 -->
     <section id="pages" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">05.</span>页面导航</h2>
+          <h2 class="section-title"><span class="num">06.</span>页面导航</h2>
           <span class="section-line"></span>
         </div>
 
@@ -454,7 +470,7 @@
     <section id="log" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">06.</span>更新日志</h2>
+          <h2 class="section-title"><span class="num">07.</span>更新日志</h2>
           <span class="section-line"></span>
         </div>
 
@@ -515,7 +531,7 @@
     <section id="contact" class="section section-contact">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">07.</span>联系我</h2>
+          <h2 class="section-title"><span class="num">08.</span>联系我</h2>
           <span class="section-line"></span>
         </div>
 
@@ -560,6 +576,27 @@
       <a href="#hero" class="back-top">↑ 返回顶部</a>
     </div>
   </footer>
+
+  <!-- 购买弹窗（首页快捷下单） -->
+  <div class="modal-mask" id="buyMask">
+    <div class="modal">
+      <button class="m-close" id="hmClose" type="button">✕</button>
+      <h3 id="hmName"></h3>
+      <div class="m-price">¥<span id="hmPrice"></span></div>
+      <div class="qr-tabs">
+        <button type="button" class="on" data-q="wechat">💚 微信收款码</button>
+        <button type="button" data-q="alipay">💙 支付宝收款码</button>
+      </div>
+      <div class="qr-box" id="hmQrBox"></div>
+      <p class="hint" style="margin-bottom:6px">付款后提交订单，站长确认后发货 ✓</p>
+      <div class="m-form">
+        <input type="text" id="hmNick" maxlength="12" placeholder="你的昵称" />
+        <input type="text" id="hmContact" maxlength="40" placeholder="联系方式（微信/QQ/邮箱，任填一种）" />
+        <textarea id="hmNote" rows="2" placeholder="备注（可选）"></textarea>
+        <button class="tbtn" id="hmSubmit" type="button">✓ 提交订单</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 复制成功提示 -->
   <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
@@ -609,6 +646,62 @@
       0%, 100% { transform: translate(-50%, 0); opacity: .45; }
       50% { transform: translate(-50%, 8px); opacity: 1; }
     }
+
+    /* ── 首页小卖部橱窗 ── */
+    .shop-strip { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .shop-lede { color: var(--muted); font-size: .86rem; margin-bottom: 18px; }
+    .shop-lede a { color: var(--accent-2); text-decoration: none; }
+    .shop-mini { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+    .sm-prod {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px; display: flex; flex-direction: column; gap: 8px;
+      transition: border-color .25s, transform .25s;
+    }
+    .sm-prod:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+    .sm-prod .e { font-size: 2rem; }
+    .sm-prod .n { font-weight: 700; color: var(--text); }
+    .sm-prod .d { font-size: .76rem; color: var(--muted); line-height: 1.7; flex: 1; }
+    .sm-prod .buy-line { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .sm-prod .pr { font-family: var(--mono); color: var(--accent); font-size: 1.05rem; }
+    .sm-buy {
+      background: var(--gradient); color: #06251a; border: none; border-radius: 8px;
+      font-family: inherit; font-size: .74rem; font-weight: 700; padding: 6px 14px; cursor: pointer;
+      transition: transform .15s, box-shadow .2s;
+    }
+    .sm-buy:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 229, 160, .3); }
+
+    /* ── 购买弹窗 ── */
+    .modal-mask { position: fixed; inset: 0; z-index: 2000; background: rgba(5, 8, 14, .7); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-mask.show { display: flex; }
+    .modal { background: var(--card); border: 1px solid var(--border-hover); border-radius: 14px; width: min(430px, 94vw); max-height: 88vh; overflow: auto; padding: 22px; text-align: center; position: relative; }
+    .modal h3 { margin-bottom: 4px; }
+    .modal .m-price { font-family: var(--mono); font-size: 1.7rem; color: var(--accent); margin-bottom: 14px; }
+    .modal .m-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+    .qr-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .qr-tabs button { background: var(--panel); border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-family: inherit; font-size: .74rem; padding: 5px 15px; cursor: pointer; transition: all .2s; }
+    .qr-tabs button.on { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
+    .qr-box { width: min(300px, 80vw); height: min(300px, 80vw); margin: 0 auto 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; }
+    .qr-box img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .qr-miss { color: var(--muted); font-size: .78rem; padding: 20px 10px; }
+    .m-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; text-align: left; }
+    .m-form input, .m-form textarea { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: .82rem; padding: 9px 11px; outline: none; }
+    .m-form textarea { resize: vertical; min-height: 46px; }
+    .m-form input:focus, .m-form textarea:focus { border-color: var(--border-hover); }
+
+    /* ── 右侧竖导航栏（宽屏） ── */
+    .side-nav { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; z-index: 850; }
+    .side-nav a { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--border-hover); transition: background .2s, box-shadow .2s; }
+    .side-nav a:hover { background: var(--accent-2); }
+    .side-nav a.on { background: var(--accent); box-shadow: 0 0 10px rgba(0, 229, 160, .5); }
+    .side-nav a .tip {
+      position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+      background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); font-size: .7rem; font-family: var(--mono);
+      padding: 2px 8px; white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .side-nav a:hover .tip { opacity: 1; }
+    @media (min-width: 1200px) { .side-nav { display: flex; } }
   </style>
   <script>
     /* 来访计数（仅存本机，一次浏览器会话只计一次） */
@@ -741,6 +834,91 @@
       a.setAttribute("aria-label", "向下滚动");
       a.textContent = "▾";
       hero.appendChild(a);
+    })();
+
+    /* 🛒 首页小卖部橱窗（数据来自云端） */
+    (function () {
+      const P_URL = "https://textdb.dev/api/data/cccad-shop-products";
+      const O_URL = "https://textdb.dev/api/data/cccad-shop-orders";
+      const QRS = { wechat: "files/pay-wechat.png", alipay: "files/pay-alipay.jpg" };
+      let cur = null;
+      const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      async function getJson(url) {
+        const r = await fetch(url + "?p=" + Math.random(), { cache: "no-store" });
+        if (r.status === 404) return null;
+        const t = await r.text();
+        if (!t.trim()) return null;
+        try { return JSON.parse(t); } catch (e) { return null; }
+      }
+      function render(list) {
+        const box = document.getElementById("homeShop");
+        const on = list.filter((p) => p.on);
+        box.innerHTML = on.length ? on.map((p) => `
+          <div class="sm-prod">
+            <div class="e">${p.e || "🎁"}</div>
+            <div class="n">${esc(p.n)}</div>
+            <div class="d">${esc(p.d || "")}</div>
+            <div class="buy-line">
+              <span class="pr">¥${Number(p.p).toFixed(3)}</span>
+              <button class="sm-buy" data-id="${p.id}">🛒 购买</button>
+            </div>
+          </div>`).join("")
+        : '<div style="grid-column:1/-1;color:var(--muted);font-size:.84rem">小卖部筹备中，敬请期待……</div>';
+        box.querySelectorAll(".sm-buy").forEach((b) => b.addEventListener("click", () => {
+          const p = list.find((x) => x.id === b.dataset.id);
+          if (!p) return;
+          cur = p;
+          document.getElementById("hmName").textContent = p.n;
+          document.getElementById("hmPrice").textContent = Number(p.p).toFixed(3);
+          showQr("wechat");
+          document.getElementById("buyMask").classList.add("show");
+        }));
+      }
+      function showQr(kind) {
+        const box = document.getElementById("hmQrBox");
+        box.innerHTML = "";
+        const img = new Image();
+        img.src = QRS[kind] + "?v=" + Date.now();
+        img.alt = kind === "wechat" ? "微信收款码" : "支付宝收款码";
+        img.onerror = () => { box.innerHTML = '<p class="qr-miss">站长还未上传' + (kind === "wechat" ? "微信" : "支付宝") + '收款码<br />请到<a href="guestbook.html" style="color:var(--accent)">留言板</a>联系站长</p>'; };
+        box.appendChild(img);
+      }
+      getJson(P_URL).then((d) => {
+        render(d && Array.isArray(d.list) ? d.list : []);
+      }).catch(() => {});
+    })();
+
+    /* 🧭 右侧竖导航栏（宽屏，滚动高亮） */
+    (function () {
+      if (window.innerWidth < 1200) { const retry = () => { if (window.innerWidth >= 1200) buildSideNav(); }; addEventListener("resize", retry); return; }
+      buildSideNav();
+      function buildSideNav() {
+        const SECTIONS = [
+          ["hero", "首页"], ["about", "关于"], ["skills", "技能"], ["projects", "项目"],
+          ["timeline", "经历"], ["shop", "小卖部"], ["pages", "页面"], ["log", "日志"], ["contact", "联系"],
+        ];
+        const nav = document.createElement("nav");
+        nav.className = "side-nav";
+        nav.setAttribute("aria-label", "区块导航");
+        nav.innerHTML = SECTIONS.map(([id, t]) => `<a href="#${id}" data-t="${id}"><span class="tip">${t}</span></a>`).join("");
+        document.body.appendChild(nav);
+        const dots = [...nav.querySelectorAll("a")];
+        dots.forEach((a) => a.addEventListener("click", (e) => {
+          e.preventDefault();
+          document.getElementById(a.dataset.t).scrollIntoView({ behavior: "smooth" });
+        }));
+        function spy() {
+          let curId = SECTIONS[0][0];
+          for (const [id] of SECTIONS) {
+            const el = document.getElementById(id);
+            if (el && el.getBoundingClientRect().top <= 220) curId = id;
+          }
+          dots.forEach((a) => a.classList.toggle("on", a.dataset.t === curId));
+        }
+        addEventListener("scroll", spy, { passive: true });
+        addEventListener("resize", () => { if (innerWidth >= 1200) spy(); });
+        spy();
+      }
     })();
   </script>
 </body>
