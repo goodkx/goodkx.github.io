@@ -821,6 +821,10 @@ main, .nav, .footer { position: relative; z-index: 1; }
 /* 展开态下隐藏复制卡片，网格里只显示原件 */
 .hscroll.is-open > .hscroll-item[data-clone] { display: none; }
 
+/* 「➕ 待续……」是给站长添加新页面用的模板卡片，
+   不属于内容本身，不参与轮播展示（新建页面时可删掉这条规则） */
+.hscroll > .page-card-add { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .hscroll { scroll-behavior: auto; }
 }
