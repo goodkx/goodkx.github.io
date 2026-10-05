@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="小卖部 —— 站长手作好物，扫码付款，留言即下单。" />
+  <meta property="og:title" content="小卖部 | CCCAD" />
+  <meta property="og:description" content="站长手作好物 · 扫码付款 · 简单直接" />
+  <meta property="og:type" content="website" />
+  <title>小卖部 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛒%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=113" />
+  <link rel="stylesheet" href="theme.css?v=113" />
+  <link rel="stylesheet" href="search.css?v=113" />
+  <script src="theme.js?v=113"></script>
+  <script src="search.js?v=113"></script>
+  <style>
+    .admin-bar {
+      display: none; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      background: var(--card); border: 1px dashed var(--border-hover); border-radius: 12px;
+      padding: 12px; margin-bottom: 22px; text-align: center;
+    }
+    .admin-bar.show { display: flex; }
+    .admin-bar .hint { width: 100%; margin: 0; }
+    .abtn {
+      background: var(--panel); border: 1px solid var(--border-hover); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: .78rem;
+      padding: 7px 14px; cursor: pointer; transition: all .2s;
+    }
+    .abtn:hover { color: var(--accent); }
+    .abtn.warn:hover { color: #ff8484; border-color: rgba(255, 132, 132, .4); }
+    .admin-form {
+      display: none; width: 100%;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px; gap: 8px; flex-wrap: wrap; align-items: center;
+    }
+    .admin-form.show { display: flex; }
+    .admin-form input, .admin-form textarea {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: .8rem; padding: 8px 10px; outline: none;
+    }
+    .admin-form input { flex: 1; min-width: 90px; }
+    .admin-form textarea { width: 100%; resize: vertical; }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    .prod {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; display: flex; flex-direction: column;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+      position: relative;
+    }
+    .prod::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gradient); transform: scaleX(0); transform-origin: left;
+      transition: transform .35s;
+    }
+    .prod:hover { border-color: var(--border-hover); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 229, 160, .1); }
+    .prod:hover::before { transform: scaleX(1); }
+    .prod .p-ico {
+      height: 110px; display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; background: rgba(0, 229, 160, .05);
+      border-bottom: 1px solid var(--border);
+    }
+    .prod .p-ico img { max-width: 100%; max-height: 100%; object-fit: cover; }
+    .prod .p-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .prod h3 { font-size: .95rem; margin: 0; }
+    .prod .p-desc { color: var(--muted); font-size: .8rem; line-height: 1.7; flex: 1; }
+    .prod .p-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+    .prod .p-price { font-family: var(--mono); font-size: 1.15rem; color: var(--accent); }
+    .prod .off-tag {
+      position: absolute; top: 10px; right: 10px; z-index: 3;
+      background: rgba(255, 132, 132, .15); color: #ff8484; border: 1px solid rgba(255, 132, 132, .35);
+      font-family: var(--mono); font-size: .64rem; padding: 2px 9px; border-radius: 999px;
+    }
+    .buy-btn {
+      background: var(--gradient); color: #06251a; border: none; border-radius: 8px;
+      font-family: inherit; font-size: .78rem; font-weight: 700;
+      padding: 7px 16px; cursor: pointer; transition: transform .15s, box-shadow .2s;
+    }
+    .buy-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 229, 160, .3); }
+
+    .empty-shop {
+      text-align: center; color: var(--muted); padding: 50px 0;
+      border: 1px dashed var(--border); border-radius: var(--radius); font-size: .9rem;
+    }
+
+    /* 购买弹窗 */
+    .modal-mask {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(5, 8, 14, .7); backdrop-filter: blur(3px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-mask.show { display: flex; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border-hover); border-radius: 14px;
+      width: min(430px, 94vw); max-height: 88vh; overflow: auto;
+      padding: 22px; text-align: center; position: relative;
+    }
+    .modal h3 { margin-bottom: 4px; }
+    .modal .m-price { font-family: var(--mono); font-size: 1.7rem; color: var(--accent); margin-bottom: 14px; }
+    .modal .m-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer;
+    }
+    .qr-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .qr-tabs button {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 999px;
+      color: var(--muted); font-family: inherit; font-size: .74rem;
+      padding: 5px 15px; cursor: pointer; transition: all .2s;
+    }
+    .qr-tabs button.on { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
+    .qr-box { min-height: 170px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .qr-box img { max-width: 200px; max-height: 190px; border-radius: 8px; }
+    .qr-miss { color: var(--muted); font-size: .78rem; padding: 20px 10px; }
+    .m-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; text-align: left; }
+    .m-form input, .m-form textarea {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: .82rem; padding: 9px 11px; outline: none;
+    }
+    .m-form textarea { resize: vertical; min-height: 46px; }
+    .m-form input:focus, .m-form textarea:focus { border-color: var(--border-hover); }
+    .m-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+
+    /* 订单列表（站长） */
+    .order-item {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 8px; text-align: left;
+      font-size: .78rem; color: var(--muted); line-height: 1.8; position: relative;
+    }
+    .order-item b { color: var(--text); }
+    .order-item .od-act { position: absolute; top: 8px; right: 10px; display: flex; gap: 6px; }
+    .order-item.done { opacity: .45; }
+    .od-act button {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      color: var(--muted); font-size: .66rem; padding: 2px 8px; cursor: pointer;
+    }
+    .od-act button:hover { color: var(--accent); border-color: var(--border-hover); }
+    .orders-box { text-align: left; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🛒 shop</span>
+  </div>
+
+  <h1>好物 <span class="grad">小卖部</span></h1>
+
+  <div class="wrap">
+    <div class="admin-bar" id="adminBar">
+      <button class="abtn" id="abAdd">➕ 新增商品</button>
+      <button class="abtn" id="abOrders">📦 订单 <span id="odCount"></span></button>
+      <button class="abtn warn" id="abExit">退出站长模式</button>
+      <p class="hint">站长模式：可上架/下架商品、处理订单 · 口令在 shop.html 的 ADMIN_PASS 修改</p>
+      <div class="admin-form" id="addForm">
+        <input type="text" id="nfEmoji" placeholder="图标 emoji，如 🎁" style="max-width:110px" />
+        <input type="text" id="nfName" placeholder="商品名称" />
+        <input type="text" id="nfPrice" placeholder="价格（数字，如 9.9）" style="max-width:130px" />
+        <textarea id="nfDesc" rows="2" placeholder="商品描述（一两句话）"></textarea>
+        <button class="abtn" id="nfGo" type="button" style="align-self:center">确认上架</button>
+      </div>
+      <div class="admin-form" id="ordersForm">
+        <div class="orders-box" id="ordersBox" style="width:100%"></div>
+      </div>
+    </div>
+
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="empty-shop" id="emptyShop" style="display:none">🛠 小卖部筹备中，敬请期待……</div>
+
+    <p class="caption">所有商品由站长上架 · 下单 = 扫码付款 + 提交订单 · 简单直接，无中间商</p>
+  </div>
+
+  <!-- 购买弹窗 -->
+  <div class="modal-mask" id="buyMask">
+    <div class="modal">
+      <button class="m-close" id="bmClose" type="button">✕</button>
+      <h3 id="bmName"></h3>
+      <div class="m-price">¥<span id="bmPrice"></span></div>
+      <div class="qr-tabs">
+        <button type="button" class="on" data-q="wechat">💚 微信收款码</button>
+        <button type="button" data-q="alipay">💙 支付宝收款码</button>
+      </div>
+      <div class="qr-box" id="bmQrBox"><p class="qr-miss">站长还未上传收款码<br />可先提交订单，再去<a href="guestbook.html" style="color:var(--accent)">留言板</a>联系站长</p></div>
+      <p class="hint" style="margin-bottom:6px">付款后提交订单，站长确认后发货 ✓</p>
+      <div class="m-form">
+        <input type="text" id="bmNick" maxlength="12" placeholder="你的昵称" />
+        <input type="text" id="bmContact" maxlength="40" placeholder="联系方式（微信/QQ/邮箱，任填一种）" />
+        <textarea id="bmNote" rows="2" placeholder="备注（可选）"></textarea>
+        <button class="tbtn" id="bmSubmit" type="button">✓ 提交订单</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+    const P_URL = "https://textdb.dev/api/data/cccad-shop-products";
+    const O_URL = "https://textdb.dev/api/data/cccad-shop-orders";
+    const QR_IMGS = { wechat: "files/pay-wechat.jpg", alipay: "files/pay-alipay.jpg" };
+    const ADMIN_PASS = "cccad2026"; /* ← 想换口令就改这里 */
+    let isAdmin = false;
+    try { isAdmin = sessionStorage.getItem("shop-admin") === "1"; } catch (e) {}
+
+    let products = [];
+    let orders = [];
+
+    /* textdb 空响应体/404 兼容读取 */
+    async function fetchJson(url) {
+      const r = await fetch(url + "?p=" + Math.random(), { cache: "no-store" });
+      if (r.status === 404) return null;
+      const text = await r.text();
+      if (!text.trim()) return null;
+      try { return JSON.parse(text); } catch (e) { return null; }
+    }
+    async function putJson(url, obj) {
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(obj),
+      });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+    }
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function render() {
+      const grid = $("#shopGrid");
+      const on = products.filter((p) => p.on);
+      $("#emptyShop").style.display = on.length ? "none" : "";
+      grid.innerHTML = on.map((p) => `
+        <div class="prod" data-id="${p.id}">
+          ${isAdmin && !p.on ? '<span class="off-tag">已下架</span>' : ""}
+          <div class="p-ico">${p.e || "🎁"}</div>
+          <div class="p-body">
+            <h3>${esc(p.n)}</h3>
+            <div class="p-desc">${esc(p.d || "")}</div>
+            <div class="p-foot">
+              <span class="p-price">¥${p.p}</span>
+              <button class="buy-btn" data-buy="${p.id}">🛒 购买</button>
+            </div>
+            ${isAdmin ? `<button class="abtn" style="width:100%;margin-top:8px" data-toggle="${p.id}">${p.on ? "下架" : "上架"}</button>` : ""}
+          </div>
+        </div>`).join("");
+      /* 管理视角还显示已下架商品 */
+      if (isAdmin) {
+        const off = products.filter((p) => !p.on);
+        grid.innerHTML += off.map((p) => `
+          <div class="prod" data-id="${p.id}" style="opacity:.55">
+            <span class="off-tag">已下架</span>
+            <div class="p-ico">${p.e || "🎁"}</div>
+            <div class="p-body">
+              <h3>${esc(p.n)}</h3>
+              <div class="p-desc">${esc(p.d || "")}</div>
+              <div class="p-foot">
+                <span class="p-price">¥${p.p}</span>
+                <button class="abtn" data-toggle="${p.id}">重新上架</button>
+              </div>
+            </div>
+          </div>`).join("");
+      }
+      wireCards();
+    }
+
+    function wireCards() {
+      $$("#shopGrid [data-buy]").forEach((b) => b.addEventListener("click", () => openBuy(b.dataset.buy)));
+      $$("#shopGrid [data-toggle]").forEach((b) => b.addEventListener("click", async () => {
+        const p = products.find((x) => x.id === b.dataset.toggle);
+        if (!p) return;
+        p.on = !p.on;
+        render();
+        try { await putJson(P_URL, { list: products }); showToast("已" + (p.on ? "上架" : "下架") + " ✓"); }
+        catch (e) { showToast("同步失败（" + e.message + "）"); }
+      }));
+    }
+
+    let curBuy = null;
+    function openBuy(id) {
+      const p = products.find((x) => x.id === id);
+      if (!p) return;
+      curBuy = p;
+      $("#bmName").textContent = p.n;
+      $("#bmPrice").textContent = p.p;
+      showQr("wechat");
+      $("#buyMask").classList.add("show");
+    }
+    function showQr(kind) {
+      const box = $("#bmQrBox");
+      box.innerHTML = "";
+      const img = new Image();
+      img.src = QR_IMGS[kind] + "?v=" + Date.now();
+      img.alt = kind === "wechat" ? "微信收款码" : "支付宝收款码";
+      img.onerror = () => { box.innerHTML = '<p class="qr-miss">站长还未上传' + (kind === "wechat" ? "微信" : "支付宝") + '收款码<br />请先到<a href="guestbook.html" style="color:var(--accent)">留言板</a>联系站长</p>'; };
+      box.appendChild(img);
+    }
+    $$(".qr-tabs button").forEach((b) => b.addEventListener("click", () => {
+      $$(".qr-tabs button").forEach((x) => x.classList.remove("on"));
+      b.classList.add("on");
+      showQr(b.dataset.q);
+    }));
+    $("#bmClose").addEventListener("click", () => $("#buyMask").classList.remove("show"));
+    $("#buyMask").addEventListener("click", (e) => { if (e.target === $("#buyMask")) $("#buyMask").classList.remove("show"); });
+
+    $("#bmSubmit").addEventListener("click", async () => {
+      const nick = $("#bmNick").value.trim() || "匿名买家";
+      const contact = $("#bmContact").value.trim();
+      const note = $("#bmNote").value.trim();
+      if (!contact) { showToast("留个联系方式吧，不然没法发货 🙏"); return; }
+      const btn = $("#bmSubmit");
+      btn.disabled = true; btn.textContent = "提交中…";
+      try {
+        const o = await fetchJson(O_URL);
+        const list = o && Array.isArray(o.list) ? o.list : [];
+        list.unshift({
+          id: "o" + Date.now(),
+          pn: curBuy ? curBuy.n : "",
+          pp: curBuy ? curBuy.p : 0,
+          n: nick, c: contact, m: note,
+          t: new Date().toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }),
+          done: false,
+        });
+        await putJson(O_URL, { list: list.slice(0, 100) });
+        $("#bmSubmit").textContent = "✓ 订单已提交";
+        setTimeout(() => {
+          $("#buyMask").classList.remove("show");
+          btn.textContent = "✓ 提交订单";
+        }, 1400);
+        $("#bmNick").value = ""; $("#bmContact").value = ""; $("#bmNote").value = "";
+        if (isAdmin) loadOrders();
+      } catch (e) {
+        btn.disabled = false; btn.textContent = "失败 · 重试";
+      }
+    });
+
+    function showToast(msg) {
+      const t = document.createElement("div");
+      t.className = "hint";
+      t.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border-hover);border-radius:999px;padding:8px 20px;z-index:3000;color:var(--accent)";
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2400);
+    }
+
+    /* ── 站长模式 ── */
+    $("#abExit").addEventListener("click", () => {
+      try { sessionStorage.removeItem("shop-admin"); } catch (e) {}
+      isAdmin = false;
+      $("#adminBar").classList.remove("show");
+      $("#addForm").classList.remove("show");
+      $("#ordersForm").classList.remove("show");
+      render();
+    });
+    $("#abAdd").addEventListener("click", () => { $("#addForm").classList.toggle("show"); $("#ordersForm").classList.remove("show"); });
+    $("#abOrders").addEventListener("click", () => { $("#ordersForm").classList.toggle("show"); $("#addForm").classList.remove("show"); loadOrders(); });
+
+    $("#nfGo").addEventListener("click", async () => {
+      const e = $("#nfEmoji").value.trim() || "🎁";
+      const n = $("#nfName").value.trim();
+      const d = $("#nfDesc").value.trim();
+      const p = Number($("#nfPrice").value);
+      if (!n || !(p >= 0)) { showToast("商品名称和价格必填 🙏"); return; }
+      const btn = $("#nfGo");
+      btn.disabled = true;
+      try {
+        products.unshift({ id: "p" + Date.now(), e, n, d, p, on: true });
+        await putJson(P_URL, { list: products });
+        btn.disabled = false;
+        $("#nfEmoji").value = ""; $("#nfName").value = ""; $("#nfDesc").value = ""; $("#nfPrice").value = "";
+        render();
+        showToast("已上架 ✓");
+      } catch (err) {
+        btn.disabled = false;
+        showToast("上架失败（" + err.message + "）");
+      }
+    });
+
+    async function loadOrders() {
+      const o = await fetchJson(O_URL);
+      orders = o && Array.isArray(o.list) ? o.list : [];
+      const box = $("#ordersBox");
+      $("#odCount").textContent = orders.length ? "(" + orders.length + ")" : "";
+      box.innerHTML = orders.length
+        ? orders.map((o) => `
+          <div class="order-item${o.done ? " done" : ""}">
+            <div class="od-act">
+              ${o.done ? "" : `<button type="button" data-done="${o.id}">✓ 已处理</button>`}
+              <button type="button" data-del="${o.id}">🗑</button>
+            </div>
+            <b>${esc(o.pn)}</b> · ¥${o.pp} · ${esc(o.t)}<br />
+            买家：${esc(o.n)} · 联系：${esc(o.c)}${o.m ? "<br />备注：" + esc(o.m) : ""}
+          </div>`).join("")
+        : "还没有订单（买家下单后会出现在这里）";
+      box.querySelectorAll("[data-done]").forEach((b) => b.addEventListener("click", async () => {
+        const o = orders.find((x) => x.id === b.dataset.done);
+        if (o) { o.done = true; await putJson(O_URL, { list: orders }).catch(() => {}); loadOrders(); }
+      }));
+      box.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", async () => {
+        if (!confirm("确定删除这条订单？")) return;
+        orders = orders.filter((x) => x.id !== b.dataset.del);
+        await putJson(O_URL, { list: orders }).catch(() => {});
+        loadOrders();
+      }));
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const o = await fetchJson(P_URL);
+      products = o && Array.isArray(o.list) ? o.list : [];
+      render();
+      if (isAdmin) $("#adminBar").classList.add("show");
+    });
+  </script>
+</body>
+</html>
