@@ -203,7 +203,7 @@
     const $$ = (s, el = document) => [...el.querySelectorAll(s)];
     const P_URL = "https://textdb.dev/api/data/cccad-shop-products";
     const O_URL = "https://textdb.dev/api/data/cccad-shop-orders";
-    const QR_IMGS = { wechat: "files/pay-wechat.jpg", alipay: "files/pay-alipay.jpg" };
+    const QR_IMGS = { wechat: "files/pay-wechat.png", alipay: "files/pay-alipay.jpg" };
     const ADMIN_PASS = "cccad2026"; /* ← 想换口令就改这里 */
     let isAdmin = false;
     try { isAdmin = sessionStorage.getItem("shop-admin") === "1"; } catch (e) {}
