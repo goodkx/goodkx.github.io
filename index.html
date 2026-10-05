@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=115" />
+  <link rel="stylesheet" href="style.css?v=116" />
   <link rel="stylesheet" href="theme.css?v=112" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
@@ -173,7 +173,6 @@
             <div class="chips"><span class="chip">博客</span><span class="chip">RSS</span><span class="chip">写作</span></div>
           </div>
         </div>
-      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
         <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
@@ -263,7 +262,6 @@
             <div class="chips"><span class="chip">策展</span><span class="chip">持续更新</span></div>
           </article>
         </div>
-      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
         <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
@@ -416,7 +414,6 @@
             <span class="page-go">复制即用 →</span>
           </a>
         </div>
-      <div class="hscroll-bar" aria-hidden="true"><i></i></div>
         <p class="hscroll-hint">← 横向滚动 / 拖动查看全部 →</p>
       </div>
     </section>
@@ -1094,27 +1091,6 @@
       const CAROUSEL_SPEED = 95;
       document.querySelectorAll(".hscroll").forEach((box) => {
 
-        /* 进度条：由 JS 注入，避免在 HTML 里重复维护 */
-        const bar = document.createElement("div");
-        bar.className = "hscroll-bar";
-        bar.setAttribute("aria-hidden", "true");
-        const fill = document.createElement("i");
-        bar.appendChild(fill);
-        box.insertAdjacentElement("afterend", bar);
-
-        function sync() {
-          if (box.classList.contains("is-open")) return;
-          const max = box.scrollWidth - box.clientWidth;
-          const ratio = max > 0 ? box.scrollLeft / max : 0;
-          const visible = box.scrollWidth > 0 ? box.clientWidth / box.scrollWidth : 1;
-          const width = Math.max(visible, 0.08) * 100;
-          const travel = 100 - width;
-          fill.style.width = width + "%";
-          fill.style.marginLeft = (ratio * travel) + "%";
-        }
-        box.addEventListener("scroll", sync, { passive: true });
-        addEventListener("resize", sync);
-
         /* 按住拖动（桌面端） */
         let down = false, startX = 0, startLeft = 0, moved = false;
         box.addEventListener("pointerdown", (e) => {
@@ -1175,13 +1151,12 @@
             stripClones();          // 网格里只保留原件，避免重复
             pauseFor(600);
           } else {
-            box.scrollLeft = 0;
+            box.scrollTo({ left: 0, behavior: "auto" });
             rebuildClones();        // 恢复无缝循环
-            requestAnimationFrame(sync);
           }
         };
         btn.addEventListener("click", toggle);
-        bar.parentNode.insertBefore(btn, bar.nextSibling);
+        box.parentElement.insertBefore(btn, box.nextSibling);
 
         /* ── 旋转木马：无限循环自动滚动，鼠标不在上面时自动前进 ── */
         let auto = 0;
@@ -1259,10 +1234,8 @@
           box.addEventListener("wheel", () => pauseFor(2500), { passive: true });
           box.addEventListener("touchstart", () => pauseFor(2500), { passive: true });
           auto = requestAnimationFrame(tick);
-          addEventListener("resize", () => { rebuildClones(); box.scrollLeft = 0; });
+          addEventListener("resize", () => { rebuildClones(); box.scrollTo({ left: 0, behavior: "auto" }); });
         }
-
-        sync();
       });
     })();
     /* 🛒 hero 右列：小卖部迷你卡（数据来自云端） */
