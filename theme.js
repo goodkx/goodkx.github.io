@@ -17,10 +17,10 @@
     if (b) b.style.display = "flex";
   });
   const THEMES = [
-    { id: "",       name: "深空绿 · 默认" },
-    { id: "violet", name: "紫夜" },
-    { id: "paper",  name: "暖纸 · 日间" },
-    { id: "amber",  name: "墨金 · OLED" },
+    { id: "",       name: "深空绿 · 终端" },
+    { id: "violet", name: "紫夜 · 霓虹" },
+    { id: "paper",  name: "暖纸 · 印刷" },
+    { id: "amber",  name: "墨金 · 鎏金" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）

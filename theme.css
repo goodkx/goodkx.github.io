@@ -278,7 +278,7 @@ html :is(.skill-card, .project-card, .page-card, .hscroll-item, .contact-box,
          .post, .photo, .tool, .ai-card, .fcard, .yr-card, .yr-title-card,
          .prod, .gmsg, .topic, .score-box, .mini-shop) {
   background-image: linear-gradient(165deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0) 44%);
-  border-radius: 16px;
+  border-radius: var(--card-radius, 16px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 12px 32px rgba(0, 0, 0, .22);
 }
 /* 少量主角容器才开磨砂，长列表不开（性能） */
@@ -371,3 +371,117 @@ html .section-title .num {
     color-mix(in srgb, var(--accent) 60%, transparent),
     color-mix(in srgb, var(--accent-2) 60%, transparent));
 }
+
+/* ═════════════════════════════════════════════════════════════
+   🎭 主题人格层（2026-10）
+   四套主题各自拥有专属的背景纹理、字体气质、卡片形状与光效——
+   切换主题 = 换整个网站的气质，不只是换个主色。
+   深空绿 = CRT 终端 ｜ 紫夜 = 霓虹星野
+   暖纸   = 印刷杂志 ｜ 墨金 = 鎏金奢华
+   ═════════════════════════════════════════════════════════════ */
+
+/* 公共底座：每套主题的专属固定纹理层（子页网格由此统一接管） */
+html body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── 深空绿 · 终端：CRT 扫描线 + 冷灰网格 ── */
+html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]) body::before {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .20) 0 1px, transparent 1px 4px);
+  background-size: 44px 44px, 44px 44px, auto;
+}
+
+/* ── 紫夜 · 霓虹：星野 + 更浓的紫粉极光 + 霓虹辉光 + 更锐利的卡角 ── */
+html[data-theme="violet"] body {
+  background-image:
+    radial-gradient(1100px 720px at 85% -10%, rgba(167, 139, 250, .17), transparent 62%),
+    radial-gradient(900px 640px at -12% 26%, rgba(244, 114, 182, .13), transparent 58%),
+    radial-gradient(1200px 820px at 55% 118%, rgba(96, 130, 246, .11), transparent 60%);
+}
+html[data-theme="violet"] body::before {
+  background-image:
+    linear-gradient(rgba(167, 139, 250, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, .05) 1px, transparent 1px),
+    radial-gradient(1.3px 1.3px at 22% 28%, rgba(255, 255, 255, .55), transparent 55%),
+    radial-gradient(1px 1px at 64% 12%, rgba(216, 180, 254, .5), transparent 55%),
+    radial-gradient(1.2px 1.2px at 84% 52%, rgba(255, 255, 255, .4), transparent 55%),
+    radial-gradient(1px 1px at 38% 74%, rgba(244, 114, 182, .45), transparent 55%),
+    radial-gradient(1.4px 1.4px at 8% 88%, rgba(216, 180, 254, .4), transparent 55%);
+  background-size: 44px 44px, 44px 44px, 340px 340px, 280px 280px, 420px 420px, 300px 300px, 460px 460px;
+}
+html[data-theme="violet"] { --card-radius: 10px; }
+html[data-theme="violet"] :is(.grad-text, h1 .grad) {
+  filter: drop-shadow(0 0 22px rgba(167, 139, 250, .55)) drop-shadow(0 0 7px rgba(244, 114, 182, .4));
+}
+html[data-theme="violet"] ::selection { background: rgba(244, 114, 182, .35); }
+
+/* ── 暖纸 · 印刷：衬线标题 + 印章红 + 纸边晕影 + 硬朗「铅版」卡片 ── */
+html[data-theme="paper"] body::before {
+  background-image:
+    radial-gradient(130% 100% at 50% 0%, rgba(255, 253, 246, .65), transparent 55%),
+    radial-gradient(150% 120% at 50% 115%, rgba(146, 116, 62, .18), transparent 58%);
+}
+html[data-theme="paper"] {
+  --accent: #b42318;           /* 印章红 */
+  --accent-2: #a16207;         /* 琥珀褐 */
+  --gradient: linear-gradient(120deg, #b42318 10%, #c2410c 90%);
+  --border: rgba(31, 41, 55, .16);
+  --border-hover: rgba(180, 35, 24, .6);
+  --acc-soft-bg: rgba(180, 35, 24, .07);
+  --acc-soft-bd: rgba(180, 35, 24, .28);
+  --acc-glow: rgba(180, 35, 24, .16);
+  --chip-c: #9a3412;
+  --chip-bg: rgba(154, 52, 18, .07);
+  --chip-bd: rgba(154, 52, 18, .25);
+  --sb-thumb: #cbbfa4;
+  --card-radius: 8px;
+}
+html[data-theme="paper"] :is(h1, h2, h3, .section-title, .hero-title, .contact-title, .feat-main strong) {
+  font-family: Georgia, "Times New Roman", "STZhongsong", "STSong", "Songti SC", "SimSun", serif;
+}
+html[data-theme="paper"] :is(.btn-primary, .feat-badge, .hscroll-toggle.is-open) { color: #fff8ef; }
+html[data-theme="paper"] :is(.skill-card, .project-card, .page-card, .hscroll-item, .contact-box,
+    .post, .photo, .tool, .ai-card, .fcard, .yr-card, .yr-title-card, .prod, .gmsg, .topic, .score-box, .mini-shop) {
+  box-shadow: 2.5px 3px 0 rgba(31, 41, 55, .08), inset 0 0 0 1px rgba(31, 41, 55, .05);
+}
+html[data-theme="paper"] ::selection { background: rgba(180, 35, 24, .22); }
+
+/* ── 墨金 · 鎏金：衬线大标题 + 鎏金渐变字 + 金尘 + 金色发丝边 ── */
+html[data-theme="amber"] body::before {
+  background-image:
+    linear-gradient(rgba(251, 191, 36, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(251, 191, 36, .04) 1px, transparent 1px),
+    radial-gradient(1.4px 1.4px at 18% 24%, rgba(251, 191, 36, .45), transparent 60%),
+    radial-gradient(1px 1px at 70% 10%, rgba(251, 191, 36, .35), transparent 60%),
+    radial-gradient(1.2px 1.2px at 86% 60%, rgba(251, 146, 60, .4), transparent 60%),
+    radial-gradient(1px 1px at 34% 80%, rgba(251, 191, 36, .3), transparent 60%),
+    radial-gradient(700px 480px at 50% 38%, rgba(251, 191, 36, .055), transparent 72%);
+  background-size: 44px 44px, 44px 44px, 480px 480px, 360px 360px, 560px 560px, 420px 420px, 100% 100%;
+}
+html[data-theme="amber"] {
+  --border: rgba(251, 191, 36, .17);
+  --card-radius: 14px;
+}
+html[data-theme="amber"] :is(.section-title, h1, .contact-title, .hero-title) {
+  font-family: Georgia, "Times New Roman", "STZhongsong", "STSong", "Songti SC", "SimSun", serif;
+  letter-spacing: .02em;
+}
+html[data-theme="amber"] :is(.grad-text, h1 .grad) {
+  filter: drop-shadow(0 0 18px rgba(251, 191, 36, .35));
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html[data-theme="amber"] .section-title {
+    background: linear-gradient(115deg, #fde68a 10%, #fbbf24 45%, #d97706 85%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
+}
+html[data-theme="amber"] ::selection { background: rgba(251, 191, 36, .3); }
