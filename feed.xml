@@ -8,6 +8,21 @@
     <atom:link href="https://goodkx.github.io/feed.xml" rel="self" type="application/rss+xml" />
 
     <item>
+      <title>俄罗斯方块与全站排行榜：四款游戏共用一块云</title>
+      <link>https://goodkx.github.io/blog.html#/post/tetris-lb</link>
+      <guid>https://goodkx.github.io/blog.html#/post/tetris-lb</guid>
+      <pubDate>Tue, 06 Oct 2026 00:00:00 +0800</pubDate>
+      <description>方块材质的三层上色、会收紧的重力间隔，以及免注册云存储的三个坑。</description>
+    </item>
+    <item>
+      <title>GitHub 注册使用教程：从零开始玩转仓库</title>
+      <link>https://goodkx.github.io/blog.html#/post/github-tutorial</link>
+      <guid>https://goodkx.github.io/blog.html#/post/github-tutorial</guid>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 +0800</pubDate>
+      <description>注册、三个核心概念、网页端操作、CLI 三连，以及免费建站五步走。</description>
+    </item>
+
+    <item>
       <title>摸鱼日历的开发笔记：一个倒计时的边界问题</title>
       <link>https://goodkx.github.io/blog.html#/post/fish-notes</link>
       <guid>https://goodkx.github.io/blog.html#/post/fish-notes</guid>

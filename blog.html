@@ -16,12 +16,12 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://goodkx.github.io/blog.html" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="subpage.css?v=116" />
-  <link rel="stylesheet" href="theme.css?v=116" />
-  <link rel="stylesheet" href="search.css?v=116" />  <link rel="manifest" href="manifest.json?v=116" />
+  <link rel="stylesheet" href="subpage.css?v=117" />
+  <link rel="stylesheet" href="theme.css?v=117" />
+  <link rel="stylesheet" href="search.css?v=117" />  <link rel="manifest" href="manifest.json?v=117" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=116"></script>
-  <script src="search.js?v=116"></script>
+  <script src="theme.js?v=117"></script>
+  <script src="search.js?v=117"></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
     .post {
@@ -475,6 +475,38 @@
 
     /* ══════════ 文章数据（想发新文章在这里加一条） ══════════ */
     const POSTS = {
+      "tetris-lb": {
+        title: "俄罗斯方块与全站排行榜：一个模块管所有游戏",
+        date: "2026-10-06",
+        tags: ["前端", "游戏", "踩坑"],
+        html: `
+          <h3>为什么是俄罗斯方块</h3>
+          <p>2048、记忆翻牌都上线后，留言板点名要俄罗斯方块。它比前两款都难一档：实时下落、旋转碰撞、消行判定。但写完回头一看，<strong>真正的难点不在游戏本身，而在怎么让每一款游戏共用同一块排行榜</strong>。</p>
+          <h3>一个格子的三层上色</h3>
+          <p>第一版方块就是纯色方块，被评价「材质不好看」。重画后的每个格子分三层：</p>
+          <pre>const g = c.createLinearGradient(x, y, x + size, y + size);
+g.addColorStop(0,   shade(color,  55));  // 上亮
+g.addColorStop(.5,  color);              // 本色
+g.addColorStop(1,   shade(color, -45));  // 下暗
+c.shadowColor = color; c.shadowBlur = 9; // 微光用方块自己的颜色
+rr(c, x + p, y + p, s, s, 6); c.fill();
+c.strokeStyle = "rgba(255,255,255,.3)"; c.stroke(); // 高光边</pre>
+          <p><code class="inline">shade()</code> 把 hex 颜色的 RGB 三个分量同时加减一个量（自动钳制在 0–255），<code class="inline">rr()</code> 用四段 <code class="inline">arcTo</code> 画圆角路径。三层叠完方块有了体积感，而且<strong>只维护一份颜色表</strong>——调色改一处，七种方块全部生效。</p>
+          <h3>下落节奏：一个会收紧的 setInterval</h3>
+          <p>重力没上 requestAnimationFrame，就一句 <code class="inline">setInterval(tick, Math.max(90, 520 - (level - 1) * 60))</code>：开局半秒落一格，每升一级收紧 60 毫秒，90 毫秒封底。数字全是试出来的——再快手指就跟不上，「手感」到最后都是参数。</p>
+          <h3>排行榜：一个模块管所有游戏</h3>
+          <p>排行榜抽成了共享的 <code class="inline">leaderboard.js</code>，每款游戏只传三个参数：游戏名、挂载点、单位（步 / 分）。「什么算更好」也由配置决定——记忆翻牌<strong>步数越少越好</strong>（升序），其余三款分数越高越好（降序）。昵称存一次 localStorage，款款通用，不用每次重填。</p>
+          <h3>免注册云存储的三个坑</h3>
+          <p>云端用的是 textdb.dev：一个 key 就是一块公开的 JSON 存储，不需要注册任何账号。接入过程踩了三个坑，都记下来：</p>
+          <ul>
+            <li><strong>不存在的 key 返回 200 + 空响应体</strong>，不是 404。直接 <code class="inline">r.json()</code> 会抛异常——先 <code class="inline">r.text()</code>，trim 后为空就当空榜处理；</li>
+            <li><strong>POST 数组会被包成 <code class="inline">{"_json":[…]}</code></strong>。对策：永远存对象，比如 <code class="inline">{ list: […] }</code>，读的时候取字段，形状就永远稳定；</li>
+            <li><strong>中文直接存会 400</strong>。所有非 ASCII 字符先转义成 <code class="inline">\\uXXXX</code> 再上传，取回来 JSON.parse 会自动还原。</li>
+          </ul>
+          <h3>结语</h3>
+          <p>游戏逻辑两百行，排行榜加云存储的兼容代码也是两百行——真实项目大多如此，看不见的部分往往比看得见的部分更费工夫。去<a href="tetris.html" target="_blank" rel="noopener">俄罗斯方块</a>扔一个方块试试？几款游戏的成绩现在全站互通。</p>
+        `
+      },
       "github-tutorial": {
         title: "GitHub 注册使用教程：从零开始玩转仓库",
         date: "2026-10-04",
@@ -786,7 +818,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     };
 
     /* 文章顺序（新 → 旧），用于上下篇导航 */
-    const ORDER = ["github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+    const ORDER = ["tetris-lb", "github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     let curPostId = null, lastSave = 0, routeTs = 0;

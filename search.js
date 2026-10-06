@@ -46,6 +46,7 @@
     { t: "小卖部", d: "站长手作好物 · 扫码付款", u: "shop.html", k: "小卖部 shop 商店 商品 买卖 付款 购买" },
     { t: "记忆翻牌", d: "配对小站图案 · 挑战最少步数", u: "memory.html", k: "记忆 翻牌 配对 游戏 memory 消消乐" },
     { t: "更新日志", d: "网站进化史", u: "index.html#log", k: "更新 日志 changelog 版本 历史" },
+    { t: "文章 · 俄罗斯方块与全站排行榜", d: "材质三层上色 · 排行榜模块 · textdb 三坑", u: "blog.html#/post/tetris-lb", k: "俄罗斯方块 tetris 排行榜 leaderboard 游戏 云存储 textdb 材质 canvas" },
     { t: "文章 · GitHub Pages 上线指南", d: "blog.html", u: "blog.html#/post/gh-pages", k: "github pages 部署 上线 建站 域名" },
     { t: "文章 · CSS 变量全站换肤", d: "blog.html", u: "blog.html#/post/theme-css", k: "css 变量 换肤 主题 前端 data-theme" },
     { t: "文章 · 留言板上云踩坑记", d: "KV 审批 · 401 之谜 · 变量名 bug", u: "blog.html#/post/gb-cloud", k: "留言板 上云 踩坑 textdb kv edgeone 401 supabase" },

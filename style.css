@@ -435,6 +435,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .c-key { color: #c792ea; }
 .c-var { color: var(--accent-2); }
 .c-str { color: var(--accent); }
+.c-num { color: #f5a83c; }
 
 /* ─────────── 技能 ─────────── */
 .skills-grid {
