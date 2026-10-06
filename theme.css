@@ -200,7 +200,7 @@ html[data-theme="amber"] {
 #backTopBtn .ar svg { display: block; }
 
 @media (max-width: 640px) {
-  #backTopBtn { right: 14px; bottom: 66px; width: 38px; height: 38px; }
+  #backTopBtn { right: 14px; bottom: 122px; width: 38px; height: 38px; }
 }
 
 /* PWA 安装按钮（浏览器允许安装时出现） */
