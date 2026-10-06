@@ -126,6 +126,14 @@
     if (pwaEvent) inst.style.display = "flex";
     addEventListener("appinstalled", () => { inst.style.display = "none"; });
 
+    /* 滚动时自动隐藏/显示浮动按钮（下滑隐藏 · 上滑出现） */
+    let lastY = 0;
+    addEventListener("scroll", () => {
+      const y = window.scrollY;
+      document.body.classList.toggle("fab-hidden", y > lastY + 4 && y > 140);
+      lastY = y;
+    }, { passive: true });
+
     /* 📢 标签页离开/回来的小彩蛋 */
     let prevTitle = document.title;
     document.addEventListener("visibilitychange", () => {
