@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0a0e16" />
+  <title>离线中 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📡%3C/text%3E%3C/svg%3E" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: #0a0e16;
+      background-image:
+        linear-gradient(rgba(0, 229, 160, .04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 160, .04) 1px, transparent 1px);
+      background-size: 42px 42px;
+      color: #e8f0f8;
+      font-family: "SF Mono", "Cascadia Code", Consolas, "Microsoft YaHei", monospace, sans-serif;
+      min-height: 100vh;
+    }
+    .off {
+      width: min(680px, 92%);
+      margin: 10vh auto 0;
+      text-align: center;
+    }
+    .off-code {
+      font-size: clamp(4rem, 14vw, 8rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(120deg, #38bdf8, #00e5a0);
+      -webkit-background-clip: text;
+              background-clip: text;
+      color: transparent;
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .off h1 { margin: 18px 0 10px; font-size: clamp(1.1rem, 3vw, 1.5rem); }
+    .off p { color: #8fa3b8; font-size: .9rem; margin-bottom: 30px; }
+    .off-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+    .off-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 26px; border-radius: 10px;
+      font-size: .92rem; font-weight: 600; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .off-btn.main {
+      background: linear-gradient(120deg, #38bdf8, #00e5a0);
+      color: #06251a;
+      box-shadow: 0 6px 22px rgba(56, 189, 248, .25);
+    }
+    .off-btn.main:hover { transform: translateY(-3px); }
+    .off-btn.ghost { color: #9fe8d0; border: 1px solid rgba(0, 229, 160, .35); }
+    .off-btn.ghost:hover { background: rgba(0, 229, 160, .08); }
+    .off-tip { margin-top: 36px; font-size: .74rem; color: #6b7f94; }
+  </style>
+</head>
+<body>
+  <div class="off">
+    <div class="off-code">📡</div>
+    <h1>当前处于离线状态</h1>
+    <p>网络恢复后本页会自动重新加载——已缓存的页面仍可离线浏览。</p>
+    <div class="off-actions">
+      <button class="off-btn main" onclick="location.reload()">🔄 重新连接</button>
+      <a class="off-btn ghost" href="/index.html">🏠 回到首页</a>
+    </div>
+    <p class="off-tip">小站已支持离线访问 · 恢复联网后留言与订单会正常同步</p>
+  </div>
+  <script>
+    addEventListener("online", () => location.reload());
+    setInterval(() => { fetch("/favicon.ico", { cache: "no-store" }).then(() => location.reload()).catch(() => {}); }, 15000);
+  </script>
+</body>
+</html>

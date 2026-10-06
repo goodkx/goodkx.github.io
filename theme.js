@@ -4,6 +4,18 @@
 
 (function () {
   const KEY = "site-theme";
+
+  /* ── PWA：Service Worker 注册 + 安装入口（全站生效） ── */
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+  let pwaEvent = null;
+  addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    pwaEvent = e;
+    const b = document.getElementById("pwaInstall");
+    if (b) b.style.display = "flex";
+  });
   const THEMES = [
     { id: "",       name: "深空绿 · 默认" },
     { id: "violet", name: "紫夜" },
@@ -95,6 +107,24 @@
     addEventListener("scroll", toggleTop, { passive: true });
     document.body.appendChild(top);
     toggleTop();
+
+    /* 📥 PWA 安装按钮（浏览器允许时出现） */
+    const inst = document.createElement("button");
+    inst.id = "pwaInstall";
+    inst.type = "button";
+    inst.setAttribute("aria-label", "把小站安装到桌面 / 手机");
+    inst.title = "把小站安装到桌面 / 手机";
+    inst.textContent = "📥";
+    inst.addEventListener("click", async () => {
+      if (!pwaEvent) return;
+      pwaEvent.prompt();
+      const res = await pwaEvent.userChoice.catch(() => null);
+      if (res && res.outcome === "accepted") inst.style.display = "none";
+      pwaEvent = null;
+    });
+    document.body.appendChild(inst);
+    if (pwaEvent) inst.style.display = "flex";
+    addEventListener("appinstalled", () => { inst.style.display = "none"; });
 
     /* 📢 标签页离开/回来的小彩蛋 */
     let prevTitle = document.title;
