@@ -606,6 +606,18 @@
       100% { transform: translateX(calc(-100vw - 100%)); opacity: 0; }
     }
     @media (prefers-reduced-motion: reduce) { .dm-band { display: none; } }
+    /* 弹幕开关按钮 + 关闭态 */
+    #dmToggle {
+      position: fixed; right: 18px; bottom: 246px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border-hover);
+      color: var(--accent); font-size: .95rem; cursor: pointer;
+      z-index: 900; transition: transform .15s, box-shadow .2s, opacity .2s;
+    }
+    #dmToggle:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, .25); }
+    #dmToggle.off { opacity: .45; }
+    html.dm-off .dm-band { display: none !important; }
+    @media (max-width: 640px) { #dmToggle { right: 14px; bottom: 232px; width: 38px; height: 38px; } }
     .dm-stats { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-top: 16px; }
     .dm-stats b { color: var(--accent); font-size: .86rem; }
     .dm-stats a { color: var(--accent-2); text-decoration: none; }
@@ -1009,10 +1021,30 @@
     /* 💬 云端留言弹幕：全屏固定层，不随页面滚动（拉取留言板数据，失败静默） */
     (function () {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      /* 弹幕开关状态（记忆在本机） */
+      let dmOff = false;
+      try { dmOff = localStorage.getItem("dm-off") === "1"; } catch (e) {}
+      if (dmOff) document.documentElement.classList.add("dm-off");
       const band = document.createElement("div");
       band.className = "dm-band";
       band.setAttribute("aria-hidden", "true");
       document.body.appendChild(band);       // 挂到 body：全屏固定，不随滚动移动
+      /* 开关按钮 */
+      const tgl = document.createElement("button");
+      tgl.id = "dmToggle";
+      tgl.type = "button";
+      tgl.textContent = dmOff ? "🚫" : "💬";
+      tgl.title = dmOff ? "打开弹幕" : "关闭弹幕";
+      tgl.setAttribute("aria-pressed", String(!dmOff));
+      tgl.addEventListener("click", () => {
+        dmOff = !dmOff;
+        try { localStorage.setItem("dm-off", dmOff ? "1" : "0"); } catch (e) {}
+        document.documentElement.classList.toggle("dm-off", dmOff);
+        tgl.textContent = dmOff ? "🚫" : "💬";
+        tgl.title = dmOff ? "打开弹幕" : "关闭弹幕";
+        tgl.setAttribute("aria-pressed", String(!dmOff));
+      });
+      document.body.appendChild(tgl);
       fetch("https://textdb.dev/api/data/cccad-gb-95592aa7", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
         .then((d) => {
@@ -1032,7 +1064,7 @@
             el.className = "dm";
             el.href = "guestbook.html";
             el.textContent = "💬 " + String(m.m || "").slice(0, 24) + " —— " + (m.n || "匿名");
-            el.style.top = (12 + (i % LANES) * 13) + "%";
+      el.style.top = (10 + (i % LANES) * 11) + "%";
             el.style.animationDuration = (18 + Math.random() * 14).toFixed(1) + "s";
             el.style.animationDelay = (i * 2.4).toFixed(1) + "s";
             band.appendChild(el);
