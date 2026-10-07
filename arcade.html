@@ -281,6 +281,16 @@
   </div>
 
   <script>
+    /* 进场显现观察器（.reveal → .visible） */
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    })();
+
     /* 🏆 荣誉墙：四台机的全站排名一屏看全 */
     LB.render("g2048", "#wall2048", "分");
     LB.render("memory", "#wallMemory", "步");
