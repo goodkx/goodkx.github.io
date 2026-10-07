@@ -485,3 +485,103 @@ html[data-theme="amber"] :is(.grad-text, h1 .grad) {
   }
 }
 html[data-theme="amber"] ::selection { background: rgba(251, 191, 36, .3); }
+
+/* ═════════════════════════════════════════════════════════════
+   ✨ 高级感 · 动效层（2026-10 第二批）
+   页面转场 + 入场编排 + 流动渐变字 + 按钮划光 + 玻璃胶囊导航
+   ═════════════════════════════════════════════════════════════ */
+
+/* 1) 跨页面平滑转场（Chrome / Safari 18+，其余浏览器自动忽略） */
+@view-transition { navigation: auto; }
+@keyframes vtOut { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes vtIn { from { opacity: 0; transform: translateY(12px); } }
+::view-transition-old(root) { animation: vtOut .18s ease both; }
+::view-transition-new(root) { animation: vtIn .3s cubic-bezier(.22,.68,.3,1) both; }
+
+/* 2) 首次进入的入场编排：主内容整体浮起（仅 from 关键帧，结束后无残留 transform） */
+@keyframes mainIn { from { opacity: 0; transform: translateY(14px); } }
+main, body .top, body h1, body .wrap {
+  animation: mainIn .55s cubic-bezier(.22,.68,.3,1) backwards;
+}
+body h1 { animation-delay: .05s; }
+body .wrap { animation-delay: .08s; }
+@media (prefers-reduced-motion: reduce) {
+  main, body .top, body h1, body .wrap { animation: none; }
+}
+
+/* 3) 首屏渐变字缓慢流动（高级感核心细节） */
+.grad-text, h1 .grad {
+  background-size: 200% 200%;
+  animation: gradFlow 7s ease-in-out infinite;
+}
+@keyframes gradFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* 4) 主按钮 / 推荐徽章：悬停划光扫过 */
+.btn-primary, .feat-badge {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after, .feat-badge::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 55%;
+  height: 100%;
+  transform: translateX(-160%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+  pointer-events: none;
+}
+.btn-primary:hover::after, .feat-badge:hover::after {
+  animation: btnShine .75s ease;
+}
+@keyframes btnShine { to { transform: translateX(340%) skewX(-18deg); } }
+
+/* 5) 桌面端导航：玻璃胶囊激活态 */
+@media (min-width: 961px) {
+  .nav-links a {
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: color .25s, background .25s, box-shadow .25s;
+  }
+  .nav-links a.active {
+    background: var(--acc-soft-bg);
+    box-shadow: inset 0 0 0 1px var(--acc-soft-bd);
+  }
+  .nav-links a.active::after { display: none; }
+}
+
+/* 6) 终端背后的旋转极光晕（电影感） */
+.hero-terminal { position: relative; }
+.hero-terminal::before {
+  content: "";
+  position: absolute;
+  inset: -46px;
+  z-index: -1;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 16%, transparent) 12%,
+    transparent 32%,
+    color-mix(in srgb, var(--accent-2) 12%, transparent) 55%,
+    transparent 78%);
+  filter: blur(34px);
+  animation: haloSpin 16s linear infinite;
+  pointer-events: none;
+}
+@keyframes haloSpin { to { transform: rotate(360deg); } }
+
+/* 7) 相册画作悬停缓放 */
+.photo .art { overflow: hidden; }
+.photo .art svg { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.photo:hover .art svg { transform: scale(1.06); }
+
+/* 8) 页脚运行状态行（theme.js 注入） */
+.sys-status {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--muted);
+  letter-spacing: .05em;
+}

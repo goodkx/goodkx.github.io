@@ -174,3 +174,47 @@
     });
   });
 })();
+
+/* ─────────── ✨ 高级感细节：终端微倾斜 + 页脚运行状态行 ─────────── */
+(function () {
+  function init() {
+    var calm = false, fine = false;
+    try {
+      calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      fine = matchMedia("(pointer: fine)").matches;
+    } catch (e) {}
+
+    /* 终端 3D 微倾斜（悬停时暂停漂浮动画，离开恢复） */
+    var term = document.querySelector(".terminal");
+    if (fine && !calm && term && !term.dataset.tilt) {
+      term.dataset.tilt = "1";
+      term.addEventListener("mouseenter", function () { term.style.animation = "none"; });
+      term.addEventListener("mousemove", function (e) {
+        var r = term.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        term.style.transform = "perspective(900px) rotateX(" + (-y * 4).toFixed(2) + "deg) rotateY(" + (x * 5).toFixed(2) + "deg)";
+      });
+      term.addEventListener("mouseleave", function () {
+        term.style.animation = "";
+        term.style.transform = "";
+      });
+    }
+
+    /* 页脚运行状态行（仅首页页脚） */
+    var foot = document.querySelector(".footer-inner");
+    if (foot && !document.getElementById("sysStatus")) {
+      var days = Math.max(1, Math.floor((Date.now() - new Date("2026-09-26T00:00:00+08:00").getTime()) / 86400000));
+      var el = document.createElement("div");
+      el.id = "sysStatus";
+      el.className = "sys-status";
+      el.innerHTML = '<span style="color:var(--accent)">●</span> SYSTEM ONLINE · 已稳定运行 ' + days + ' 天 · 与 AI 结对手工维护';
+      foot.appendChild(el);
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
