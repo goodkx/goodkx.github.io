@@ -28,14 +28,9 @@
   try { saved = localStorage.getItem(KEY) || ""; } catch (e) {}
   if (saved) {
     document.documentElement.dataset.theme = saved;
-  } else {
-    /* 从未手动选过主题：跟随系统深浅色偏好 + 白天因子；
-       一旦手动切换过任何主题，以手动选择为准，不再自动变 */
-    let sysLight = false;
-    try { sysLight = window.matchMedia("(prefers-color-scheme: light)").matches; } catch (e) {}
-    const h = new Date().getHours();
-    if (h >= 7 && h < 19 && sysLight) document.documentElement.dataset.theme = "paper";
   }
+  /* 默认固定使用「深空绿 · 终端」：不再跟随系统深浅色 / 时段自动换肤。
+     想换风格的访客点右下角 🎨 手动选择，选择会被记住。 */
 
   function apply(id) {
     if (id) document.documentElement.dataset.theme = id;
