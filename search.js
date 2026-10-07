@@ -38,6 +38,7 @@
     { t: "考研大纲 · 备考时间线", d: "2026.9 → 2027.4 全程", u: "kaoyan.html#timeline", k: "考研 时间线 规划 复试" },
     { t: "考研 Word 指南下载", d: "软件工程专业考研全程复习指南.docx", u: "kaoyan.html#dl", k: "考研 下载 word docx 指南" },
     { t: "鹈鹕彩蛋", d: "纯 SVG 骑车动画", u: "pelican.html", k: "pelican 鹈鹕 动画 svg 彩蛋" },
+    { t: "🕹 街机厅", d: "四台机台 + 全站荣誉墙", u: "arcade.html", k: "街机厅 arcade 游戏 厅 2048 俄罗斯方块 扫雷 翻牌 排行榜 荣誉墙" },
     { t: "2048 小游戏", d: "方向键 / 滑动，拼出 2048", u: "game.html", k: "游戏 2048 game 玩 合成 小游戏" },
     { t: "俄罗斯方块", d: "旋转消行 · 全站排名", u: "tetris.html", k: "俄罗斯方块 tetris 游戏 消行 旋转" },
     { t: "扫雷", d: "经典排雷 · 首点必安全 · 全站排名", u: "minesweeper.html", k: "扫雷 minesweeper 雷 插旗 游戏 排名 puzzle" },

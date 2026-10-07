@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="小站街机厅 —— 2048、记忆翻牌、俄罗斯方块、扫雷四台机台，全部成绩上云，荣誉墙一屏看全站排名。" />
+  <title>街机厅 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🕹%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=120" />
+  <link rel="stylesheet" href="theme.css?v=121" />
+  <link rel="stylesheet" href="search.css?v=116" />
+  <link rel="manifest" href="manifest.json?v=116" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script src="theme.js?v=121"></script>
+  <script src="search.js?v=116"></script>
+  <script src="leaderboard.js?v=117"></script>
+  <style>
+    /* ─────────── 投币提示 ─────────── */
+    .coin-line {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: var(--muted);
+      letter-spacing: .22em;
+      margin: 0 0 24px;
+    }
+    .coin-line b { color: var(--accent); animation: coinBlink 1.15s steps(1) infinite; }
+    @keyframes coinBlink { 50% { opacity: 0; } }
+
+    /* ─────────── 机台 ─────────── */
+    .arc-cabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      margin-bottom: 52px;
+    }
+    @media (max-width: 860px) { .arc-cabs { grid-template-columns: 1fr; } }
+
+    .cab {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .cab:hover {
+      transform: translateY(-6px);
+      border-color: var(--cab-c);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, .4),
+                  0 0 34px color-mix(in srgb, var(--cab-c) 22%, transparent);
+    }
+    .cab-marquee {
+      padding: 12px 16px;
+      text-align: center;
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: .2em;
+      font-size: .78rem;
+      color: #08131b;
+      background: linear-gradient(120deg, var(--cab-c), color-mix(in srgb, var(--cab-c) 55%, #ffffff));
+    }
+    .cab-screen {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, .04), transparent 60%), #05080d;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    /* CRT 扫描线 + 逐行扫光 */
+    .cab-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, .28) 0 1px, transparent 1px 3px),
+        linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, .06) 50%, transparent 100%);
+      background-size: auto, 100% 220%;
+      animation: crtSweep 3.4s linear infinite;
+    }
+    @keyframes crtSweep {
+      from { background-position: 0 0, 0 -120%; }
+      to   { background-position: 0 0, 0 120%; }
+    }
+    .cab-emoji {
+      font-size: 3.4rem;
+      filter: drop-shadow(0 0 20px var(--cab-c));
+      transition: transform .3s;
+    }
+    .cab:hover .cab-emoji { transform: scale(1.16) rotate(-4deg); }
+    .cab-screen .cab-tag {
+      position: absolute;
+      left: 14px;
+      bottom: 10px;
+      font-family: var(--mono);
+      font-size: .64rem;
+      color: color-mix(in srgb, var(--cab-c) 80%, #ffffff);
+      letter-spacing: .12em;
+      opacity: .8;
+    }
+    .cab-deck {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+    }
+    .cab-name { font-weight: 700; font-size: 1.02rem; }
+    .cab-desc { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+    .cab-coin {
+      flex: none;
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: #08131b;
+      background: linear-gradient(120deg, var(--cab-c), color-mix(in srgb, var(--cab-c) 60%, #ffffff));
+      border-radius: 999px;
+      padding: 7px 15px;
+      white-space: nowrap;
+      transition: transform .2s;
+    }
+    .cab:hover .cab-coin { transform: scale(1.08); }
+
+    /* ─────────── 荣誉墙 ─────────── */
+    .wall-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .wall-sub {
+      font-family: var(--mono);
+      font-size: .74rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .arc-wall {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 860px) { .arc-wall { grid-template-columns: 1fr; } }
+    .lb-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 0;
+      text-align: left;
+    }
+    .lb-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .lb-head i {
+      font-style: normal;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--lb-c, var(--accent));
+      box-shadow: 0 0 10px var(--lb-c, var(--accent));
+    }
+    .lb-head span { color: var(--muted); font-weight: 400; margin-left: auto; }
+    .lb-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 8px;
+      border-bottom: 1px dashed var(--border);
+      font-family: var(--mono); font-size: .76rem;
+    }
+    .lb-row:last-child { border-bottom: 0; }
+    .lb-row.first { background: var(--acc-soft-bg); border-radius: 6px; }
+    .lb-row .rk { width: 20px; color: var(--accent); }
+    .lb-row .nm { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: var(--accent); }
+    .lb-row .dt { color: var(--muted); font-size: .62rem; }
+    .lb-empty { font-family: var(--mono); font-size: .74rem; color: var(--muted); padding: 10px 8px; }
+    /* 模块内部生成的标题隐藏，用面板自带的游戏名标题 */
+    .lb-mount .lb-head { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🕹 arcade</span>
+  </div>
+
+  <h1 data-word="ARCADE">欢迎来到 <span class="grad">街机厅</span></h1>
+
+  <div class="wrap">
+    <p class="coin-line"><b>▮ INSERT COIN ▮</b> 点任意机台开始 · 成绩全站互通</p>
+
+    <div class="arc-cabs">
+      <a class="cab reveal" href="game.html" style="--cab-c:#fbbf24">
+        <div class="cab-marquee">2048 · NUMBER PUZZLE</div>
+        <div class="cab-screen">
+          <span class="cab-emoji">🔢</span>
+          <span class="cab-tag">HI-SCORE MODE</span>
+        </div>
+        <div class="cab-deck">
+          <span><span class="cab-name">2048</span><span class="cab-desc">方向键合并数字，拼出 2048</span></span>
+          <span class="cab-coin">投币 ▸</span>
+        </div>
+      </a>
+
+      <a class="cab reveal" style="--d:.06s; --cab-c:#a78bfa" href="memory.html">
+        <div class="cab-marquee">MEMORY · 配对挑战</div>
+        <div class="cab-screen">
+          <span class="cab-emoji">🧠</span>
+          <span class="cab-tag">STEP ATTACK</span>
+        </div>
+        <div class="cab-deck">
+          <span><span class="cab-name">记忆翻牌</span><span class="cab-desc">找出小站图案，步数越少越强</span></span>
+          <span class="cab-coin">投币 ▸</span>
+        </div>
+      </a>
+
+      <a class="cab reveal" style="--d:.12s; --cab-c:#38bdf8" href="tetris.html">
+        <div class="cab-marquee">TETRIS · 落块对决</div>
+        <div class="cab-screen">
+          <span class="cab-emoji">🧱</span>
+          <span class="cab-tag">MARATHON MODE</span>
+        </div>
+        <div class="cab-deck">
+          <span><span class="cab-name">俄罗斯方块</span><span class="cab-desc">旋转、消行、等级加速</span></span>
+          <span class="cab-coin">投币 ▸</span>
+        </div>
+      </a>
+
+      <a class="cab reveal" style="--d:.18s; --cab-c:#fb7185" href="minesweeper.html">
+        <div class="cab-marquee">MINES · 排雷行动</div>
+        <div class="cab-screen">
+          <span class="cab-emoji">💣</span>
+          <span class="cab-tag">SPEED RUN</span>
+        </div>
+        <div class="cab-deck">
+          <span><span class="cab-name">扫雷</span><span class="cab-desc">首点必安全，最快时间排清</span></span>
+          <span class="cab-coin">投币 ▸</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="wall-title">🏆 荣誉墙</div>
+    <p class="wall-sub">四台机的全站 TOP 10 实时上云 · 谁都能上榜，包括正在看这句话的你</p>
+
+    <div class="arc-wall">
+      <div class="lb-panel reveal" style="--lb-c:#fbbf24">
+        <p class="lb-head"><i></i>2048 · 数字谜题<span>分数越高越好</span></p>
+        <div class="lb-mount" id="wall2048"></div>
+      </div>
+      <div class="lb-panel reveal" style="--d:.06s; --lb-c:#a78bfa">
+        <p class="lb-head"><i></i>记忆翻牌<span>步数越少越好</span></p>
+        <div class="lb-mount" id="wallMemory"></div>
+      </div>
+      <div class="lb-panel reveal" style="--d:.12s; --lb-c:#38bdf8">
+        <p class="lb-head"><i></i>俄罗斯方块<span>分数越高越好</span></p>
+        <div class="lb-mount" id="wallTetris"></div>
+      </div>
+      <div class="lb-panel reveal" style="--d:.18s; --lb-c:#fb7185">
+        <p class="lb-head"><i></i>扫雷<span>用时越短越好</span></p>
+        <div class="lb-mount" id="wallMines"></div>
+      </div>
+    </div>
+
+    <p class="caption">机台里的成绩与荣誉墙实时同步 · 排名数据来自 textdb 云端 · 站长与 AI 结对手工维护</p>
+  </div>
+
+  <script>
+    /* 🏆 荣誉墙：四台机的全站排名一屏看全 */
+    LB.render("g2048", "#wall2048", "分");
+    LB.render("memory", "#wallMemory", "步");
+    LB.render("tetris", "#wallTetris", "分");
+    LB.render("mines", "#wallMines", "秒");
+  </script>
+</body>
+</html>
