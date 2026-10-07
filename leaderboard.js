@@ -9,6 +9,7 @@
     g2048: "cccad-lb-2048",
     memory: "cccad-lb-memory",
     tetris: "cccad-lb-tetris",
+    mines: "cccad-lb-mines",
   };
   const BASE = "https://textdb.dev/api/data/";
   const CAP = 10;
@@ -37,7 +38,7 @@
   }
 
   function better(a, b, game) {
-    return game === "memory" ? a.s < b.s : a.s > b.s;
+    return (game === "memory" || game === "mines") ? a.s < b.s : a.s > b.s;
   }
 
   window.LB = {

@@ -40,6 +40,7 @@
     { t: "鹈鹕彩蛋", d: "纯 SVG 骑车动画", u: "pelican.html", k: "pelican 鹈鹕 动画 svg 彩蛋" },
     { t: "2048 小游戏", d: "方向键 / 滑动，拼出 2048", u: "game.html", k: "游戏 2048 game 玩 合成 小游戏" },
     { t: "俄罗斯方块", d: "旋转消行 · 全站排名", u: "tetris.html", k: "俄罗斯方块 tetris 游戏 消行 旋转" },
+    { t: "扫雷", d: "经典排雷 · 首点必安全 · 全站排名", u: "minesweeper.html", k: "扫雷 minesweeper 雷 插旗 游戏 排名 puzzle" },
     { t: "友链", d: "朋友们的小站 · 申请友链", u: "links.html", k: "友链 friends 朋友 链接 申请" },
     { t: "留言板", d: "留下你的痕迹 · 云端同步 · 全员可见", u: "guestbook.html", k: "留言 guestbook 消息 打招呼 板" },
     { t: "AI 工具导航", d: "25+ 当红 AI 工具精选", u: "ai.html", k: "ai 工具 chatgpt claude deepseek kimi 豆包 cursor 导航 军火库" },

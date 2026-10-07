@@ -13,8 +13,15 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <script src="theme.js?v=119"></script>
   <script src="search.js?v=116"></script>
-  <script src="leaderboard.js?v=116"></script>
+  <script src="leaderboard.js?v=117"></script>
   <style>
+    .tbtn {
+      background: var(--card); border: 1px solid var(--border-hover); border-radius: 999px;
+      color: var(--accent); font-family: inherit; font-size: .84rem;
+      padding: 9px 22px; cursor: pointer; transition: transform .2s, box-shadow .2s;
+    }
+    .tbtn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, 0.3); }
+    .tbtn:disabled { opacity: 0.6; cursor: wait; transform: none; }
     .hud {
       display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
       margin-bottom: 22px;
