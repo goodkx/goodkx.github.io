@@ -585,3 +585,8 @@ body .wrap { animation-delay: .08s; }
   color: var(--muted);
   letter-spacing: .05em;
 }
+
+/* 窄屏关闭终端极光晕：::before 出屏 46px 会撑出手机端横向滚动 */
+@media (max-width: 960px) {
+  .hero-terminal::before { display: none; }
+}
