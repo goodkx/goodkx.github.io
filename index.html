@@ -802,15 +802,15 @@
       .proj-row { gap: 14px; padding: 20px 6px; }
       .proj-num { font-size: 1.4rem; min-width: 38px; }
     }
-    /* ─────────── 06 更新日志：3D 滚筒（老虎机式上下滚动） ─────────── */
+    /* ─────────── 06 更新日志：3D 滚筒（纯文字 + 强透视，JS 驱动） ─────────── */
     .drum-wrap {
       --item-h: 84px;
       position: relative;
       height: calc(var(--item-h) * 3);
-      perspective: 1000px;
+      perspective: 680px;
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
-              mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
+      -webkit-mask-image: linear-gradient(180deg, transparent, #000 24%, #000 76%, transparent);
+              mask-image: linear-gradient(180deg, transparent, #000 24%, #000 76%, transparent);
     }
     .drum-wrap::before {
       content: "";
@@ -823,9 +823,8 @@
       position: absolute;
       inset: 0;
       transform-style: preserve-3d;
-      animation: drumRoll calc(var(--n) * 4s) linear infinite;
+      /* 旋转由底部 JS 逐帧驱动（可按角度调节每条文字的透明度） */
     }
-    .drum-wrap:hover .drum { animation-play-state: paused; }
     .drum-item {
       position: absolute;
       left: 50%;
@@ -836,22 +835,32 @@
       transform: rotateX(calc(var(--i) * var(--step))) translateZ(var(--rz));
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      will-change: opacity;
     }
-    @keyframes drumRoll { to { transform: rotateX(-360deg); } }
     .drum-item .cl-row {
       height: 100%;
       align-items: center;
       align-content: center;
       grid-template-columns: 100px 1fr;
       gap: 16px;
-      background: var(--card);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 10px 26px rgba(0, 0, 0, .2);
-      border: 1px solid var(--border);
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0 10px;
+    }
+    .drum-item .cl-row:hover { background: none; }
+    .drum-item .cl-date {
+      color: var(--muted);
+      text-shadow: 0 1px 10px rgba(5, 8, 14, .75);
+    }
+    .drum-item .cl-body h3 {
+      text-shadow: 0 1px 12px rgba(5, 8, 14, .8);
     }
     .drum-item .cl-body p {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-shadow: 0 1px 10px rgba(5, 8, 14, .7);
     }
     .drum-hint {
       font-family: var(--mono);
@@ -862,16 +871,15 @@
       opacity: .85;
     }
     @media (max-width: 640px) {
-      .drum-item .cl-row { grid-template-columns: 1fr; gap: 1px; padding: 9px 12px; }
+      .drum-item .cl-row { grid-template-columns: 1fr; gap: 1px; padding: 0 8px; }
       .drum-item .cl-date { padding-top: 0; font-size: .7rem; }
       .drum-item .cl-body h3 { font-size: .92rem; margin: 0 0 1px; }
       .drum-item .cl-body p { font-size: .8rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       .drum-wrap { height: auto; perspective: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
-      .drum { position: static; animation: none; transform-style: flat; }
-      .drum-item { position: static; width: auto; height: auto; margin: 0 0 12px; transform: none; }
-      .drum-item .cl-row { height: auto; background: var(--card); }
+      .drum { position: static; transform-style: flat; }
+      .drum-item { position: static; width: auto; height: auto; margin: 0 0 12px; transform: none; opacity: 1 !important; }
       .drum-item .cl-body p { white-space: normal; }
     }
     .cl-row {
@@ -1693,6 +1701,36 @@
           tip("发布失败，请稍后再试", "err");
         }
       });
+    })();
+
+    /* 🎞 06 滚筒驱动：逐帧旋转 + 按角度调节每条文字的透明度（正面全亮、侧面渐暗） */
+    (function () {
+      const wrap = document.querySelector(".drum-wrap");
+      const drum = document.querySelector(".drum");
+      if (!wrap || !drum || drum.dataset.jsDrum) return;
+      drum.dataset.jsDrum = "1";
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const items = Array.from(drum.querySelectorAll(".drum-item"));
+      const n = items.length;
+      if (!n) return;
+      const step = 360 / n;
+      let phi = 0, paused = false, last = performance.now();
+      wrap.addEventListener("mouseenter", () => { paused = true; });
+      wrap.addEventListener("mouseleave", () => { paused = false; last = performance.now(); });
+      function frame(now) {
+        const dt = Math.min(100, now - last);
+        last = now;
+        if (!paused && !document.hidden) phi = (phi + dt * 0.0075) % 360; /* 48s 一圈 */
+        drum.style.transform = "rotateX(" + (-phi).toFixed(3) + "deg)";
+        for (let i = 0; i < n; i++) {
+          let a = ((i * step - phi) % 360 + 360) % 360;
+          if (a > 180) a = 360 - a;
+          const f = Math.max(0, Math.cos(a * Math.PI / 180));
+          items[i].style.opacity = (0.1 + 0.9 * f).toFixed(3);
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
     })();
   </script>
 </body>
