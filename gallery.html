@@ -68,7 +68,7 @@
       width: min(980px, 94vw);
       height: min(56vh, 430px);
       perspective: 1150px;
-      perspective-origin: 50% 40%;
+      perspective-origin: 50% 50%;
     }
     .cf-track {
       position: absolute;
@@ -626,7 +626,7 @@
           const x = sign * (Math.min(ax, 1) * 46 + Math.max(0, ax - 1) * 26);
           const ry = -sign * (Math.min(ax, 1) * 40 + Math.max(0, ax - 1) * 7);
           const z = 90 - Math.min(ax, 3) * 160;
-          el.style.transform = "translateX(" + x.toFixed(1) + "%) translateZ(" + z.toFixed(0) + "px) rotateY(" + ry.toFixed(1) + "deg)";
+          el.style.transform = "translateY(-50%) translateX(" + x.toFixed(1) + "%) translateZ(" + z.toFixed(0) + "px) rotateY(" + ry.toFixed(1) + "deg)";
           el.style.opacity = ax > 3.4 ? "0" : Math.max(0.1, 1 - ax * 0.28).toFixed(2);
           el.style.visibility = ax > 3.6 ? "hidden" : "visible";
           el.style.zIndex = String(300 - Math.round(ax * 10));
