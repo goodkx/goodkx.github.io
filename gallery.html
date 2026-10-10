@@ -44,58 +44,78 @@
     }
     .photo .d { font-family: var(--mono); font-size: .72rem; color: var(--muted); white-space: nowrap; }
 
-    /* 灯箱（点击放大） */
+    /* ── 3D 透视查看器（点击作品进入，coverflow 排布） ── */
     .lightbox {
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(4, 8, 14, .86);
-      -webkit-backdrop-filter: blur(6px);
-              backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      background: rgba(4, 8, 14, .9);
+      -webkit-backdrop-filter: blur(8px);
+              backdrop-filter: blur(8px);
       opacity: 0;
       pointer-events: none;
       transition: opacity .3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
     }
     .lightbox.open { opacity: 1; pointer-events: auto; }
-    .lb-inner {
+    .lb-stage {
       position: relative;
-      width: min(720px, 92%);
-      background: var(--card);
-      border: 1px solid var(--border-hover);
-      border-radius: 16px;
-      padding: 16px;
-      transform: scale(.94);
-      transition: transform .3s;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+      width: min(980px, 94vw);
+      height: min(56vh, 430px);
+      perspective: 1150px;
+      perspective-origin: 50% 40%;
     }
-    .lightbox.open .lb-inner { transform: scale(1); }
-    .lb-inner svg { width: 100%; display: block; border-radius: 10px; }
+    .cf-track {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+    }
+    .cf-item {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(56%, 560px);
+      margin-left: calc(min(56%, 560px) / -2);
+      transform-style: preserve-3d;
+      transition: transform .5s cubic-bezier(.22,.68,.28,1), opacity .4s ease;
+      cursor: pointer;
+    }
+    .cf-item svg {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, .55), 0 0 44px rgba(0, 229, 160, .06);
+      background: var(--card);
+    }
+    .cf-item.center { cursor: default; }
     .lb-navs {
       position: absolute;
       top: 0; left: 0; right: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 14px;
+      padding: 0 4px;
       pointer-events: none;
+      z-index: 500;
     }
     .lb-navs button {
       pointer-events: auto;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       line-height: 1;
       cursor: pointer;
-      opacity: 0.9;
-      transition: transform 0.2s, border-color 0.2s, color 0.2s;
+      opacity: .92;
+      transition: transform .2s, border-color .2s, color .2s;
     }
     .lb-navs button:hover {
       transform: scale(1.1);
@@ -104,22 +124,25 @@
     }
     #lbCount {
       font-family: var(--mono);
-      font-size: 0.72rem;
+      font-size: .72rem;
       color: var(--muted);
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 999px;
       padding: 4px 12px;
     }
-
-    .lb-cap { text-align: center; margin-top: 14px; color: var(--text); font-size: .95rem; }
+    .lb-cap { text-align: center; margin-top: 20px; color: var(--text); font-size: 1.02rem; font-weight: 600; }
     .lb-hint {
       text-align: center;
       font-family: var(--mono);
       font-size: .7rem;
-      color: var(--accent);
+      color: var(--muted);
       margin-top: 8px;
       opacity: .75;
+    }
+    @media (max-width: 640px) {
+      .lb-stage { height: 44vh; }
+      .cf-item { width: 76%; }
     }
 
     @media (max-width: 900px) { .photos { grid-template-columns: repeat(2, 1fr); } }
@@ -554,19 +577,17 @@
   </p>
 
   <!-- 灯箱 -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-label="图片放大预览">
-    <div class="lb-inner">
-      <div style="position: relative;">
-        <div id="lbArt"></div>
-        <div class="lb-navs">
-          <button id="lbPrev" type="button" aria-label="上一张">‹</button>
-          <span id="lbCount">1 / 6</span>
-          <button id="lbNext" type="button" aria-label="下一张">›</button>
-        </div>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="3D 画廊查看器">
+    <div class="lb-stage">
+      <div class="cf-track" id="cfTrack"></div>
+      <div class="lb-navs">
+        <button id="lbPrev" type="button" aria-label="上一张">‹</button>
+        <span id="lbCount">1 / 20</span>
+        <button id="lbNext" type="button" aria-label="下一张">›</button>
       </div>
-      <p class="lb-cap" id="lbCap"></p>
-      <p class="lb-hint">点击任意处关闭</p>
     </div>
+    <p class="lb-cap" id="lbCap"></p>
+    <p class="lb-hint">← → 键 · 点击两侧作品 · 手机左右滑动 翻页 ｜ 点击空白处退出</p>
   </div>
 
   <script>
@@ -585,30 +606,73 @@
     function initLightbox() {
       const lightbox = $("#lightbox");
       const photos = $$(".photo");
+      const track = $("#cfTrack");
+      const n = photos.length;
       let cur = 0;
 
+      /* 20 幅作品全部上轨道，按透视排布 */
+      const items = photos.map((p) => {
+        const el = document.createElement("div");
+        el.className = "cf-item";
+        el.innerHTML = p.querySelector("svg").outerHTML;
+        track.appendChild(el);
+        return el;
+      });
+
+      const layout = () => {
+        items.forEach((el, i) => {
+          const off = ((i - cur + n + n / 2) % n) - n / 2; /* 最短环绕路径 */
+          const ax = Math.abs(off), sign = off < 0 ? -1 : 1;
+          const x = sign * (Math.min(ax, 1) * 46 + Math.max(0, ax - 1) * 26);
+          const ry = -sign * (Math.min(ax, 1) * 40 + Math.max(0, ax - 1) * 7);
+          const z = 90 - Math.min(ax, 3) * 160;
+          el.style.transform = "translateX(" + x.toFixed(1) + "%) translateZ(" + z.toFixed(0) + "px) rotateY(" + ry.toFixed(1) + "deg)";
+          el.style.opacity = ax > 3.4 ? "0" : Math.max(0.1, 1 - ax * 0.28).toFixed(2);
+          el.style.visibility = ax > 3.6 ? "hidden" : "visible";
+          el.style.zIndex = String(300 - Math.round(ax * 10));
+          el.classList.toggle("center", ax < 0.5);
+        });
+      };
+
       const show = (i) => {
-        cur = (i + photos.length) % photos.length;
+        cur = (i + n) % n;
+        layout();
         const p = photos[cur];
-        $("#lbArt").innerHTML = p.querySelector("svg").outerHTML;
         $("#lbCap").textContent =
           p.querySelector(".t").textContent + " · " + p.querySelector(".d").textContent;
-        $("#lbCount").textContent = (cur + 1) + " / " + photos.length;
+        $("#lbCount").textContent = (cur + 1) + " / " + n;
         lightbox.classList.add("open");
       };
 
       photos.forEach((p, i) => {
         p.addEventListener("click", () => show(i));
       });
+      items.forEach((el, i) => {
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (i !== cur) show(i); /* 点两侧作品 = 跳到那一张 */
+        });
+      });
       $("#lbPrev").addEventListener("click", (e) => { e.stopPropagation(); show(cur - 1); });
       $("#lbNext").addEventListener("click", (e) => { e.stopPropagation(); show(cur + 1); });
       lightbox.addEventListener("click", () => lightbox.classList.remove("open"));
+      /* 手机左右滑动 */
+      let tx = null;
+      lightbox.addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; }, { passive: true });
+      lightbox.addEventListener("touchend", (e) => {
+        if (tx === null) return;
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 45) show(cur + (dx < 0 ? 1 : -1));
+        tx = null;
+      }, { passive: true });
       document.addEventListener("keydown", (e) => {
         if (!lightbox.classList.contains("open")) return;
         if (e.key === "Escape") lightbox.classList.remove("open");
         else if (e.key === "ArrowLeft") show(cur - 1);
         else if (e.key === "ArrowRight") show(cur + 1);
       });
+      show(0);
+      lightbox.classList.remove("open"); /* 预排布，首次打开即是成品布局 */
     }
 
     document.addEventListener("DOMContentLoaded", () => {
