@@ -630,6 +630,8 @@
           el.style.opacity = ax > 3.4 ? "0" : Math.max(0.1, 1 - ax * 0.28).toFixed(2);
           el.style.visibility = ax > 3.6 ? "hidden" : "visible";
           el.style.zIndex = String(300 - Math.round(ax * 10));
+          /* 只有正中 + 相邻两张可点：渐隐的远景图禁用指针，防止「点到后面的图」 */
+          el.style.pointerEvents = ax < 1.5 ? "auto" : "none";
           el.classList.toggle("center", ax < 0.5);
         });
       };
