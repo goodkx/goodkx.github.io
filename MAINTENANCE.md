@@ -45,13 +45,14 @@
 | cccad-shop-products | 小卖部商品 |
 | cccad-shop-orders | 小卖部订单 |
 | cccad-site-stats | 共同记录（来访/打卡等） |
-| cccad-lb-2048 / -memory / -tetris / -mines | 四款游戏排行榜（{list:[{n,s,d}]}） |
+| cccad-lb-2048 / -memory / -tetris / -mines / -typing | 五款游戏排行榜（{list:[{n,s,d}]}） |
+| cccad-notice | 站长公告（{msg, d}——全站底部横条，留言板站长端发布） |
 
 **备份**（建议每月跑一次，结果存到本地仓库外）：
 
 ```bash
 for k in cccad-gb-95592aa7 cccad-shop-products cccad-shop-orders cccad-site-stats \
-         cccad-lb-2048 cccad-lb-memory cccad-lb-tetris cccad-lb-mines; do
+         cccad-lb-2048 cccad-lb-memory cccad-lb-tetris cccad-lb-mines cccad-lb-typing cccad-notice; do
   curl -s "https://textdb.dev/api/data/$k" -o "backup-$k.json"
 done
 ```
