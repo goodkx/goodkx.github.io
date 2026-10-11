@@ -308,6 +308,16 @@
 
       <!-- ✏️ 写新文章：1) 在下面 JS 的 POSTS 里加一篇文章；2) 复制一个 <a class="post"> 块，
            href 填 #/post/你的id。未写的文章保持 href="#"，点击会提示 -->
+      <a class="post reveal" href="#/post/typing-arcade">
+        <time class="post-time">2026-10-11</time>
+        <div class="post-body">
+          <h2>打字测速上线记：词流、WPM 和一个按键冲突</h2>
+          <p>不用输入框的键盘捕获、一个除法的 WPM 算法，以及 T 键换肤和打字游戏的正面冲突。</p>
+          <div class="chips"><span class="chip green">前端</span><span class="chip">游戏</span><span class="chip">踩坑</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
       <a class="post reveal" href="#/post/tetris-lb">
         <time class="post-time">2026-10-06</time>
         <div class="post-body">
@@ -489,6 +499,26 @@
 
     /* ══════════ 文章数据（想发新文章在这里加一条） ══════════ */
     const POSTS = {
+      "typing-arcade": {
+        title: "打字测速上线记：词流、WPM 和一个按键冲突",
+        date: "2026-10-11",
+        tags: ["前端", "游戏", "踩坑"],
+        html: `
+          <h3>为什么是打字测速</h3>
+          <p>街机厅开到第五台，前四台都在考「反应」，唯独缺一台考<strong>手速本业</strong>的——写代码的人天天打字，却很少有人测过自己到底多快。于是这台机器的目标很纯粹：60 秒，能打多快打多快。</p>
+          <h3>词流 UI：当前词大字，后面的排队</h3>
+          <p>界面分两层：当前词居中大字、<strong>逐字符变色</strong>（打对变绿、打错变红划掉），后面的词半透明排队。判定极简单——按空格提交时，缓冲区和目标词<strong>忽略大小写</strong>比对，对一词记一词。</p>
+          <h3>不用输入框的键盘捕获</h3>
+          <p>市面上大多数打字测试放一个输入框，本站没有——直接在 <code class="inline">document</code> 上监听 <code class="inline">keydown</code>，自己拼缓冲区。好处是没有输入框的边框和光标干扰，坏处是要自己处理退格、自己挡住非字母键，还要小心<strong>别把 Ctrl+K 搜索这些快捷键也吞掉</strong>——只拦需要的键，其余全部放行。</p>
+          <p>中文输入法是下一个坑：IME 合成期间 keydown 会变成 229，拿不到真实字母。所以这台机第一期是英文词流，中文模式要等把 IME 事件处理明白再上。</p>
+          <h3>WPM 就是一个除法</h3>
+          <p>标准算法：<code class="inline">正确字符数 ÷ 5 ÷ 分钟</code>——5 是英文单词的平均长度，空格也算一个字符。大小写不敏感，打错的不计。实时 WPM 每次统计刷新，60 秒结束定格上云。</p>
+          <h3>一个真实的按键冲突</h3>
+          <p>上线前自己测试，打出「t」的瞬间——<strong>主题换肤了</strong>。上一轮刚加的 T 键换肤和打字捕获撞在一起。解法是一个小模式：游戏开始时在 body 上挂 <code class="inline">keysCapture</code> 标记，全局快捷键看到标记就让路，结束自动摘除。交互系统之间也要讲道理，谁在收键，谁说了算。</p>
+          <h3>结语</h3>
+          <p>游戏本体一百多行，排行榜复用现成模块——街机厅做到第五台，边际成本越来越低，这就是当初坚持「排行榜抽成公共模块」的回报。去<a href="typing.html" target="_blank" rel="noopener">打字测速</a>打个 60 秒？荣誉墙第五榜还空着。</p>
+        `
+      },
       "tetris-lb": {
         title: "俄罗斯方块与全站排行榜：一个模块管所有游戏",
         date: "2026-10-06",
@@ -832,7 +862,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     };
 
     /* 文章顺序（新 → 旧），用于上下篇导航 */
-    const ORDER = ["tetris-lb", "github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+    const ORDER = ["typing-arcade", "tetris-lb", "github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     let curPostId = null, lastSave = 0, routeTs = 0;

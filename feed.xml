@@ -8,6 +8,13 @@
     <atom:link href="https://goodkx.github.io/feed.xml" rel="self" type="application/rss+xml" />
 
     <item>
+      <title>打字测速上线记：词流、WPM 和一个按键冲突</title>
+      <link>https://goodkx.github.io/blog.html#/post/typing-arcade</link>
+      <guid>https://goodkx.github.io/blog.html#/post/typing-arcade</guid>
+      <pubDate>Sun, 11 Oct 2026 00:00:00 +0800</pubDate>
+      <description>不用输入框的键盘捕获、一个除法的 WPM 算法，以及 T 键换肤和打字游戏的正面冲突。</description>
+    </item>
+    <item>
       <title>俄罗斯方块与全站排行榜：四款游戏共用一块云</title>
       <link>https://goodkx.github.io/blog.html#/post/tetris-lb</link>
       <guid>https://goodkx.github.io/blog.html#/post/tetris-lb</guid>
