@@ -163,6 +163,49 @@
       setTimeout(() => { document.title = prevTitle; }, 2500);
     });
 
+    /* ⌨️ 快捷键：T 循环换肤 · ? 快捷键帮助浮层 */
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
+      if (e.key === "t" || e.key === "T") {
+        const ids = THEMES.map((t) => t.id);
+        const curT = document.documentElement.dataset.theme || "";
+        apply(ids[(ids.indexOf(curT) + 1) % ids.length]);
+      } else if (e.key === "?") {
+        let help = document.getElementById("keyHelp");
+        if (!help) {
+          help = document.createElement("div");
+          help.id = "keyHelp";
+          help.innerHTML = '<div class="kh-box"><h4>⌨️ 快捷键</h4><ul>' +
+            '<li><span>全站搜索</span><b>Ctrl / ⌘ + K</b></li>' +
+            '<li><span>切换主题（四套循环）</span><b>T</b></li>' +
+            '<li><span>相册查看器翻页</span><b>← →</b></li>' +
+            '<li><span>关闭弹层 / 搜索</span><b>Esc</b></li>' +
+            '<li><span>本帮助</span><b>?</b></li></ul>' +
+            '<p>点击任意处关闭</p></div>';
+          document.body.appendChild(help);
+          help.addEventListener("click", () => help.classList.remove("open"));
+        }
+        help.classList.toggle("open");
+      }
+    });
+
+    /* 📊 内页顶部滚动进度条（首页已有 .progress，自动跳过） */
+    if (!document.querySelector(".progress") && !document.getElementById("pageProgress")) {
+      const pp = document.createElement("div");
+      pp.id = "pageProgress";
+      document.body.appendChild(pp);
+      const updPP = () => {
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        pp.style.width = max > h.clientHeight ? ((h.scrollTop / max) * 100).toFixed(2) + "%" : "0";
+      };
+      addEventListener("scroll", updPP, { passive: true });
+      addEventListener("resize", updPP);
+      updPP();
+    }
+
     const cur = document.documentElement.dataset.theme || "";
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
@@ -212,4 +255,46 @@
   } else {
     init();
   }
+})();
+
+/* ─────────── ✨ 追光卡：给全站卡片挂 .spot 并写入鼠标位置 ─────────── */
+(function () {
+  var CARD_SEL = ".skill-card, .project-card, .page-card, .post, .photo, .tool, .ai-card, " +
+    ".fcard, .yr-card, .yr-title-card, .prod, .gmsg, .topic, .score-box, .mini-shop, .cab, .contact-box";
+  function init() {
+    var fine = true;
+    try { fine = matchMedia("(pointer: fine)").matches; } catch (e) {}
+    if (!fine) return; /* 触屏设备无悬停，跳过 */
+    document.querySelectorAll(CARD_SEL).forEach(function (el) { el.classList.add("spot"); });
+    document.addEventListener("mousemove", function (e) {
+      var el = e.target.closest ? e.target.closest(".spot") : null;
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", ((e.clientX - r.left) / r.width * 100).toFixed(1) + "%");
+      el.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
+    }, { passive: true });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+/* ─────────── 🫧 按钮波纹反馈（pointerdown 委托，全站按钮/胶囊） ─────────── */
+(function () {
+  var SEL = ".btn, .tbtn, .mode-row button, .gbtn, .qr-tabs button, .chip, #themeBtn, #backTopBtn, #pwaInstall, .lb-navs button";
+  document.addEventListener("pointerdown", function (e) {
+    var b = e.target.closest ? e.target.closest(SEL) : null;
+    if (!b || e.button > 0) return;
+    var r = b.getBoundingClientRect();
+    var size = Math.max(r.width, r.height) * 2.2;
+    var s = document.createElement("span");
+    s.className = "ripple";
+    s.style.cssText = "width:" + size + "px;height:" + size + "px;left:" +
+      (e.clientX - r.left - size / 2) + "px;top:" + (e.clientY - r.top - size / 2) + "px;";
+    if (getComputedStyle(b).position === "static") b.style.position = "relative";
+    b.appendChild(s);
+    setTimeout(function () { s.remove(); }, 620);
+  }, { passive: true });
 })();
