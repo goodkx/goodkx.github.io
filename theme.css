@@ -738,3 +738,50 @@ html p a:hover { background-size: 100% 1.5px; }
 }
 .kh-box li b { font-family: var(--mono); color: var(--accent); font-weight: 600; white-space: nowrap; }
 .kh-box p { margin: 10px 0 0; font-family: var(--mono); font-size: .68rem; color: var(--muted); text-align: center; }
+
+/* ═════════════════════════════════════════════════════════════
+   📢 站长公告横幅（theme.js 注入 · textdb cccad-notice）
+   ═════════════════════════════════════════════════════════════ */
+#noticeBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 78px 10px 16px; /* 右侧避开悬浮按钮列 */
+  background: var(--panel);
+  border-top: 1px solid var(--border-hover);
+  box-shadow: 0 -10px 32px rgba(0, 0, 0, .38);
+  transform: translateY(100%);
+  transition: transform .45s cubic-bezier(.22, .68, .28, 1);
+}
+#noticeBar.show { transform: none; }
+#noticeBar .nb-icon { flex: none; }
+#noticeBar .nb-text {
+  flex: 1;
+  min-width: 0;
+  font-size: .84rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+#noticeBar .nb-date { flex: none; font-family: var(--mono); font-size: .68rem; color: var(--muted); }
+#noticeBar .nb-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+#noticeBar .nb-close:hover { color: var(--text); border-color: var(--border-hover); }
+@media (max-width: 640px) {
+  #noticeBar { padding: 9px 62px 9px 12px; }
+  #noticeBar .nb-date { display: none; }
+  #noticeBar .nb-text { font-size: .78rem; }
+}

@@ -299,3 +299,62 @@
     setTimeout(function () { s.remove(); }, 620);
   }, { passive: true });
 })();
+
+/* ─────────── 📢 站长公告横幅（textdb：cccad-notice，访客可关闭，新公告自动再现） ─────────── */
+(function () {
+  var SEEN_KEY = "notice-seen";
+  var NOTICE_URL = "https://textdb.dev/api/data/cccad-notice";
+  function hash(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return String(h);
+  }
+  function init() {
+    fetch(NOTICE_URL + "?n=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.text(); })
+      .then(function (t) {
+        if (!t.trim()) return;
+        var d;
+        try { d = JSON.parse(t); } catch (e) { return; }
+        var msg = (d.msg || "").trim();
+        if (!msg) return;
+        var h = hash(msg);
+        var seen = "";
+        try { seen = localStorage.getItem(SEEN_KEY) || ""; } catch (e) {}
+        if (seen === h) return;
+        var bar = document.createElement("div");
+        bar.id = "noticeBar";
+        var icon = document.createElement("span");
+        icon.className = "nb-icon";
+        icon.textContent = "📢";
+        var text = document.createElement("span");
+        text.className = "nb-text";
+        text.textContent = msg;
+        var date = document.createElement("span");
+        date.className = "nb-date";
+        date.textContent = d.d || "";
+        var close = document.createElement("button");
+        close.className = "nb-close";
+        close.type = "button";
+        close.setAttribute("aria-label", "关闭公告");
+        close.textContent = "✕";
+        close.addEventListener("click", function () {
+          try { localStorage.setItem(SEEN_KEY, h); } catch (e) {}
+          bar.classList.remove("show");
+          setTimeout(function () { bar.remove(); }, 450);
+        });
+        bar.appendChild(icon);
+        bar.appendChild(text);
+        bar.appendChild(date);
+        bar.appendChild(close);
+        document.body.appendChild(bar);
+        requestAnimationFrame(function () { bar.classList.add("show"); });
+      })
+      .catch(function () {});
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
