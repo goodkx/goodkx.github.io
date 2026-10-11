@@ -116,7 +116,26 @@ fetch 也断时 `gh api repos/.../tarball/main > repo.tgz` 解包覆盖本地文
 **部署后必等 CDN**：GitHub Pages 的 HTML 缓存 ~10 分钟（查询参数会被 CDN 忽略，不能用来穿透）。
 验证用 `curl -s 线上URL | grep 新内容标记`，别只看浏览器（浏览器还有本地缓存）。
 
-## 五、故障排查速查
+## 五、浏览器兼容性（2026-10-11 审计）
+
+**真实测试**：Chromium（Chrome/Edge）全站 17 页逐页实测。
+**其他引擎**：按「特性支持 + 降级路径」审计（Firefox / Safari / 旧 Chrome）。
+
+| 特性 | Chrome | Firefox | Safari | 降级表现 |
+|---|---|---|---|---|
+| color-mix()（渐变边框/极光/幽灵字） | 111+ | 113+ | 16.2+ | 关键处已写静态 rgba 回退；其余丢失该层装饰，不破版 |
+| @view-transition 页面转场 | 123+ | 暂无（忽略） | 18+ | 无转场，直接跳页 |
+| :has()（日志/页面网格展开） | 105+ | 121+ | 15.4+ | 老引擎展开功能退化，不影响阅读 |
+| backdrop-filter（磨砂） | 全部（已配 -webkit-） | 103+ | 全部（已配 -webkit-） | 无磨砂，卡片仍半透明可读 |
+| mask-image（渐隐遮罩） | 全部（已配 -webkit-） | 53+ | 全部（已配 -webkit-） | 无渐隐，边缘生硬但不破版 |
+| -webkit-text-stroke（刊头幽灵字） | 全部 | 48+（支持该前缀） | 全部 | @supports 守卫：无描边 → 实色淡字回退 |
+| -webkit-user-select / background-clip | 已全站配对（审计 0 缺失） | — | — | — |
+| background-attachment: fixed（极光） | ✓ | ✓ | iOS 忽略 | ≤960px 已改为 scroll，移动端不受影响 |
+| ES2020（可选链/空值合并/async） | 80+ | 74+ | 13.1+ | 2020 年后浏览器全兼容 |
+
+**规则**：新增 CSS 特性时——①关键视觉必须写静态回退（回退行写在 color-mix 行之前）；②mask/backdrop-filter/background-clip/user-select 必须同时写 -webkit- 与标准形式；③纯装饰特性可裸用（丢了不破版）。改完跑 `node "$TEMP/prefix_audit.js"` 式审计或手动 grep。
+
+## 六、故障排查速查
 
 | 症状 | 原因 / 解法 |
 |---|---|
@@ -127,7 +146,7 @@ fetch 也断时 `gh api repos/.../tarball/main > repo.tgz` 解包覆盖本地文
 | push 一直失败 | 走上面的 Contents API 备用通道 |
 | 主题不对 | 访客浏览器 localStorage 存了手动选择 → 🎨 重选；默认已固定「深空绿·终端」，无自动换肤 |
 
-## 六、红线（每条都有教训）
+## 七、红线（每条都有教训）
 
 1. **不可逆操作前逐字验证路径**——`rm -rf` 曾误删整站（靠远端才救回）
 2. **验收必须真实点击**——evaluate 的 JS click 会绕过可见性检查（tetris 开始按钮教训）

@@ -633,7 +633,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 46px), transparent 100%);
 }
 .hscroll.is-dragging { cursor: grabbing; scroll-snap-type: none; }
-.hscroll.is-dragging * { user-select: none; }
+.hscroll.is-dragging * { -webkit-user-select: none; user-select: none; }
 /* 隐藏浏览器自带的横向滚动条，保留滚轮/拖动/触屏滚动能力 */
 .hscroll { scrollbar-width: none; }
 .hscroll::-webkit-scrollbar { height: 0; display: none; }

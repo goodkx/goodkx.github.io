@@ -130,12 +130,14 @@ h1::before {
   line-height: 1;
   letter-spacing: .02em;
   white-space: nowrap;
+  color: rgba(0, 229, 160, 0.09); /* 旧引擎回退：不支持 color-mix 时用固定淡色，避免幽灵字变成实心大字 */
   color: color-mix(in srgb, var(--accent) 9%, transparent);
   pointer-events: none;
 }
 @supports (-webkit-text-stroke: 1px #000) {
   h1::before {
     color: transparent;
+    -webkit-text-stroke: 1.5px rgba(0, 229, 160, 0.32); /* 回退 */
     -webkit-text-stroke: 1.5px color-mix(in srgb, var(--accent) 32%, transparent);
   }
 }
