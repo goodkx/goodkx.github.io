@@ -168,6 +168,7 @@
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const tag = (e.target.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
+      if (document.body.dataset.keysCapture === "1") return; /* 打字测速等游戏正在捕获按键 */
       if (e.key === "t" || e.key === "T") {
         const ids = THEMES.map((t) => t.id);
         const curT = document.documentElement.dataset.theme || "";

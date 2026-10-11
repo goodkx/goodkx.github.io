@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="description" content="打字测速 —— 60 秒极速录入挑战，实时 WPM 与准确率，成绩上云全站排名。" />
+  <title>打字测速 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%8C%A8%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=128" />
+  <link rel="stylesheet" href="theme.css?v=128" />
+  <link rel="stylesheet" href="search.css?v=128" />
+  <link rel="manifest" href="manifest.json?v=128" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script src="theme.js?v=128"></script>
+  <script src="search.js?v=128"></script>
+  <script src="leaderboard.js?v=128"></script>
+  <style>
+    .tbtn {
+      background: var(--card); border: 1px solid var(--border-hover); border-radius: 999px;
+      color: var(--accent); font-family: inherit; font-size: .84rem;
+      padding: 9px 22px; cursor: pointer; transition: transform .2s, box-shadow .2s;
+    }
+    .tbtn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, 0.3); }
+    .tbtn:disabled { opacity: .6; cursor: wait; transform: none; }
+
+    .mode-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+    .mode-row button {
+      background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+      color: var(--muted); font-family: inherit; font-size: .8rem;
+      padding: 7px 18px; cursor: pointer; transition: all .2s;
+    }
+    .mode-row button.on { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
+
+    .hud {
+      display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .hud div {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 18px; text-align: center; font-family: var(--mono);
+    }
+    .hud b { display: block; font-size: 1.2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .hud span { font-size: .68rem; color: var(--muted); }
+
+    /* 词流舞台 */
+    .type-stage {
+      position: relative;
+      max-width: 760px;
+      margin: 0 auto 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 34px 30px 26px;
+      min-height: 190px;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .cur-word {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: .06em;
+      min-height: 1.4em;
+      margin-bottom: 18px;
+      color: var(--text);
+    }
+    .cur-word .ok { color: var(--accent); }
+    .cur-word .bad { color: #f87171; text-decoration: line-through; }
+    .cur-word .caret {
+      display: inline-block;
+      width: 2px;
+      height: 1.05em;
+      background: var(--accent);
+      vertical-align: -0.15em;
+      margin-left: 2px;
+      animation: caretBlink 1s steps(1) infinite;
+    }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+    .next-words {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 14px;
+      font-family: var(--mono);
+      font-size: .88rem;
+      color: var(--muted);
+      opacity: .75;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(10, 14, 22, .72);
+      -webkit-backdrop-filter: blur(3px);
+              backdrop-filter: blur(3px);
+      text-align: center;
+      padding: 16px;
+    }
+    .overlay.hide { display: none; }
+    .overlay .big { font-size: 2rem; }
+    .overlay .tip { color: var(--muted); font-size: .84rem; line-height: 1.8; }
+
+    /* 结果 */
+    .win-panel {
+      display: none;
+      background: linear-gradient(120deg, rgba(0, 229, 160, .14), rgba(56, 189, 248, .10));
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius);
+      padding: 26px;
+      text-align: center;
+      max-width: 520px;
+      margin: 0 auto 16px;
+    }
+    .win-panel.show { display: block; }
+    .win-panel h2 { margin-bottom: 8px; }
+    .win-panel p { color: var(--muted); font-size: .88rem; margin-bottom: 14px; }
+    .win-wpm { font-family: var(--mono); font-size: 2.6rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
+    .record { color: var(--accent); font-family: var(--mono); font-size: .8rem; }
+    .lb-submit { display: none; align-items: center; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap; justify-content: center; }
+    .lb-submit.show { display: flex; }
+    .lb-submit input {
+      flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit; font-size: .8rem; padding: 8px 10px; outline: none;
+    }
+    .lb-submit input:focus { border-color: var(--border-hover); }
+    .lb-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
+
+    /* 排行榜 */
+    .lb-panel { max-width: 520px; margin: 0 auto 16px; text-align: left; }
+    .lb-head { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-bottom: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-bottom: 1px dashed var(--border); font-family: var(--mono); font-size: .74rem; }
+    .lb-row.first { background: var(--acc-soft-bg); border-radius: 6px; }
+    .lb-row .rk { width: 20px; color: var(--accent); }
+    .lb-row .nm { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: var(--accent); }
+    .lb-row .dt { color: var(--muted); font-size: .62rem; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <a class="back" href="arcade.html">🕹 街机厅</a>
+    <span class="badge">⌨️ typing</span>
+  </div>
+
+  <h1 data-word="TYPING">极速 <span class="grad">打字测速</span></h1>
+
+  <div class="wrap">
+    <div class="mode-row">
+      <button type="button" data-m="30" class="on">⚡ 30 秒挑战</button>
+      <button type="button" data-m="60">⏱ 60 秒标准</button>
+    </div>
+
+    <div class="hud">
+      <div><b id="tWpm">0</b><span>WPM</span></div>
+      <div><b id="tWords">0</b><span>正确词</span></div>
+      <div><b id="tAcc">100%</b><span>准确率</span></div>
+      <div><b id="tTime">30s</b><span>剩余</span></div>
+    </div>
+
+    <div class="type-stage" id="stage">
+      <div class="cur-word" id="curWord"></div>
+      <div class="next-words" id="nextWords"></div>
+      <div class="overlay" id="tOverlay">
+        <div class="big">⌨️</div>
+        <div class="tip">点击「开始」或直接敲键盘任意字母开始<br />输入单词后按 <b>空格</b> 提交 · 输错了 <b>退格</b> 修改<br />建议电脑端使用</div>
+        <button class="tbtn" id="tStart" type="button">▶ 开始挑战</button>
+      </div>
+    </div>
+
+    <div class="win-panel" id="endPanel">
+      <h2>🏁 时间到！</h2>
+      <div class="win-wpm" id="endWpm">0</div>
+      <p id="endText"></p>
+      <span class="record" id="endRecord"></span>
+      <div class="lb-submit" id="tLb">
+        <input type="text" id="tLbName" maxlength="10" placeholder="昵称（10 字内）" />
+        <button class="tbtn" id="tLbGo" type="button">🏆 上榜</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:16px">
+        <button class="tbtn" id="tRestart">🔄 再来一局</button>
+      </div>
+    </div>
+
+    <div class="lb-panel" id="typingLb"></div>
+
+    <p class="caption">标准 WPM 算法：正确字符数 ÷ 5 ÷ 分钟 · 大小写不敏感 · 成绩上云全站排名</p>
+  </div>
+
+  <script>
+    const $ = (s, el = document) => el.querySelector(s);
+    const BANK = ("the and for are but not you all any can had her was one our out day get has him his how man new now old see two way who boy did its let put say she too use that with have this will your from they know want been good much some time very when come here just like long make many more only over such take than them well were what about after again below could every first found great house large learn never other place plant point right small sound spell still study their there these thing think three water where which world would write years above almost along always animal another answer around because before begin being between both build call children city close country different does earth even example example food form four give going grow hard head hear help high keep kind land last late leave light line little live look mean might mile miss most mountain move must name near need next night number often once open own page paper part people play read said same school sea second seem set should show side small start state stop story sun sure tell thing think through together took tree try turn under until walk watch while white why word work world year young").split(/\s+/);
+    const MODES = { 30: 30, 60: 60 };
+    let mode = 30, words = [], wIdx = 0, buf = "";
+    let running = false, over = true;
+    let correctWords = 0, wrongWords = 0, correctChars = 0, typedChars = 0;
+    let t0 = 0, left = 30, timer = null;
+    const BKEY = () => "typing-best-" + mode;
+
+    function pick() { return BANK[Math.floor(Math.random() * BANK.length)]; }
+
+    function build() {
+      over = false; running = false;
+      delete document.body.dataset.keysCapture;
+      words = Array.from({ length: 40 }, pick);
+      wIdx = 0; buf = "";
+      correctWords = 0; wrongWords = 0; correctChars = 0; typedChars = 0;
+      left = MODES[mode];
+      clearInterval(timer); timer = null;
+      $("#tTime").textContent = left + "s";
+      $("#tWpm").textContent = "0";
+      $("#tWords").textContent = "0";
+      $("#tAcc").textContent = "100%";
+      $("#endPanel").classList.remove("show");
+      $("#tLb").classList.remove("show");
+      $("#tOverlay").classList.remove("hide");
+      render();
+    }
+
+    function render() {
+      const w = words[wIdx] || "";
+      let html = "";
+      for (let i = 0; i < w.length; i++) {
+        const c = w[i];
+        if (i < buf.length) html += (buf[i] === c ? '<span class="ok">' + c + "</span>" : '<span class="bad">' + c + "</span>");
+        else html += c;
+      }
+      $("#curWord").innerHTML = html + '<span class="caret"></span>';
+      const next = words.slice(wIdx + 1, wIdx + 9);
+      $("#nextWords").innerHTML = next.map(function (x) { return "<span>" + x + "</span>"; }).join("");
+    }
+
+    function stats() {
+      const elapsed = (MODES[mode] - left) / 60 || 1 / 60;
+      const wpm = Math.max(0, Math.round(correctChars / 5 / elapsed)) || 0;
+      const total = correctWords + wrongWords;
+      const acc = total ? Math.round((correctWords / total) * 100) : 100;
+      $("#tWpm").textContent = wpm;
+      $("#tWords").textContent = correctWords;
+      $("#tAcc").textContent = acc + "%";
+      return { wpm: wpm, acc: acc };
+    }
+
+    function submitWord() {
+      if (!buf) return;
+      const w = words[wIdx] || "";
+      typedChars += buf.length;
+      if (buf.toLowerCase() === w.toLowerCase()) { correctWords++; correctChars += w.length + 1; }
+      else wrongWords++;
+      buf = "";
+      wIdx++;
+      if (wIdx >= words.length - 10) words = words.concat(Array.from({ length: 40 }, pick));
+      stats();
+      render();
+    }
+
+    function start() {
+      if (running) return;
+      running = true; over = false;
+      document.body.dataset.keysCapture = "1"; /* 打字中：让 T/? 等全局快捷键让路 */
+      $("#tOverlay").classList.add("hide");
+      t0 = Date.now();
+      timer = setInterval(function () {
+        left = Math.max(0, MODES[mode] - Math.floor((Date.now() - t0) / 1000));
+        $("#tTime").textContent = left + "s";
+        stats();
+        if (left <= 0) finish();
+      }, 250);
+    }
+
+    function finish() {
+      running = false; over = true;
+      delete document.body.dataset.keysCapture;
+      clearInterval(timer);
+      if (buf) submitWord();
+      const s = stats();
+      $("#endWpm").textContent = s.wpm + " WPM";
+      $("#endText").textContent = correctWords + " 个正确词 · 准确率 " + s.acc + "% —— " +
+        (s.wpm >= 60 ? "键盘上的钢琴师 🎹" : s.wpm >= 40 ? "手指飞快 🔥" : s.wpm >= 20 ? "稳健输出 👍" : "熟能生巧 💪");
+      const best = getBest();
+      const isRecord = !best || s.wpm > best;
+      if (isRecord) { try { localStorage.setItem(BKEY(), JSON.stringify(s.wpm)); } catch (e) {} }
+      $("#endRecord").textContent = isRecord ? "🌟 新纪录！" : "本机最佳：" + best + " WPM";
+      $("#tLb").classList.add("show");
+      $("#tLbName").value = LB.getName();
+      $("#endPanel").classList.add("show");
+    }
+
+    function getBest() {
+      try { return JSON.parse(localStorage.getItem(BKEY())); } catch (e) { return null; }
+    }
+
+    /* 键盘捕获 */
+    document.addEventListener("keydown", function (e) {
+      if (over || e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      if (!running && /^[a-z]$/i.test(e.key)) { start(); }
+      if (!running) return;
+      if (e.key === " ") {
+        e.preventDefault();
+        submitWord();
+      } else if (e.key === "Backspace") {
+        e.preventDefault();
+        buf = buf.slice(0, -1);
+        render();
+      } else if (/^[a-zA-Z\-']$/.test(e.key) && e.key.length === 1) {
+        if (buf.length < 24) { buf += e.key; render(); }
+      }
+    });
+
+    $("#tStart").addEventListener("click", start);
+    $("#tRestart").addEventListener("click", build);
+    document.querySelectorAll(".mode-row [data-m]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        mode = +b.dataset.m;
+        document.querySelectorAll(".mode-row [data-m]").forEach(function (x) { x.classList.toggle("on", x === b); });
+        build();
+      });
+    });
+
+    /* 🏆 全站排名（WPM 降序） */
+    LB.render("typing", "#typingLb", "WPM");
+    $("#tLbGo").addEventListener("click", async function () {
+      const btn = $("#tLbGo");
+      btn.disabled = true;
+      try {
+        const name = $("#tLbName").value;
+        LB.saveName(name);
+        const s = stats();
+        const res = await LB.submit("typing", name, s.wpm);
+        $("#tLb").innerHTML = '<span class="lb-ok">🏆 已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
+        LB.render("typing", "#typingLb", "WPM");
+      } catch (e) {
+        btn.disabled = false;
+        $("#tLb").innerHTML = '<span class="lb-ok" style="color:var(--muted)">上榜失败，稍后再试</span>';
+      }
+    });
+
+    build();
+  </script>
+</body>
+</html>

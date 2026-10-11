@@ -7,14 +7,14 @@
   <meta name="description" content="小站街机厅 —— 2048、记忆翻牌、俄罗斯方块、扫雷四台机台，全部成绩上云，荣誉墙一屏看全站排名。" />
   <title>街机厅 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🕹%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=125" />
-  <link rel="stylesheet" href="theme.css?v=127" />
-  <link rel="stylesheet" href="search.css?v=125" />
-  <link rel="manifest" href="manifest.json?v=125" />
+  <link rel="stylesheet" href="subpage.css?v=128" />
+  <link rel="stylesheet" href="theme.css?v=128" />
+  <link rel="stylesheet" href="search.css?v=128" />
+  <link rel="manifest" href="manifest.json?v=128" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=127"></script>
-  <script src="search.js?v=125"></script>
-  <script src="leaderboard.js?v=125"></script>
+  <script src="theme.js?v=128"></script>
+  <script src="search.js?v=128"></script>
+  <script src="leaderboard.js?v=128"></script>
   <style>
     /* ─────────── 投币提示 ─────────── */
     .coin-line {
@@ -253,10 +253,22 @@
           <span class="cab-coin">投币 ▸</span>
         </div>
       </a>
+
+      <a class="cab reveal" style="--d:.24s; --cab-c:#34d399" href="typing.html">
+        <div class="cab-marquee">TYPING · 极速录入</div>
+        <div class="cab-screen">
+          <span class="cab-emoji">⌨️</span>
+          <span class="cab-tag">WPM ATTACK</span>
+        </div>
+        <div class="cab-deck">
+          <span><span class="cab-name">打字测速</span><span class="cab-desc">60 秒极限录入，WPM 上云比拼</span></span>
+          <span class="cab-coin">投币 ▸</span>
+        </div>
+      </a>
     </div>
 
     <div class="wall-title">🏆 荣誉墙</div>
-    <p class="wall-sub">四台机的全站 TOP 10 实时上云 · 谁都能上榜，包括正在看这句话的你</p>
+    <p class="wall-sub">五台机的全站 TOP 10 实时上云 · 谁都能上榜，包括正在看这句话的你</p>
 
     <div class="arc-wall">
       <div class="lb-panel reveal" style="--lb-c:#fbbf24">
@@ -274,6 +286,10 @@
       <div class="lb-panel reveal" style="--d:.18s; --lb-c:#fb7185">
         <p class="lb-head"><i></i>扫雷<span>用时越短越好</span></p>
         <div class="lb-mount" id="wallMines"></div>
+      </div>
+      <div class="lb-panel reveal" style="--d:.24s; --lb-c:#34d399">
+        <p class="lb-head"><i></i>打字测速<span>WPM 越高越好</span></p>
+        <div class="lb-mount" id="wallTyping"></div>
       </div>
     </div>
 
@@ -296,6 +312,7 @@
     LB.render("memory", "#wallMemory", "步");
     LB.render("tetris", "#wallTetris", "分");
     LB.render("mines", "#wallMines", "秒");
+    LB.render("typing", "#wallTyping", "WPM");
   </script>
 </body>
 </html>

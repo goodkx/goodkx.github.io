@@ -90,7 +90,7 @@ const artReal = (galleryHtml.match(/<figure class="photo/g) || []).length;
 const artClaim = claim(/🖼️? (\d+) 幅画/, idxHtml) ?? claim(/art: <span class="c-num">(\d+)/, idxHtml);
 (artClaim === null ? tip("首页缺「N 幅画」宣称") : artClaim === artReal ? ok("画作数 " + artReal + " ✓") : bad("画作数漂移：宣称 " + artClaim + "，实际 " + artReal));
 /* 游戏数 */
-const gamesReal = ["game.html", "tetris.html", "memory.html", "minesweeper.html"].filter(exists).length;
+const gamesReal = ["game.html", "tetris.html", "memory.html", "minesweeper.html", "typing.html"].filter(exists).length;
 const gamesClaim = claim(/games: <span class="c-num">(\d+)/, idxHtml);
 (gamesClaim === null ? tip("关于卡缺 games 数") : gamesClaim === gamesReal ? ok("游戏数 " + gamesReal + " ✓") : bad("游戏数漂移：关于卡 " + gamesClaim + "，实际 " + gamesReal));
 

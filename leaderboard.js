@@ -10,6 +10,7 @@
     memory: "cccad-lb-memory",
     tetris: "cccad-lb-tetris",
     mines: "cccad-lb-mines",
+    typing: "cccad-lb-typing",
   };
   const BASE = "https://textdb.dev/api/data/";
   const CAP = 10;
