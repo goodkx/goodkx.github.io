@@ -398,6 +398,10 @@
         set("sNotice", on ? "ON" : "OFF", on ? (d.d || "已发布") : "没有公告");
       }).catch(() => set("sNotice", "!", "读取失败"));
 
+      if (!token) {
+        set("sBuild", "—", "配令牌后可见");
+        return;
+      }
       loadBuild().then((b) => {
         if (!b) { set("sBuild", "?", "读取失败"); return; }
         set("sBuild", b.status === "built" ? "OK" : b.status, fmtTime(b.updated_at));
@@ -587,6 +591,7 @@
 
     /* ═══════════ 部署 ═══════════ */
     async function loadBuild() {
+      if (!token) return null;      /* Pages 接口要写权限，没令牌直接跳过，别刷 404 */
       try {
         const r = await api("/repos/" + OWNER + "/" + REPO + "/pages/builds/latest");
         if (!r.ok) return null;
