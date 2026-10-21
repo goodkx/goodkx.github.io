@@ -61,16 +61,6 @@
       transition: color .2s, border-color .2s;
     }
     .wall-admin:hover { color: var(--accent); border-color: var(--border-hover); }
-    /* 顶部「工作台」入口：做成能点的圆角块（原来纯文字太小，点不到） */
-    .admin-chip {
-      font-family: var(--mono); font-size: .74rem; color: var(--text); text-decoration: none;
-      border: 1px solid var(--border-hover); border-radius: 999px; padding: 7px 14px;
-      background: var(--acc-soft-bg);
-      display: inline-flex; align-items: center; justify-content: center; min-height: 34px;
-      transition: color .2s, border-color .2s, background .2s, transform .15s;
-    }
-    .admin-chip:hover { color: var(--accent); transform: translateY(-1px); }
-    @media (max-width: 640px) { .admin-chip { min-height: 44px; padding: 0 16px; } }
     .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .shot {
       margin: 0; background: var(--card); border: 1px solid var(--border);
@@ -272,10 +262,7 @@
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
-    <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <a class="admin-chip" href="admin.html" rel="nofollow">🛠 工作台</a>
-      <a class="badge" href="#wall" title="跳到照片墙">📷 照片墙 ↓</a>
-    </span>
+    <a class="badge" href="#wall" title="跳到照片墙">📷 照片墙 ↓</a>
   </div>
 
   <h1 data-word="GALLERY">用照片收藏 <span class="grad">生活</span></h1>
@@ -696,10 +683,7 @@
     <section class="wall" id="wall">
       <div class="wall-head">
         <h2>📸 照片墙 <span class="wc" id="wallCount"></span></h2>
-        <span style="display:flex;gap:8px;flex-wrap:wrap">
-          <a class="wall-admin" href="admin.html" rel="nofollow">🛠 工作台</a>
-          <a class="wall-admin" href="admin-upload.html" rel="nofollow">站长上传 ↗</a>
-        </span>
+        <a class="wall-admin" href="admin-upload.html" rel="nofollow">站长上传 ↗</a>
       </div>
       <div class="shots" id="shots"></div>
       <div class="wall-empty" id="wallEmpty">
