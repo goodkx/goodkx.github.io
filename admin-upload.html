@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0e16" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="站长照片上传台 —— 上传后统一 3:2 预览进入相册照片墙，点开可看原图。" />
+  <title>照片上传台 | CCCAD</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A4%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="subpage.css?v=130" />
+  <link rel="stylesheet" href="theme.css?v=130" />
+  <link rel="manifest" href="manifest.json?v=130" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script src="theme.js?v=130"></script>
+  <style>
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 20px;
+      margin-bottom: 18px;
+    }
+    .card h2 {
+      font-size: .98rem;
+      margin: 0 0 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .card h2 .num {
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--accent);
+      border: 1px solid var(--border-hover);
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-weight: 400;
+    }
+    .card .hint { margin: 0 0 12px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .row input[type="password"], .row input[type="text"] {
+      flex: 1;
+      min-width: 160px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: 9px 11px;
+      outline: none;
+    }
+    .row input:focus { border-color: var(--border-hover); }
+    .btn, .tbtn, .lnk {
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .btn {
+      background: var(--panel);
+      border: 1px solid var(--border-hover);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: .78rem;
+      padding: 8px 15px;
+      transition: color .2s, border-color .2s, transform .15s;
+    }
+    .btn:hover { color: var(--accent); }
+    .btn.warn:hover { color: #ff8484; border-color: rgba(255, 132, 132, .45); }
+    .btn[disabled] { opacity: .4; cursor: not-allowed; }
+    .lnk {
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border-hover);
+      color: var(--accent);
+      font-size: inherit;
+      padding: 0;
+    }
+    .state {
+      font-family: var(--mono);
+      font-size: .74rem;
+      color: var(--muted);
+      margin: 10px 0 0;
+      line-height: 1.8;
+    }
+    .state.ok { color: var(--accent); }
+    .state.bad { color: #ff8484; }
+    details { margin-top: 12px; }
+    summary {
+      cursor: pointer;
+      font-size: .78rem;
+      color: var(--muted);
+      outline: none;
+    }
+    summary:hover { color: var(--accent); }
+    .guide {
+      margin-top: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: .8rem;
+      line-height: 1.95;
+      color: var(--muted);
+    }
+    .guide b { color: var(--text); }
+    .guide code {
+      font-family: var(--mono);
+      font-size: .74rem;
+      background: rgba(127, 127, 127, .16);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .guide ol { margin: 6px 0 0; padding-left: 18px; }
+
+    .drop {
+      border: 1px dashed var(--border-hover);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 26px 18px;
+      text-align: center;
+      font-size: .88rem;
+      color: var(--text);
+      transition: border-color .2s, background .2s;
+    }
+    .drop.hot { border-color: var(--accent); background: rgba(167, 139, 250, .07); }
+    .drop .hint { margin: 8px 0 0; }
+
+    .queue { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .qi {
+      display: grid;
+      grid-template-columns: 92px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .qi .qart {
+      width: 92px;
+      height: 61px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #0b0f16;
+      border: 1px solid var(--border);
+    }
+    .qi .qart img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .qi .qbody { min-width: 0; }
+    .qi .qname {
+      font-size: .8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .qi .qname span { font-family: var(--mono); font-size: .68rem; color: var(--muted); margin-left: 6px; }
+    .qi input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .78rem;
+      padding: 6px 9px;
+      outline: none;
+    }
+    .qi input:focus { border-color: var(--border-hover); }
+    .qi .qst {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+    .qi .qst.ok { color: var(--accent); }
+    .qi .qst.bad { color: #ff8484; }
+    .qi .qx {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: .8rem;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+    .qi .qx:hover { color: #ff8484; border-color: rgba(255, 132, 132, .4); }
+    .bar {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(127, 127, 127, .2);
+      overflow: hidden;
+      margin-top: 7px;
+      display: none;
+    }
+    .bar.on { display: block; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--gradient); transition: width .3s; }
+
+    #go {
+      margin-top: 16px;
+      width: 100%;
+      background: var(--gradient);
+      color: #06251a;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: .86rem;
+      font-weight: 700;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .2s, opacity .2s;
+    }
+    #go:hover:not([disabled]) { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 229, 160, .28); }
+    #go[disabled] { opacity: .45; cursor: not-allowed; }
+
+    .mine { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .mp {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .mp .mart { aspect-ratio: 3 / 2; background: #0b0f16; }
+    .mp .mart img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mp .mcap {
+      padding: 8px 10px;
+      font-size: .74rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .mp .mcap b { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mp .mdel {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(8, 10, 16, .78);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: .7rem;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    .mp .mdel:hover { color: #ff8484; border-color: rgba(255, 132, 132, .4); }
+    .empty {
+      color: var(--muted);
+      font-size: .82rem;
+      padding: 18px 0;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+      .qi { grid-template-columns: 74px 1fr auto; gap: 9px; }
+      .qi .qart { width: 74px; height: 49px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="gallery.html">← 返回相册</a>
+    <span class="badge">📤 upload</span>
+  </div>
+
+  <h1 data-word="UPLOAD">站长 <span class="grad">照片上传</span></h1>
+
+  <div class="wrap">
+
+    <section class="card" id="tokenCard">
+      <h2><span class="num">STEP 1</span>连接 GitHub</h2>
+      <p class="hint">照片存进仓库 <b>gallery/p/</b>，由 GitHub Pages 直接分发；令牌只留在这台设备的浏览器里，不会写进网页。</p>
+      <div class="row">
+        <input type="password" id="tok" placeholder="粘贴 GitHub 令牌（gho_… 或 github_pat_…）" autocomplete="off" spellcheck="false" />
+        <button class="btn" id="tokSave" type="button">保存并测试</button>
+        <button class="btn warn" id="tokForget" type="button">清除</button>
+      </div>
+      <p class="state" id="tokState">未配置令牌</p>
+      <details>
+        <summary>怎么拿到令牌？（两种方式）</summary>
+        <div class="guide">
+          <b>方式 A：本机已登录 gh（最快）</b>
+          <ol>
+            <li>在这个仓库的电脑上打开 PowerShell，运行 <code>gh auth token | Set-Clipboard</code></li>
+            <li>回到本页，令牌直接在剪贴板里，粘到上面输入框 → 保存并测试</li>
+          </ol>
+          <b>方式 B：新建细粒度令牌（更安全，只给这一个仓库）</b>
+          <ol>
+            <li>在能打开 github.com 的网络下访问 <code>github.com/settings/personal-access-tokens/new</code></li>
+            <li>Repository access 选 <b>Only select repositories</b> → <b>goodkx.github.io</b></li>
+            <li>Permissions → Repository permissions → <b>Contents: Read and write</b>（其余全留 No access）</li>
+            <li>生成后复制 <code>github_pat_…</code> 粘到上面</li>
+          </ol>
+        </div>
+      </details>
+    </section>
+
+    <section class="card" id="pickCard">
+      <h2><span class="num">STEP 2</span>选照片</h2>
+      <div class="drop" id="drop">
+        <input type="file" id="file" accept="image/*" multiple hidden />
+        <p style="margin:0">把照片拖到这里，或 <button class="lnk" id="pick" type="button">点此选择</button></p>
+        <p class="hint">单张 ≤ 15MB · JPG / PNG / WebP / GIF · 预览一律裁成 <b>3:2</b>（1200×800），原图按原样保存</p>
+      </div>
+      <div class="queue" id="queue"></div>
+      <button class="tbtn" id="go" type="button" disabled>开始上传</button>
+      <p class="state" id="goState"></p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">STEP 3</span>相册里已有 <span id="cnt">…</span> 张</h2>
+      <p class="hint">删除会同时移除照片墙记录和仓库里的两个文件（缩略图 + 原图）。</p>
+      <div class="mine" id="mine"></div>
+    </section>
+
+    <p class="caption">
+      图片：仓库 <b>gallery/p/</b> · 记录：<b>textdb cccad-photos</b> ·
+      上传后 30–90 秒构建完成，照片墙自动出现
+    </p>
+  </div>
+
+  <script>
+    /* ══════════════════════════════════════════════════════════
+       站长照片上传台
+       - 预览：客户端 canvas 居中裁切 3:2 → 1200×800 JPEG（所有照片同一个格式）
+       - 原图：原始字节直传（≤15MB），点开「查看原图」即为上传的那张
+       - 存储：GitHub Contents API（gallery/p/）+ textdb 清单（cccad-photos）
+       ══════════════════════════════════════════════════════════ */
+    const $ = (s, el = document) => el.querySelector(s);
+
+    const OWNER = "goodkx";
+    const REPO = "goodkx.github.io";
+    const BRANCH = "main";
+    const DIR = "gallery/p/";
+    const TDB = "https://textdb.dev/api/data/cccad-photos";
+    const TOKEN_KEY = "cccad-gh-token";
+    const THUMB_W = 1200, THUMB_H = 800;      /* 3:2 —— 与相册卡片比例一致 */
+    const MAX_ORIG = 15 * 1024 * 1024;
+    const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif" };
+
+    let token = "";
+    try { token = localStorage.getItem(TOKEN_KEY) || ""; } catch (e) {}
+    let queue = [];          /* { file, id, title, date, status, err, done } */
+    let mine = [];           /* manifest */
+    let busy = false;
+
+    /* ── 小工具 ── */
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const fmtSize = (b) => b >= 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+    const today = () => {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    };
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const esc = (s) => String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+    function asciiJson(obj) {
+      /* textdb 只收 ASCII 安全 JSON：中文转 \uXXXX，取回 JSON.parse 自动还原 */
+      return JSON.stringify(obj).replace(/[\u0080-\uFFFF]/g, (ch) =>
+        "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
+    }
+
+    function blobToB64(blob) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(String(fr.result).split(",")[1]);
+        fr.onerror = () => rej(new Error("读取文件失败"));
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    function fileToB64(file) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(String(fr.result).split(",")[1]);
+        fr.onerror = () => rej(new Error("读取文件失败"));
+        fr.readAsDataURL(file);
+      });
+    }
+
+    /* ── GitHub API ── */
+    function api(path, opts = {}) {
+      const headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      };
+      return fetch("https://api.github.com" + path, Object.assign({}, opts, { headers }));
+    }
+
+    const encPath = (p) => p.split("/").map(encodeURIComponent).join("/");
+
+    async function checkToken() {
+      const r = await api("/repos/" + OWNER + "/" + REPO);
+      if (r.status === 401) throw new Error("令牌无效或已过期");
+      if (r.status === 404) throw new Error("令牌看不到这个仓库（检查仓库权限）");
+      if (!r.ok) throw new Error("GitHub 返回 HTTP " + r.status);
+      const j = await r.json();
+      if (!j.permissions || !j.permissions.push) {
+        throw new Error("令牌只读 —— 需要 Contents: Read and write");
+      }
+      return j;
+    }
+
+    async function getSha(path) {
+      const r = await api("/repos/" + OWNER + "/" + REPO + "/contents/" + encPath(path) + "?ref=" + BRANCH);
+      if (!r.ok) return null;
+      const j = await r.json();
+      return j && j.sha ? j.sha : null;
+    }
+
+    /* 上传/覆盖一个文件（失败自动重试；分支头变动导致 409 时重试） */
+    async function putFile(path, contentB64, message) {
+      let lastErr = null;
+      for (let i = 0; i < 3; i++) {
+        if (i > 0) await sleep(900 * i);
+        const body = { message, content: contentB64, branch: BRANCH };
+        let r = await api("/repos/" + OWNER + "/" + REPO + "/contents/" + encPath(path), {
+          method: "PUT", body: JSON.stringify(body),
+        });
+        if (r.status === 422 || r.status === 409) {
+          const sha = await getSha(path);
+          if (sha) {
+            r = await api("/repos/" + OWNER + "/" + REPO + "/contents/" + encPath(path), {
+              method: "PUT", body: JSON.stringify(Object.assign(body, { sha })),
+            });
+          }
+        }
+        if (r.ok) return true;
+        lastErr = "HTTP " + r.status + ((await r.text()) || "").slice(0, 140);
+      }
+      throw new Error("上传失败：" + lastErr);
+    }
+
+    async function delFile(path, message) {
+      const sha = await getSha(path);
+      if (!sha) return;                       /* 文件已不存在，当成成功 */
+      const r = await api("/repos/" + OWNER + "/" + REPO + "/contents/" + encPath(path), {
+        method: "DELETE", body: JSON.stringify({ message, sha, branch: BRANCH }),
+      });
+      if (!r.ok && r.status !== 404) throw new Error("删除失败：HTTP " + r.status);
+    }
+
+    /* ── textdb 清单 ── */
+    async function readManifest() {
+      const r = await fetch(TDB + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return [];
+      const d = await r.json();
+      const arr = Array.isArray(d) ? d : (Array.isArray(d.photos) ? d.photos : []);
+      return arr.filter((p) => p && p.thumb && p.full);
+    }
+
+    async function writeManifest(list) {
+      const payload = asciiJson({ photos: list });
+      let lastErr = "";
+      for (let i = 0; i < 3; i++) {
+        if (i > 0) await sleep(1200 * i);
+        try {
+          const r = await fetch(TDB, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: payload,
+          });
+          if (r.ok) return true;
+          lastErr = "HTTP " + r.status;
+        } catch (e) { lastErr = e.message || String(e); }
+      }
+      throw new Error("清单写入失败：" + lastErr);
+    }
+
+    /* ── 令牌 UI ── */
+    function setTokState(msg, cls) {
+      const el = $("#tokState");
+      el.textContent = msg;
+      el.className = "state" + (cls ? " " + cls : "");
+    }
+
+    async function saveToken(silent) {
+      const v = $("#tok").value.trim();
+      if (!v) { if (!silent) setTokState("请先粘贴令牌", "bad"); return false; }
+      token = v;
+      setTokState("测试连接中…");
+      try {
+        const j = await checkToken();
+        try { localStorage.setItem(TOKEN_KEY, token); } catch (e) {}
+        setTokState("✓ 已连接 " + j.full_name + " · 可写入（" + (j.private ? "私有" : "公开") + "仓库）", "ok");
+        refreshMine();
+        return true;
+      } catch (e) {
+        setTokState("✗ " + (e.message || e), "bad");
+        return false;
+      }
+    }
+
+    $("#tokSave").addEventListener("click", () => saveToken(false));
+    $("#tokForget").addEventListener("click", () => {
+      token = "";
+      try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+      $("#tok").value = "";
+      setTokState("已清除本机令牌");
+    });
+
+    /* ── 缩略图：居中裁切 3:2 ──
+       用 <img> 解码（createImageBitmap 在部分格式/旧内核上不稳），
+       浏览器会自动按 EXIF 方向摆正，横竖图都能正确出片。 */
+    function loadImage(file) {
+      return new Promise((res, rej) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => res({
+          el: img,
+          w: img.naturalWidth || img.width,
+          h: img.naturalHeight || img.height,
+          revoke: () => URL.revokeObjectURL(url),
+        });
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          rej(new Error("这张图浏览器解码不了（可能是 HEIC，请先转成 JPG）"));
+        };
+        img.src = url;
+      });
+    }
+
+    async function makeThumb(file) {
+      const src = await loadImage(file);
+      if (!src.w || !src.h) { src.revoke(); throw new Error("读不到图片尺寸"); }
+      const c = document.createElement("canvas");
+      c.width = THUMB_W; c.height = THUMB_H;
+      const g = c.getContext("2d");
+      g.imageSmoothingEnabled = true;
+      g.imageSmoothingQuality = "high";
+      g.fillStyle = "#0b0f16";
+      g.fillRect(0, 0, THUMB_W, THUMB_H);
+      const s = Math.max(THUMB_W / src.w, THUMB_H / src.h);
+      const w = src.w * s, h = src.h * s;
+      g.drawImage(src.el, (THUMB_W - w) / 2, (THUMB_H - h) / 2, w, h);
+      const blob = await new Promise((res) => c.toBlob(res, "image/jpeg", 0.86));
+      const dims = { w: src.w, h: src.h };
+      src.revoke();
+      if (!blob) throw new Error("缩略图生成失败");
+      return { blob, dims };
+    }
+
+    /* 超大原图 → 压到长边 3200 的 JPEG（仍算「原图」，只是体积友好） */
+    async function shrinkOriginal(file) {
+      const src = await loadImage(file);
+      const max = 3200;
+      const s = Math.min(1, max / Math.max(src.w, src.h));
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(src.w * s));
+      c.height = Math.max(1, Math.round(src.h * s));
+      const g = c.getContext("2d");
+      g.imageSmoothingQuality = "high";
+      g.drawImage(src.el, 0, 0, c.width, c.height);
+      const blob = await new Promise((res) => c.toBlob(res, "image/jpeg", 0.9));
+      const dims = { w: c.width, h: c.height };
+      src.revoke();
+      if (!blob) throw new Error("压缩失败");
+      return { blob, dims };
+    }
+
+    /* ── 队列 UI ── */
+    function addFiles(files) {
+      let n = 0;
+      for (const f of files) {
+        if (!/^image\//.test(f.type)) continue;
+        if (f.size > MAX_ORIG) { alert("「" + f.name + "」超过 15MB，先压一下再传吧"); continue; }
+        if (queue.some((q) => q.file.name === f.name && q.file.size === f.size && q.file.lastModified === f.file.lastModified)) continue;
+        queue.push({
+          file: f,
+          id: uid(),
+          title: f.name.replace(/\.[^.]+$/, "").slice(0, 24),
+          date: today(),
+          status: "待上传",
+          err: "",
+          done: false,
+        });
+        n++;
+      }
+      renderQueue();
+      return n;
+    }
+
+    function renderQueue() {
+      const box = $("#queue");
+      box.innerHTML = queue.map((q, i) => `
+        <div class="qi" data-i="${i}">
+          <div class="qart"><img alt="" src="${q.previewUrl || ""}" /></div>
+          <div class="qbody">
+            <div class="qname"><span class="fn"></span></div>
+            <input type="text" maxlength="30" value="${esc(q.title)}" placeholder="照片标题（相册里显示）" />
+            <div class="qst ${q.err ? "bad" : q.done ? "ok" : ""}">${esc(q.err || q.status)} · ${fmtSize(q.file.size)}</div>
+            <div class="bar ${q.done || q.err ? "" : q.stage ? "on" : ""}"><i style="width:${q.pct || 0}%"></i></div>
+          </div>
+          <button class="qx" type="button" data-del="${i}" title="移出队列">✕</button>
+        </div>`).join("");
+
+      box.querySelectorAll(".qi").forEach((el, i) => {
+        const q = queue[i];
+        el.querySelector(".fn").textContent = q.file.name;
+        const img = el.querySelector("img");
+        if (!q.previewUrl) {
+          /* 队列条目自己生成 3:2 预览（与相册所见一致） */
+          makeThumb(q.file).then(({ blob }) => {
+            q.previewUrl = URL.createObjectURL(blob);
+            img.src = q.previewUrl;
+          }).catch(() => { img.removeAttribute("src"); });
+        }
+        el.querySelector("input").addEventListener("input", (e) => { q.title = e.target.value; });
+        el.querySelector(".qx").addEventListener("click", () => {
+          if (busy) return alert("上传中，等这批跑完再移除");
+          if (q.previewUrl) URL.revokeObjectURL(q.previewUrl);
+          queue.splice(i, 1);
+          renderQueue();
+        });
+      });
+
+      $("#go").disabled = busy || !queue.length;
+      $("#go").textContent = busy ? "上传中…" : "开始上传（" + queue.filter((q) => !q.done).length + " 张）";
+      $("#go").disabled = busy || !queue.filter((q) => !q.done).length;
+    }
+
+    function setItem(i, patch) {
+      Object.assign(queue[i], patch);
+      const el = document.querySelector('.qi[data-i="' + i + '"]');
+      if (!el) { renderQueue(); return; }
+      const st = el.querySelector(".qst");
+      const b = el.querySelector(".bar");
+      const q = queue[i];
+      st.textContent = (q.err || q.status) + " · " + fmtSize(q.file.size);
+      st.className = "qst" + (q.err ? " bad" : q.done ? " ok" : "");
+      b.classList.toggle("on", !q.done && !q.err);
+      b.querySelector("i").style.width = (q.pct || 0) + "%";
+    }
+
+    /* ── 构建状态轮询 ── */
+    async function waitBuild(ms) {
+      const t0 = Date.now();
+      while (Date.now() - t0 < ms) {
+        try {
+          const r = await api("/repos/" + OWNER + "/" + REPO + "/pages/builds/latest");
+          if (r.ok) {
+            const b = await r.json();
+            if (b.status === "built") return "built";
+            if (b.status === "errored") return "errored";
+          }
+        } catch (e) {}
+        await sleep(6000);
+      }
+      return "timeout";
+    }
+
+    /* ── 上传主流程 ── */
+    async function uploadOne(q, i) {
+      const base = DIR + q.date.replace(/-/g, "") + "-" + q.id;
+      setItem(i, { status: "生成 3:2 预览…", pct: 8 });
+      const { blob: thumb, dims } = await makeThumb(q.file);
+
+      let origBlob = q.file, origExt = EXT[q.file.type] || "jpg", note = "";
+      if (!EXT[q.file.type]) {
+        setItem(i, { status: "转换原图为 JPG…", pct: 18 });
+        const s = await shrinkOriginal(q.file);
+        origBlob = s.blob; origExt = "jpg"; note = "（已转 JPG）";
+      } else if (q.file.size > 6 * 1024 * 1024) {
+        /* 6MB 以上再压一次，避免仓库和加载被拖垮；尺寸信息照原图记 */
+        setItem(i, { status: "压缩原图（长边 3200）…", pct: 18 });
+        const s = await shrinkOriginal(q.file);
+        if (s.blob.size < q.file.size) { origBlob = s.blob; origExt = "jpg"; note = "（已压到长边 3200）"; }
+      }
+
+      const thumbPath = base + "-t.jpg";
+      const fullPath = base + "." + origExt;
+
+      setItem(i, { status: "上传预览图…", pct: 34 });
+      await putFile(thumbPath, await blobToB64(thumb), "相册：新增预览图 " + q.title);
+
+      setItem(i, { status: "上传原图…", pct: 62 });
+      await putFile(fullPath, await fileToB64(origBlob), "相册：新增原图 " + q.title);
+
+      setItem(i, { status: "登记到照片墙…", pct: 84 });
+      mine = await readManifest();
+      const entry = {
+        id: q.id,
+        t: q.title || "未命名照片",
+        d: q.date,
+        thumb: thumbPath,
+        full: fullPath,
+        w: dims.w,
+        h: dims.h,
+        sz: origBlob.size,
+        ts: Date.now(),
+      };
+      mine = mine.filter((p) => p.id !== q.id);
+      mine.unshift(entry);
+      await writeManifest(mine);
+
+      setItem(i, { status: "等 Pages 构建" + note, pct: 92 });
+      const st = await waitBuild(150000);
+      setItem(i, {
+        done: true,
+        pct: 100,
+        status: st === "built" ? "✓ 已上线" : st === "errored" ? "⚠ 已提交，但 Pages 构建失败" : "✓ 已提交（构建还在跑，约 1 分钟）",
+      });
+      return entry;
+    }
+
+    $("#go").addEventListener("click", async () => {
+      if (busy) return;
+      if (!token) { alert("先在第 1 步保存令牌"); return; }
+      busy = true;
+      renderQueue();
+      $("#goState").textContent = "";
+      try {
+        await checkToken();
+      } catch (e) {
+        busy = false; renderQueue();
+        $("#goState").className = "state bad";
+        $("#goState").textContent = "✗ " + e.message;
+        return;
+      }
+
+      const todo = queue.map((q, i) => ({ q, i })).filter((x) => !x.q.done);
+      for (const { i } of todo) {
+        const q = queue[i];
+        try {
+          await uploadOne(q, i);
+        } catch (e) {
+          setItem(i, { err: "✗ " + (e.message || e) });
+        }
+      }
+      busy = false;
+      renderQueue();
+      refreshMine();
+      $("#goState").className = "state ok";
+      $("#goState").textContent = "本轮结束 · 失败的可以单独重试（改完再点开始上传）";
+    });
+
+    /* ── 已有照片 ── */
+    async function refreshMine() {
+      try { mine = await readManifest(); } catch (e) { mine = []; }
+      $("#cnt").textContent = mine.length;
+      const box = $("#mine");
+      if (!mine.length) {
+        box.innerHTML = '<div class="empty">还没有上传过照片 —— 上面选几张试试</div>';
+        return;
+      }
+      box.innerHTML = mine.map((p) => `
+        <div class="mp" data-id="${p.id}">
+          <div class="mart"><img loading="lazy" alt="${esc(p.t)}" src="${esc(p.thumb)}" /></div>
+          <div class="mcap"><b>${esc(p.t || "未命名")}</b><span>${esc(p.d || "")}</span></div>
+          <button class="mdel" type="button" data-del="${p.id}">删除</button>
+        </div>`).join("");
+      box.querySelectorAll(".mdel").forEach((b) => {
+        b.addEventListener("click", () => delPhoto(b.getAttribute("data-del")));
+      });
+    }
+
+    async function delPhoto(id) {
+      const p = mine.find((x) => x.id === id);
+      if (!p) return;
+      if (!confirm("删除「" + (p.t || "未命名") + "」？\n照片墙会立刻移除，仓库里的两个文件也会删掉。")) return;
+      if (!token) { alert("先在第 1 步配置令牌"); return; }
+      try {
+        await delFile(p.thumb, "相册：删除预览图 " + (p.t || ""));
+        await delFile(p.full, "相册：删除原图 " + (p.t || ""));
+        mine = (await readManifest()).filter((x) => x.id !== id);
+        await writeManifest(mine);
+        refreshMine();
+      } catch (e) {
+        alert("删除失败：" + (e.message || e));
+      }
+    }
+
+    /* ── 拖拽 / 选择 ── */
+    const drop = $("#drop");
+    ["dragenter", "dragover"].forEach((ev) =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("hot"); }));
+    ["dragleave", "drop"].forEach((ev) =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("hot"); }));
+    drop.addEventListener("drop", (e) => {
+      if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+    });
+    $("#pick").addEventListener("click", () => $("#file").click());
+    $("#file").addEventListener("change", (e) => {
+      addFiles(e.target.files);
+      e.target.value = "";
+    });
+
+    /* ── 启动 ── */
+    (function boot() {
+      if (token) {
+        $("#tok").value = token;
+        setTokState("已读取本机保存的令牌，测试连接中…");
+        checkToken().then((j) => {
+          setTokState("✓ 已连接 " + j.full_name + " · 可写入", "ok");
+          refreshMine();
+        }).catch((e) => {
+          setTokState("✗ " + (e.message || e) + "（重新粘贴一次令牌）", "bad");
+          refreshMine();
+        });
+      } else {
+        refreshMine();
+      }
+    })();
+  </script>
+</body>
+</html>

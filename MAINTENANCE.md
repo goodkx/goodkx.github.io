@@ -16,7 +16,8 @@
 | index.html | 首页（全部区块 + 内联样式/脚本；五区五版式：bento 技能 / 编号列表项目 / 竖线经历 / 卡片码头 / 3D 滚筒日志） |
 | arcade.html | 街机厅（四台机台 + 荣誉墙 = 四游戏排行榜聚合） |
 | blog.html | 博客（**数据内联**：POSTS 对象 + ORDER 数组 + 静态列表卡，三者都要注册，见下文 SOP） |
-| gallery.html | 相册（内联 SVG 画作，.photo 块） |
+| gallery.html | 相册（上半：内联 SVG 画作 .photo 块；下半：照片墙 .shot，数据来 textdb `cccad-photos`） |
+| admin-upload.html | 📤 站长照片上传台（GitHub Contents API 写 `gallery/p/`，统一 3:2 缩略图 + 原图） |
 | tools.html | 工具箱（14 个 `<section class="tool">`） |
 | shop.html | 小卖部（云端商品/订单，站长口令见文件内 ADMIN_PASS） |
 | game/tetris/memory/minesweeper.html | 四款游戏（都接 leaderboard.js） |
@@ -47,12 +48,14 @@
 | cccad-site-stats | 共同记录（来访/打卡等） |
 | cccad-lb-2048 / -memory / -tetris / -mines / -typing | 五款游戏排行榜（{list:[{n,s,d}]}） |
 | cccad-notice | 站长公告（{msg, d}——全站底部横条，留言板站长端发布） |
+| cccad-photos | 相册照片墙清单（{photos:[{id,t,d,thumb,full,w,h,sz,ts}]}——上传台自动写） |
 
 **备份**（建议每月跑一次，结果存到本地仓库外）：
 
 ```bash
 for k in cccad-gb-95592aa7 cccad-shop-products cccad-shop-orders cccad-site-stats \
-         cccad-lb-2048 cccad-lb-memory cccad-lb-tetris cccad-lb-mines cccad-lb-typing cccad-notice; do
+         cccad-lb-2048 cccad-lb-memory cccad-lb-tetris cccad-lb-mines cccad-lb-typing cccad-notice \
+         cccad-photos; do
   curl -s "https://textdb.dev/api/data/$k" -o "backup-$k.json"
 done
 ```
@@ -90,9 +93,24 @@ done
 ### 加一个工具
 复制 `<section class="tool">` + 写函数即可；`node check.js` 会自动校验首页宣称的工具数。
 
+### 上传照片到相册照片墙（固定 3:2 预览 + 点开看原图）
+**入口**：`admin-upload.html`（相册页右上「站长上传 ↗」也能进）。
+
+1. 第一步粘 GitHub 令牌（只需一次，存在本机 localStorage）：
+   - 本机最快：`gh auth token | Set-Clipboard`（或 `gh auth token` 复制）
+   - 更安全：新建细粒度令牌 → 仅 `goodkx.github.io` 仓库 → **Contents: Read and write**
+2. 拖照片进去 → 填标题 → 开始上传。每张会：
+   - 客户端 canvas **居中裁切 3:2 → 1200×800 JPEG** 存 `gallery/p/<日期>-<id>-t.jpg`（所有照片预览因此长一样）
+   - 原图原样存 `gallery/p/<日期>-<id>.<ext>`（>6MB 会压到长边 3200，界面会标注）
+   - 清单写进 textdb `cccad-photos`（最新在前）
+3. 等 30–90 秒 Pages 构建；上传台会自动轮询构建状态，构建没完时相册卡片显示「⏳ 构建中」并 20 秒后自动重试。
+4. 删除：上传台第三步点「删除」——同时删清单条目和仓库里的两个文件。
+
+**注意**：令牌等于仓库写权限，只存在自己浏览器；换电脑/清缓存要重粘。`gallery.html` 只读 textdb 清单，不需要令牌。
+
 ### 改样式
 - 只影响首页 → style.css；影响所有内页 → subpage.css；全站（含主题）→ theme.css
-- **改完任何 css/js：全站统一 bump 版本号**（当前单版本策略 v124）：
+- **改完任何 css/js：全站统一 bump 版本号**（当前单版本策略 v130）：
   `sed -i 's/?v=[0-9]*/?v=125/g' *.html`
 - `node check.js` 第 7 项会报告版本漂移
 
@@ -144,7 +162,8 @@ fetch 也断时 `gh api repos/.../tarball/main > repo.tgz` 解包覆盖本地文
 | 手机横向滚动 | 某元素出血超出视口 → 逐个 `display:none` 二分定位（参考 theme.css 里极光晕的修法） |
 | 新区块/卡片隐身 | 用了 .reveal 但页面没加 IntersectionObserver 观察器（arcade.html 踩过） |
 | 列表不显示新文章 | 只注册了 POSTS/ORDER，忘了静态列表卡（blog 踩过） |
-| push 一直失败 | 走上面的 Contents API 备用通道 |
+| push 一直失败 | 走上面的 Contents API 备用通道（当前已改用 SSH：`git@github.com:goodkx/goodkx.github.io.git`，github.com:443 被墙也不影响） |
+| 上传了照片，相册没有 | ① 构建还没跑完（30–90 秒）② textdb `cccad-photos` 没写成功（上传台第三步能看到列表才算成功）③ 令牌没有 Contents 写权限 |
 | 主题不对 | 访客浏览器 localStorage 存了手动选择 → 🎨 重选；默认已固定「深空绿·终端」，无自动换肤 |
 
 ## 七、红线（每条都有教训）
