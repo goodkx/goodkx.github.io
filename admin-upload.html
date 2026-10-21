@@ -678,15 +678,18 @@
       const { blob: thumb, dims } = await makeThumb(q.file);
 
       let origBlob = q.file, origExt = EXT[q.file.type] || "jpg", note = "";
+      let servedDim = null;                 /* 实际入库那张图的像素（压缩/转码后可能与原图不同） */
       if (!EXT[q.file.type]) {
         setItem(i, { status: "转换原图为 JPG…", pct: 18 });
         const s = await shrinkOriginal(q.file);
-        origBlob = s.blob; origExt = "jpg"; note = "（已转 JPG）";
+        origBlob = s.blob; origExt = "jpg"; servedDim = s.dims; note = "（已转 JPG）";
       } else if (q.file.size > 6 * 1024 * 1024) {
-        /* 6MB 以上再压一次，避免仓库和加载被拖垮；尺寸信息照原图记 */
+        /* 6MB 以上再压一次，避免仓库和加载被拖垮 */
         setItem(i, { status: "压缩原图（长边 3200）…", pct: 18 });
         const s = await shrinkOriginal(q.file);
-        if (s.blob.size < q.file.size) { origBlob = s.blob; origExt = "jpg"; note = "（已压到长边 3200）"; }
+        if (s.blob.size < q.file.size) {
+          origBlob = s.blob; origExt = "jpg"; servedDim = s.dims; note = "（已压到长边 3200）";
+        }
       }
 
       const thumbPath = base + "-t.jpg";
@@ -706,8 +709,12 @@
         d: q.date,
         thumb: thumbPath,
         full: fullPath,
-        w: dims.w,
-        h: dims.h,
+        /* 记「实际入库」的尺寸，别记原图尺寸——否则查看器写着 4284×5712、真图只有 2400×3200（踩过） */
+        w: servedDim ? servedDim.w : dims.w,
+        h: servedDim ? servedDim.h : dims.h,
+        ow: dims.w,
+        oh: dims.h,
+        cz: servedDim ? 1 : 0,
         sz: origBlob.size,
         ts: Date.now(),
       };

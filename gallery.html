@@ -851,23 +851,24 @@
       empty.style.display = "none";
       $("#wallCount").textContent = "· " + list.length + " 张";
       box.innerHTML = list.map((p, i) => `
-        <figure class="shot" data-i="${i}" tabindex="0" role="button" aria-label="查看原图：${escHtml(p.t || "照片")}">
+        <figure class="shot pending" data-i="${i}" tabindex="0" role="button" aria-label="查看原图：${escHtml(p.t || "照片")}">
           <div class="s-art">
             <img loading="lazy" decoding="async" src="${escHtml(p.thumb)}" alt="${escHtml(p.t || "照片")}" />
-            <span class="s-ph">⏳ 正在等 GitHub Pages 构建…</span>
+            <span class="s-ph">⏳ 图片加载中…</span>
           </div>
           <figcaption><span class="t">${escHtml(p.t || "照片")}</span><span class="d">${escHtml(p.d || "")}</span></figcaption>
         </figure>`).join("");
 
-      /* 图片没出来 → 占位 + 逐步拉长间隔自动重试（Pages 构建通常 1–3 分钟，
-         首个请求可能被 CDN 缓存成 404，所以要带 ?r= 换 URL 重试，最多约 10 分钟） */
+      /* 默认先显示占位，图真加载出来才撤（不会出现「图裂了但什么都没提示」的白框）。
+         图没出来 → 阶梯式重试：Pages 构建通常 1–3 分钟，构建完成前 CDN 会把 404 缓存住，
+         所以要换 ?r= URL，最多约 10 分钟。 */
       const RETRY = [8, 15, 30, 60, 90, 120, 180];
       box.querySelectorAll(".shot img").forEach((img) => {
-        let attempt = 0;
-        const ph = img.parentElement.querySelector(".s-ph");
-        img.addEventListener("error", () => {
-          const fig = img.closest(".shot");
-          if (!fig) return;
+        let attempt = 0, timer = null;
+        const fig = img.closest(".shot");
+        const ph = fig ? fig.querySelector(".s-ph") : null;
+
+        const schedule = () => {
           fig.classList.add("pending");
           if (attempt >= RETRY.length) {
             if (ph) ph.innerHTML = "图片还没构建出来<br>稍后刷新这一页试试";
@@ -875,15 +876,20 @@
           }
           const wait = RETRY[attempt++];
           if (ph) ph.innerHTML = "⏳ 正在等 GitHub Pages 构建…<br>" + wait + " 秒后自动重试";
-          setTimeout(() => {
-            const base = img.getAttribute("src").split("?")[0];
-            img.src = base + "?r=" + Date.now();
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            img.src = img.getAttribute("src").split("?")[0] + "?r=" + Date.now();
           }, wait * 1000);
-        });
+        };
+
+        img.addEventListener("error", schedule);
         img.addEventListener("load", () => {
-          const fig = img.closest(".shot");
-          if (fig) fig.classList.remove("pending");
+          clearTimeout(timer);
+          fig.classList.remove("pending");
         });
+
+        /* 关键：监听器挂上之前图可能已经失败（缓存命中时 error 会先触发），补一次判断 */
+        if (img.complete && img.naturalWidth === 0) schedule();
       });
     }
 
@@ -895,8 +901,9 @@
       img.alt = p.t || "照片";
       img.src = p.full;
       $("#pvTitle").textContent = p.t || "照片";
-      $("#pvInfo").textContent = [p.w && p.h ? p.w + "×" + p.h : "", fmtSize(p.sz), p.d || ""]
-        .filter(Boolean).join(" · ");
+      const dimTxt = p.w && p.h ? p.w + "×" + p.h : "";
+      const czTxt = p.cz && p.ow ? "已压缩（原 " + p.ow + "×" + p.oh + "）" : "";
+      $("#pvInfo").textContent = [dimTxt, fmtSize(p.sz), czTxt, p.d || ""].filter(Boolean).join(" · ");
       $("#pvFull").href = p.full;
       $("#pvCount").textContent = (pvCur + 1) + " / " + shotsData.length;
       $("#pv").classList.add("open");
