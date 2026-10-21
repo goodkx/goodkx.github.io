@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /files/
 Disallow: /admin-upload.html
+Disallow: /admin.html
 
 Sitemap: https://goodkx.github.io/sitemap.xml

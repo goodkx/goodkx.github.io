@@ -17,6 +17,7 @@
 | arcade.html | 街机厅（四台机台 + 荣誉墙 = 四游戏排行榜聚合） |
 | blog.html | 博客（**数据内联**：POSTS 对象 + ORDER 数组 + 静态列表卡，三者都要注册，见下文 SOP） |
 | gallery.html | 相册（上半：内联 SVG 画作 .photo 块；下半：照片墙 .shot，数据来 textdb `cccad-photos`） |
+| admin.html | 🛠 站长工作台（概览 / 照片 / 公告 / 小店 / 留言 / 部署，一页管完；照片标签页 iframe 复用 admin-upload.html） |
 | admin-upload.html | 📤 站长照片上传台（GitHub Contents API 写 `gallery/p/`，统一 3:2 缩略图 + 原图） |
 | tools.html | 工具箱（14 个 `<section class="tool">`） |
 | shop.html | 小卖部（云端商品/订单，站长口令见文件内 ADMIN_PASS） |
@@ -92,6 +93,20 @@ done
 
 ### 加一个工具
 复制 `<section class="tool">` + 写函数即可；`node check.js` 会自动校验首页宣称的工具数。
+
+### 站长工作台（admin.html）
+**入口**：`/admin.html`（相册照片墙右上「🛠 工作台」也能进），已 noindex + robots 屏蔽。
+
+| 标签页 | 能干什么 | 数据位置 |
+|---|---|---|
+| 📊 概览 | 照片/在售/待处理订单/留言/公告/构建状态一览 | 各云端键 |
+| 📸 照片 | 上传、看已有、删除（iframe 嵌 `admin-upload.html`，逻辑只维护一份） | 仓库 `gallery/p/` + `cccad-photos` |
+| 📢 公告 | 写文案 → 发布/撤下，全站底部横条 | `cccad-notice`（{msg,d}） |
+| 🛒 小店 | 新增商品、上下架、订单标记完成/删除 | `cccad-shop-products` / `cccad-shop-orders`（{list}） |
+| 💬 留言 | 最新 50 条，可删除 | `cccad-gb-95592aa7`（{messages}） |
+| 🚀 部署 | 最近提交、构建状态、手动 `POST /pages/builds` 重新发布 | GitHub API |
+
+**令牌**：与上传台共用同一个 `localStorage['cccad-gh-token']`。只有「照片」和「重新构建」需要它；公告/小店/留言走 textdb，没令牌也能用（但知道 key 的人都能写，属门禁级）。
 
 ### 上传照片到相册照片墙（固定 3:2 预览 + 点开看原图）
 **入口**：`admin-upload.html`（相册页右上「站长上传 ↗」也能进）。
