@@ -99,7 +99,7 @@ done
 1. 第一步粘 GitHub 令牌（只需一次，存在本机 localStorage）：
    - 本机最快：`gh auth token | Set-Clipboard`（或 `gh auth token` 复制）
    - 更安全：新建细粒度令牌 → 仅 `goodkx.github.io` 仓库 → **Contents: Read and write**
-2. 拖照片进去 → 填标题 → 开始上传。每张会：
+2. 拖照片进去 → 可填说明（**不填就用「站长收藏于 日期」**，相册里不显示原始文件名）→ 开始上传。每张会：
    - 客户端 canvas **居中裁切 3:2 → 1200×800 JPEG** 存 `gallery/p/<日期>-<id>-t.jpg`（所有照片预览因此长一样）
    - 原图原样存 `gallery/p/<日期>-<id>.<ext>`（≤12MB 原样；12–15MB 才压到长边 3200，界面会标注）
    - 清单写进 textdb `cccad-photos`（最新在前）
@@ -110,7 +110,7 @@ done
 
 ### 改样式
 - 只影响首页 → style.css；影响所有内页 → subpage.css；全站（含主题）→ theme.css
-- **改完任何 css/js：全站统一 bump 版本号**（当前单版本策略 v130）：
+- **改完任何 css/js：全站统一 bump 版本号**（当前单版本策略 v131）：
   `sed -i 's/?v=[0-9]*/?v=125/g' *.html`
 - `node check.js` 第 7 项会报告版本漂移
 

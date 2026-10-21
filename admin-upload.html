@@ -8,11 +8,11 @@
   <meta name="description" content="站长照片上传台 —— 上传后统一 3:2 预览进入相册照片墙，点开可看原图。" />
   <title>照片上传台 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A4%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=130" />
-  <link rel="stylesheet" href="theme.css?v=130" />
-  <link rel="manifest" href="manifest.json?v=130" />
+  <link rel="stylesheet" href="subpage.css?v=131" />
+  <link rel="stylesheet" href="theme.css?v=131" />
+  <link rel="manifest" href="manifest.json?v=131" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=130"></script>
+  <script src="theme.js?v=131"></script>
   <style>
     .card {
       background: var(--card);
@@ -389,6 +389,12 @@
       });
     }
 
+    /* 相册里统一的口径：没写标题就是「站长收藏于 日期」 */
+    const capOf = (p) => {
+      const t = (p && p.t ? String(p.t).trim() : "");
+      return t || ("站长收藏于 " + ((p && p.d) || ""));
+    };
+
     /* ── GitHub API ── */
     function api(path, opts = {}) {
       const headers = {
@@ -590,7 +596,8 @@
         queue.push({
           file: f,
           id: uid(),
-          title: f.name.replace(/\.[^.]+$/, "").slice(0, 24),
+          /* 不再拿文件名当标题：相册里统一显示「站长收藏于 日期」 */
+          title: "",
           date: today(),
           status: "待上传",
           err: "",
@@ -609,7 +616,7 @@
           <div class="qart"><img alt="" src="${q.previewUrl || ""}" /></div>
           <div class="qbody">
             <div class="qname"><span class="fn"></span></div>
-            <input type="text" maxlength="30" value="${esc(q.title)}" placeholder="照片标题（相册里显示）" />
+            <input type="text" maxlength="30" value="${esc(q.title)}" placeholder="可不填 · 默认「站长收藏于 日期」" />
             <div class="qst ${q.err ? "bad" : q.done ? "ok" : ""}">${esc(q.err || q.status)} · ${fmtSize(q.file.size)}</div>
             <div class="bar ${q.done || q.err ? "" : q.stage ? "on" : ""}"><i style="width:${q.pct || 0}%"></i></div>
           </div>
@@ -705,7 +712,7 @@
       mine = await readManifest();
       const entry = {
         id: q.id,
-        t: q.title || "未命名照片",
+        t: (q.title || "").trim() || ("站长收藏于 " + q.date),
         d: q.date,
         thumb: thumbPath,
         full: fullPath,
@@ -793,7 +800,7 @@
       box.innerHTML = mine.map((p) => `
         <div class="mp" data-id="${p.id}">
           <div class="mart"><img loading="lazy" alt="${esc(p.t)}" src="${esc(p.thumb)}" /></div>
-          <div class="mcap"><b>${esc(p.t || "未命名")}</b><span>${esc(p.d || "")}</span></div>
+          <div class="mcap"><b>${esc(capOf(p))}</b><span>${esc(p.d || "")}</span></div>
           <button class="mdel" type="button" data-del="${p.id}">删除</button>
         </div>`).join("");
       box.querySelectorAll(".mdel").forEach((b) => {
@@ -804,7 +811,7 @@
     async function delPhoto(id, btn) {
       const p = mine.find((x) => x.id === id);
       if (!p) return;
-      if (!confirm("删除「" + (p.t || "未命名") + "」？\n照片墙会立刻移除，仓库里的两个文件也会删掉。")) return;
+      if (!confirm("删除「" + capOf(p) + "」？\n照片墙会立刻移除，仓库里的两个文件也会删掉。")) return;
       if (!token) { alert("先在第 1 步配置令牌"); return; }
       if (btn) { btn.disabled = true; btn.textContent = "删除中…"; }
       try {
