@@ -260,7 +260,7 @@
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
-    <span class="badge">📷 gallery</span>
+    <a class="badge" href="#wall" title="跳到照片墙">📷 照片墙 ↓</a>
   </div>
 
   <h1 data-word="GALLERY">用照片收藏 <span class="grad">生活</span></h1>
@@ -854,20 +854,31 @@
         <figure class="shot" data-i="${i}" tabindex="0" role="button" aria-label="查看原图：${escHtml(p.t || "照片")}">
           <div class="s-art">
             <img loading="lazy" decoding="async" src="${escHtml(p.thumb)}" alt="${escHtml(p.t || "照片")}" />
-            <span class="s-ph">⏳ 图片构建中…<br>约 1 分钟后自动出现</span>
+            <span class="s-ph">⏳ 正在等 GitHub Pages 构建…</span>
           </div>
           <figcaption><span class="t">${escHtml(p.t || "照片")}</span><span class="d">${escHtml(p.d || "")}</span></figcaption>
         </figure>`).join("");
 
-      /* 刚上传还没构建好 → 先占位，20 秒后自动重试一次 */
+      /* 图片没出来 → 占位 + 逐步拉长间隔自动重试（Pages 构建通常 1–3 分钟，
+         首个请求可能被 CDN 缓存成 404，所以要带 ?r= 换 URL 重试，最多约 10 分钟） */
+      const RETRY = [8, 15, 30, 60, 90, 120, 180];
       box.querySelectorAll(".shot img").forEach((img) => {
+        let attempt = 0;
+        const ph = img.parentElement.querySelector(".s-ph");
         img.addEventListener("error", () => {
           const fig = img.closest(".shot");
+          if (!fig) return;
           fig.classList.add("pending");
+          if (attempt >= RETRY.length) {
+            if (ph) ph.innerHTML = "图片还没构建出来<br>稍后刷新这一页试试";
+            return;
+          }
+          const wait = RETRY[attempt++];
+          if (ph) ph.innerHTML = "⏳ 正在等 GitHub Pages 构建…<br>" + wait + " 秒后自动重试";
           setTimeout(() => {
-            const src = img.getAttribute("src").split("?")[0];
-            img.src = src + "?r=" + Date.now();
-          }, 20000);
+            const base = img.getAttribute("src").split("?")[0];
+            img.src = base + "?r=" + Date.now();
+          }, wait * 1000);
         });
         img.addEventListener("load", () => {
           const fig = img.closest(".shot");
