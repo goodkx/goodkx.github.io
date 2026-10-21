@@ -956,6 +956,40 @@ main, .nav, .footer { position: relative; z-index: 1; }
   .footer-inner { justify-content: center; text-align: center; }
 }
 
+/* ─────────── 站长专区（首页独立卡片，随页面滚动浮现） ─────────── */
+.admin-zone {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 22px 24px;
+  background: var(--card);
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+.admin-zone:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .3), 0 0 26px var(--acc-glow, rgba(0, 229, 160, .08));
+}
+.az-icon { font-size: 2rem; line-height: 1; }
+.az-text { display: flex; flex-direction: column; gap: 4px; flex: 1 1 240px; min-width: 0; }
+.az-text strong { font-size: 1.05rem; }
+.az-sub { color: var(--muted); font-size: .84rem; line-height: 1.6; }
+.az-go {
+  font-family: var(--mono); font-size: .78rem; color: var(--accent);
+  border: 1px solid var(--border-hover); border-radius: 999px;
+  padding: 9px 18px; white-space: nowrap;
+  background: var(--acc-soft-bg, transparent);
+}
+@media (max-width: 600px) {
+  .admin-zone { padding: 18px; gap: 12px; }
+  .az-go { width: 100%; text-align: center; }
+}
+
 /* ─────────── 动效偏好 ─────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
