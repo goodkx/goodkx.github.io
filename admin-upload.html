@@ -457,11 +457,16 @@
       if (!r.ok && r.status !== 404) throw new Error("删除失败：HTTP " + r.status);
     }
 
-    /* ── textdb 清单 ── */
+    /* ── textdb 清单 ──
+       注意：键不存在时 textdb 返回 200 + 空 body，直接 r.json() 会抛
+       "Unexpected end of JSON input" —— 必须先读 text 再判空。 */
     async function readManifest() {
       const r = await fetch(TDB + "?t=" + Date.now(), { cache: "no-store" });
       if (!r.ok) return [];
-      const d = await r.json();
+      const txt = (await r.text()).trim();
+      if (!txt) return [];                    /* 空键 = 还没上传过照片 */
+      let d;
+      try { d = JSON.parse(txt); } catch (e) { return []; }
       const arr = Array.isArray(d) ? d : (Array.isArray(d.photos) ? d.photos : []);
       return arr.filter((p) => p && p.thumb && p.full);
     }
@@ -710,13 +715,8 @@
       mine.unshift(entry);
       await writeManifest(mine);
 
-      setItem(i, { status: "等 Pages 构建" + note, pct: 92 });
-      const st = await waitBuild(150000);
-      setItem(i, {
-        done: true,
-        pct: 100,
-        status: st === "built" ? "✓ 已上线" : st === "errored" ? "⚠ 已提交，但 Pages 构建失败" : "✓ 已提交（构建还在跑，约 1 分钟）",
-      });
+      /* 构建状态统一在这一批传完后只等一次（多张一起传不用每张都干等） */
+      setItem(i, { status: "已上传，等 Pages 构建" + note, pct: 94, uploaded: true });
       return entry;
     }
 
@@ -744,6 +744,20 @@
           setItem(i, { err: "✗ " + (e.message || e) });
         }
       }
+
+      /* 这批里成功上传的，统一等一次构建 */
+      const uploadedIdx = queue.map((q, i) => ({ q, i }))
+        .filter((x) => x.q.uploaded && !x.q.done && !x.q.err).map((x) => x.i);
+      if (uploadedIdx.length) {
+        $("#goState").className = "state";
+        $("#goState").textContent = "等 Pages 构建（约 30–90 秒）…";
+        const st = await waitBuild(150000);
+        const label = st === "built" ? "✓ 已上线"
+          : st === "errored" ? "⚠ 已提交，但 Pages 构建失败"
+          : "✓ 已提交（构建还在跑，约 1 分钟）";
+        uploadedIdx.forEach((i) => setItem(i, { done: true, pct: 100, status: label }));
+      }
+
       busy = false;
       renderQueue();
       refreshMine();
