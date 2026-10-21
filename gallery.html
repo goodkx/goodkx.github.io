@@ -80,7 +80,9 @@
     .shot .s-ph {
       position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
       color: var(--muted); font-family: var(--mono); font-size: .7rem; text-align: center; padding: 12px;
+      line-height: 1.9;
     }
+    .shot .s-ph .s-reload { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(167, 139, 250, .4); }
     .shot.pending .s-ph { display: flex; }
     .shot figcaption {
       padding: 11px 14px; font-size: .84rem;
@@ -832,6 +834,8 @@
     const capOf = (p) => hasCustomTitle(p)
       ? String(p.t).trim()
       : ("站长收藏于 " + ((p && p.d) || ""));
+    /* 说明里已经带了日期就不再重复（「站长收藏于 2026-10-21」+ 2026-10-21 很啰嗦） */
+    const showDate = (p) => !!(p && p.d && !capOf(p).includes(p.d));
 
     async function loadShots() {
       try {
@@ -862,7 +866,7 @@
             <img loading="lazy" decoding="async" src="${escHtml(p.thumb)}" alt="${escHtml(capOf(p))}" />
             <span class="s-ph">⏳ 图片加载中…</span>
           </div>
-          <figcaption><span class="t">${escHtml(capOf(p))}</span><span class="d">${hasCustomTitle(p) ? escHtml(p.d || "") : ""}</span></figcaption>
+          <figcaption><span class="t">${escHtml(capOf(p))}</span><span class="d">${showDate(p) ? escHtml(p.d) : ""}</span></figcaption>
         </figure>`).join("");
 
       /* 默认先显示占位，图真加载出来才撤（不会出现「图裂了但什么都没提示」的白框）。
@@ -877,11 +881,18 @@
         const schedule = () => {
           fig.classList.add("pending");
           if (attempt >= RETRY.length) {
-            if (ph) ph.innerHTML = "图片还没构建出来<br>稍后刷新这一页试试";
+            if (ph) {
+              ph.innerHTML = "照片还没就绪<br><a href=\"#\" class=\"s-reload\">点此重新加载</a>";
+              const a = ph.querySelector(".s-reload");
+              if (a) a.addEventListener("click", (e) => {
+                e.preventDefault(); e.stopPropagation();
+                location.reload();
+              });
+            }
             return;
           }
           const wait = RETRY[attempt++];
-          if (ph) ph.innerHTML = "⏳ 正在等 GitHub Pages 构建…<br>" + wait + " 秒后自动重试";
+          if (ph) ph.textContent = "⏳ 照片马上就好…";   /* 不显示秒数，安静重试 */
           clearTimeout(timer);
           timer = setTimeout(() => {
             img.src = img.getAttribute("src").split("?")[0] + "?r=" + Date.now();
@@ -909,7 +920,7 @@
       $("#pvTitle").textContent = capOf(p);
       const dimTxt = p.w && p.h ? p.w + "×" + p.h : "";
       const czTxt = p.cz && p.ow ? "已压缩（原 " + p.ow + "×" + p.oh + "）" : "";
-      const dateTxt = hasCustomTitle(p) ? (p.d || "") : "";   /* 默认标题已含日期，不重复 */
+      const dateTxt = showDate(p) ? (p.d || "") : "";   /* 说明里已有日期就不重复 */
       $("#pvInfo").textContent = [dimTxt, fmtSize(p.sz), czTxt, dateTxt].filter(Boolean).join(" · ");
       $("#pvFull").href = p.full;
       $("#pvCount").textContent = (pvCur + 1) + " / " + shotsData.length;
