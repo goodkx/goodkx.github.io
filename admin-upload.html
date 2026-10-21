@@ -720,6 +720,21 @@
       return entry;
     }
 
+    /* 后台等构建：不阻塞界面，构建好了再把状态改成「已上线」 */
+    async function watchBuild(idxList) {
+      $("#goState").className = "state";
+      $("#goState").textContent = "已上传 " + idxList.length + " 张，等 Pages 构建（约 1 分钟）…";
+      const st = await waitBuild(180000);
+      const label = st === "built" ? "✓ 已上线"
+        : st === "errored" ? "⚠ 已提交，但 Pages 构建失败"
+        : "✓ 已提交（构建还在跑，稍后自动出现）";
+      idxList.forEach((i) => {
+        if (queue[i] && !queue[i].err) setItem(i, { done: true, pct: 100, status: label });
+      });
+      $("#goState").className = st === "errored" ? "state bad" : "state ok";
+      $("#goState").textContent = label.replace("✓ ", "") + " · 共 " + idxList.length + " 张";
+    }
+
     $("#go").addEventListener("click", async () => {
       if (busy) return;
       if (!token) { alert("先在第 1 步保存令牌"); return; }
@@ -745,24 +760,18 @@
         }
       }
 
-      /* 这批里成功上传的，统一等一次构建 */
+      /* 这批里成功上传的，统一在后台等一次构建（不卡住界面，可以继续传下一批） */
       const uploadedIdx = queue.map((q, i) => ({ q, i }))
         .filter((x) => x.q.uploaded && !x.q.done && !x.q.err).map((x) => x.i);
-      if (uploadedIdx.length) {
-        $("#goState").className = "state";
-        $("#goState").textContent = "等 Pages 构建（约 30–90 秒）…";
-        const st = await waitBuild(150000);
-        const label = st === "built" ? "✓ 已上线"
-          : st === "errored" ? "⚠ 已提交，但 Pages 构建失败"
-          : "✓ 已提交（构建还在跑，约 1 分钟）";
-        uploadedIdx.forEach((i) => setItem(i, { done: true, pct: 100, status: label }));
-      }
+      if (uploadedIdx.length) watchBuild(uploadedIdx);
 
       busy = false;
       renderQueue();
       refreshMine();
-      $("#goState").className = "state ok";
-      $("#goState").textContent = "本轮结束 · 失败的可以单独重试（改完再点开始上传）";
+      if (!uploadedIdx.length) {
+        $("#goState").className = "state ok";
+        $("#goState").textContent = "本轮结束 · 失败的可以单独重试（改完再点开始上传）";
+      }
     });
 
     /* ── 已有照片 ── */
@@ -781,15 +790,16 @@
           <button class="mdel" type="button" data-del="${p.id}">删除</button>
         </div>`).join("");
       box.querySelectorAll(".mdel").forEach((b) => {
-        b.addEventListener("click", () => delPhoto(b.getAttribute("data-del")));
+        b.addEventListener("click", () => delPhoto(b.getAttribute("data-del"), b));
       });
     }
 
-    async function delPhoto(id) {
+    async function delPhoto(id, btn) {
       const p = mine.find((x) => x.id === id);
       if (!p) return;
       if (!confirm("删除「" + (p.t || "未命名") + "」？\n照片墙会立刻移除，仓库里的两个文件也会删掉。")) return;
       if (!token) { alert("先在第 1 步配置令牌"); return; }
+      if (btn) { btn.disabled = true; btn.textContent = "删除中…"; }
       try {
         await delFile(p.thumb, "相册：删除预览图 " + (p.t || ""));
         await delFile(p.full, "相册：删除原图 " + (p.t || ""));
@@ -797,6 +807,7 @@
         await writeManifest(mine);
         refreshMine();
       } catch (e) {
+        if (btn) { btn.disabled = false; btn.textContent = "删除"; }
         alert("删除失败：" + (e.message || e));
       }
     }
