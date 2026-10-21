@@ -55,12 +55,6 @@
       font-family: var(--mono); font-size: .7rem; color: var(--muted);
       margin-left: 8px; font-weight: 400;
     }
-    .wall-admin {
-      font-family: var(--mono); font-size: .7rem; color: var(--muted); text-decoration: none;
-      border: 1px solid var(--border); border-radius: 999px; padding: 5px 13px;
-      transition: color .2s, border-color .2s;
-    }
-    .wall-admin:hover { color: var(--accent); border-color: var(--border-hover); }
     .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .shot {
       margin: 0; background: var(--card); border: 1px solid var(--border);
@@ -679,16 +673,16 @@
 
     </div>
 
-    <!-- 📸 照片墙：站长在 admin-upload.html 上传（图片进仓库 gallery/p/，清单存 textdb cccad-photos） -->
+    <!-- 📸 照片墙：图片进仓库 gallery/p/，清单存 textdb cccad-photos（上传在站长工作台里做） -->
     <section class="wall" id="wall">
       <div class="wall-head">
         <h2>📸 照片墙 <span class="wc" id="wallCount"></span></h2>
-        <a class="wall-admin" href="admin-upload.html" rel="nofollow">站长上传 ↗</a>
       </div>
       <div class="shots" id="shots"></div>
       <div class="wall-empty" id="wallEmpty">
-        还没有照片。<a href="admin-upload.html">站长上传</a>之后，
-        不管原图多大、横的还是竖的，都会以统一的 3:2 预览出现在这里 —— 点开看的就是原图。
+        还没有照片。
+        这里收的是站长随手拍下的瞬间，不管原图多大、横的还是竖的，
+        都会以统一的 3:2 预览出现在这里 —— 点开看的就是原图。
       </div>
     </section>
   </div>
