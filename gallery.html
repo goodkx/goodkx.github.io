@@ -213,6 +213,8 @@
       z-index: 5;
     }
     body.gal-admin .gal-tools { display: flex; }
+    body.gal-admin .photo { position: relative; }
+    body.gal-admin .gal-tools { z-index: 6; }
     .gal-tools button {
       border: 1px solid var(--border-hover);
       background: var(--panel);
@@ -1165,7 +1167,7 @@
           const tools = document.createElement("div");
           tools.className = "gal-tools";
           tools.innerHTML = '<button type="button" class="up">📤 替换</button><button type="button" class="restore">↺ 原画</button>';
-          p.querySelector(".art").appendChild(tools);
+          p.appendChild(tools);
           syncTools(n);
           tools.querySelector(".up").addEventListener("click", function (e) {
             e.stopPropagation();
