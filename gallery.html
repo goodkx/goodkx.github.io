@@ -188,7 +188,7 @@
       transition: transform .5s cubic-bezier(.22,.68,.28,1), opacity .4s ease;
       cursor: pointer;
     }
-    .cf-item svg {
+    .cf-item svg, .cf-item img {
       width: 100%;
       display: block;
       border-radius: 12px;
@@ -196,6 +196,46 @@
       background: var(--card);
     }
     .cf-item.center { cursor: default; }
+
+    /* ── 站长上传替换（照片 → 替换画作） ── */
+    .photo .art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .gal-tools {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      gap: 6px;
+      z-index: 5;
+    }
+    body.gal-admin .gal-tools { display: flex; }
+    .gal-tools button {
+      border: 1px solid var(--border-hover);
+      background: var(--panel);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: .68rem;
+      border-radius: 999px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: transform .15s, background .2s;
+    }
+    .gal-tools button:hover { transform: scale(1.06); background: var(--acc-soft-bg); }
+    .gal-tools button:disabled { opacity: .5; cursor: wait; }
+    .gal-tools button.restore { display: none; }
+    .gal-tools button.restore.show { display: block; }
+    body.gal-admin .photo { cursor: default; }
+    #galAdminBtn { cursor: pointer; }
+    #galStatus {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      margin-left: 8px;
+    }
     .lb-navs {
       position: absolute;
       top: 0; left: 0; right: 0;
@@ -257,7 +297,11 @@
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
     <a class="badge" href="#wall" title="跳到照片墙">📷 照片墙 ↓</a>
+    <span style="flex:1"></span>
+    <span id="galStatus"></span>
+    <button class="badge" id="galAdminBtn" type="button" title="站长上传照片 / 恢复原画">🛡️ 站长</button>
   </div>
+  <input type="file" id="galFile" accept="image/*" hidden />
 
   <h1 data-word="GALLERY">用照片收藏 <span class="grad">生活</span></h1>
 
@@ -767,9 +811,17 @@
           el.classList.toggle("center", ax < 0.5);
         });
       };
+      /* 暴露给上传模块：照片替换后同步 3D 查看器 */
+      lightbox.__cfSync = layout;
 
       const show = (i) => {
         cur = (i + n) % n;
+        /* 重灌可见项内容：站长替换的照片实时进查看器 */
+        items.forEach((el, k) => {
+          if (Math.abs(((k - cur + n + n / 2) % n) - n / 2) < 3.6) {
+            el.innerHTML = photos[k].querySelector(".art").innerHTML;
+          }
+        });
         layout();
         const p = photos[cur];
         $("#lbCap").textContent =
@@ -975,7 +1027,207 @@
       initReveal();
       initLightbox();
       initWall();
+      initGalleryAdmin();
     });
+  </script>
+
+  <script>
+    /* ══════════ 📤 站长上传系统：照片压缩 → textdb 云端 → 替换画作（可恢复） ══════════ */
+    (function () {
+      const IDX_URL = "https://textdb.dev/api/data/cccad-gallery-index";
+      const PKEY = (n) => "https://textdb.dev/api/data/cccad-gallery-p" + n;
+      const PASS = "cccad2026";
+      const gPhotos = Array.from(document.querySelectorAll(".photo"));
+      const originalArt = gPhotos.map((p) => p.querySelector(".art").innerHTML);
+      const replaced = new Array(gPhotos.length).fill(false);
+      let pendingSlot = -1;
+
+      const asciiJson = (obj) =>
+        JSON.stringify(obj).replace(/[\u0080-\uFFFF]/g, (ch) => "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
+      const status = (t) => { const el = document.getElementById("galStatus"); if (el) el.textContent = t; };
+
+      /* 云端照片应用到卡面 */
+      function applyPhoto(n, dataUrl) {
+        const art = gPhotos[n] && gPhotos[n].querySelector(".art");
+        if (!art) return;
+        art.innerHTML = '<img src="' + dataUrl + '" alt="站长上传的照片" loading="lazy">';
+        replaced[n] = true;
+        syncTools(n);
+        if (document.getElementById("lightbox").classList.contains("open")) syncViewer();
+      }
+      function restoreArt(n) {
+        const art = gPhotos[n] && gPhotos[n].querySelector(".art");
+        if (!art) return;
+        art.innerHTML = originalArt[n];
+        replaced[n] = false;
+        syncTools(n);
+        if (document.getElementById("lightbox").classList.contains("open")) syncViewer();
+      }
+      /* 3D 查看器同步（查看器暴露 __cfSync 就调用） */
+      function syncViewer() {
+        const lb = document.getElementById("lightbox");
+        if (lb && typeof lb.__cfSync === "function") lb.__cfSync();
+      }
+      function syncTools(n) {
+        const box = gPhotos[n] && gPhotos[n].querySelector(".gal-tools");
+        if (!box) return;
+        box.querySelector(".restore").classList.toggle("show", replaced[n]);
+      }
+
+      /* 索引：哪些槽位被替换了 */
+      async function getIndex() {
+        const r = await fetch(IDX_URL + "?n=" + Date.now(), { cache: "no-store" });
+        const t = await r.text();
+        if (!t.trim()) return { slots: [] };
+        const d = JSON.parse(t);
+        return { slots: Array.isArray(d.slots) ? d.slots : [] };
+      }
+      async function saveIndex(slots) {
+        const r = await fetch(IDX_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: asciiJson({ slots: slots }),
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+      }
+
+      /* 压缩：最长边 1100px · JPEG 0.78 · 保留 EXIF 方向 */
+      async function compress(file) {
+        let img;
+        try {
+          img = await createImageBitmap(file, { imageOrientation: "from-image" });
+        } catch (e) {
+          img = await new Promise(function (res, rej) {
+            const i = new Image();
+            i.onload = function () { res(i); };
+            i.onerror = rej;
+            i.src = URL.createObjectURL(file);
+          });
+        }
+        const w = img.width || img.naturalWidth;
+        const h = img.height || img.naturalHeight;
+        const scale = Math.min(1, 1100 / Math.max(w, h));
+        const cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(w * scale));
+        cv.height = Math.max(1, Math.round(h * scale));
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        return cv.toDataURL("image/jpeg", 0.78);
+      }
+
+      async function saveSlot(n, dataUrl) {
+        const rp = await fetch(PKEY(n), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: asciiJson({ s: dataUrl, m: new Date().toLocaleDateString("zh-CN") }),
+        });
+        if (!rp.ok) throw new Error("HTTP " + rp.status);
+        const idx = await getIndex();
+        const slots = idx.slots;
+        if (!slots.includes(n)) {
+          slots.push(n);
+          await saveIndex(slots);
+        }
+      }
+      async function clearSlot(n) {
+        const rp = await fetch(PKEY(n), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: asciiJson({ gone: 1 }),
+        });
+        if (!rp.ok) throw new Error("HTTP " + rp.status);
+        const idx = await getIndex();
+        await saveIndex(idx.slots.filter(function (s) { return s !== n; }));
+      }
+
+      /* 云端照片加载（进页面就渲染真实照片） */
+      async function loadCloud() {
+        try {
+          const idx = await getIndex();
+          await Promise.all(
+            idx.slots.map(async function (n) {
+              try {
+                const r = await fetch(PKEY(n) + "?n=" + Date.now(), { cache: "no-store" });
+                const t = await r.text();
+                if (!t.trim()) return;
+                const d = JSON.parse(t);
+                if (d.s) applyPhoto(n, d.s);
+              } catch (e) {}
+            })
+          );
+        } catch (e) {}
+      }
+
+      /* 站长模式 */
+      function enterAdmin() {
+        document.body.classList.add("gal-admin");
+        gPhotos.forEach(function (p, n) {
+          if (p.querySelector(".gal-tools")) return;
+          const tools = document.createElement("div");
+          tools.className = "gal-tools";
+          tools.innerHTML = '<button type="button" class="up">📤 替换</button><button type="button" class="restore">↺ 原画</button>';
+          p.querySelector(".art").appendChild(tools);
+          syncTools(n);
+          tools.querySelector(".up").addEventListener("click", function (e) {
+            e.stopPropagation();
+            pendingSlot = n;
+            document.getElementById("galFile").click();
+          });
+          tools.querySelector(".restore").addEventListener("click", async function (e) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            status("恢复中…");
+            try {
+              await clearSlot(n);
+              restoreArt(n);
+              status("已恢复原画 ✓");
+            } catch (err) {
+              status("恢复失败");
+            }
+            btn.disabled = false;
+          });
+        });
+      }
+
+      document.getElementById("galAdminBtn").addEventListener("click", function () {
+        var isAdmin = false;
+        try { isAdmin = sessionStorage.getItem("gallery-admin") === "1"; } catch (e) {}
+        if (isAdmin) {
+          document.body.classList.remove("gal-admin");
+          try { sessionStorage.removeItem("gallery-admin"); } catch (e) {}
+          this.textContent = "🛡️ 站长";
+          status("");
+          return;
+        }
+        var pass = prompt("站长口令（与留言板相同）");
+        if (pass === null) return;
+        if (pass !== PASS) { status("口令不对 🙅"); return; }
+        try { sessionStorage.setItem("gallery-admin", "1"); } catch (e) {}
+        document.body.classList.add("gal-admin");
+        enterAdmin();
+        this.textContent = "✓ 管理中";
+        status("管理中：点卡片右上角 📤 替换照片");
+      });
+
+      document.getElementById("galFile").addEventListener("change", async function (e) {
+        const file = e.target.files && e.target.files[0];
+        e.target.value = "";
+        if (!file || pendingSlot < 0) return;
+        const n = pendingSlot;
+        pendingSlot = -1;
+        status("压缩上传中…");
+        try {
+          const dataUrl = await compress(file);
+          await saveSlot(n, dataUrl);
+          applyPhoto(n, dataUrl);
+          status("已替换 ✓ 刷新后所有人可见");
+        } catch (err) {
+          status("上传失败：" + String(err).slice(0, 40));
+        }
+      });
+
+      loadCloud();
+    })();
   </script>
 </body>
 </html>
