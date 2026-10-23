@@ -1020,12 +1020,13 @@
         const lb = document.getElementById('lightbox');
         if (lb && typeof lb.__cfSync === 'function') lb.__cfSync();
       }
-      function boot() {
-        if (Array.isArray(shotsData) && shotsData.length) applyUserPhotos(shotsData);
-      }
-      document.addEventListener('DOMContentLoaded', boot);
-      if (document.readyState !== 'loading') boot();
-      window.addEventListener('hashchange', boot);
+      let lastLen = -1;
+      setInterval(function () {
+        if (Array.isArray(shotsData) && shotsData.length !== lastLen) {
+          lastLen = shotsData.length;
+          applyUserPhotos(shotsData);
+        }
+      }, 300);
     })();
   </script>
 </body>
