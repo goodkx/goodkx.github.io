@@ -44,54 +44,6 @@
     }
     .photo .d { font-family: var(--mono); font-size: .72rem; color: var(--muted); white-space: nowrap; }
 
-    /* ── 照片墙（站长上传的真实照片：不管原图多大，预览一律 3:2 同一格式） ── */
-    .wall { margin-top: 54px; }
-    .wall-head {
-      display: flex; align-items: baseline; justify-content: space-between;
-      gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
-    }
-    .wall-head h2 { font-size: 1.12rem; margin: 0; letter-spacing: .01em; }
-    .wall-head h2 .wc {
-      font-family: var(--mono); font-size: .7rem; color: var(--muted);
-      margin-left: 8px; font-weight: 400;
-    }
-    .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .shot {
-      margin: 0; background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden; cursor: zoom-in;
-      transition: transform .3s, border-color .3s, box-shadow .3s;
-    }
-    .shot:hover {
-      transform: translateY(-5px); border-color: var(--border-hover);
-      box-shadow: 0 14px 36px rgba(0, 0, 0, .35), 0 0 26px rgba(0, 229, 160, .07);
-    }
-    .shot .s-art { position: relative; aspect-ratio: 3 / 2; background: #0b0f16; overflow: hidden; }
-    .shot .s-art img {
-      width: 100%; height: 100%; object-fit: cover; object-position: center;
-      display: block; transition: transform .5s;
-    }
-    .shot:hover .s-art img { transform: scale(1.035); }
-    .shot .s-ph {
-      position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
-      color: var(--muted); font-family: var(--mono); font-size: .7rem; text-align: center; padding: 12px;
-      line-height: 1.9;
-    }
-    .shot .s-ph .s-reload { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(167, 139, 250, .4); }
-    .shot.pending .s-ph { display: flex; }
-    .shot figcaption {
-      padding: 11px 14px; font-size: .84rem;
-      display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-    }
-    .shot .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .shot .d { font-family: var(--mono); font-size: .7rem; color: var(--muted); white-space: nowrap; }
-    .wall-empty {
-      border: 1px dashed var(--border); border-radius: var(--radius);
-      padding: 32px 18px; text-align: center; color: var(--muted);
-      font-size: .86rem; line-height: 1.9;
-    }
-    .wall-empty a { color: var(--accent); }
-    @media (max-width: 900px) { .shots { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .shots { grid-template-columns: 1fr; } }
 
     /* ── 原图查看器（点开就是上传的那张原图） ── */
     .pv {
@@ -260,6 +212,14 @@
 
     @media (max-width: 900px) { .photos { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .photos { grid-template-columns: 1fr; } }
+    .gal-count {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: .74rem;
+      color: var(--muted);
+      margin: -10px 0 22px;
+      letter-spacing: .04em;
+    }
   </style>
 </head>
 <body>
@@ -270,6 +230,7 @@
   </div>
 
   <h1 data-word="GALLERY">用照片收藏 <span class="grad">生活</span></h1>
+  <p class="gal-count" id="galCount"></p>
 
   <div class="wrap">
     <!-- ✏️ 换成真实照片：把每个 .art 里的 <svg> 占位图换成
@@ -684,17 +645,7 @@
     </div>
 
     <!-- 📸 照片墙：图片进仓库 gallery/p/，清单存 textdb cccad-photos（上传在站长工作台里做） -->
-    <section class="wall" id="wall">
-      <div class="wall-head">
-        <h2>📸 照片墙 <span class="wc" id="wallCount"></span></h2>
-      </div>
-      <div class="shots" id="shots"></div>
-      <div class="wall-empty" id="wallEmpty">
-        还没有照片。
-        这里收的是站长随手拍下的瞬间，不管原图多大、横的还是竖的，
-        都会以统一的 3:2 预览出现在这里 —— 点开看的就是原图。
-      </div>
-    </section>
+
   </div>
 
   <p class="caption">
@@ -747,7 +698,7 @@
 
     function initLightbox() {
       const lightbox = $("#lightbox");
-      const photos = $$(".photo");
+      const photos = $(".photo").filter((f) => f.getAttribute("data-upload") !== "1");
       const track = $("#cfTrack");
       const n = photos.length;
       let cur = 0;
@@ -789,14 +740,15 @@
           }
         });
         layout();
-        const p = photos[cur];
+        const p = svgFigs[cur];
         $("#lbCap").textContent =
           p.querySelector(".t").textContent + " · " + p.querySelector(".d").textContent;
         $("#lbCount").textContent = (cur + 1) + " / " + n;
         lightbox.classList.add("open");
       };
 
-      photos.forEach((p, i) => {
+      const svgFigs = photos;
+      svgFigs.forEach((p, i) => {
         p.addEventListener("click", () => show(i));
       });
       items.forEach((el, i) => {
@@ -949,30 +901,33 @@
       document.body.style.overflow = "";
     }
 
-    async function initWall() {
-      const list = await loadShots();
-      shotsData = list || [];
-      renderWall(shotsData);
-      if (list === null) {
-        $("#wallEmpty").innerHTML = "照片墙暂时加载不到（网络原因），刷新一次试试。";
-        $("#wallEmpty").style.display = "";
-      }
-      $("#shots").addEventListener("click", (e) => {
-        const fig = e.target.closest(".shot");
-        if (fig) openPv(+fig.getAttribute("data-i"));
+    let uploadCount = 0;
+    async function initUploads() {
+      let list = [];
+      try { list = (await loadShots()) || []; } catch (e) { list = []; }
+      shotsData = list;
+      const grid = $(".photos");
+      const svgCount = grid.querySelectorAll(".photo").length;
+      const frag = document.createDocumentFragment();
+      list.forEach(function (p, k) {
+        const fig = document.createElement("figure");
+        fig.className = "photo";
+        fig.setAttribute("data-upload", "1");
+        fig.setAttribute("data-shot", String(k));
+        fig.innerHTML = '<div class="art"><img loading="lazy" decoding="async" src="' + escHtml(p.thumb) + '" alt="' + escHtml(capOf(p)) + '"></div>' +
+          '<figcaption><span class="t">' + escHtml(capOf(p)) + '</span><span class="d">' + (showDate(p) ? escHtml(p.d) : "") + '</span></figcaption>';
+        fig.addEventListener("click", function () { openPv(k); });
+        frag.appendChild(fig);
       });
-      $("#shots").addEventListener("keydown", (e) => {
-        const fig = e.target.closest(".shot");
-        if (fig && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          openPv(+fig.getAttribute("data-i"));
-        }
-      });
+      grid.prepend(frag);
+      uploadCount = list.length;
+      const gc = $("#galCount");
+      if (gc) gc.textContent = "共 " + (uploadCount + svgCount) + " 件作品 · 站长摄影 " + uploadCount + " · 手绘插画 " + svgCount;
+      /* 原图查看器（#pv）接线 */
       $("#pvX").addEventListener("click", closePv);
       $("#pv").addEventListener("click", (e) => { if (e.target === $("#pv")) closePv(); });
       $("#pvPrev").addEventListener("click", (e) => { e.stopPropagation(); openPv(pvCur - 1); });
       $("#pvNext").addEventListener("click", (e) => { e.stopPropagation(); openPv(pvCur + 1); });
-      /* 手机左右滑动 */
       let tx = null;
       $("#pv").addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; }, { passive: true });
       $("#pv").addEventListener("touchend", (e) => {
@@ -988,47 +943,14 @@
         else if (e.key === "ArrowRight") openPv(pvCur + 1);
       });
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       initReveal();
+      await initUploads();
       initLightbox();
-      initWall();
     });
   </script>
 
-    <script>
-    /* ══════════ 🖼 桥接：站长工作台上传的照片，按顺序替换顶部画格 ══════════ */
-    (function () {
-      function applyUserPhotos(list) {
-        const arts = document.querySelectorAll('.photos .photo .art');
-        const limit = Math.min(list.length, arts.length);
-        for (let k = 0; k < limit; k++) {
-          const p = list[k];
-          if (!p || !p.full) continue;
-          const art = arts[k];
-          if (art.dataset.userPhoto === p.full) continue;
-          art.dataset.userPhoto = p.full;
-          art.innerHTML = '<img loading="lazy" decoding="async" src="' + escHtml(p.full) + '" alt="' + escHtml(capOf(p)) + '">';
-          const fig = art.closest('.photo');
-          if (fig) {
-            const t = fig.querySelector('figcaption .t');
-            const d = fig.querySelector('figcaption .d');
-            if (t) t.textContent = capOf(p);
-            if (d) d.textContent = showDate(p) ? p.d : '';
-          }
-        }
-        const lb = document.getElementById('lightbox');
-        if (lb && typeof lb.__cfSync === 'function') lb.__cfSync();
-      }
-      let lastLen = -1;
-      setInterval(function () {
-        if (Array.isArray(shotsData) && shotsData.length !== lastLen) {
-          lastLen = shotsData.length;
-          applyUserPhotos(shotsData);
-        }
-      }, 300);
-    })();
-  </script>
+    
 </body>
 </html>
 
