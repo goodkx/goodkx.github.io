@@ -1227,6 +1227,16 @@
       });
 
       loadCloud();
+
+      /* 站长会话保持：刷新后自动回到管理状态 */
+      try {
+        if (sessionStorage.getItem("gallery-admin") === "1") {
+          document.body.classList.add("gal-admin");
+          enterAdmin();
+          var gb = document.getElementById("galAdminBtn");
+          if (gb) gb.textContent = "✓ 管理中";
+        }
+      } catch (e) {}
     })();
   </script>
 </body>
