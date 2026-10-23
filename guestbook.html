@@ -572,6 +572,10 @@
           const btn = $("#noticeGo");
           btn.disabled = true;
           const msg = ($("#noticeTa").value || "").trim();
+          if (!msg && !confirm("公告内容为空 = 撤下当前公告。确定吗？")) {
+            btn.disabled = false;
+            return;
+          }
           try {
             const r = await fetch(NOTICE_URL, {
               method: "POST",
