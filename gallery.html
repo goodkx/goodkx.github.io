@@ -962,7 +962,16 @@
           const art = arts[k];
           if (art.dataset.userPhoto === p.full) continue;
           art.dataset.userPhoto = p.full;
-          art.innerHTML = '<img loading="lazy" decoding="async" src="' + escHtml(p.full) + '" alt="' + escHtml(capOf(p)) + '">';
+          art.innerHTML = '<img loading="lazy" decoding="async" alt="' + escHtml(capOf(p)) + '">';
+          /* Pages 构建完成前新图会 404：阶梯重试（与照片墙同一策略） */
+          const im = art.querySelector('img');
+          let attempt = 0;
+          const loadImg = function () { im.src = p.full + (attempt ? '?r=' + attempt : ''); };
+          im.onerror = function () {
+            attempt++;
+            if (attempt <= 6) setTimeout(loadImg, [10, 20, 40, 60, 90, 120][attempt - 1] * 1000);
+          };
+          loadImg();
           const fig = art.closest('.photo');
           if (fig) {
             const t = fig.querySelector('figcaption .t');
