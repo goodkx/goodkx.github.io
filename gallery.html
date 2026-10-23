@@ -950,6 +950,40 @@
   </script>
 
     
+  <script>
+    /* ══════════ 🖼 桥接：站长工作台上传的照片，按顺序替换顶部画格 ══════════ */
+    (function () {
+      function applyUserPhotos(list) {
+        const arts = document.querySelectorAll('.photos .photo .art');
+        const limit = Math.min(list.length, arts.length);
+        for (let k = 0; k < limit; k++) {
+          const p = list[k];
+          if (!p || !p.full) continue;
+          const art = arts[k];
+          if (art.dataset.userPhoto === p.full) continue;
+          art.dataset.userPhoto = p.full;
+          art.innerHTML = '<img loading="lazy" decoding="async" src="' + escHtml(p.full) + '" alt="' + escHtml(capOf(p)) + '">';
+          const fig = art.closest('.photo');
+          if (fig) {
+            const t = fig.querySelector('figcaption .t');
+            const d = fig.querySelector('figcaption .d');
+            if (t) t.textContent = capOf(p);
+            if (d) d.textContent = showDate(p) ? p.d : '';
+          }
+        }
+        const lb = document.getElementById('lightbox');
+        if (lb && typeof lb.__cfSync === 'function') lb.__cfSync();
+      }
+      function boot() {
+        if (Array.isArray(shotsData) && shotsData.length) applyUserPhotos(shotsData);
+      }
+      document.addEventListener('DOMContentLoaded', boot);
+      if (document.readyState !== 'loading') boot();
+      window.addEventListener('hashchange', boot);
+    })();
+  </script>
+</body>
+</html>
 </body>
 </html>
 
