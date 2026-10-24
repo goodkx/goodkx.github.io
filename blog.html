@@ -1085,20 +1085,20 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
   </script>
 
   <script>
-    /* 🔊 Web Speech 朗读 2.0：智能选最自然的声音 + 声音下拉可换 + 按句朗读（句间自然停顿） */
+    /* 🔊 Web Speech 朗读 3.0：修 Chrome 静默吞音（启动延迟 + 看门狗重试 + 逐句错误上报） */
     (function () {
       var btn = document.getElementById("artSpeak");
       if (!btn) return;
       if (!("speechSynthesis" in window)) { btn.style.display = "none"; return; }
       var SEL_KEY = "speak-voice";
-      var queue = [];
+      var utterKeep = [];   /* 防 GC：utterance 必须持有引用，否则 Chrome 静默丢弃 */
+      var startTimer = null, watchdog = null, retried = false;
 
       function zhVoices() {
         return speechSynthesis.getVoices().filter(function (v) {
           return v.lang && (v.lang.indexOf("zh") === 0 || v.lang.indexOf("cmn") === 0);
         });
       }
-      /* 音质排序：微软神经网络音（晓晓/云希/云扬/晓伊）> Google 云音 > 其他远程音 > 老式本地音 */
       function score(v) {
         var n = (v.name || "") + " " + (v.voiceURI || "");
         var s = 0;
@@ -1107,8 +1107,8 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         if (/xiaoyi|晓伊/i.test(n)) s += 100;
         if (/google/i.test(n)) s += 70;
         if (/natural|online|神经/i.test(n)) s += 40;
-        if (!v.localService) s += 25; /* 远程音通常更自然流畅 */
-        if (/huihui|hongyan|yaoyao|kangkang/i.test(n)) s -= 30; /* 老款机械音垫底 */
+        if (!v.localService) s += 25;
+        if (/huihui|hongyan|yaoyao|kangkang/i.test(n)) s -= 30;
         return s;
       }
       function ranked() { return zhVoices().slice().sort(function (a, b) { return score(b) - score(a); }); }
@@ -1121,7 +1121,6 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         return list[0];
       }
 
-      /* 声音选择器（≥2 个中文音才显示） */
       var sel = document.createElement("select");
       sel.id = "artVoice";
       sel.title = "换一个朗读声音";
@@ -1139,13 +1138,19 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
       }
       sel.addEventListener("change", function () {
         try { localStorage.setItem(SEL_KEY, sel.value); } catch (e) {}
-        if (speechSynthesis.speaking) { stopAll(); startSpeak(); } /* 换声即重读，立刻听到效果 */
+        if (speakingNow()) { hardStop(); setTimeout(startSpeak, 350); }
       });
 
       function reset() { btn.textContent = "🔊 听全文"; }
-      function stopAll() { queue = []; speechSynthesis.cancel(); reset(); }
+      function speakingNow() { return speechSynthesis.speaking || speechSynthesis.pending; }
+      function hardStop() {
+        clearTimeout(startTimer); clearTimeout(watchdog);
+        try { speechSynthesis.pause(); } catch (e) {}
+        speechSynthesis.cancel();
+        utterKeep = [];
+        reset();
+      }
 
-      /* 按句切分：句间由引擎自然停顿，长文更稳更像真人 */
       function splitSentences(text) {
         var parts = text.replace(/\s+/g, " ").match(/[^。！？；!?;]+[。！？；!?;]?/g) || [text];
         var out = [], buf = "";
@@ -1157,35 +1162,51 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         return out;
       }
 
-      function startSpeak() {
+      function startSpeak(useDefaultVoice) {
         var title = document.getElementById("artTitle");
         var body = document.getElementById("artBody");
         if (!body) return;
         var text = (title ? title.textContent + "。" : "") + body.innerText;
-        var v = pickVoice();
+        var v = useDefaultVoice ? null : pickVoice();
         var parts = splitSentences(text);
-        queue = [];
+        utterKeep = [];
+        var lastErr = null;
         parts.forEach(function (p, i) {
           var u = new SpeechSynthesisUtterance(p);
           u.lang = "zh-CN";
           u.rate = 1.0;
           u.pitch = 1.0;
           if (v) u.voice = v;
-          if (i === parts.length - 1) { u.onend = reset; u.onerror = reset; }
-          queue.push(u);
+          u.onstart = function () { clearTimeout(watchdog); };
+          u.onerror = function (e) { lastErr = e && e.error; };
+          if (i === parts.length - 1) {
+            u.onend = function () { if (!speakingNow()) reset(); };
+          }
+          utterKeep.push(u);
         });
-        speechSynthesis.cancel();
-        queue.forEach(function (u) { speechSynthesis.speak(u); });
+        /* 关键修复：cancel 之后必须延迟入队，否则 Chrome 静默吞掉整批语音 */
+        startTimer = setTimeout(function () {
+          utterKeep.forEach(function (u) { speechSynthesis.speak(u); });
+          /* 看门狗：1.5s 仍没开始说话 → 换系统默认音色重试一次 */
+          watchdog = setTimeout(function () {
+            if (!speechSynthesis.speaking && !retried) {
+              retried = true;
+              speechSynthesis.cancel();
+              setTimeout(function () { startSpeak(true); }, 300);
+            }
+          }, 1500);
+        }, 600);
         btn.textContent = "⏹ 停止朗读";
       }
 
       btn.addEventListener("click", function () {
-        if (speechSynthesis.speaking || speechSynthesis.pending) { stopAll(); return; }
-        startSpeak();
+        retried = false;
+        if (speakingNow() || startTimer) { hardStop(); return; }
+        if (speechSynthesis.paused) { try { speechSynthesis.resume(); } catch (e) {} }
+        startSpeak(false);
       });
-      var stop = function () { if (speechSynthesis.speaking) stopAll(); };
-      window.addEventListener("hashchange", stop);
-      window.addEventListener("beforeunload", stop);
+      window.addEventListener("hashchange", function () { if (speakingNow() || startTimer) hardStop(); });
+      window.addEventListener("beforeunload", function () { if (speakingNow()) hardStop(); });
       speechSynthesis.addEventListener("voiceschanged", buildSel);
       buildSel();
       speechSynthesis.getVoices();
