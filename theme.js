@@ -313,44 +313,56 @@
     fetch(NOTICE_URL + "?n=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.text(); })
       .then(function (t) {
-        if (!t.trim()) return;
-        var d;
-        try { d = JSON.parse(t); } catch (e) { return; }
-        var msg = (d.msg || "").trim();
-        if (!msg) return;
-        var h = hash(msg);
-        var seen = "";
-        try { seen = localStorage.getItem(SEEN_KEY) || ""; } catch (e) {}
-        if (seen === h) return;
-        var bar = document.createElement("div");
-        bar.id = "noticeBar";
-        var icon = document.createElement("span");
-        icon.className = "nb-icon";
-        icon.textContent = "📢";
-        var text = document.createElement("span");
-        text.className = "nb-text";
-        text.textContent = msg;
-        var date = document.createElement("span");
-        date.className = "nb-date";
-        date.textContent = d.d || "";
-        var close = document.createElement("button");
-        close.className = "nb-close";
-        close.type = "button";
-        close.setAttribute("aria-label", "关闭公告");
-        close.textContent = "✕";
-        close.addEventListener("click", function () {
-          try { localStorage.setItem(SEEN_KEY, h); } catch (e) {}
-          bar.classList.remove("show");
-          setTimeout(function () { bar.remove(); }, 450);
-        });
-        bar.appendChild(icon);
-        bar.appendChild(text);
-        bar.appendChild(date);
-        bar.appendChild(close);
-        document.body.appendChild(bar);
-        requestAnimationFrame(function () { bar.classList.add("show"); });
+        try { localStorage.setItem("notice-mirror", t); } catch (e) {}
+        render(t);
       })
-      .catch(function () {});
+      .catch(function () {
+        /* 网络/云不可达：回退本机镜像的最后已知公告 */
+        try {
+          var m = localStorage.getItem("notice-mirror");
+          if (m) render(m);
+        } catch (e) {}
+      });
+  }
+  function render(t) {
+    {
+      if (!t.trim()) return;
+      var d;
+      try { d = JSON.parse(t); } catch (e) { return; }
+      var msg = (d.msg || "").trim();
+      if (!msg) return;
+      var h = hash(msg);
+      var seen = "";
+      try { seen = localStorage.getItem(SEEN_KEY) || ""; } catch (e) {}
+      if (seen === h) return;
+      var bar = document.createElement("div");
+      bar.id = "noticeBar";
+      var icon = document.createElement("span");
+      icon.className = "nb-icon";
+      icon.textContent = "📢";
+      var text = document.createElement("span");
+      text.className = "nb-text";
+      text.textContent = msg;
+      var date = document.createElement("span");
+      date.className = "nb-date";
+      date.textContent = d.d || "";
+      var close = document.createElement("button");
+      close.className = "nb-close";
+      close.type = "button";
+      close.setAttribute("aria-label", "关闭公告");
+      close.textContent = "✕";
+      close.addEventListener("click", function () {
+        try { localStorage.setItem(SEEN_KEY, h); } catch (e) {}
+        bar.classList.remove("show");
+        setTimeout(function () { bar.remove(); }, 450);
+      });
+      bar.appendChild(icon);
+      bar.appendChild(text);
+      bar.appendChild(date);
+      bar.appendChild(close);
+      document.body.appendChild(bar);
+      requestAnimationFrame(function () { bar.classList.add("show"); });
+    }
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

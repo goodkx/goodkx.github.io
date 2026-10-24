@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="theme.css?v=133" />
   <link rel="stylesheet" href="search.css?v=133" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=133"></script>
+  <script src="theme.js?v=130"></script>
   <script src="search.js?v=133"></script>
   <style>
     .gform {
@@ -163,6 +163,7 @@
         <button class="tretry" id="gbRetry" type="button" title="重新尝试连接云端">🔄 重新连接</button>
         <button class="tretry" id="gbAdmin" type="button" title="站长管理（删除留言）">🛡️ 站长</button>
         <button class="tretry" id="gbExport" type="button" title="导出留言备份 JSON（站长）" style="display:none">⬇ 导出</button>
+        <button class="tretry" id="gbRestore" type="button" title="云端被清时：把本机镜像的留言推回云端" style="display:none">♻ 镜像恢复</button>
       </div>
       <textarea id="gbText" rows="3" maxlength="500" placeholder="留下你想说的话……"></textarea>
       <div class="row">
@@ -232,7 +233,14 @@
       catch (e) { return []; }
     }
     function saveLocal(list) {
-      try { localStorage.setItem(LKEY, JSON.stringify(list)); } catch (e) {}
+      try {
+        /* 灾备镜像只增不减：空列表（云端被清/删光）不覆盖非空镜像 */
+        if (!list.length) {
+          const prev = JSON.parse(localStorage.getItem(LKEY) || 'null') || [];
+          if (prev.length) return;
+        }
+        localStorage.setItem(LKEY, JSON.stringify(list));
+      } catch (e) {}
     }
 
     function esc(s) {
@@ -503,6 +511,7 @@
       setInterval(render, 60000); /* 相对时间每分钟自动刷新 */
       /* 带站长会话刷新时，导出按钮直接可见 */
       document.getElementById("gbExport").style.display = isAdmin ? "" : "none";
+      document.getElementById("gbRestore").style.display = isAdmin ? "" : "none";
       if (isAdmin) initNoticeAdmin();
 
       $("#gbRetry").addEventListener("click", () => {
@@ -564,10 +573,24 @@
         fetch(NOTICE_URL + "?n=" + Date.now(), { cache: "no-store" })
           .then((r) => r.text())
           .then((t) => {
-            if (!t.trim()) return;
-            try { const d = JSON.parse(t); if (d.msg) $("#noticeTa").value = d.msg; } catch (e) {}
+            if (t.trim()) {
+              try { localStorage.setItem('notice-mirror', t); } catch (e) {}
+              const d = JSON.parse(t);
+              if (d.msg) $('#noticeTa').value = d.msg;
+              return;
+            }
+            /* 云端为空/拉取失败：回退本机镜像（灾备副本） */
+            try {
+              const m = localStorage.getItem('notice-mirror');
+              if (m) { const d = JSON.parse(m); if (d.msg) $('#noticeTa').value = d.msg; }
+            } catch (e) {}
           })
-          .catch(() => {});
+          .catch(() => {
+            try {
+              const m = localStorage.getItem('notice-mirror');
+              if (m) { const d = JSON.parse(m); if (d.msg) $('#noticeTa').value = d.msg; }
+            } catch (e) {}
+          });
         $("#noticeGo").addEventListener("click", async () => {
           const btn = $("#noticeGo");
           btn.disabled = true;
@@ -590,6 +613,16 @@
           btn.disabled = false;
         });
       }
+
+      /* ♻ 镜像恢复（站长）：云端被清空时，把本机灾备镜像推回云端 */
+      $("#gbRestore").addEventListener("click", async () => {
+        const local = loadLocal();
+        if (!local.length) { showToast("本机没有可用镜像"); return; }
+        if (!confirm("把本机镜像的 " + local.length + " 条留言推回云端？\n（云端当前内容将被覆盖）")) return;
+        const okc = await cloudWriteList(local);
+        if (okc) { showToast("♻ 已恢复 " + local.length + " 条到云端 ✓"); refresh(); }
+        else showToast("恢复失败，稍后再试");
+      });
 
       /* ⬇ 导出留言备份（站长） */
       $("#gbExport").addEventListener("click", () => {
