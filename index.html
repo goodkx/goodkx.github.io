@@ -1915,7 +1915,9 @@
       }, { passive: true });
 
       var drewOnce = false;
+      window.__nebula = { frames: 0, err: null };
       function frame() {
+        try {
         if (!running || (calm && drewOnce)) return;
         if (!heroNear && !calm) return;
         resize();
@@ -1929,9 +1931,11 @@
         gl.uniform3f(U.c3, colors[6] * 0.5, colors[7] * 0.45, colors[8] * 0.6);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         if (!drewOnce) { drewOnce = true; cv.classList.add("on"); }
+        window.__nebula.frames++;
         if (!calm) requestAnimationFrame(frame);
+        } catch (e) { window.__nebula.err = String(e); }
       }
-      function raf() { requestAnimationFrame(frame); }
+      function raf() { try { requestAnimationFrame(frame); } catch (e) { window.__nebula.err = String(e); } }
       raf();
     })();
   </script></body>
