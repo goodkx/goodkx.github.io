@@ -390,6 +390,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .reveal.visible { opacity: 1; transform: none; }
 
 /* ─────────── 关于 ─────────── */
+.about-grid > * { min-width: 0; }
 .about-grid {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;

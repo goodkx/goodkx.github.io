@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=133" />
+  <link rel="stylesheet" href="style.css?v=132" />
   <link rel="stylesheet" href="theme.css?v=133" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
@@ -1915,9 +1915,7 @@
       }, { passive: true });
 
       var drewOnce = false;
-      window.__nebula = { frames: 0, err: null };
       function frame() {
-        try {
         if (!running || (calm && drewOnce)) return;
         if (!heroNear && !calm) return;
         resize();
@@ -1931,11 +1929,9 @@
         gl.uniform3f(U.c3, colors[6] * 0.5, colors[7] * 0.45, colors[8] * 0.6);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         if (!drewOnce) { drewOnce = true; cv.classList.add("on"); }
-        window.__nebula.frames++;
-        if (!calm) requestAnimationFrame(frame);
-        } catch (e) { window.__nebula.err = String(e); }
+        if (!calm) setTimeout(frame, 33);
       }
-      function raf() { try { requestAnimationFrame(frame); } catch (e) { window.__nebula.err = String(e); } }
+      function raf() { setTimeout(frame, 0); }
       raf();
     })();
   </script></body>
