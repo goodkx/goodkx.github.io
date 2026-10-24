@@ -1085,35 +1085,110 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
   </script>
 
   <script>
-    /* 🔊 Web Speech API：文章朗读（切页自动停；无语音能力自动隐藏按钮） */
+    /* 🔊 Web Speech 朗读 2.0：智能选最自然的声音 + 声音下拉可换 + 按句朗读（句间自然停顿） */
     (function () {
       var btn = document.getElementById("artSpeak");
       if (!btn) return;
       if (!("speechSynthesis" in window)) { btn.style.display = "none"; return; }
+      var SEL_KEY = "speak-voice";
+      var queue = [];
+
+      function zhVoices() {
+        return speechSynthesis.getVoices().filter(function (v) {
+          return v.lang && (v.lang.indexOf("zh") === 0 || v.lang.indexOf("cmn") === 0);
+        });
+      }
+      /* 音质排序：微软神经网络音（晓晓/云希/云扬/晓伊）> Google 云音 > 其他远程音 > 老式本地音 */
+      function score(v) {
+        var n = (v.name || "") + " " + (v.voiceURI || "");
+        var s = 0;
+        if (/xiaoxiao|晓晓/i.test(n)) s += 120;
+        if (/yunxi|yunyang|云希|云扬/i.test(n)) s += 110;
+        if (/xiaoyi|晓伊/i.test(n)) s += 100;
+        if (/google/i.test(n)) s += 70;
+        if (/natural|online|神经/i.test(n)) s += 40;
+        if (!v.localService) s += 25; /* 远程音通常更自然流畅 */
+        if (/huihui|hongyan|yaoyao|kangkang/i.test(n)) s -= 30; /* 老款机械音垫底 */
+        return s;
+      }
+      function ranked() { return zhVoices().slice().sort(function (a, b) { return score(b) - score(a); }); }
+      function pickVoice() {
+        var list = ranked();
+        if (!list.length) return null;
+        var saved = "";
+        try { saved = localStorage.getItem(SEL_KEY) || ""; } catch (e) {}
+        if (saved) for (var i = 0; i < list.length; i++) if (list[i].name === saved) return list[i];
+        return list[0];
+      }
+
+      /* 声音选择器（≥2 个中文音才显示） */
+      var sel = document.createElement("select");
+      sel.id = "artVoice";
+      sel.title = "换一个朗读声音";
+      sel.style.cssText = "background:var(--panel);border:1px solid var(--border);border-radius:8px;color:var(--text);font:inherit;font-size:.72rem;padding:3px 8px;outline:none;cursor:pointer;max-width:150px";
+      btn.after(sel);
+      function buildSel() {
+        var list = ranked();
+        if (list.length < 2) { sel.style.display = "none"; return; }
+        sel.style.display = "";
+        sel.innerHTML = list.map(function (v) {
+          return '<option value="' + v.name.replace(/"/g, "&quot;") + '">' + v.name.split(/[(（]/)[0].trim() + "</option>";
+        }).join("");
+        var v = pickVoice();
+        if (v) sel.value = v.name;
+      }
+      sel.addEventListener("change", function () {
+        try { localStorage.setItem(SEL_KEY, sel.value); } catch (e) {}
+        if (speechSynthesis.speaking) { stopAll(); startSpeak(); } /* 换声即重读，立刻听到效果 */
+      });
+
       function reset() { btn.textContent = "🔊 听全文"; }
-      btn.addEventListener("click", function () {
-        if (speechSynthesis.speaking) { speechSynthesis.cancel(); reset(); return; }
+      function stopAll() { queue = []; speechSynthesis.cancel(); reset(); }
+
+      /* 按句切分：句间由引擎自然停顿，长文更稳更像真人 */
+      function splitSentences(text) {
+        var parts = text.replace(/\s+/g, " ").match(/[^。！？；!?;]+[。！？；!?;]?/g) || [text];
+        var out = [], buf = "";
+        parts.forEach(function (p) {
+          if ((buf + p).length > 200) { if (buf) out.push(buf); buf = p; }
+          else buf += p;
+        });
+        if (buf) out.push(buf);
+        return out;
+      }
+
+      function startSpeak() {
         var title = document.getElementById("artTitle");
         var body = document.getElementById("artBody");
         if (!body) return;
-        var u = new SpeechSynthesisUtterance(
-          (title ? title.textContent + "。" : "") +
-          body.innerText.replace(/\s+/g, " ").slice(0, 6000)
-        );
-        u.lang = "zh-CN";
-        u.rate = 1.05;
-        var zh = speechSynthesis.getVoices().filter(function (v) { return v.lang && v.lang.indexOf("zh") === 0; });
-        if (zh.length) u.voice = zh[0];
-        u.onend = reset;
-        u.onerror = reset;
+        var text = (title ? title.textContent + "。" : "") + body.innerText;
+        var v = pickVoice();
+        var parts = splitSentences(text);
+        queue = [];
+        parts.forEach(function (p, i) {
+          var u = new SpeechSynthesisUtterance(p);
+          u.lang = "zh-CN";
+          u.rate = 1.0;
+          u.pitch = 1.0;
+          if (v) u.voice = v;
+          if (i === parts.length - 1) { u.onend = reset; u.onerror = reset; }
+          queue.push(u);
+        });
         speechSynthesis.cancel();
-        speechSynthesis.speak(u);
+        queue.forEach(function (u) { speechSynthesis.speak(u); });
         btn.textContent = "⏹ 停止朗读";
+      }
+
+      btn.addEventListener("click", function () {
+        if (speechSynthesis.speaking || speechSynthesis.pending) { stopAll(); return; }
+        startSpeak();
       });
-      var stop = function () { if (speechSynthesis.speaking) { speechSynthesis.cancel(); reset(); } };
+      var stop = function () { if (speechSynthesis.speaking) stopAll(); };
       window.addEventListener("hashchange", stop);
       window.addEventListener("beforeunload", stop);
-      speechSynthesis.getVoices(); /* 部分浏览器声音列表异步加载，预触发 */
+      speechSynthesis.addEventListener("voiceschanged", buildSel);
+      buildSel();
+      speechSynthesis.getVoices();
     })();
   </script>
 </body>
