@@ -99,55 +99,6 @@
       .pv-count { bottom: 10px; }
     }
 
-    /* ── 3D 透视查看器（点击作品进入，coverflow 排布） ── */
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(4, 8, 14, .9);
-      -webkit-backdrop-filter: blur(8px);
-              backdrop-filter: blur(8px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
-    }
-    .lightbox.open { opacity: 1; pointer-events: auto; }
-    .lb-stage {
-      position: relative;
-      width: min(980px, 94vw);
-      height: min(56vh, 430px);
-      perspective: 1150px;
-      perspective-origin: 50% 50%;
-    }
-    .cf-track {
-      position: absolute;
-      inset: 0;
-      transform-style: preserve-3d;
-    }
-    .cf-item {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: min(56%, 560px);
-      margin-left: calc(min(56%, 560px) / -2);
-      transform-style: preserve-3d;
-      transition: transform .5s cubic-bezier(.22,.68,.28,1), opacity .4s ease;
-      cursor: pointer;
-    }
-    .cf-item svg, .cf-item img {
-      width: 100%;
-      display: block;
-      border-radius: 12px;
-      box-shadow: 0 30px 70px rgba(0, 0, 0, .55), 0 0 44px rgba(0, 229, 160, .06);
-      background: var(--card);
-    }
-    .cf-item.center { cursor: default; }
 
     /* ── 用户上传的照片替换画格（照片墙数据 → 主画格） ── */
     .photo .art img {
@@ -158,57 +109,6 @@
     }
     .photo:hover .art img { transform: scale(1.04); }
     .photo .art img { transition: transform .5s ease; }
-    .lb-navs {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 4px;
-      pointer-events: none;
-      z-index: 500;
-    }
-    .lb-navs button {
-      pointer-events: auto;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      font-size: 1.2rem;
-      line-height: 1;
-      cursor: pointer;
-      opacity: .92;
-      transition: transform .2s, border-color .2s, color .2s;
-    }
-    .lb-navs button:hover {
-      transform: scale(1.1);
-      border-color: var(--border-hover);
-      color: var(--accent);
-    }
-    #lbCount {
-      font-family: var(--mono);
-      font-size: .72rem;
-      color: var(--muted);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 12px;
-    }
-    .lb-cap { text-align: center; margin-top: 20px; color: var(--text); font-size: 1.02rem; font-weight: 600; }
-    .lb-hint {
-      text-align: center;
-      font-family: var(--mono);
-      font-size: .7rem;
-      color: var(--muted);
-      margin-top: 8px;
-      opacity: .75;
-    }
-    @media (max-width: 640px) {
-      .lb-stage { height: 44vh; }
-      .cf-item { width: 76%; }
-    }
 
     @media (max-width: 900px) { .photos { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .photos { grid-template-columns: 1fr; } }
@@ -235,436 +135,18 @@
   <div class="wrap">
     <!-- ✏️ 换成真实照片：把每个 .art 里的 <svg> 占位图换成
          <img src="你的图片.jpg" alt="描述" style="width:100%;height:100%;object-fit:cover"> 即可 -->
-    <div class="photos">
-
-      <!-- 🍂 四季明信片系列 -->
-      <figure class="photo reveal">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#241f38"/>
-            <circle cx="82" cy="62" r="28" fill="#f2b8d0" opacity=".9"/>
-            <circle cx="82" cy="62" r="40" fill="#f2b8d0" opacity=".14"/>
-            <path d="M0,158 Q90,128 180,152 T300,146 L300,200 L0,200 Z" fill="#332b4d"/>
-            <path d="M296,152 C258,140 236,118 232,94" stroke="#4b3d5e" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <path d="M258,118 C246,106 244,94 250,82" stroke="#4b3d5e" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <circle cx="232" cy="90" r="8" fill="#f2a0c0"/><circle cx="220" cy="80" r="6" fill="#f2a0c0"/>
-            <circle cx="250" cy="82" r="7" fill="#f2a0c0"/><circle cx="244" cy="74" r="5" fill="#f7bcd4"/><circle cx="262" cy="96" r="5" fill="#f7bcd4"/>
-            <ellipse cx="150" cy="118" rx="3" ry="1.8" fill="#f2a0c0"/>
-            <ellipse cx="118" cy="96" rx="2.4" ry="1.5" fill="#f7bcd4"/>
-            <ellipse cx="176" cy="100" rx="2.4" ry="1.5" fill="#f2a0c0"/>
-            <ellipse cx="98" cy="128" rx="2.6" ry="1.6" fill="#f7bcd4"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">春 · 樱</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.06s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#12251f"/>
-            <circle cx="222" cy="56" r="26" fill="#e8f5b8" opacity=".85"/>
-            <circle cx="222" cy="56" r="38" fill="#e8f5b8" opacity=".12"/>
-            <rect y="150" width="300" height="50" fill="#0d1c17"/>
-            <rect y="149" width="300" height="2.5" fill="#2e4a3a"/>
-            <path d="M28,200 C30,180 26,170 33,158" stroke="#1d352a" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <path d="M52,200 C54,184 50,176 56,166" stroke="#1d352a" stroke-width="3.4" fill="none" stroke-linecap="round"/>
-            <path d="M84,200 C86,182 82,174 88,164" stroke="#1d352a" stroke-width="3.8" fill="none" stroke-linecap="round"/>
-            <path d="M262,200 C260,178 266,170 258,158" stroke="#1d352a" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <circle cx="120" cy="128" r="5" fill="#d6f58a" opacity=".18"/><circle cx="120" cy="128" r="2.2" fill="#d6f58a"/>
-            <circle cx="168" cy="108" r="5" fill="#d6f58a" opacity=".18"/><circle cx="168" cy="108" r="2" fill="#d6f58a"/>
-            <circle cx="94" cy="92" r="4.5" fill="#d6f58a" opacity=".16"/><circle cx="94" cy="92" r="1.8" fill="#d6f58a"/>
-            <circle cx="196" cy="138" r="4.5" fill="#d6f58a" opacity=".16"/><circle cx="196" cy="138" r="1.8" fill="#d6f58a"/>
-            <circle cx="58" cy="118" r="4" fill="#d6f58a" opacity=".14"/><circle cx="58" cy="118" r="1.6" fill="#d6f58a"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">夏 · 萤</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.12s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#2b1c22"/>
-            <circle cx="76" cy="58" r="27" fill="#f5a83c" opacity=".9"/>
-            <circle cx="76" cy="58" r="39" fill="#f5a83c" opacity=".14"/>
-            <path d="M0,156 Q100,132 200,154 T300,148 L300,200 L0,200 Z" fill="#3d262a"/>
-            <rect x="248" y="118" width="7" height="46" rx="3" fill="#241519"/>
-            <circle cx="252" cy="102" r="22" fill="#c25b33"/>
-            <circle cx="234" cy="114" r="14" fill="#e0703c"/>
-            <circle cx="270" cy="112" r="15" fill="#f5a83c"/>
-            <path d="M170,120 l4,4 -4,4 -4,-4 Z" fill="#e0703c"/>
-            <path d="M138,96 l3.4,3.4 -3.4,3.4 -3.4,-3.4 Z" fill="#f5a83c"/>
-            <path d="M196,84 l3.4,3.4 -3.4,3.4 -3.4,-3.4 Z" fill="#c25b33"/>
-            <ellipse cx="120" cy="140" rx="4" ry="2" fill="#e0703c"/>
-            <ellipse cx="152" cy="150" rx="3.4" ry="1.8" fill="#f5a83c"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">秋 · 枫</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.18s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#182338"/>
-            <circle cx="150" cy="54" r="23" fill="#dfe9f5" opacity=".9"/>
-            <circle cx="150" cy="54" r="35" fill="#dfe9f5" opacity=".12"/>
-            <path d="M0,200 L74,118 L148,200 Z" fill="#22314d"/>
-            <path d="M104,200 L192,98 L280,200 Z" fill="#1b2942"/>
-            <rect y="176" width="300" height="24" fill="#dfe9f5" opacity=".1"/>
-            <path d="M36,176 L46,148 L56,176 Z" fill="#0f1a2c"/>
-            <path d="M38.5,162 L46,142 L53.5,162 Z" fill="#0f1a2c"/>
-            <rect x="196" y="150" width="44" height="26" rx="2" fill="#141f33"/>
-            <path d="M192,150 L218,132 L244,150 Z" fill="#0f1a2c"/>
-            <rect x="210" y="158" width="12" height="10" rx="1" fill="#f5a83c" opacity=".85"/>
-            <circle cx="60" cy="52" r="2" fill="#dfe9f5" opacity=".8"/>
-            <circle cx="104" cy="76" r="1.7" fill="#dfe9f5" opacity=".6"/>
-            <circle cx="212" cy="60" r="2" fill="#dfe9f5" opacity=".7"/>
-            <circle cx="248" cy="96" r="1.7" fill="#dfe9f5" opacity=".55"/>
-            <circle cx="170" cy="110" r="1.8" fill="#dfe9f5" opacity=".6"/>
-            <circle cx="136" cy="140" r="2" fill="#dfe9f5" opacity=".5"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">冬 · 雪</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#101c30"/>
-            <circle cx="238" cy="50" r="24" fill="#dfe9f5"/>
-            <circle cx="228" cy="43" r="21" fill="#101c30"/>
-            <circle cx="60" cy="40" r="1.6" fill="#9fb6d0"/><circle cx="112" cy="26" r="1.2" fill="#9fb6d0"/><circle cx="168" cy="54" r="1.4" fill="#9fb6d0"/>
-            <path d="M0,200 L92,86 L182,200 Z" fill="#1c2f4a"/>
-            <path d="M120,200 L215,104 L310,200 Z" fill="#15253d"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">夜山</span><span class="d">2026-08</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.06s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="142" fill="#1a2a44"/>
-            <circle cx="150" cy="128" r="30" fill="#f5a83c"/>
-            <circle cx="150" cy="128" r="42" fill="#f5a83c" opacity=".18"/>
-            <rect y="142" width="300" height="58" fill="#12203a"/>
-            <path d="M118,144 L182,144 L204,200 L96,200 Z" fill="#f5a83c" opacity=".22"/>
-            <rect x="30" y="156" width="52" height="3" rx="1.5" fill="#38bdf8" opacity=".45"/>
-            <rect x="216" y="170" width="44" height="3" rx="1.5" fill="#38bdf8" opacity=".35"/>
-            <rect x="64" y="184" width="36" height="3" rx="1.5" fill="#38bdf8" opacity=".3"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">出海</span><span class="d">2026-07</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.12s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0e1828"/>
-            <circle cx="252" cy="38" r="18" fill="#dfe9f5" opacity=".9"/>
-            <circle cx="245" cy="33" r="16" fill="#0e1828"/>
-            <rect x="28" y="92" width="44" height="108" fill="#16253c"/>
-            <rect x="84" y="58" width="52" height="142" fill="#1b2c46"/>
-            <rect x="148" y="102" width="40" height="98" fill="#142238"/>
-            <rect x="200" y="70" width="58" height="130" fill="#1a2b44"/>
-            <g fill="#f5c56b">
-              <rect x="36" y="102" width="7" height="9"/><rect x="52" y="122" width="7" height="9"/>
-              <rect x="94" y="72" width="7" height="9"/><rect x="112" y="94" width="7" height="9"/><rect x="94" y="120" width="7" height="9"/>
-              <rect x="158" y="114" width="7" height="9"/><rect x="172" y="138" width="7" height="9"/>
-              <rect x="210" y="84" width="7" height="9"/><rect x="228" y="106" width="7" height="9"/><rect x="210" y="132" width="7" height="9"/>
-            </g>
-          </svg>
-        </div>
-        <figcaption><span class="t">城市夜色</span><span class="d">2026-06</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.18s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0c1a22"/>
-            <circle cx="60" cy="42" r="20" fill="#dfe9f5" opacity=".85"/>
-            <circle cx="52" cy="37" r="17" fill="#0c1a22"/>
-            <path d="M40,200 L70,110 L100,200 Z" fill="#123a29"/>
-            <path d="M90,200 L128,84 L166,200 Z" fill="#164a34"/>
-            <path d="M150,200 L186,116 L222,200 Z" fill="#123a29"/>
-            <path d="M210,200 L246,96 L282,200 Z" fill="#0f3325"/>
-            <ellipse cx="150" cy="196" rx="160" ry="14" fill="#9fb6d0" opacity=".08"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">雾林</span><span class="d">2026-05</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.24s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0a1020"/>
-            <g fill="#cfe3ff">
-              <circle cx="36" cy="36" r="1.5"/><circle cx="86" cy="70" r="1.1"/><circle cx="140" cy="30" r="1.7"/>
-              <circle cx="188" cy="58" r="1.2"/><circle cx="236" cy="26" r="1.5"/><circle cx="272" cy="66" r="1.1"/>
-              <circle cx="60" cy="104" r="1.2"/><circle cx="122" cy="88" r="1"/><circle cx="206" cy="98" r="1.4"/>
-              <circle cx="258" cy="120" r="1"/><circle cx="104" cy="132" r="1.3"/><circle cx="164" cy="118" r="1"/>
-            </g>
-            <line x1="196" y1="44" x2="256" y2="20" stroke="#dfe9f5" stroke-width="2" stroke-linecap="round" opacity=".7"/>
-            <path d="M196,44 l10,-2 l-6,-6 z" fill="#dfe9f5" opacity=".7"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">流星</span><span class="d">2026-04</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.3s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0d1626"/>
-            <line x1="0" y1="164" x2="300" y2="164" stroke="#223047" stroke-width="4"/>
-            <circle cx="92" cy="142" r="22" fill="none" stroke="#38bdf8" stroke-width="4"/>
-            <circle cx="208" cy="142" r="22" fill="none" stroke="#38bdf8" stroke-width="4"/>
-            <g stroke="#38bdf8" stroke-width="4" stroke-linecap="round">
-              <line x1="92" y1="142" x2="130" y2="120"/>
-              <line x1="130" y1="120" x2="170" y2="118"/>
-              <line x1="170" y1="118" x2="208" y2="142"/>
-              <line x1="130" y1="120" x2="128" y2="94"/>
-            </g>
-            <ellipse cx="122" cy="74" rx="30" ry="17" fill="#f2ead8"/>
-            <circle cx="152" cy="62" r="9" fill="#f2ead8"/>
-            <path d="M158,60 L180,66 L156,70 Z" fill="#f5a83c"/>
-            <ellipse cx="150" cy="50" rx="10" ry="5" fill="#00e5a0"/>
-            <circle cx="154" cy="60" r="1.6" fill="#1c2433"/>
-            <line x1="130" y1="88" x2="140" y2="112" stroke="#f5a83c" stroke-width="5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">骑行日记 🚲</span><span class="d">2026-03</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.36s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0d1b2a"/>
-            <circle cx="52" cy="36" r="1.5" fill="#9fb6d0"/><circle cx="96" cy="22" r="1.2" fill="#9fb6d0"/><circle cx="200" cy="30" r="1.4" fill="#9fb6d0"/><circle cx="262" cy="58" r="1.1" fill="#9fb6d0"/>
-            <rect y="160" width="300" height="40" fill="#0f2136"/>
-            <path d="M105,160 L150,118 L198,160 Z" fill="#1c2f4a"/>
-            <path d="M139,120 L143,62 L157,62 L161,120 Z" fill="#dfe9f5"/>
-            <path d="M140.5,104 L159.5,104 L158.8,92 L141.2,92 Z" fill="#e8862e"/>
-            <path d="M141.8,80 L158.2,80 L157.6,70 L142.4,70 Z" fill="#e8862e"/>
-            <rect x="145" y="48" width="10" height="14" fill="#f5c56b"/>
-            <path d="M155,55 L236,28 L236,76 Z" fill="#f5c56b" opacity="0.22"/>
-            <path d="M144,120 L156,120 L155,132 L145,132 Z" fill="#1c2433"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">灯塔</span><span class="d">2026-02</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.42s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0a1020"/>
-            <circle cx="46" cy="30" r="1.5" fill="#cfe3ff"/><circle cx="240" cy="22" r="1.3" fill="#cfe3ff"/><circle cx="272" cy="52" r="1.2" fill="#cfe3ff"/><circle cx="72" cy="66" r="1.1" fill="#cfe3ff"/>
-            <ellipse cx="120" cy="176" rx="46" ry="12" fill="#223047"/>
-            <ellipse cx="182" cy="182" rx="38" ry="10" fill="#1a2739"/>
-            <path d="M150,28 C166,50 169,80 166,112 L134,112 C131,80 134,50 150,28 Z" fill="#dfe9f5"/>
-            <circle cx="150" cy="68" r="8" fill="#38bdf8" stroke="#0a1020" stroke-width="2"/>
-            <path d="M134,92 L118,122 L134,110 Z" fill="#f56262"/>
-            <path d="M166,92 L182,122 L166,110 Z" fill="#f56262"/>
-            <path d="M141,112 C141,130 150,142 150,142 C150,142 159,130 159,112 Z" fill="#f5a83c"/>
-            <path d="M146,112 C146,124 150,132 150,132 C150,132 154,124 154,112 Z" fill="#f56262"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">火箭升空</span><span class="d">2026-01</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.48s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#101a20"/>
-            <circle cx="250" cy="40" r="20" fill="#dfe9f5" opacity="0.9"/>
-            <circle cx="243" cy="35" r="17" fill="#101a20"/>
-            <circle cx="180" cy="44" r="7" fill="#9fb6d0" opacity="0.35"/>
-            <circle cx="192" cy="36" r="9" fill="#9fb6d0" opacity="0.25"/>
-            <rect y="152" width="300" height="48" fill="#14231c"/>
-            <path d="M18,152 L38,96 L58,152 Z" fill="#123a29"/>
-            <path d="M240,152 L262,88 L284,152 Z" fill="#164a34"/>
-            <rect x="118" y="112" width="64" height="40" fill="#6b4f35"/>
-            <path d="M104,114 L150,72 L196,114 Z" fill="#3d2e1f"/>
-            <rect x="168" y="84" width="10" height="20" fill="#3d2e1f"/>
-            <circle cx="173" cy="74" r="5" fill="#9fb6d0" opacity="0.3"/>
-            <circle cx="179" cy="64" r="6" fill="#9fb6d0" opacity="0.22"/>
-            <rect x="130" y="126" width="16" height="26" fill="#2a1f16"/>
-            <rect x="156" y="126" width="16" height="14" fill="#f5c56b"/>
-            <line x1="164" y1="126" x2="164" y2="140" stroke="#6b4f35" stroke-width="2"/>
-            <line x1="156" y1="133" x2="172" y2="133" stroke="#6b4f35" stroke-width="2"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">林中小屋</span><span class="d">2025-12</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.54s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#122036"/>
-            <circle cx="70" cy="48" r="22" fill="#f5a83c" opacity="0.9"/>
-            <circle cx="70" cy="48" r="32" fill="#f5a83c" opacity="0.16"/>
-            <rect y="128" width="300" height="72" fill="#0e2a45"/>
-            <path d="M0,138 Q37,130 75,138 T150,138 T225,138 T300,138" stroke="#38bdf8" stroke-width="3" fill="none" opacity="0.4"/>
-            <path d="M0,158 Q37,150 75,158 T150,158 T225,158 T300,158" stroke="#38bdf8" stroke-width="3" fill="none" opacity="0.3"/>
-            <path d="M0,178 Q37,170 75,178 T150,178 T225,178 T300,178" stroke="#38bdf8" stroke-width="3" fill="none" opacity="0.2"/>
-            <line x1="150" y1="96" x2="150" y2="152" stroke="#93a4bd" stroke-width="4"/>
-            <path d="M150,98 L150,148 L186,148 Z" fill="#dfe9f5"/>
-            <path d="M146,106 L146,148 L122,148 Z" fill="#f2ead8"/>
-            <path d="M118,150 L186,150 L176,166 L128,166 Z" fill="#6b4f35"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">扬帆</span><span class="d">2025-11</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.6s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0b1626"/>
-            <circle cx="250" cy="36" r="18" fill="#e8f1fa"/>
-            <circle cx="241" cy="29" r="15.5" fill="#0b1626"/>
-            <circle cx="40" cy="30" r="1.4" fill="#9fb6d0"/><circle cx="96" cy="52" r="1.2" fill="#9fb6d0"/><circle cx="150" cy="24" r="1.5" fill="#9fb6d0"/><circle cx="205" cy="66" r="1.2" fill="#9fb6d0"/><circle cx="272" cy="92" r="1.3" fill="#9fb6d0"/>
-            <line x1="34" y1="14" x2="148" y2="84" stroke="#bfd8f2" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>
-            <line x1="34" y1="14" x2="112" y2="58" stroke="#bfd8f2" stroke-width="1.1" stroke-linecap="round" opacity=".35"/>
-            <circle cx="150" cy="86" r="3.2" fill="#e8f1fa"/>
-            <path d="M0,200 L84,96 L176,200 Z" fill="#13233b"/>
-            <path d="M118,200 L214,110 L312,200 Z" fill="#0f1c31"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">流星</span><span class="d">2026-09</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.66s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="150" fill="#12233c"/>
-            <circle cx="52" cy="40" r="16" fill="#dfe9f5"/>
-            <circle cx="45" cy="34" r="13.5" fill="#12233c"/>
-            <path d="M162,54 L268,16 L268,92 Z" fill="#ffd76a" opacity=".12"/>
-            <path d="M162,54 L268,38 L268,70 Z" fill="#ffd76a" opacity=".22"/>
-            <rect y="150" width="300" height="50" fill="#0e1a2e"/>
-            <path d="M150,58 L134,150 L190,150 L174,58 Z" fill="#e8eef5"/>
-            <defs>
-              <clipPath id="lhClip"><path d="M150,58 L134,150 L190,150 L174,58 Z"/></clipPath>
-            </defs>
-            <g clip-path="url(#lhClip)">
-              <rect x="128" y="78" width="70" height="14" fill="#e06a5a"/>
-              <rect x="128" y="106" width="70" height="14" fill="#e06a5a"/>
-              <rect x="128" y="134" width="70" height="14" fill="#e06a5a"/>
-            </g>
-            <rect x="145" y="46" width="34" height="12" rx="2" fill="#22354f"/>
-            <circle cx="162" cy="52" r="5" fill="#ffd76a"/>
-            <path d="M112,150 L136,128 L160,150 Z" fill="#1c3050"/>
-            <line x1="24" y1="164" x2="86" y2="164" stroke="#38bdf8" stroke-width="3" opacity=".35" stroke-linecap="round"/>
-            <line x1="200" y1="176" x2="272" y2="176" stroke="#38bdf8" stroke-width="3" opacity=".25" stroke-linecap="round"/>
-            <line x1="60" y1="186" x2="150" y2="186" stroke="#38bdf8" stroke-width="3" opacity=".18" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">航标</span><span class="d">2026-09</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.72s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#131a2c"/>
-            <circle cx="56" cy="42" r="17" fill="#e8d8e2"/>
-            <circle cx="49" cy="36" r="14.5" fill="#131a2c"/>
-            <path d="M216,158 L212,96 L228,96 L224,158 Z" fill="#3a2a3a"/>
-            <line x1="220" y1="98" x2="204" y2="74" stroke="#3a2a3a" stroke-width="5" stroke-linecap="round"/>
-            <line x1="220" y1="98" x2="238" y2="72" stroke="#3a2a3a" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="220" cy="72" r="24" fill="#e8a0b8"/>
-            <circle cx="200" cy="64" r="15" fill="#e8a0b8" opacity=".85"/>
-            <circle cx="241" cy="62" r="14" fill="#e8a0b8" opacity=".8"/>
-            <circle cx="160" cy="96" r="2.2" fill="#f2c4d8"/><circle cx="128" cy="122" r="1.8" fill="#f2c4d8"/><circle cx="176" cy="132" r="1.6" fill="#f2c4d8"/><circle cx="96" cy="108" r="1.8" fill="#f2c4d8"/>
-            <rect y="158" width="300" height="42" fill="#0e1830"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">樱雨 · 春</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.78s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0c1a20"/>
-            <circle cx="244" cy="40" r="16" fill="#dfe9f5"/>
-            <circle cx="236" cy="34" r="13.5" fill="#0c1a20"/>
-            <rect y="148" width="300" height="52" fill="#0a141c"/>
-            <path d="M0,156 Q37,150 75,156 T150,156 T225,156 T300,156" stroke="#38bdf8" stroke-width="3" fill="none" opacity=".3"/>
-            <circle cx="86" cy="92" r="4" fill="#ffd76a"/>
-            <circle cx="86" cy="92" r="10" fill="#ffd76a" opacity=".18"/>
-            <circle cx="150" cy="66" r="3.4" fill="#ffd76a"/>
-            <circle cx="150" cy="66" r="9" fill="#ffd76a" opacity=".16"/>
-            <circle cx="204" cy="104" r="3.6" fill="#ffd76a"/>
-            <circle cx="204" cy="104" r="10" fill="#ffd76a" opacity=".15"/>
-            <circle cx="120" cy="126" r="2.6" fill="#ffd76a" opacity=".7"/>
-            <circle cx="238" cy="128" r="2.4" fill="#ffd76a" opacity=".6"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">萤火 · 夏</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.84s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#161420"/>
-            <circle cx="48" cy="38" r="15" fill="#f5a83c"/>
-            <circle cx="41" cy="32" r="12.5" fill="#161420"/>
-            <path d="M196,160 L190,92 L206,92 L200,160 Z" fill="#3a2a2a"/>
-            <line x1="198" y1="94" x2="180" y2="66" stroke="#3a2a2a" stroke-width="5" stroke-linecap="round"/>
-            <line x1="198" y1="94" x2="218" y2="64" stroke="#3a2a2a" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="198" cy="60" r="26" fill="#e8963c"/>
-            <circle cx="178" cy="52" r="16" fill="#d97b2a" opacity=".85"/>
-            <circle cx="220" cy="50" r="15" fill="#f5b04a" opacity=".8"/>
-            <ellipse cx="140" cy="100" rx="5" ry="2.4" fill="#e8963c" transform="rotate(-30 140 100)"/>
-            <ellipse cx="112" cy="128" rx="5" ry="2.4" fill="#d97b2a" transform="rotate(20 112 128)"/>
-            <ellipse cx="164" cy="120" rx="4.5" ry="2.2" fill="#f5b04a" transform="rotate(-15 164 120)"/>
-            <rect y="160" width="300" height="40" fill="#12101c"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">秋叶 · 秋</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-      <figure class="photo reveal" style="--d:.9s">
-        <div class="art">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect width="300" height="200" fill="#0d1626"/>
-            <circle cx="248" cy="38" r="15" fill="#cfe0f0"/>
-            <circle cx="248" cy="38" r="2" fill="#0d1626"/><circle cx="254" cy="32" r="1.4" fill="#0d1626"/>
-            <circle cx="60" cy="34" r="1.6" fill="#cfe0f0"/><circle cx="120" cy="24" r="1.3" fill="#cfe0f0"/><circle cx="180" cy="40" r="1.5" fill="#cfe0f0"/><circle cx="96" cy="66" r="1.3" fill="#cfe0f0"/>
-            <rect y="152" width="300" height="48" fill="#dbe6f2"/>
-            <circle cx="150" cy="122" r="20" fill="#eef4fa"/>
-            <circle cx="150" cy="94" r="14" fill="#eef4fa"/>
-            <circle cx="145" cy="92" r="1.8" fill="#22354f"/><circle cx="155" cy="92" r="1.8" fill="#22354f"/>
-            <path d="M150,96 L158,99 L150,99 Z" fill="#e08a4a"/>
-            <line x1="138" y1="100" x2="122" y2="96" stroke="#3a2a2a" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="162" y1="100" x2="178" y2="96" stroke="#3a2a2a" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="200" y1="80" x2="248" y2="56" stroke="#3a2a2a" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="70" cy="110" r="2" fill="#cfe0f0"/><circle cx="170" cy="60" r="1.8" fill="#cfe0f0"/><circle cx="230" cy="118" r="2" fill="#cfe0f0"/><circle cx="110" cy="52" r="1.6" fill="#cfe0f0"/>
-          </svg>
-        </div>
-        <figcaption><span class="t">初雪 · 冬</span><span class="d">2026-10</span></figcaption>
-      </figure>
-
-    </div>
+    <div class="photos" id="photosGrid"></div>
 
     <!-- 📸 照片墙：图片进仓库 gallery/p/，清单存 textdb cccad-photos（上传在站长工作台里做） -->
 
   </div>
 
   <p class="caption">
-    手绘插画与站长摄影同墙展出 ｜ 点击卡片查看大图 ｜ 上传新照片：首页 🛠 站长工作台
+    全部为站长摄影作品 ｜ 点击卡片查看原图 ｜ 上传新照片：首页 🛠 站长工作台
   </p>
 
   <!-- 灯箱 -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-label="3D 画廊查看器">
-    <div class="lb-stage">
-      <div class="cf-track" id="cfTrack"></div>
-      <div class="lb-navs">
-        <button id="lbPrev" type="button" aria-label="上一张">‹</button>
-        <span id="lbCount">1 / 20</span>
-        <button id="lbNext" type="button" aria-label="下一张">›</button>
-      </div>
-    </div>
-    <p class="lb-cap" id="lbCap"></p>
-    <p class="lb-hint">← → 键 · 点击两侧作品 · 手机左右滑动 翻页 ｜ 点击空白处退出</p>
-  </div>
+  
 
   <!-- 原图查看器 -->
   <div class="pv" id="pv" role="dialog" aria-modal="true" aria-label="照片查看器">
@@ -693,89 +175,6 @@
         });
       }, { threshold: 0.1 });
       $$(".reveal").forEach((el) => io.observe(el));
-    }
-
-    function initLightbox() {
-      const lightbox = $("#lightbox");
-      const photos = $(".photo").filter((f) => f.getAttribute("data-upload") !== "1");
-      const track = $("#cfTrack");
-      const n = photos.length;
-      let cur = 0;
-
-      /* 20 幅作品全部上轨道，按透视排布 */
-      const items = photos.map((p) => {
-        const el = document.createElement("div");
-        el.className = "cf-item";
-        el.innerHTML = p.querySelector("svg").outerHTML;
-        track.appendChild(el);
-        return el;
-      });
-
-      const layout = () => {
-        items.forEach((el, i) => {
-          const off = ((i - cur + n + n / 2) % n) - n / 2; /* 最短环绕路径 */
-          const ax = Math.abs(off), sign = off < 0 ? -1 : 1;
-          const x = sign * (Math.min(ax, 1) * 46 + Math.max(0, ax - 1) * 26);
-          const ry = -sign * (Math.min(ax, 1) * 40 + Math.max(0, ax - 1) * 7);
-          const z = 90 - Math.min(ax, 3) * 160;
-          el.style.transform = "translateY(-50%) translateX(" + x.toFixed(1) + "%) translateZ(" + z.toFixed(0) + "px) rotateY(" + ry.toFixed(1) + "deg)";
-          el.style.opacity = ax > 3.4 ? "0" : Math.max(0.1, 1 - ax * 0.28).toFixed(2);
-          el.style.visibility = ax > 3.6 ? "hidden" : "visible";
-          el.style.zIndex = String(300 - Math.round(ax * 10));
-          /* 只有正中 + 相邻两张可点：渐隐的远景图禁用指针，防止「点到后面的图」 */
-          el.style.pointerEvents = ax < 1.5 ? "auto" : "none";
-          el.classList.toggle("center", ax < 0.5);
-        });
-      };
-      /* 暴露给上传模块：照片替换后同步 3D 查看器 */
-      lightbox.__cfSync = layout;
-
-      const show = (i) => {
-        cur = (i + n) % n;
-        /* 重灌可见项内容：站长替换的照片实时进查看器 */
-        items.forEach((el, k) => {
-          if (Math.abs(((k - cur + n + n / 2) % n) - n / 2) < 3.6) {
-            el.innerHTML = photos[k].querySelector(".art").innerHTML;
-          }
-        });
-        layout();
-        const p = svgFigs[cur];
-        $("#lbCap").textContent =
-          p.querySelector(".t").textContent + " · " + p.querySelector(".d").textContent;
-        $("#lbCount").textContent = (cur + 1) + " / " + n;
-        lightbox.classList.add("open");
-      };
-
-      const svgFigs = photos;
-      svgFigs.forEach((p, i) => {
-        p.addEventListener("click", () => show(i));
-      });
-      items.forEach((el, i) => {
-        el.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (i !== cur) show(i); /* 点两侧作品 = 跳到那一张 */
-        });
-      });
-      $("#lbPrev").addEventListener("click", (e) => { e.stopPropagation(); show(cur - 1); });
-      $("#lbNext").addEventListener("click", (e) => { e.stopPropagation(); show(cur + 1); });
-      lightbox.addEventListener("click", () => lightbox.classList.remove("open"));
-      /* 手机左右滑动 */
-      let tx = null;
-      lightbox.addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; }, { passive: true });
-      lightbox.addEventListener("touchend", (e) => {
-        if (tx === null) return;
-        const dx = e.changedTouches[0].clientX - tx;
-        if (Math.abs(dx) > 45) show(cur + (dx < 0 ? 1 : -1));
-        tx = null;
-      }, { passive: true });
-      document.addEventListener("keydown", (e) => {
-        if (!lightbox.classList.contains("open")) return;
-        if (e.key === "Escape") lightbox.classList.remove("open");
-        else if (e.key === "ArrowLeft") show(cur - 1);
-        else if (e.key === "ArrowRight") show(cur + 1);
-      });
-      show(0);
-      lightbox.classList.remove("open"); /* 预排布，首次打开即是成品布局 */
     }
 
     /* ─────────── 📸 照片墙：textdb 清单 → 统一 3:2 卡片 → 点开看原图 ─────────── */
@@ -906,8 +305,7 @@
       try { list = (await loadShots()) || []; } catch (e) { list = []; }
       shotsData = list;
       const grid = $(".photos");
-      const svgCount = grid.querySelectorAll(".photo").length;
-      const frag = document.createDocumentFragment();
+            const frag = document.createDocumentFragment();
       list.forEach(function (p, k) {
         const fig = document.createElement("figure");
         fig.className = "photo";
@@ -920,8 +318,11 @@
       });
       grid.prepend(frag);
       uploadCount = list.length;
+      if (!list.length) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; border: 1px dashed var(--border); border-radius: var(--radius); padding: 40px 18px; text-align: center; color: var(--muted); font-size: .86rem; line-height: 1.9">还没有照片。<br>去首页 🛠 站长工作台上传，照片会出现在这里。</div>';
+      }
       const gc = $("#galCount");
-      if (gc) gc.textContent = "共 " + (uploadCount + svgCount) + " 件作品 · 站长摄影 " + uploadCount + " · 手绘插画 " + svgCount;
+      if (gc) gc.textContent = "📸 共 " + uploadCount + " 张照片 · 持续更新中";
       /* 原图查看器（#pv）接线 */
       $("#pvX").addEventListener("click", closePv);
       $("#pv").addEventListener("click", (e) => { if (e.target === $("#pv")) closePv(); });
@@ -945,7 +346,6 @@
     document.addEventListener("DOMContentLoaded", async () => {
       initReveal();
       await initUploads();
-      initLightbox();
     });
   </script>
 
@@ -980,8 +380,6 @@
             if (d) d.textContent = showDate(p) ? p.d : '';
           }
         }
-        const lb = document.getElementById('lightbox');
-        if (lb && typeof lb.__cfSync === 'function') lb.__cfSync();
       }
       function boot() {
         if (Array.isArray(shotsData) && shotsData.length) applyUserPhotos(shotsData);

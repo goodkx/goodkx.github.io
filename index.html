@@ -159,7 +159,7 @@
   now: [<span class="c-str">"写页面"</span>, <span class="c-str">"攒工具"</span>, <span class="c-str">"记踩坑"</span>],
   built: <span class="c-str">"这个网站 —— 和 AI 结对从零手写"</span>,
   stack: [<span class="c-str">"HTML"</span>, <span class="c-str">"CSS"</span>, <span class="c-str">"JavaScript"</span>],
-  site: { posts: <span class="c-num">12</span>, tools: <span class="c-num">14</span>, games: <span class="c-num">5</span>, art: <span class="c-num">20</span> },
+  site: { posts: <span class="c-num">12</span>, tools: <span class="c-num">14</span>, games: <span class="c-num">5</span>, photos: <span class="c-num">17</span> },
   contact: <span class="c-str">"chenmidiy@163.com"</span>,
   motto: <span class="c-str">"保持好奇，持续造轮子。"</span>,
 };</code></pre>
@@ -1368,10 +1368,19 @@
           /* 实时站点数据条 */
           const stats = document.createElement("div");
           stats.className = "dm-stats";
-          stats.innerHTML = '📄 12 篇文章 · 🧰 14 个工具 · 🖼️ 20 幅画 · 🛒 小卖部营业中 · 💬 <b>' +
+          stats.innerHTML = '📄 12 篇文章 · 🧰 14 个工具 · 🖼️ <span id="dmArt">…</span> 张照片 · 🛒 小卖部营业中 · 💬 <b>' +
             rows.length + '</b> 条留言飘在空中 · <a href="guestbook.html">去留言 →</a>';
           const ht = document.querySelector(".hero-text");
           if (ht) ht.appendChild(stats);
+          /* 相册照片数实时拉取（工作台上传多少就显示多少） */
+          fetch("https://textdb.dev/api/data/cccad-photos?n=" + Date.now(), { cache: "no-store" })
+            .then((r) => r.json())
+            .then((d) => {
+              const n = Array.isArray(d.photos) ? d.photos.length : 0;
+              const el = document.getElementById("dmArt");
+              if (el && n) el.textContent = n;
+            })
+            .catch(() => {});
           /* 全屏高度内分 6 条轨道，避开最顶部导航与最底部按钮 */
           const LANES = 6;
           rows.forEach((m, i) => {

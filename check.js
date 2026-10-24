@@ -84,11 +84,10 @@ const postsClaim = claim(/📄 (\d+) 篇文章/, idxHtml);
 const toolsReal = (fs.readFileSync("tools.html", "utf8").match(/<section class="tool[ "]/g) || []).length;
 const toolsClaim = claim(/🧰 (\d+) 个工具/, idxHtml) ?? claim(/(\d+) 个纯前端小工具/, idxHtml);
 (toolsClaim === null ? tip("首页缺「N 个工具」宣称") : toolsClaim === toolsReal ? ok("工具数 " + toolsReal + " ✓") : bad("工具数漂移：宣称 " + toolsClaim + "，实际 " + toolsReal));
-/* 画作数 */
+/* 相册：照片已改为云端驱动（工作台上传 → textdb cccad-photos → 前台渲染），校验加载器存在 */
 const galleryHtml = fs.readFileSync("gallery.html", "utf8");
-const artReal = (galleryHtml.match(/<figure class="photo/g) || []).length;
-const artClaim = claim(/🖼️? (\d+) 幅画/, idxHtml) ?? claim(/art: <span class="c-num">(\d+)/, idxHtml);
-(artClaim === null ? tip("首页缺「N 幅画」宣称") : artClaim === artReal ? ok("画作数 " + artReal + " ✓") : bad("画作数漂移：宣称 " + artClaim + "，实际 " + artReal));
+const galleryCloud = galleryHtml.indexOf("cccad-photos") >= 0 && galleryHtml.indexOf("initUploads") >= 0;
+(galleryCloud ? ok("相册照片云端驱动 ✓") : bad("相册缺少云端照片加载器（cccad-photos / initUploads）"));
 /* 游戏数 */
 const gamesReal = ["game.html", "tetris.html", "memory.html", "minesweeper.html", "typing.html"].filter(exists).length;
 const gamesClaim = claim(/games: <span class="c-num">(\d+)/, idxHtml);
