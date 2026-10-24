@@ -940,9 +940,10 @@ main, .nav, .footer { position: relative; z-index: 1; }
     border-radius: 0 0 0 14px;
     padding: 12px 0;
     transform: translateX(105%);
-    transition: transform 0.35s ease;
+    visibility: hidden; /* 移出画布同时不可见：子元素不再撑出页面横向滚动 */
+    transition: transform 0.35s ease, visibility 0s linear 0.35s;
   }
-  .nav-links.open { transform: translateX(0); }
+  .nav-links.open { transform: translateX(0); visibility: visible; transition: transform 0.35s ease; }
   .nav-links a { padding: 13px 26px; }
   .nav-links a.active::after { display: none; }
 }
