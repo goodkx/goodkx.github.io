@@ -370,3 +370,18 @@
     init();
   }
 })();
+
+/* ─────────── 🚀 Speculation Rules：同站链接悬停即预渲染（Chrome 109+，其余浏览器安全忽略） ─────────── */
+(function () {
+  try {
+    if (!("supports" in HTMLScriptElement) || !HTMLScriptElement.supports("speculationrules")) return;
+    var s = document.createElement("script");
+    s.type = "speculationrules";
+    s.textContent = JSON.stringify({
+      prerender: [
+        { source: "document", where: { href_matches: "/*" }, eagerness: "moderate" }
+      ]
+    });
+    document.head.appendChild(s);
+  } catch (e) {}
+})();

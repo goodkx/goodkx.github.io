@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="theme.css?v=133" />
   <link rel="stylesheet" href="search.css?v=133" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=130"></script>
+  <script src="theme.js?v=131"></script>
   <script src="search.js?v=133"></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
@@ -467,6 +467,7 @@
           <time id="artDate"></time>
           <span id="artChips" class="chips"></span>
           <button class="art-copy" id="artCopy" type="button">🔗 复制本文链接</button>
+          <button class="art-copy" id="artSpeak" type="button" title="浏览器语音朗读全文">🔊 听全文</button>
         </div>
       </div>
       <div class="art-body" id="artBody"></div>
@@ -1081,6 +1082,39 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
         }
       });
     });
+  </script>
+
+  <script>
+    /* 🔊 Web Speech API：文章朗读（切页自动停；无语音能力自动隐藏按钮） */
+    (function () {
+      var btn = document.getElementById("artSpeak");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) { btn.style.display = "none"; return; }
+      function reset() { btn.textContent = "🔊 听全文"; }
+      btn.addEventListener("click", function () {
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); reset(); return; }
+        var title = document.getElementById("artTitle");
+        var body = document.getElementById("artBody");
+        if (!body) return;
+        var u = new SpeechSynthesisUtterance(
+          (title ? title.textContent + "。" : "") +
+          body.innerText.replace(/\s+/g, " ").slice(0, 6000)
+        );
+        u.lang = "zh-CN";
+        u.rate = 1.05;
+        var zh = speechSynthesis.getVoices().filter(function (v) { return v.lang && v.lang.indexOf("zh") === 0; });
+        if (zh.length) u.voice = zh[0];
+        u.onend = reset;
+        u.onerror = reset;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+        btn.textContent = "⏹ 停止朗读";
+      });
+      var stop = function () { if (speechSynthesis.speaking) { speechSynthesis.cancel(); reset(); } };
+      window.addEventListener("hashchange", stop);
+      window.addEventListener("beforeunload", stop);
+      speechSynthesis.getVoices(); /* 部分浏览器声音列表异步加载，预触发 */
+    })();
   </script>
 </body>
 </html>
