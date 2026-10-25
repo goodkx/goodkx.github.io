@@ -1,7 +1,7 @@
 /* ═══════ 🐋 网页宠物 · 鲸鲸 ═══════
    鲸鲸形象与动画素材来自开源项目 dsh-pet（PC2005-cloud，MIT License），
    精选 8 段 VP9 透明 webm（共约 3.1MB），存放在 /pet/ 目录。
-   行为：待机呼吸 → 随机小剧场 → 点击互动 / 拖拽甩飞反弹 / 久置入睡 / 双击下班。
+   行为：待机呼吸 → 随机小剧场 → 点击互动 / 拖拽甩飞反弹 / 久置入睡 / 长按下班。
    样式自注入（不依赖站内 CSS）；prefers-reduced-motion / 流量敏感场景自动退场。 */
 
 (function () {
@@ -30,7 +30,8 @@
     fly: ["我飞～～～", "鲸生第一次飞行，值了", "别接！让我再飞一会儿"],
     sleep: ["Zzz…（梦见自己变成一朵云）"],
     wake: ["唔……到饭点了吗？", "谁！谁在摸我！"],
-    bye: ["打卡下班，明天见～"],
+    hold: ["唔……你是想让我下班吗？", "再按一会儿，我就真的走了"],
+    bye: ["好嘞，打卡下班，明天见～"],
     code: ["这行代码我也看不懂，但大受震撼", "别催了，在写了在写了"],
     tanghulu: ["冰糖葫芦，酸掉牙但快乐", "甜的酸的，都是生活"],
     sigh: ["需求又变了……哦，这儿没甲方", "叹气专用动画，按次计费"]
@@ -43,8 +44,9 @@
   var cur = "";                      /* 当前播放的状态名 */
   var urls = {}, dead = {};          /* 已就绪 blob URL / 已损坏的素材 */
   var pressed = null, dragging = false, samples = [];
-  var rafId = 0, theaterT = 0, sleepT = 0, wakeT = 0, bubbleT = 0, clickFlip = 0, lastClick = 0;
-  var SIZE = 112, lastFloor = 0;
+  var rafId = 0, theaterT = 0, sleepT = 0, wakeT = 0, bubbleT = 0, clickFlip = 0;
+  var lpT1 = 0, lpT2 = 0, lpFired = false;
+  var SIZE = 150, lastFloor = 0;
 
   /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存） ── */
   function fetchAsset(name) {
@@ -71,12 +73,18 @@
     vid.play().catch(function () {});
   }
 
-  /* ── 气泡 ── */
+  /* ── 气泡：长文本自动换行；伸出屏幕左右时用 margin 平移收回（不干扰 transform 过渡） ── */
   function say(pool) {
     if (!pool || !pool.length) return;
     bub.textContent = pick(pool);
     bub.classList.add("show");
-    bub.classList.toggle("under", y < 96);       /* 贴着屏幕顶时气泡挪到身下 */
+    bub.classList.toggle("under", y < 150);
+    bub.style.marginLeft = "";
+    var br = bub.getBoundingClientRect();
+    var dx = 0;
+    if (br.left < 8) dx = 8 - br.left;
+    if (br.right > innerWidth - 8) dx -= br.right - (innerWidth - 8);
+    if (dx) bub.style.marginLeft = dx.toFixed(0) + "px";
     clearTimeout(bubbleT);
     bubbleT = setTimeout(function () { bub.classList.remove("show"); }, 2600);
   }
@@ -150,7 +158,7 @@
     box.style.top = y + "px";
   }
 
-  /* ── 交互：拖拽 / 点击（连点两下 = 打卡下班） ── */
+  /* ── 交互：拖拽 / 点击纯互动（连点不再误触）· 长按 950ms 打卡下班 ── */
   function bindPointer() {
     box.addEventListener("pointerdown", function (e) {
       if (e.button > 0) return;
@@ -163,6 +171,9 @@
       samples = [{ t: pressed.t, x: e.clientX, y: e.clientY }];
       box.classList.add("grabbing");
       clearTimeout(sleepT); clearTimeout(wakeT);
+      clearTimeout(lpT1); clearTimeout(lpT2); lpFired = false;
+      lpT1 = setTimeout(function () { if (!dragging && pressed) say(LINES.hold); }, 450);
+      lpT2 = setTimeout(function () { if (!dragging && pressed) { lpFired = true; bye(); } }, 950);
       if (cur === "sleep") { play("idle"); say(LINES.wake); }
       armSleep();
     });
@@ -171,6 +182,7 @@
       var dx = e.clientX - pressed.x, dy = e.clientY - pressed.y;
       if (!dragging && Math.hypot(dx, dy) > 7) {
         dragging = true;
+        clearTimeout(lpT1); clearTimeout(lpT2);   /* 一拖动就不是长按了 */
         play("drag");
         if (Math.random() < 0.5) say(LINES.grab);
       }
@@ -184,6 +196,8 @@
       if (!pressed) return;
       pressed = null;
       box.classList.remove("grabbing");
+      clearTimeout(lpT1); clearTimeout(lpT2);
+      if (lpFired) return;                        /* 长按下班已处理 */
       if (!dragging) {
         clickAction();
         return;
@@ -209,9 +223,6 @@
   }
 
   function clickAction() {
-    var now = performance.now();
-    if (now - lastClick < 500) { bye(); return; }   /* 双击（按系统双击时限）：下班 */
-    lastClick = now;
     clickFlip ^= 1;
     play(dead[clickFlip ? "happy" : "angry"] ? "idle" : clickFlip ? "happy" : "angry");
     say(LINES.click);
@@ -227,6 +238,7 @@
 
   function teardown() {
     clearTimeout(theaterT); clearTimeout(sleepT); clearTimeout(wakeT); clearTimeout(bubbleT);
+    clearTimeout(lpT1); clearTimeout(lpT2);
     cancelAnimationFrame(rafId);
     if (box) box.remove();
   }
@@ -235,15 +247,15 @@
   function injectStyle() {
     var s = document.createElement("style");
     s.textContent =
-      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(128px,17vw,256px);height:clamp(128px,17vw,256px);z-index:1450;" +
+      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(150px,20vw,300px);height:clamp(150px,20vw,300px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
       "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38));transition:opacity .8s,transform .8s}" +
       "#webPet.grabbing{cursor:grabbing}" +
       "#webPet.leaving{opacity:0;transform:translateY(26px) rotate(8deg)}" +
       "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}" +
       "#webPet .wp-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);" +
-      "max-width:200px;padding:6px 11px;border-radius:12px;font-size:clamp(12px,1.1vw,14px);line-height:1.5;text-align:center;" +
-      "white-space:nowrap;background:rgba(8,14,12,.92);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
+      "width:max-content;max-width:min(280px,64vw);padding:7px 12px;border-radius:13px;font-size:clamp(13px,1.15vw,15px);line-height:1.55;text-align:center;" +
+      "background:rgba(8,14,12,.92);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
       "backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}" +
       "#webPet .wp-bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}" +
       "#webPet .wp-bubble.under{bottom:auto;top:calc(100% + 10px)}" +
@@ -257,7 +269,7 @@
 
     box = document.createElement("div");
     box.id = "webPet";
-    box.title = "鲸鲸 · 可以拖我甩我 · 双击让我下班（刷新回来）· 素材来自 dsh-pet（MIT）";
+    box.title = "鲸鲸 · 可以拖我甩我 · 长按一会儿让我下班（刷新回来）· 素材来自 dsh-pet（MIT）";
     box.setAttribute("aria-hidden", "true");
     bub = document.createElement("div");
     bub.className = "wp-bubble";
@@ -280,7 +292,7 @@
       play("idle");
     });
 
-    SIZE = box.offsetWidth || 112;
+    SIZE = box.offsetWidth || 150;
     x = box.offsetLeft;   /* 尊重媒体查询的手机内边距 */
     y = floorY();         /* 站上地板（公告横幅在场时自动抬升） */
     place();
