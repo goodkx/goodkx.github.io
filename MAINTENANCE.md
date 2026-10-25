@@ -32,6 +32,7 @@
 | search.js / search.css | 全站搜索（Ctrl+K） |
 | leaderboard.js | 游戏排行榜共享模块（textdb 读写） |
 | script.js | 仅首页交互（打字机等） |
+| pet.js + pet/ | 🐋 网页宠物鲸鲸（13 个内容页挂载，游戏页/admin/live 不挂；状态机+拖拽物理+气泡；**素材源自 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，MIT 协议，署名不可删**——见 pet.js 头注与 title 提示） |
 | sw.js / manifest.json / offline.html / icons/ | PWA 三件套 |
 | feed.xml / sitemap.xml / robots.txt | SEO / RSS |
 | functions/api/messages.js | EdgeOne Pages Function（留言板备用 API，EdgeOne 部署才生效） |
@@ -187,5 +188,6 @@ fetch 也断时 `gh api repos/.../tarball/main > repo.tgz` 解包覆盖本地文
 2. **验收必须真实点击**——evaluate 的 JS click 会绕过可见性检查（tetris 开始按钮教训）
 3. **375px 零横向溢出是红线**——新元素的出血装饰必查（极光晕教训）
 4. **静态列表 + 数据层要双注册**（blog 教训）
-5. **改 css/js 必 bump 版本 + 跑 `node check.js`**
+5. **改 css/js 必 bump 版本 + 跑 `node check.js`**（pet.js 样式自注入，改它无需 bump css）
 6. **贪吃蛇是用户主动下架的**，别擅自恢复
+7. **pet/ 素材与 pet.js 头部 MIT 署名不可删**（dsh-pet 协议要求；换素材须同样开源可商用）
