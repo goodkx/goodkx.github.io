@@ -44,7 +44,7 @@
   var urls = {}, dead = {};          /* 已就绪 blob URL / 已损坏的素材 */
   var pressed = null, dragging = false, samples = [];
   var rafId = 0, theaterT = 0, sleepT = 0, wakeT = 0, bubbleT = 0, clickFlip = 0, lastClick = 0;
-  var SIZE = 112;
+  var SIZE = 112, lastFloor = 0;
 
   /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存） ── */
   function fetchAsset(name) {
@@ -111,7 +111,7 @@
       last = now;
       vy += 2200 * dt;
       x += vx * dt; y += vy * dt;
-      var maxX = innerWidth - SIZE, maxY = innerHeight - SIZE;
+      var maxX = innerWidth - SIZE, maxY = floorY();
       if (x < 0) { x = 0; vx = -vx * 0.55; }
       if (x > maxX) { x = maxX; vx = -vx * 0.55; }
       if (y > maxY) {
@@ -133,9 +133,19 @@
     rafId = requestAnimationFrame(step);
   }
 
+  /* ── 地板：贴底 12/18px 内边距；公告横幅在时以横幅顶为地板（落上去弹跳，不遮挡公告） ── */
+  function floorY() {
+    var inset = innerWidth <= 640 ? 12 : 18;
+    var bar = document.getElementById("noticeBar");
+    var reserve = bar ? bar.offsetHeight + 6 : 0;
+    return Math.max(0, innerHeight - SIZE - Math.max(inset, reserve));
+  }
+
   function place() {
+    var f = floorY();
     x = clamp(x, 0, Math.max(0, innerWidth - SIZE));
-    y = clamp(y, 0, Math.max(0, innerHeight - SIZE));
+    y = clamp(y, 0, f);
+    lastFloor = f;
     box.style.left = x + "px";
     box.style.top = y + "px";
   }
@@ -145,7 +155,7 @@
     box.addEventListener("pointerdown", function (e) {
       if (e.button > 0) return;
       e.preventDefault();
-      box.setPointerCapture(e.pointerId);
+      try { box.setPointerCapture(e.pointerId); } catch (err) {} /* 个别环境对非活动指针会抛错 */
       cancelAnimationFrame(rafId);
       vid.style.transform = "";
       pressed = { t: performance.now(), x: e.clientX, y: e.clientY };
@@ -172,11 +182,10 @@
     });
     function release(e) {
       if (!pressed) return;
-      var dt = performance.now() - pressed.t;
       pressed = null;
       box.classList.remove("grabbing");
       if (!dragging) {
-        if (dt < 400) clickAction();
+        clickAction();
         return;
       }
       /* 由最近 ~100ms 采样估算出手速度 */
@@ -226,19 +235,19 @@
   function injectStyle() {
     var s = document.createElement("style");
     s.textContent =
-      "#webPet{position:fixed;left:18px;bottom:18px;width:112px;height:112px;z-index:880;" +
+      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(128px,17vw,256px);height:clamp(128px,17vw,256px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
       "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38));transition:opacity .8s,transform .8s}" +
       "#webPet.grabbing{cursor:grabbing}" +
       "#webPet.leaving{opacity:0;transform:translateY(26px) rotate(8deg)}" +
       "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}" +
       "#webPet .wp-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);" +
-      "max-width:190px;padding:6px 11px;border-radius:12px;font-size:12px;line-height:1.5;text-align:center;" +
+      "max-width:200px;padding:6px 11px;border-radius:12px;font-size:clamp(12px,1.1vw,14px);line-height:1.5;text-align:center;" +
       "white-space:nowrap;background:rgba(8,14,12,.92);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
       "backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}" +
       "#webPet .wp-bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}" +
       "#webPet .wp-bubble.under{bottom:auto;top:calc(100% + 10px)}" +
-      "@media(max-width:640px){#webPet{width:78px;height:78px;left:12px;bottom:12px}}" +
+      "@media(max-width:640px){#webPet{left:12px;bottom:12px}}" +
       "@media print{#webPet{display:none}}";
     document.head.appendChild(s);
   }
@@ -272,7 +281,8 @@
     });
 
     SIZE = box.offsetWidth || 112;
-    y = innerHeight - SIZE - 18;
+    x = box.offsetLeft;   /* 尊重媒体查询的手机内边距 */
+    y = floorY();         /* 站上地板（公告横幅在场时自动抬升） */
     place();
     bindPointer();
     armSleep();
@@ -292,8 +302,12 @@
       }, 3200);
     });
 
-    /* 用户在页面里有动静就别睡死；离开标签页时暂停一切 */
-    document.addEventListener("pointerdown", function () { clearTimeout(sleepT); armSleep(); }, { passive: true });
+    /* 用户在页面里有动静就别睡死（顺带救活被后台策略暂停的视频）；离开标签页时暂停一切 */
+    document.addEventListener("pointerdown", function () {
+      if (vid && vid.paused && vid.src) vid.play().catch(function () {});
+      clearTimeout(sleepT);
+      armSleep();
+    }, { passive: true });
     document.addEventListener("keydown", function () { clearTimeout(sleepT); armSleep(); }, { passive: true });
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) {
@@ -304,7 +318,21 @@
         if (cur === "idle") armTheater();
       }
     });
-    addEventListener("resize", place);
+    /* 尺寸随视口流式变化（clamp）：ResizeObserver 盯自身尺寸 + resize 事件双保险，
+       窗口一变就重读尺寸并收回视口内（部分内嵌视图改视口不派发 resize 事件） */
+    function refit() {
+      var wasOnFloor = !pressed && Math.abs(y - lastFloor) < 2;
+      SIZE = box.offsetWidth || SIZE;
+      var newFloor = floorY();
+      if (wasOnFloor || y > newFloor) y = newFloor;
+      place();
+    }
+    if (window.ResizeObserver) new ResizeObserver(refit).observe(box);
+    addEventListener("resize", refit);
+    /* 公告横幅出现/消失（body 直接子节点增删）→ 重新落到新地板上 */
+    if (window.MutationObserver) {
+      new MutationObserver(function () { refit(); }).observe(document.body, { childList: true });
+    }
 
     try { console.info("🐋 鲸鲸 · 形象与动画素材来自 PC2005-cloud/dsh-pet（MIT License）"); } catch (e) {}
   }
