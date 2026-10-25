@@ -30,7 +30,7 @@
     fly: ["我飞～～～", "鲸生第一次飞行，值了", "别接！让我再飞一会儿"],
     sleep: ["Zzz…（梦见自己变成一朵云）"],
     wake: ["唔……到饭点了吗？", "谁！谁在摸我！"],
-    hold: ["唔……你是想让我下班吗？", "再按一会儿，我就真的走了"],
+    hold: ["节目单加载中……", "想看点什么？马上开——"],
     bye: ["好嘞，打卡下班，明天见～"],
     code: ["这行代码我也看不懂，但大受震撼", "别催了，在写了在写了"],
     tanghulu: ["冰糖葫芦，酸掉牙但快乐", "甜的酸的，都是生活"],
@@ -46,7 +46,8 @@
   var pressed = null, dragging = false, samples = [];
   var rafId = 0, theaterT = 0, sleepT = 0, wakeT = 0, bubbleT = 0, clickFlip = 0;
   var lpT1 = 0, lpT2 = 0, lpFired = false;
-  var SIZE = 150, lastFloor = 0;
+  var menu = null;
+  var SIZE = 190, lastFloor = 0;
 
   /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存） ── */
   function fetchAsset(name) {
@@ -171,9 +172,10 @@
       samples = [{ t: pressed.t, x: e.clientX, y: e.clientY }];
       box.classList.add("grabbing");
       clearTimeout(sleepT); clearTimeout(wakeT);
+      if (menu) closeMenu();
       clearTimeout(lpT1); clearTimeout(lpT2); lpFired = false;
       lpT1 = setTimeout(function () { if (!dragging && pressed) say(LINES.hold); }, 450);
-      lpT2 = setTimeout(function () { if (!dragging && pressed) { lpFired = true; bye(); } }, 950);
+      lpT2 = setTimeout(function () { if (!dragging && pressed) { lpFired = true; openMenu(); } }, 950);
       if (cur === "sleep") { play("idle"); say(LINES.wake); }
       armSleep();
     });
@@ -220,6 +222,11 @@
     }
     box.addEventListener("pointerup", release);
     box.addEventListener("pointercancel", release);
+    /* 右键 / 安卓长按呼出系统菜单 → 拦下，开点播台 */
+    box.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+      openMenu();
+    });
   }
 
   function clickAction() {
@@ -227,6 +234,79 @@
     play(dead[clickFlip ? "happy" : "angry"] ? "idle" : clickFlip ? "happy" : "angry");
     say(LINES.click);
     armTheater();
+  }
+
+  /* ── 🎬 点播台：长按 / 右键呼出，点播任意已收录动作 ── */
+  function closeMenu() {
+    if (menu) { menu.remove(); menu = null; }
+  }
+  function openMenu() {
+    if (menu) { closeMenu(); return; }
+    clearTimeout(lpT1); clearTimeout(lpT2);
+    menu = document.createElement("div");
+    menu.className = "wp-menu" + (y < 300 ? " under" : "");
+    var h = document.createElement("h5");
+    h.textContent = "🐋 鲸鲸点播台";
+    menu.appendChild(h);
+    var acts = [
+      ["code", "⌨️ 写代码"], ["tanghulu", "🍡 吃糖葫芦"],
+      ["sigh", "😰 叹口气"], ["happy", "👋 开心挥手"],
+      ["angry", "😤 傲娇生气"], ["sleep", "💤 睡一会儿"]
+    ];
+    acts.forEach(function (a) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = a[1];
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        closeMenu();
+        clearTimeout(wakeT);
+        if (a[0] === "sleep") {
+          play("sleep");
+          wakeT = setTimeout(function () { if (cur === "sleep") play("idle"); }, 50000);
+        } else {
+          play(a[0]);
+          armTheater();
+        }
+        say(LINES[a[0]]);
+      });
+      menu.appendChild(b);
+    });
+    var home = document.createElement("button");
+    home.type = "button";
+    home.textContent = "🏠 回原位";
+    home.addEventListener("click", function (e) {
+      e.stopPropagation();
+      closeMenu();
+      goHome();
+    });
+    menu.appendChild(home);
+    var off = document.createElement("button");
+    off.type = "button";
+    off.textContent = "🚪 打卡下班";
+    off.addEventListener("click", function (e) {
+      e.stopPropagation();
+      closeMenu();
+      bye();
+    });
+    menu.appendChild(off);
+    /* 菜单内部按压不落到宠物（不触发拖拽） */
+    menu.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+    box.appendChild(menu);
+    /* 伸出屏幕左右时收回视口内（与气泡同法） */
+    var mr = menu.getBoundingClientRect();
+    var dx = 0;
+    if (mr.left < 8) dx = 8 - mr.left;
+    if (mr.right > innerWidth - 8) dx -= mr.right - (innerWidth - 8);
+    if (dx) menu.style.marginLeft = dx.toFixed(0) + "px";
+  }
+  function goHome() {
+    box.classList.add("homing");
+    x = innerWidth <= 640 ? 12 : 18;
+    y = floorY();
+    place();
+    setTimeout(function () { box.classList.remove("homing"); }, 620);
+    say(["到家！"]);
   }
 
   function bye() {
@@ -239,6 +319,7 @@
   function teardown() {
     clearTimeout(theaterT); clearTimeout(sleepT); clearTimeout(wakeT); clearTimeout(bubbleT);
     clearTimeout(lpT1); clearTimeout(lpT2);
+    closeMenu();
     cancelAnimationFrame(rafId);
     if (box) box.remove();
   }
@@ -247,10 +328,12 @@
   function injectStyle() {
     var s = document.createElement("style");
     s.textContent =
-      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(170px,24vw,360px);height:clamp(170px,24vw,360px);z-index:1450;" +
+      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(190px,28vw,430px);height:clamp(190px,28vw,430px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
+      "-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;outline:none;" +
       "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38));transition:opacity .8s,transform .8s}" +
       "#webPet.grabbing{cursor:grabbing}" +
+      "#webPet.homing{transition:opacity .8s,transform .8s,left .55s cubic-bezier(.22,1,.36,1),top .55s cubic-bezier(.22,1,.36,1)}" +
       "#webPet.leaving{opacity:0;transform:translateY(26px) rotate(8deg)}" +
       "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}" +
       "#webPet .wp-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);" +
@@ -259,6 +342,18 @@
       "backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}" +
       "#webPet .wp-bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}" +
       "#webPet .wp-bubble.under{bottom:auto;top:calc(100% + 10px)}" +
+      "#webPet .wp-menu{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);" +
+      "width:max-content;max-width:min(320px,88vw);padding:10px 12px;border-radius:14px;" +
+      "background:rgba(8,14,12,.94);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
+      "backdrop-filter:blur(8px);display:grid;grid-template-columns:repeat(2,1fr);gap:6px;" +
+      "animation:wpMenuIn .18s ease-out;z-index:6}" +
+      "#webPet .wp-menu.under{bottom:auto;top:calc(100% + 12px)}" +
+      "#webPet .wp-menu h5{grid-column:1/-1;margin:0 0 3px;font-size:12px;color:var(--accent,#00e5a0);font-weight:600;letter-spacing:.5px}" +
+      "#webPet .wp-menu button{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);" +
+      "color:#eafff6;border-radius:9px;padding:7px 10px;font-size:13px;cursor:pointer;white-space:nowrap;" +
+      "-webkit-tap-highlight-color:transparent;font-family:inherit}" +
+      "#webPet .wp-menu button:hover{background:rgba(255,255,255,.14);border-color:var(--accent,#00e5a0)}" +
+      "@keyframes wpMenuIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}" +
       "@media(max-width:640px){#webPet{left:12px;bottom:12px}}" +
       "@media print{#webPet{display:none}}";
     document.head.appendChild(s);
@@ -269,7 +364,7 @@
 
     box = document.createElement("div");
     box.id = "webPet";
-    box.title = "鲸鲸 · 可以拖我甩我 · 长按一会儿让我下班（刷新回来）· 素材来自 dsh-pet（MIT）";
+    box.title = "鲸鲸 · 点击互动 / 拖拽甩飞 · 长按或右键开点播台 · 素材来自 dsh-pet（MIT）";
     box.setAttribute("aria-hidden", "true");
     bub = document.createElement("div");
     bub.className = "wp-bubble";
@@ -292,7 +387,7 @@
       play("idle");
     });
 
-    SIZE = box.offsetWidth || 170;
+    SIZE = box.offsetWidth || 190;
     x = box.offsetLeft;   /* 尊重媒体查询的手机内边距 */
     y = floorY();         /* 站上地板（公告横幅在场时自动抬升） */
     place();
@@ -314,8 +409,9 @@
       }, 3200);
     });
 
-    /* 用户在页面里有动静就别睡死（顺带救活被后台策略暂停的视频）；离开标签页时暂停一切 */
-    document.addEventListener("pointerdown", function () {
+    /* 用户在页面里有动静就别睡死（顺带救活被后台策略暂停的视频）；点宠物外任意处收起点播台 */
+    document.addEventListener("pointerdown", function (e) {
+      if (menu && !box.contains(e.target)) closeMenu();
       if (vid && vid.paused && vid.src) vid.play().catch(function () {});
       clearTimeout(sleepT);
       armSleep();

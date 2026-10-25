@@ -32,7 +32,7 @@
 | search.js / search.css | 全站搜索（Ctrl+K） |
 | leaderboard.js | 游戏排行榜共享模块（textdb 读写） |
 | script.js | 仅首页交互（打字机等） |
-| pet.js + pet/ | 🐋 网页宠物鲸鲸（13 个内容页挂载，游戏页/admin/live 不挂；状态机+拖拽物理+气泡；**素材源自 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，MIT 协议，署名不可删**——见 pet.js 头注与 title 提示） |
+| pet.js + pet/ | 🐋 网页宠物鲸鲸（13 个内容页挂载，游戏页/admin/live 不挂；状态机+拖拽物理+气泡+点播台（长按/右键）；**素材源自 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，MIT 协议，署名不可删**——见 pet.js 头注与 title 提示） |
 | sw.js / manifest.json / offline.html / icons/ | PWA 三件套 |
 | feed.xml / sitemap.xml / robots.txt | SEO / RSS |
 | functions/api/messages.js | EdgeOne Pages Function（留言板备用 API，EdgeOne 部署才生效） |
