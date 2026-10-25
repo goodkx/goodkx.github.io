@@ -336,6 +336,8 @@
       "#webPet.homing{transition:opacity .8s,transform .8s,left .55s cubic-bezier(.22,1,.36,1),top .55s cubic-bezier(.22,1,.36,1)}" +
       "#webPet.leaving{opacity:0;transform:translateY(26px) rotate(8deg)}" +
       "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}" +
+      "#webPet video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none}" +
+      "#webPet video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}" +
       "#webPet .wp-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);" +
       "width:max-content;max-width:min(280px,64vw);padding:7px 12px;border-radius:13px;font-size:clamp(13px,1.15vw,15px);line-height:1.55;text-align:center;" +
       "background:rgba(8,14,12,.92);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
@@ -373,6 +375,9 @@
     vid.autoplay = true;
     vid.setAttribute("playsinline", "");
     vid.setAttribute("disablepictureinpicture", "");
+    vid.controls = false;
+    vid.setAttribute("controlslist", "noplaybackrate nodownload nomute");
+    vid.poster = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; /* 1px 透明：防 WebView 画默认占位播放键 */
     vid.setAttribute("aria-hidden", "true");
     box.appendChild(bub);
     box.appendChild(vid);
