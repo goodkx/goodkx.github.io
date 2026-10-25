@@ -830,6 +830,64 @@
       .proj-num { font-size: 1.4rem; min-width: 38px; }
     }
 
+    /* ─────────── 🛸 科幻 HUD 层（战术界面：角框/读数/扫描/故障字） ─────────── */
+    .hud-c { position: absolute; width: 30px; height: 30px; z-index: 2; pointer-events: none; opacity: .8; }
+    .hud-c::before, .hud-c::after { content: ""; position: absolute; background: var(--accent); }
+    .hud-c::before { width: 100%; height: 1.5px; }
+    .hud-c::after { width: 1.5px; height: 100%; }
+    .hud-c.tl { top: 82px; left: calc((100% - min(1120px, 92%)) / 2); }
+    .hud-c.tr { top: 82px; right: calc((100% - min(1120px, 92%)) / 2); }
+    .hud-c.tl::before, .hud-c.tl::after { top: 0; left: 0; }
+    .hud-c.tr::before { top: 0; right: 0; } .hud-c.tr::after { top: 0; right: 0; }
+    .hud-c.bl { bottom: 14px; left: calc((100% - min(1120px, 92%)) / 2); }
+    .hud-c.br { bottom: 14px; right: calc((100% - min(1120px, 92%)) / 2); }
+    .hud-c.bl::before { bottom: 0; left: 0; } .hud-c.bl::after { bottom: 0; left: 0; }
+    .hud-c.br::before, .hud-c.br::after { bottom: 0; right: 0; }
+    .hud-ro {
+      position: absolute; z-index: 2; pointer-events: none;
+      font-family: var(--mono); font-size: .64rem; letter-spacing: .14em;
+      color: var(--muted); white-space: nowrap;
+    }
+    .hud-ro b { color: var(--accent); font-weight: 600; }
+    .hud-ro .blip { animation: hudBlip 1.1s steps(1) infinite; }
+    @keyframes hudBlip { 50% { opacity: 0; } }
+    .hud-ro-sys { top: 92px; right: calc((100% - min(1120px, 92%)) / 2 + 42px); }
+    .hud-ro-xy { bottom: 22px; left: calc((100% - min(1120px, 92%)) / 2 + 42px); }
+    .hud-ro-ver { top: 92px; left: calc((100% - min(1120px, 92%)) / 2 + 42px); }
+    .hud-scan {
+      position: absolute; left: 0; right: 0; height: 2px; z-index: 2;
+      background: linear-gradient(90deg, transparent 5%, var(--accent) 50%, transparent 95%);
+      opacity: 0; pointer-events: none;
+      animation: hudScan 9s linear infinite;
+      box-shadow: 0 0 14px var(--acc-glow);
+    }
+    @keyframes hudScan {
+      0%, 70% { top: 12%; opacity: 0; }
+      72% { opacity: .45; }
+      96% { top: 96%; opacity: .3; }
+      100% { top: 96%; opacity: 0; }
+    }
+    /* 标题故障艺术（悬停触发，克制版） */
+    .hero-title .grad-text { transition: text-shadow .2s; }
+    .hero-title:hover .grad-text {
+      animation: hudGlitch .32s steps(2) 1;
+    }
+    @keyframes hudGlitch {
+      25% { text-shadow: 2px 0 rgba(255, 45, 120, .55), -2px 0 rgba(56, 189, 248, .55); transform: translateX(1.5px); }
+      75% { text-shadow: -2px 0 rgba(56, 189, 248, .55), 2px 0 rgba(255, 45, 120, .4); transform: translateX(-1.5px); }
+    }
+    @media (max-width: 640px) {
+      .hud-c { width: 18px; height: 18px; }
+      .hud-ro-ver, .hud-ro-xy { display: none; }
+      .hud-ro-sys { font-size: .58rem; right: auto; left: 14px; top: 74px; }
+      .hud-c.tl, .hud-c.bl { left: 10px; }
+      .hud-c.tr, .hud-c.br { right: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hud-scan { display: none; }
+      .hud-ro .blip { animation: none; }
+    }
+
     /* ─────────── 06 更新日志：3D 滚筒（纯文字 + 强透视，JS 驱动） ─────────── */
     .drum-wrap {
       --item-h: 84px;
@@ -1774,5 +1832,43 @@
     })();
   </script>
 
-</body>
+
+  <script>
+    /* ══════════ 🛸 科幻 HUD 层（角框 / 系统读数 / 实时坐标 / 扫描光束） ══════════ */
+    (function () {
+      var hero = document.getElementById("hero");
+      if (!hero || hero.dataset.hud) return;
+      hero.dataset.hud = "1";
+      ["tl", "tr", "bl", "br"].forEach(function (k) {
+        var c = document.createElement("span");
+        c.className = "hud-c " + k;
+        c.setAttribute("aria-hidden", "true");
+        hero.appendChild(c);
+      });
+      var scan = document.createElement("span");
+      scan.className = "hud-scan";
+      scan.setAttribute("aria-hidden", "true");
+      hero.appendChild(scan);
+      var sys = document.createElement("div");
+      sys.className = "hud-ro hud-ro-sys";
+      sys.innerHTML = "<b>SYS // ONLINE</b> <span class=blip>▮</span> SIGNAL 100%";
+      var ver = document.createElement("div");
+      ver.className = "hud-ro hud-ro-ver";
+      ver.innerHTML = "CCCAD-OS · BUILD <b>134</b> · DEEPSPACE";
+      var xy = document.createElement("div");
+      xy.className = "hud-ro hud-ro-xy";
+      xy.innerHTML = "CUR <b id=hudX>0000</b> : <b id=hudY>0000</b>";
+      hero.appendChild(sys); hero.appendChild(ver); hero.appendChild(xy);
+      var hx = null, hy = null;
+      addEventListener("pointermove", function (e) {
+        hx = e.clientX; hy = e.clientY;
+      }, { passive: true });
+      setInterval(function () {
+        if (hx === null) return;
+        var ex = document.getElementById("hudX"), ey = document.getElementById("hudY");
+        if (ex) ex.textContent = String(Math.max(0, Math.round(hx))).padStart(4, "0");
+        if (ey) ey.textContent = String(Math.max(0, Math.round(window.innerHeight - hy))).padStart(4, "0");
+      }, 120);
+    })();
+  </script></body>
 </html>
