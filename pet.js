@@ -247,7 +247,7 @@
   function injectStyle() {
     var s = document.createElement("style");
     s.textContent =
-      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(150px,20vw,300px);height:clamp(150px,20vw,300px);z-index:1450;" +
+      "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(170px,24vw,360px);height:clamp(170px,24vw,360px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
       "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38));transition:opacity .8s,transform .8s}" +
       "#webPet.grabbing{cursor:grabbing}" +
@@ -292,7 +292,7 @@
       play("idle");
     });
 
-    SIZE = box.offsetWidth || 150;
+    SIZE = box.offsetWidth || 170;
     x = box.offsetLeft;   /* 尊重媒体查询的手机内边距 */
     y = floorY();         /* 站上地板（公告横幅在场时自动抬升） */
     place();
