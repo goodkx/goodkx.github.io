@@ -65,7 +65,6 @@
   </header>
 
   <main>
-    <canvas id="nebula" aria-hidden="true"></canvas>
     <!-- ══════════ 首屏 Hero ══════════ -->
     <section id="hero" class="hero">
       <div class="container hero-inner">
@@ -830,19 +829,6 @@
       .proj-row { gap: 14px; padding: 20px 6px; }
       .proj-num { font-size: 1.4rem; min-width: 38px; }
     }
-    /* ─────────── 🌌 WebGL 星云背景 ─────────── */
-    #nebula {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1.6s ease;
-    }
-    #nebula.on { opacity: 1; }
-    @media (prefers-reduced-motion: reduce) { #nebula { opacity: .55; } }
 
     /* ─────────── 06 更新日志：3D 滚筒（纯文字 + 强透视，JS 驱动） ─────────── */
     .drum-wrap {
@@ -1788,151 +1774,5 @@
     })();
   </script>
 
-  <script>
-    /* ══════════ 🌌 WebGL 星云背景（GLSL fbm 实时演算 · 随主题变色 · 鼠标视差 · 离屏暂停） ══════════ */
-    (function () {
-      var cv = document.getElementById("nebula");
-      if (!cv) return;
-      var calm = false;
-      try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-      var gl = cv.getContext("webgl", { antialias: false, alpha: false, powerPreference: "low-power" });
-      if (!gl) { cv.remove(); return; }
-
-      var VS = "attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }";
-      var FS = [
-        "precision mediump float;",
-        "uniform vec2 uRes; uniform float uT; uniform vec2 uM;",
-        "uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3;",
-        "float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }",
-        "float noise(vec2 p){",
-        "  vec2 i = floor(p), f = fract(p);",
-        "  vec2 u = f * f * (3.0 - 2.0 * f);",
-        "  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),",
-        "             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);",
-        "}",
-        "float fbm(vec2 p){",
-        "  float v = 0.0, a = 0.5;",
-        "  mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);",
-        "  for (int i = 0; i < 5; i++) { v += a * noise(p); p = rot * p * 2.03; a *= 0.5; }",
-        "  return v;",
-        "}",
-        "void main(){",
-        "  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;",
-        "  vec2 p = uv * 1.7 + uM * 0.22;",
-        "  float t = uT * 0.028;",
-        "  float q = fbm(p + vec2(t, -t * 0.6));",
-        "  float r = fbm(p + 2.2 * vec2(q) + vec2(-t * 0.7, t * 0.4));",
-        "  float f = fbm(p + 3.0 * vec2(r));",
-        "  vec3 col = mix(uC1 * 0.30, uC2 * 0.85, clamp(q * 1.5, 0.0, 1.0));",
-        "  col = mix(col, uC3, clamp(r * r * 2.4, 0.0, 1.0));",
-        "  col *= 0.30 + 0.70 * f;",
-        "  float fade = smoothstep(-1.25, 0.85, uv.y);",
-        "  col *= fade * 0.52;",
-        "  col *= 1.0 - 0.50 * dot(uv, uv);",
-        "  gl_FragColor = vec4(col, 1.0);",
-        "}"
-      ].join("\n");
-
-      function sh(type, src) {
-        var s = gl.createShader(type);
-        gl.shaderSource(s, src);
-        gl.compileShader(s);
-        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s);
-        return s;
-      }
-      var prog;
-      try {
-        prog = gl.createProgram();
-        gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
-        gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
-        gl.linkProgram(prog);
-        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw "link fail";
-      } catch (e) { cv.remove(); return; }
-      gl.useProgram(prog);
-
-      var buf = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      var loc = gl.getAttribLocation(prog, "p");
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-      var U = {
-        res: gl.getUniformLocation(prog, "uRes"),
-        t: gl.getUniformLocation(prog, "uT"),
-        m: gl.getUniformLocation(prog, "uM"),
-        c1: gl.getUniformLocation(prog, "uC1"),
-        c2: gl.getUniformLocation(prog, "uC2"),
-        c3: gl.getUniformLocation(prog, "uC3"),
-      };
-
-      function hexToRgb(v) {
-        v = (v || "").trim();
-        if (v.indexOf("#") !== 0) return [0, 0.9, 0.6];
-        var n = parseInt(v.slice(1), 16);
-        if (isNaN(n)) return [0, 0.9, 0.6];
-        return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
-      }
-      var colors = [0, 0.9, 0.6, 0, 0.7, 1.0, 0.6, 0.4, 0.9];
-      function readColors() {
-        var cs = getComputedStyle(document.documentElement);
-        colors = [].concat(
-          hexToRgb(cs.getPropertyValue("--accent")),
-          hexToRgb(cs.getPropertyValue("--accent-2")),
-          hexToRgb(cs.getPropertyValue("--chip-c"))
-        );
-      }
-      readColors();
-      /* 主题切换时重读颜色 */
-      if (window.MutationObserver) {
-        new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-      }
-
-      var scale = Math.min(window.devicePixelRatio || 1, 1.5) * (innerWidth < 700 ? 0.55 : 0.72);
-      function resize() {
-        var w = Math.max(2, Math.round(innerWidth * scale));
-        var hgt = Math.max(2, Math.round(innerHeight * scale));
-        if (cv.width !== w || cv.height !== hgt) {
-          cv.width = w; cv.height = hgt;
-          gl.viewport(0, 0, w, hgt);
-        }
-      }
-
-      var mx = 0, my = 0, tx = 0, ty = 0;
-      addEventListener("pointermove", function (e) {
-        tx = (e.clientX / innerWidth - 0.5) * 2;
-        ty = (0.5 - e.clientY / innerHeight) * 2;
-      }, { passive: true });
-
-      var t0 = performance.now();
-      var running = true;
-      document.addEventListener("visibilitychange", function () { running = !document.hidden; if (running) raf(); });
-      /* 滚出首屏两屏远即暂停（省电） */
-      var heroNear = true;
-      addEventListener("scroll", function () {
-        var near = scrollY < innerHeight * 2.2;
-        if (near !== heroNear) { heroNear = near; if (near && running && !calm) raf(); }
-      }, { passive: true });
-
-      var drewOnce = false;
-      function frame() {
-        if (!running || (calm && drewOnce)) return;
-        if (!heroNear && !calm) return;
-        resize();
-        mx += (tx - mx) * 0.04;
-        my += (ty - my) * 0.04;
-        gl.uniform2f(U.res, cv.width, cv.height);
-        gl.uniform1f(U.t, calm ? 40.0 : (performance.now() - t0) / 1000);
-        gl.uniform2f(U.m, mx, my);
-        gl.uniform3f(U.c1, colors[0], colors[1], colors[2]);
-        gl.uniform3f(U.c2, colors[3], colors[4], colors[5]);
-        gl.uniform3f(U.c3, colors[6] * 0.5, colors[7] * 0.45, colors[8] * 0.6);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        if (!drewOnce) { drewOnce = true; cv.classList.add("on"); }
-        if (!calm) setTimeout(frame, 33);
-      }
-      function raf() { setTimeout(frame, 0); }
-      raf();
-    })();
-  </script></body>
+</body>
 </html>
