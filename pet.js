@@ -1,7 +1,8 @@
 /* ═══════ 🐋 网页宠物 · 鲸鲸 ═══════
    鲸鲸形象与动画素材来自开源项目 dsh-pet（PC2005-cloud，MIT License），
-   精选 8 段 VP9 透明 webm（共约 3.1MB），存放在 /pet/ 目录。
-   行为：待机呼吸 → 随机小剧场 → 点击互动 / 拖拽甩飞反弹 / 久置入睡 / 长按下班。
+   精选 9 段 VP9 透明 webm（共约 3.7MB），存放在 /pet/ 目录。
+   行为：待机呼吸 → 随机小剧场 → 点击互动 / 拖拽甩飞反弹 / 久置入睡；双击/右键呼出「点播台」
+   任意点播动作（含舞狮头/回原位/下班）；下班后左下角留召唤铃，一键召回。
    样式自注入（不依赖站内 CSS）；prefers-reduced-motion / 流量敏感场景自动退场。 */
 
 (function () {
@@ -17,7 +18,7 @@
     idle: "idle.webm",      drag: "drag.webm",
     happy: "click-happy.webm", angry: "click-angry.webm",
     sleep: "sleep.webm",    code: "code.webm",
-    tanghulu: "tanghulu.webm", sigh: "sigh.webm"
+    tanghulu: "tanghulu.webm", sigh: "sigh.webm", liondance: "liondance.webm"
   };
   var LOOPS = { idle: 1, drag: 1, sleep: 1 };
   var THEATER = ["code", "tanghulu", "sigh"];   /* 随机小剧场剧目 */
@@ -33,6 +34,7 @@
     bye: ["好嘞，打卡下班，明天见～"],
     code: ["这行代码我也看不懂，但大受震撼", "别催了，在写了在写了"],
     tanghulu: ["冰糖葫芦，酸掉牙但快乐", "甜的酸的，都是生活"],
+    liondance: ["锣鼓一响，好运登场！", "这头狮子采的不是青，是 bug"],
     sigh: ["需求又变了……哦，这儿没甲方", "叹气专用动画，按次计费"]
   };
   function pick(a) { return a[(Math.random() * a.length) | 0]; }
@@ -244,7 +246,7 @@
     h.textContent = "🐋 鲸鲸点播台";
     menu.appendChild(h);
     var acts = [
-      ["code", "⌨️ 写代码"], ["tanghulu", "🍡 吃糖葫芦"],
+      ["liondance", "🦁 舞狮头"], ["code", "⌨️ 写代码"], ["tanghulu", "🍡 吃糖葫芦"],
       ["sigh", "😰 叹口气"], ["happy", "👋 开心挥手"],
       ["angry", "😤 傲娇生气"], ["sleep", "💤 睡一会儿"]
     ];
@@ -308,7 +310,27 @@
     say(LINES.bye);
     try { sessionStorage.setItem("pet-off", "1"); } catch (e) {}
     box.classList.add("leaving");
-    setTimeout(function () { teardown(); }, 900);
+    setTimeout(function () { teardown(); showSummon(); }, 900);
+  }
+
+  /* ── 🐋 召唤铃：下班后左下角留个门铃，一键召回（比刷新页友好） ── */
+  function showSummon() {
+    var old = document.getElementById("petSummon");
+    if (old) old.remove();
+    var b = document.createElement("button");
+    b.id = "petSummon";
+    b.type = "button";
+    b.title = "召唤鲸鲸回来上班";
+    b.setAttribute("aria-label", "召唤鲸鲸回来上班");
+    b.textContent = "🐋";
+    b.addEventListener("click", function () {
+      try { sessionStorage.removeItem("pet-off"); } catch (e) {}
+      b.remove();
+      cur = ""; pressed = null; dragging = false; menu = null; rafId = 0;
+      clearTimeout(theaterT); clearTimeout(sleepT); clearTimeout(wakeT); clearTimeout(bubbleT);
+      init();
+    });
+    document.body.appendChild(b);
   }
 
   function teardown() {
@@ -320,7 +342,9 @@
 
   /* ── 样式自注入（不占用站内 css 版本号） ── */
   function injectStyle() {
+    if (document.getElementById("wpStyle")) return;
     var s = document.createElement("style");
+    s.id = "wpStyle";
     s.textContent =
       "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(225px,30vw,460px);height:clamp(225px,30vw,460px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
@@ -350,12 +374,21 @@
       "-webkit-tap-highlight-color:transparent;font-family:inherit}" +
       "#webPet .wp-menu button:hover{background:rgba(255,255,255,.14);border-color:var(--accent,#00e5a0)}" +
       "@keyframes wpMenuIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}" +
-      "@media(max-width:640px){#webPet{left:12px;bottom:12px}}" +
-      "@media print{#webPet{display:none}}";
+      "#petSummon{position:fixed;left:18px;bottom:18px;z-index:1449;width:48px;height:48px;border-radius:50%;" +
+      "border:1px solid var(--accent,#00e5a0);background:rgba(8,14,12,.88);backdrop-filter:blur(6px);color:#eafff6;" +
+      "font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;" +
+      "-webkit-tap-highlight-color:transparent;animation:wpPulse 2.4s infinite}" +
+      "@keyframes wpPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.4)}50%{box-shadow:0 0 0 12px rgba(0,229,160,0)}}" +
+      "@media(max-width:640px){#webPet{left:12px;bottom:12px}#petSummon{left:12px;bottom:12px;width:44px;height:44px}}" +
+      "@media print{#webPet{display:none}}" +
+      "@media(prefers-reduced-motion:reduce){#petSummon{animation:none}}";
     document.head.appendChild(s);
   }
 
   function init() {
+    var sb = document.getElementById("petSummon");
+    if (sb) sb.remove();
+    cur = ""; pressed = null; dragging = false; menu = null; rafId = 0;
     injectStyle();
 
     box = document.createElement("div");
