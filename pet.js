@@ -30,7 +30,6 @@
     fly: ["我飞～～～", "鲸生第一次飞行，值了", "别接！让我再飞一会儿"],
     sleep: ["Zzz…（梦见自己变成一朵云）"],
     wake: ["唔……到饭点了吗？", "谁！谁在摸我！"],
-    hold: ["节目单加载中……", "想看点什么？马上开——"],
     bye: ["好嘞，打卡下班，明天见～"],
     code: ["这行代码我也看不懂，但大受震撼", "别催了，在写了在写了"],
     tanghulu: ["冰糖葫芦，酸掉牙但快乐", "甜的酸的，都是生活"],
@@ -45,8 +44,7 @@
   var urls = {}, dead = {};          /* 已就绪 blob URL / 已损坏的素材 */
   var pressed = null, dragging = false, samples = [];
   var rafId = 0, theaterT = 0, sleepT = 0, wakeT = 0, bubbleT = 0, clickFlip = 0;
-  var lpT1 = 0, lpT2 = 0, lpFired = false;
-  var menu = null;
+  var menu = null, lastClick = 0;
   var SIZE = 190, lastFloor = 0;
 
   /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存） ── */
@@ -159,7 +157,7 @@
     box.style.top = y + "px";
   }
 
-  /* ── 交互：拖拽 / 点击纯互动（连点不再误触）· 长按 950ms 打卡下班 ── */
+  /* ── 交互：拖拽 / 点击互动 · 双击呼出点播台 ── */
   function bindPointer() {
     box.addEventListener("pointerdown", function (e) {
       if (e.button > 0) return;
@@ -173,9 +171,6 @@
       box.classList.add("grabbing");
       clearTimeout(sleepT); clearTimeout(wakeT);
       if (menu) closeMenu();
-      clearTimeout(lpT1); clearTimeout(lpT2); lpFired = false;
-      lpT1 = setTimeout(function () { if (!dragging && pressed) say(LINES.hold); }, 450);
-      lpT2 = setTimeout(function () { if (!dragging && pressed) { lpFired = true; openMenu(); } }, 950);
       if (cur === "sleep") { play("idle"); say(LINES.wake); }
       armSleep();
     });
@@ -184,7 +179,6 @@
       var dx = e.clientX - pressed.x, dy = e.clientY - pressed.y;
       if (!dragging && Math.hypot(dx, dy) > 7) {
         dragging = true;
-        clearTimeout(lpT1); clearTimeout(lpT2);   /* 一拖动就不是长按了 */
         play("drag");
         if (Math.random() < 0.5) say(LINES.grab);
       }
@@ -198,8 +192,6 @@
       if (!pressed) return;
       pressed = null;
       box.classList.remove("grabbing");
-      clearTimeout(lpT1); clearTimeout(lpT2);
-      if (lpFired) return;                        /* 长按下班已处理 */
       if (!dragging) {
         clickAction();
         return;
@@ -230,6 +222,9 @@
   }
 
   function clickAction() {
+    var now = performance.now();
+    if (now - lastClick < 500) { lastClick = 0; openMenu(); return; }  /* 双击：呼出点播台 */
+    lastClick = now;
     clickFlip ^= 1;
     play(dead[clickFlip ? "happy" : "angry"] ? "idle" : clickFlip ? "happy" : "angry");
     say(LINES.click);
@@ -242,7 +237,7 @@
   }
   function openMenu() {
     if (menu) { closeMenu(); return; }
-    clearTimeout(lpT1); clearTimeout(lpT2);
+    lastClick = 0;
     menu = document.createElement("div");
     menu.className = "wp-menu" + (y < 300 ? " under" : "");
     var h = document.createElement("h5");
@@ -318,7 +313,6 @@
 
   function teardown() {
     clearTimeout(theaterT); clearTimeout(sleepT); clearTimeout(wakeT); clearTimeout(bubbleT);
-    clearTimeout(lpT1); clearTimeout(lpT2);
     closeMenu();
     cancelAnimationFrame(rafId);
     if (box) box.remove();
@@ -366,7 +360,7 @@
 
     box = document.createElement("div");
     box.id = "webPet";
-    box.title = "鲸鲸 · 点击互动 / 拖拽甩飞 · 长按或右键开点播台 · 素材来自 dsh-pet（MIT）";
+    box.title = "鲸鲸 · 点击互动 / 拖拽甩飞 · 双击或右键开点播台 · 素材来自 dsh-pet（MIT）";
     box.setAttribute("aria-hidden", "true");
     bub = document.createElement("div");
     bub.className = "wp-bubble";
