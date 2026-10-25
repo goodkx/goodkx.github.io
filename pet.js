@@ -1,6 +1,6 @@
 /* ═══════ 🐋 网页宠物 · 鲸鲸 ═══════
    鲸鲸形象与动画素材来自开源项目 dsh-pet（PC2005-cloud，MIT License），
-   精选 9 段 VP9 透明 webm（共约 3.7MB），存放在 /pet/ 目录。
+   全库收录：9 段精选常驻 pet/（约 3.7MB），其余 97 段按需加载 pet/all/（约 48MB，见 manifest.json）。
    行为：待机呼吸 → 随机小剧场 → 点击互动 / 拖拽甩飞反弹 / 久置入睡；双击/右键呼出「点播台」
    任意点播动作（含舞狮头/回原位/下班）；下班后左下角留召唤铃，一键召回。
    样式自注入（不依赖站内 CSS）；prefers-reduced-motion / 流量敏感场景自动退场。 */
@@ -49,10 +49,16 @@
   var menu = null, lastClick = 0;
   var SIZE = 190, lastFloor = 0;
 
-  /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存） ── */
+  /* ── 素材加载：blob URL 随取随播（fetch 顺路进 Service Worker 缓存）。
+     常设 9 段在 pet/ 根；全库其余动作在 pet/all/（key=a###，见 manifest.json） ── */
+  var MAN = null, manPromise = null;
+  function loadManifest() {
+    if (!manPromise) manPromise = fetch(DIR + "manifest.json").then(function (r) { return r.json(); }).catch(function () { return null; });
+    return manPromise;
+  }
   function fetchAsset(name) {
     if (urls[name] || dead[name]) return Promise.resolve(urls[name]);
-    return fetch(DIR + ASSETS[name])
+    return fetch(DIR + (ASSETS[name] || "all/" + name + ".webm"))
       .then(function (r) {
         if (!r.ok) throw new Error(r.status);
         return r.blob();
@@ -241,62 +247,142 @@
     if (menu) { closeMenu(); return; }
     lastClick = 0;
     menu = document.createElement("div");
-    menu.className = "wp-menu" + (y < 300 ? " under" : "");
+    menu.className = "wp-menu";
     var h = document.createElement("h5");
     h.textContent = "🐋 鲸鲸点播台";
+    var tabs = document.createElement("div");
+    tabs.className = "wp-tabs";
+    var panel = document.createElement("div");
+    panel.className = "wp-panel";
+    var foot = document.createElement("div");
+    foot.className = "wp-foot";
     menu.appendChild(h);
-    var acts = [
+    menu.appendChild(tabs);
+    menu.appendChild(panel);
+    menu.appendChild(foot);
+
+    function actBtn(label, fn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.addEventListener("click", function (e) { e.stopPropagation(); fn(b); });
+      return b;
+    }
+    function runAct(k) {
+      closeMenu();
+      clearTimeout(wakeT);
+      if (k === "sleep") {
+        play("sleep");
+        wakeT = setTimeout(function () { if (cur === "sleep") play("idle"); }, 50000);
+      } else {
+        play(k);
+        armTheater();
+      }
+      if (LINES[k]) say(LINES[k]);
+    }
+
+    /* ⭐ 常设：精选动作（素材常驻，点了就播） */
+    var CURATED = [
       ["liondance", "🦁 舞狮头"], ["code", "⌨️ 写代码"], ["tanghulu", "🍡 吃糖葫芦"],
       ["sigh", "😰 叹口气"], ["happy", "👋 开心挥手"],
       ["angry", "😤 傲娇生气"], ["sleep", "💤 睡一会儿"]
     ];
-    acts.forEach(function (a) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = a[1];
-      b.addEventListener("click", function (e) {
-        e.stopPropagation();
-        closeMenu();
-        clearTimeout(wakeT);
-        if (a[0] === "sleep") {
-          play("sleep");
-          wakeT = setTimeout(function () { if (cur === "sleep") play("idle"); }, 50000);
-        } else {
-          play(a[0]);
-          armTheater();
-        }
-        say(LINES[a[0]]);
+    function renderCurated() {
+      panel.innerHTML = "";
+      CURATED.forEach(function (a) {
+        panel.appendChild(actBtn(a[1], function () { runAct(a[0]); }));
       });
-      menu.appendChild(b);
+    }
+    /* 全库分类：manifest 驱动，首次点播按需拉取（拉过即缓存） */
+    function renderCat(catId) {
+      panel.innerHTML = "";
+      MAN.acts.filter(function (a) { return a.c === catId; }).forEach(function (a) {
+        panel.appendChild(actBtn(a.n, function (btn) {
+          if (urls[a.k]) { runAct(a.k); return; }
+          var old = btn.textContent;
+          btn.textContent = "⏳ 加载中…";
+          btn.disabled = true;
+          fetchAsset(a.k).then(function (u) {
+            btn.textContent = old;
+            btn.disabled = false;
+            if (u) runAct(a.k);
+            else { closeMenu(); say(["这段素材走丢了……"]); }
+          });
+        }));
+      });
+    }
+    function selectTab(btn, catId) {
+      Array.prototype.forEach.call(tabs.children, function (b) { b.classList.toggle("on", b === btn); });
+      if (catId === null) renderCurated();
+      else if (MAN) renderCat(catId);
+    }
+    var curTab = actBtn("⭐ 常设", function () { selectTab(curTab, null); });
+    curTab.classList.add("on");
+    tabs.appendChild(curTab);
+    renderCurated();
+    /* manifest 懒加载：到手后把全库分类标签补上（97 段全收录） */
+    loadManifest().then(function (m) {
+      if (!m || !menu) return;
+      MAN = m;
+      m.cats.forEach(function (c) {
+        var b = actBtn(c.name, function () { selectTab(b, c.id); });
+        tabs.appendChild(b);
+      });
+      fitMenu(); /* 标签换行会撑高菜单，重新收回视口 */
     });
-    var home = document.createElement("button");
-    home.type = "button";
-    home.textContent = "🏠 回原位";
-    home.addEventListener("click", function (e) {
-      e.stopPropagation();
-      closeMenu();
-      goHome();
-    });
-    menu.appendChild(home);
-    var off = document.createElement("button");
-    off.type = "button";
-    off.textContent = "🚪 打卡下班";
-    off.addEventListener("click", function (e) {
-      e.stopPropagation();
-      closeMenu();
-      bye();
-    });
-    menu.appendChild(off);
+
+    foot.appendChild(actBtn("🏠 回原位", function () { closeMenu(); goHome(); }));
+    foot.appendChild(actBtn("🚪 打卡下班", function () { closeMenu(); bye(); }));
     /* 菜单内部按压不落到宠物（不触发拖拽） */
     menu.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
     box.appendChild(menu);
-    /* 伸出屏幕左右时收回视口内（与气泡同法） */
+    fitMenu();
+  }
+  /* 菜单收回视口：水平 margin 平移 + 顶部不足时动态收缩滚动面板 */
+  function fitMenu() {
+    if (!menu) return;
+    menu.style.marginLeft = "";
+    menu.style.position = ""; menu.style.top = ""; menu.style.bottom = ""; menu.style.left = ""; menu.style.transform = "";
+    menu.classList.remove("under");
+    var p2 = menu.querySelector(".wp-panel");
+    if (p2) p2.style.maxHeight = "";
     var mr = menu.getBoundingClientRect();
+    /* 上方放不下时的三级策略：微差压面板 → 身下放得下才翻下 → 钉屏 */
+    if (mr.top < 8) {
+      var petR = box.getBoundingClientRect();
+      var underFits = (petR.bottom + 12 + mr.height) <= (innerHeight - 8);
+      if (mr.top >= -110 && p2) {
+        var shrink = p2.clientHeight + (mr.top - 8);
+        if (shrink > 120) p2.style.maxHeight = shrink + "px";
+      } else if (underFits) {
+        menu.classList.add("under");
+      }
+    }
+    mr = menu.getBoundingClientRect();
     var dx = 0;
     if (mr.left < 8) dx = 8 - mr.left;
     if (mr.right > innerWidth - 8) dx -= mr.right - (innerWidth - 8);
     if (dx) menu.style.marginLeft = dx.toFixed(0) + "px";
+    /* 终极兜底：脱离锚定钉在屏内，面板压缩到装得下为止 */
+    for (var i = 0; i < 3; i++) {
+      var mr2 = menu.getBoundingClientRect();
+      if (mr2.top >= 8 && mr2.bottom <= innerHeight - 4) break;
+      if (mr2.top < 8) {
+        menu.style.marginLeft = "";
+        menu.style.position = "fixed";
+        menu.style.left = Math.max(8, Math.min(mr2.left, innerWidth - mr2.width - 8)) + "px";
+        menu.style.top = "8px";
+        menu.style.bottom = "auto";
+        menu.style.transform = "none";
+      }
+      var mb = menu.getBoundingClientRect().bottom;
+      if (p2 && mb > innerHeight - 8) {
+        p2.style.maxHeight = Math.max(120, p2.clientHeight - (mb - (innerHeight - 8))) + "px";
+      }
+    }
   }
+  /* 调试钩子：验收用，可手动重跑适配 */
+  try { window.__wpFit = function () { fitMenu(); }; } catch (e) {}
   function goHome() {
     box.classList.add("homing");
     x = innerWidth <= 640 ? 12 : 18;
@@ -349,11 +435,12 @@
       "#webPet{position:fixed;left:18px;bottom:18px;width:clamp(225px,30vw,460px);height:clamp(225px,30vw,460px);z-index:1450;" +
       "cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;" +
       "-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;outline:none;" +
-      "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38));transition:opacity .8s,transform .8s}" +
+      "transition:opacity .8s,transform .8s}" +
       "#webPet.grabbing{cursor:grabbing}" +
       "#webPet.homing{transition:opacity .8s,transform .8s,left .55s cubic-bezier(.22,1,.36,1),top .55s cubic-bezier(.22,1,.36,1)}" +
       "#webPet.leaving{opacity:0;transform:translateY(26px) rotate(8deg)}" +
-      "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}" +
+      "#webPet video{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;" +
+      "filter:drop-shadow(0 8px 16px rgba(0,0,0,.38))}" + /* 阴影挂视频上：不给孩子当 fixed 的包含块 */
       "#webPet video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none}" +
       "#webPet video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}" +
       "#webPet .wp-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);" +
@@ -363,12 +450,19 @@
       "#webPet .wp-bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}" +
       "#webPet .wp-bubble.under{bottom:auto;top:calc(100% + 10px)}" +
       "#webPet .wp-menu{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);" +
-      "width:max-content;max-width:min(320px,88vw);padding:10px 12px;border-radius:14px;" +
+      "width:max-content;max-width:min(360px,92vw);padding:10px 12px;border-radius:14px;" +
       "background:rgba(8,14,12,.94);color:#eafff6;border:1px solid var(--accent,#00e5a0);" +
-      "backdrop-filter:blur(8px);display:grid;grid-template-columns:repeat(2,1fr);gap:6px;" +
+      "backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:8px;" +
       "animation:wpMenuIn .18s ease-out;z-index:6}" +
       "#webPet .wp-menu.under{bottom:auto;top:calc(100% + 12px)}" +
-      "#webPet .wp-menu h5{grid-column:1/-1;margin:0 0 3px;font-size:12px;color:var(--accent,#00e5a0);font-weight:600;letter-spacing:.5px}" +
+      "#webPet .wp-menu h5{margin:0;font-size:12px;color:var(--accent,#00e5a0);font-weight:600;letter-spacing:.5px}" +
+      "#webPet .wp-tabs{display:flex;flex-wrap:wrap;gap:5px}" +
+      "#webPet .wp-tabs button{padding:4px 9px;font-size:12px;border-radius:99px}" +
+      "#webPet .wp-tabs button.on{background:var(--accent,#00e5a0);color:#06120e;border-color:transparent;font-weight:600}" +
+      "#webPet .wp-panel{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;" +
+      "max-height:min(280px,40vh);overflow-y:auto;padding-right:2px;overscroll-behavior:contain}" +
+      "#webPet .wp-panel button{text-overflow:ellipsis;overflow:hidden}" +
+      "#webPet .wp-foot{display:grid;grid-template-columns:1fr 1fr;gap:6px}" +
       "#webPet .wp-menu button{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);" +
       "color:#eafff6;border-radius:9px;padding:7px 10px;font-size:13px;cursor:pointer;white-space:nowrap;" +
       "-webkit-tap-highlight-color:transparent;font-family:inherit}" +
