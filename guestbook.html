@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="theme.css?v=133" />
   <link rel="stylesheet" href="search.css?v=133" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=135"></script>
+  <script src="theme.js?v=136"></script>
   <script src="search.js?v=133"></script>
   <style>
     .gform {
@@ -512,7 +512,6 @@
       /* 带站长会话刷新时，导出按钮直接可见 */
       document.getElementById("gbExport").style.display = isAdmin ? "" : "none";
       document.getElementById("gbRestore").style.display = isAdmin ? "" : "none";
-      if (isAdmin) initNoticeAdmin();
 
       $("#gbRetry").addEventListener("click", () => {
         const s = $("#gbStatus");
@@ -551,69 +550,12 @@
             render();
             document.getElementById("gbExport").style.display = "";
             document.getElementById("gbRestore").style.display = "";
-            initNoticeAdmin();
             showToast("站长模式已开启：每条留言出现 🗑 按钮 ✓");
           } else showToast("口令不对 🙅");
         };
         $("#gbUnlock").addEventListener("click", tryUnlock);
         $("#gbPass").addEventListener("keydown", (ev) => { if (ev.key === "Enter") tryUnlock(); });
       });
-
-      /* 📢 公告管理（站长）：写 textdb 的 cccad-notice，全站底部横条显示 */
-      const NOTICE_URL = "https://textdb.dev/api/data/cccad-notice";
-      function initNoticeAdmin() {
-        if (document.getElementById("noticeAdmin")) return;
-        const box = document.createElement("div");
-        box.id = "noticeAdmin";
-        box.className = "row";
-        box.style.cssText = "margin-top:8px; flex-wrap:wrap; gap:8px";
-        box.innerHTML = '<textarea id="noticeTa" rows="2" placeholder="📢 公告内容（清空并发布 = 撤下公告）…" style="flex:1 1 100%; background:var(--panel); border:1px solid var(--border); border-radius:8px; color:var(--text); font:inherit; font-size:.84rem; padding:8px 10px; outline:none; resize:vertical"></textarea>' +
-          '<button class="tbtn" id="noticeGo" type="button">📢 发布 / 更新公告</button>' +
-          '<span class="hint">发布后全站底部横条显示，访客可关闭；新公告会让已关闭的重新出现</span>';
-        $("#gbExport").after(box);
-        fetch(NOTICE_URL + "?n=" + Date.now(), { cache: "no-store" })
-          .then((r) => r.text())
-          .then((t) => {
-            if (t.trim()) {
-              try { localStorage.setItem('notice-mirror', t); } catch (e) {}
-              const d = JSON.parse(t);
-              if (d.msg) $('#noticeTa').value = d.msg;
-              return;
-            }
-            /* 云端为空/拉取失败：回退本机镜像（灾备副本） */
-            try {
-              const m = localStorage.getItem('notice-mirror');
-              if (m) { const d = JSON.parse(m); if (d.msg) $('#noticeTa').value = d.msg; }
-            } catch (e) {}
-          })
-          .catch(() => {
-            try {
-              const m = localStorage.getItem('notice-mirror');
-              if (m) { const d = JSON.parse(m); if (d.msg) $('#noticeTa').value = d.msg; }
-            } catch (e) {}
-          });
-        $("#noticeGo").addEventListener("click", async () => {
-          const btn = $("#noticeGo");
-          btn.disabled = true;
-          const msg = ($("#noticeTa").value || "").trim();
-          if (!msg && !confirm("公告内容为空 = 撤下当前公告。确定吗？")) {
-            btn.disabled = false;
-            return;
-          }
-          try {
-            const r = await fetch(NOTICE_URL, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain" },
-              body: asciiJson({ msg: msg, d: new Date().toLocaleDateString("zh-CN") }),
-            });
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            showToast(msg ? "📢 公告已发布，全站可见 ✓" : "公告已撤下 ✓");
-          } catch (err) {
-            showToast("发布失败，稍后再试");
-          }
-          btn.disabled = false;
-        });
-      }
 
       /* ♻ 镜像恢复（站长）：云端被清空时，把本机灾备镜像推回云端 */
       $("#gbRestore").addEventListener("click", async () => {
@@ -732,6 +674,6 @@
       });
     });
   </script>
-  <script src="pet.js?v=17" defer></script>
+  <script src="pet.js?v=18" defer></script>
 </body>
 </html>

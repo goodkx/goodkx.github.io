@@ -148,12 +148,10 @@
     rafId = requestAnimationFrame(step);
   }
 
-  /* ── 地板：贴底 12/18px 内边距；公告横幅在时以横幅顶为地板（落上去弹跳，不遮挡公告） ── */
+  /* ── 地板：贴底 12/18px 内边距 ── */
   function floorY() {
     var inset = innerWidth <= 640 ? 12 : 18;
-    var bar = document.getElementById("noticeBar");
-    var reserve = bar ? bar.offsetHeight + 6 : 0;
-    return Math.max(0, innerHeight - SIZE - Math.max(inset, reserve));
+    return Math.max(0, innerHeight - SIZE - inset);
   }
 
   function place() {
@@ -515,7 +513,7 @@
 
     SIZE = box.offsetWidth || 225;
     x = box.offsetLeft;   /* 尊重媒体查询的手机内边距 */
-    y = floorY();         /* 站上地板（公告横幅在场时自动抬升） */
+    y = floorY();         /* 站上地板 */
     place();
     bindPointer();
     armSleep();
@@ -563,10 +561,6 @@
     }
     if (window.ResizeObserver) new ResizeObserver(refit).observe(box);
     addEventListener("resize", refit);
-    /* 公告横幅出现/消失（body 直接子节点增删）→ 重新落到新地板上 */
-    if (window.MutationObserver) {
-      new MutationObserver(function () { refit(); }).observe(document.body, { childList: true });
-    }
 
     try { console.info("🐋 鲸鲸 · 形象与动画素材来自 PC2005-cloud/dsh-pet（MIT License）"); } catch (e) {}
   }

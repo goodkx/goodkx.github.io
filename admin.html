@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0a0e16" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="站长工作台 —— 照片、公告、小店、留言、部署，一页管完。" />
+  <meta name="description" content="站长工作台 —— 照片、小店、留言、部署，一页管完。" />
   <title>站长工作台 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A0%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="subpage.css?v=134" />
   <link rel="stylesheet" href="theme.css?v=133" />
   <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=135"></script>
+  <script src="theme.js?v=136"></script>
   <style>
     /* ── 令牌条 ── */
     .tokbar {
@@ -138,7 +138,6 @@
     <nav class="tabs" id="tabs">
       <button type="button" data-tab="home" class="on">📊 概览</button>
       <button type="button" data-tab="photos">📸 照片</button>
-      <button type="button" data-tab="notice">📢 公告</button>
       <button type="button" data-tab="shop">🛒 小店</button>
       <button type="button" data-tab="gb">💬 留言</button>
       <button type="button" data-tab="deploy">🚀 部署</button>
@@ -151,14 +150,12 @@
         <div class="stat"><div class="n" id="sProds">–</div><div class="l">在售商品</div><div class="s" id="sProdsSub">读取中</div></div>
         <div class="stat"><div class="n" id="sOrders">–</div><div class="l">待处理订单</div><div class="s" id="sOrdersSub">读取中</div></div>
         <div class="stat"><div class="n" id="sGb">–</div><div class="l">留言</div><div class="s" id="sGbSub">读取中</div></div>
-        <div class="stat"><div class="n" id="sNotice">–</div><div class="l">公告</div><div class="s" id="sNoticeSub">读取中</div></div>
         <div class="stat"><div class="n" id="sBuild">–</div><div class="l">站点构建</div><div class="s" id="sBuildSub">读取中</div></div>
       </div>
       <div class="box">
         <h3>怎么用</h3>
         <p class="hint">
           照片：上传后会在相册最下面的「照片墙」出现（统一 3:2 预览，点开看原图）。<br />
-          公告：发布后所有页面底部会冒出横条，访客可关闭，换个公告会再次出现。<br />
           小店：上架/下架商品、处理订单（和 shop.html 是同一份云端数据）。<br />
           留言：看最新留言、删掉捣乱的（和留言板站长口令是同一份数据）。<br />
           部署：看最近提交与构建状态，改了仓库文件可以在这里手动触发重新发布。
@@ -170,27 +167,6 @@
     <section class="panel" id="tab-photos">
       <p class="hint" style="margin-bottom:10px">下面是完整的上传台：拖照片 → 开始上传 → 等构建。删照片也在里面。</p>
       <div class="frame-wrap"><iframe src="admin-upload.html" title="照片上传台" loading="lazy"></iframe></div>
-    </section>
-
-    <!-- ═══════════ 公告 ═══════════ -->
-    <section class="panel" id="tab-notice">
-      <div class="box">
-        <h3>当前公告 <span id="noticeState"></span></h3>
-        <p class="hint" id="noticeNow">读取中…</p>
-      </div>
-      <div class="box">
-        <h3>发布新公告</h3>
-        <p class="hint">全站底部横条，一行就够；访客关掉后不会再来烦，直到你换内容。</p>
-        <div class="frow">
-          <textarea id="nMsg" maxlength="160" placeholder="例：11 月 1 日凌晨维护，可能短暂打不开"></textarea>
-        </div>
-        <div class="frow">
-          <input type="date" id="nDate" />
-          <button class="btn" id="nPub" type="button">发布公告</button>
-          <button class="btn warn" id="nOff" type="button">撤下公告</button>
-        </div>
-        <div class="flash" id="nFlash"></div>
-      </div>
     </section>
 
     <!-- ═══════════ 小店 ═══════════ -->
@@ -245,7 +221,7 @@
     </section>
 
     <p class="caption">
-      数据：textdb（公告 / 商品 / 订单 / 留言）· 图片与代码：GitHub 仓库 ·
+      数据：textdb（商品 / 订单 / 留言）· 图片与代码：GitHub 仓库 ·
       工作台只在你浏览器里运行，令牌不会离开这台设备
     </p>
   </div>
@@ -262,7 +238,6 @@
     const TOKEN_KEY = "cccad-gh-token";
 
     const URLS = {
-      notice: "https://textdb.dev/api/data/cccad-notice",
       photos: "https://textdb.dev/api/data/cccad-photos",
       products: "https://textdb.dev/api/data/cccad-shop-products",
       orders: "https://textdb.dev/api/data/cccad-shop-orders",
@@ -356,7 +331,6 @@
       $$("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === name));
       $$(".panel").forEach((p) => p.classList.toggle("on", p.id === "tab-" + name));
       if (name === "home") loadHome();
-      if (name === "notice") loadNotice();
       if (name === "shop") loadShop();
       if (name === "gb") loadGb();
       if (name === "deploy") loadDeploy();
@@ -393,11 +367,6 @@
         set("sGb", list.length, list.length ? "最新 " + fmtTime(list[list.length - 1].t) : "还没有留言");
       }).catch(() => set("sGb", "!", "读取失败"));
 
-      getJson(URLS.notice).then((d) => {
-        const on = !!(d && d.msg && String(d.msg).trim());
-        set("sNotice", on ? "ON" : "OFF", on ? (d.d || "已发布") : "没有公告");
-      }).catch(() => set("sNotice", "!", "读取失败"));
-
       if (!token) {
         set("sBuild", "—", "配令牌后可见");
         return;
@@ -407,49 +376,6 @@
         set("sBuild", b.status === "built" ? "OK" : b.status, fmtTime(b.updated_at));
       });
     }
-
-    /* ═══════════ 公告 ═══════════ */
-    async function loadNotice() {
-      $("#nDate").value = today();
-      try {
-        const d = await getJson(URLS.notice);
-        const msg = (d && d.msg ? String(d.msg) : "").trim();
-        if (msg) {
-          $("#noticeState").textContent = "· 生效中（" + (d.d || "无日期") + "）";
-          $("#noticeNow").textContent = msg;
-          $("#nMsg").value = msg;
-        } else {
-          $("#noticeState").textContent = "· 没有公告";
-          $("#noticeNow").textContent = "全站底部当前没有横条。";
-        }
-      } catch (e) {
-        $("#noticeNow").textContent = "读取失败：" + e.message;
-      }
-    }
-
-    $("#nPub").addEventListener("click", async () => {
-      const msg = $("#nMsg").value.trim();
-      if (!msg) return flash($("#nFlash"), "先写点什么再发布", true);
-      const d = $("#nDate").value || today();
-      $("#nPub").disabled = true;
-      try {
-        await postJson(URLS.notice, { msg, d });
-        flash($("#nFlash"), "已发布 · 刷新任意页面就能看到底部横条");
-        loadNotice(); loadHome();
-      } catch (e) { flash($("#nFlash"), e.message, true); }
-      $("#nPub").disabled = false;
-    });
-
-    $("#nOff").addEventListener("click", async () => {
-      if (!confirm("撤下公告？所有页面底部横条会消失。")) return;
-      $("#nOff").disabled = true;
-      try {
-        await postJson(URLS.notice, { msg: "", d: "" });
-        flash($("#nFlash"), "已撤下");
-        loadNotice(); loadHome();
-      } catch (e) { flash($("#nFlash"), e.message, true); }
-      $("#nOff").disabled = false;
-    });
 
     /* ═══════════ 小店 ═══════════ */
     let products = [], orders = [];
@@ -671,7 +597,7 @@
     /* ═══════════ 启动 ═══════════ */
     (function boot() {
       const hash = (location.hash || "").replace("#", "");
-      showTab(["home", "photos", "notice", "shop", "gb", "deploy"].includes(hash) ? hash : "home");
+      showTab(["home", "photos", "shop", "gb", "deploy"].includes(hash) ? hash : "home");
       if (token) {
         $("#tok").value = token;
         setTokState("已读取本机令牌，测试中…");
