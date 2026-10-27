@@ -191,3 +191,4 @@ fetch 也断时 `gh api repos/.../tarball/main > repo.tgz` 解包覆盖本地文
 5. **改 css/js 必 bump 版本 + 跑 `node check.js`**（pet.js 样式自注入，改它无需 bump css）
 6. **贪吃蛇是用户主动下架的**，别擅自恢复
 7. **pet/ 素材与 pet.js 头部 MIT 署名不可删**（dsh-pet 协议要求；换素材须同样开源可商用）
+8. **新增底部/右下悬浮元素必须进 theme.js 公告模块的 FAB_IDS**——公告条 z1400 会盖住底部按钮列，抬升机制靠 FAB_IDS 运行时实测；且真实鼠标点击会在按钮里生成波纹 span，「点外关闭」判断要用 contains
