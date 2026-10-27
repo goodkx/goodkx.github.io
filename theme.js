@@ -54,7 +54,10 @@
     pop.innerHTML = THEMES.map(
       (t) =>
         `<button type="button" data-t="${t.id}"><span class="sw" data-c="${t.id}"></span>${t.name}</button>`
-    ).join("");
+    ).join("") +
+      '<div class="pop-h">背景氛围</div>' +
+      '<button type="button" data-bg=""><span class="sw" data-c="bgdef"></span>🌌 默认氛围</button>' +
+      '<button type="button" data-bg="rain"><span class="sw" data-c="bgrain"></span>💻 01 数字雨</button>';
 
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -66,6 +69,13 @@
       if (!b) return;
       apply(b.dataset.t);
       pop.classList.remove("open");
+    });
+    pop.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-bg]");
+      if (!b) return;
+      if (window.siteBg) window.siteBg(b.dataset.bg);
+      try { localStorage.setItem("site-bg", b.dataset.bg); } catch (err) {}
+      pop.querySelectorAll("button[data-bg]").forEach((x) => x.classList.toggle("on", x === b));
     });
 
     document.addEventListener("click", (e) => {
@@ -210,6 +220,11 @@
     const cur = document.documentElement.dataset.theme || "";
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
+    });
+    let bgCur = "";
+    try { bgCur = localStorage.getItem("site-bg") || ""; } catch (e) {}
+    pop.querySelectorAll("button[data-bg]").forEach((b) => {
+      b.classList.toggle("on", (b.dataset.bg || "") === bgCur);
     });
   });
 })();
@@ -384,4 +399,117 @@
     });
     document.head.appendChild(s);
   } catch (e) {}
+})();
+
+/* ─────────── 🌧️ 背景氛围：01 数字雨（site-bg 记忆；canvas z-1 垫底，风格同终端配色） ─────────── */
+(function () {
+  var canvas = null, timer = 0, cols = [];
+  function injectCss() {
+    if (document.getElementById("wpBgStyle")) return;
+    var st = document.createElement("style");
+    st.id = "wpBgStyle";
+    st.textContent =
+      "#bgRain{position:fixed;inset:0;z-index:-1;pointer-events:none}" +
+      "#themePop .pop-h{margin:6px 8px 2px;font-size:11px;color:var(--muted,#8aa39a);letter-spacing:1px;" +
+      "border-top:1px solid rgba(255,255,255,.08);padding-top:7px}" +
+      '.sw[data-c="bgdef"]{background:#101b17;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}' +
+      '.sw[data-c="bgrain"]{background:linear-gradient(135deg,#00e5a0 30%,#38bdf8)}';
+    document.head.appendChild(st);
+  }
+  function startRain() {
+    if (canvas) return;
+    injectCss();
+    canvas = document.createElement("canvas");
+    canvas.id = "bgRain";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext("2d");
+    var W = 0, H = 0, cell = 22, fs = 15, rows = 1;
+    function init() {
+      var n = Math.max(8, Math.floor(W / cell));
+      cols = [];
+      for (var i = 0; i < n; i++) cols.push(spawn(true));
+    }
+    function spawn(anywhere) {
+      return {
+        row: anywhere ? Math.random() * rows * 1.4 - 4 : -4 - Math.random() * 12,
+        v: 6 + Math.random() * 9,                 /* 行/秒 */
+        len: 8 + ((Math.random() * 14) | 0),
+        rgb: Math.random() < 0.82 ? "0,229,160" : "56,189,248",   /* 终端绿为主 · 站点蓝点缀 */
+        cells: []
+      };
+    }
+    function fit() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cell = W < 640 ? 18 : 22; fs = cell - 6;
+      rows = H / cell;
+      ctx.font = fs + 'px "ui-monospace","Cascadia Mono",Consolas,monospace';
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      init();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var ci = 0; ci < cols.length; ci++) {
+        var c = cols[ci];
+        c.row += c.v * 0.05;                       /* 定时器 50ms 一拍 */
+        while (c.cells.length === 0 || c.cells[c.cells.length - 1].r < Math.floor(c.row)) {
+          c.cells.push({ r: Math.floor(c.row), ch: Math.random() < 0.5 ? "0" : "1" });
+          if (c.cells.length > c.len) c.cells.shift();
+        }
+        var x = (ci + 0.5) * cell;
+        for (var k = 0; k < c.cells.length; k++) {
+          var yy = c.cells[k].r * cell;
+          if (yy < -cell || yy > H + cell) continue;
+          var isHead = k === c.cells.length - 1;
+          ctx.fillStyle = isHead ? "#d9ffef" : c.rgb;
+          ctx.globalAlpha = isHead ? 0.9 : Math.max(0.05, 0.5 * (1 - (c.cells.length - 1 - k) / c.len));
+          ctx.fillText(c.cells[k].ch, x, yy);
+        }
+        if ((c.row - c.len) * cell > H + 40) cols[ci] = spawn(false);
+      }
+      ctx.globalAlpha = 1;
+    }
+    var calm = false;
+    try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    fit();
+    if (calm) {                 /* 减弱动效：只画一帧静态散布 */
+      cols.forEach(function (c) {
+        c.row = Math.random() * rows;
+        c.cells = [];
+        for (var k = 0; k < c.len; k++) c.cells.push({ r: Math.floor(c.row) - k, ch: Math.random() < 0.5 ? "0" : "1" });
+      });
+      draw();
+      return;                   /* 不启动循环 */
+    }
+    timer = setInterval(function () {
+      if (!document.hidden) draw();
+    }, 50);
+    addEventListener("resize", function () {
+      if (!canvas) return;
+      fit();
+    });
+  }
+  function stopRain() {
+    if (timer) { clearInterval(timer); timer = 0; }
+    if (canvas) { canvas.remove(); canvas = null; cols = []; }
+  }
+  window.siteBg = function (id) {
+    if (id === "rain") { stopRain(); startRain(); }
+    else stopRain();
+  };
+  var saved = "";
+  try { saved = localStorage.getItem("site-bg") || ""; } catch (e) {}
+  function boot() {
+    injectCss();
+    if (saved === "rain") startRain();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 })();
