@@ -319,33 +319,43 @@
 (function () {
   var SEEN_KEY = "notice-seen";
   var NOTICE_URL = "https://textdb.dev/api/data/cccad-notice";
-  /* 公告条盖住右下角悬浮按钮列 → 出现时把按钮抬到横幅上方，关闭后落回 */
-  function layoutNotice(on, bar) {
+  /* 公告条盖住右下角悬浮按钮列 → 出现时整列实测抬升（基准线运行时读取，任何断言/按钮通吃），关闭后落回 */
+  var FAB_IDS = ["themeBtn", "searchFab", "backTopBtn", "pwaInstall"];
+  var fabBase = null;
+  function layoutNotice(on) {
     document.body.classList.toggle("nb-on", on);
-    if (on && bar) document.documentElement.style.setProperty("--nbh", bar.offsetHeight + "px");
+    var bar = document.getElementById("noticeBar");
+    if (on) {
+      if (!bar) return;
+      var delta = bar.offsetHeight + 14;
+      if (!fabBase) {
+        fabBase = {};
+        FAB_IDS.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) fabBase[id] = parseFloat(getComputedStyle(el).bottom) || 0;
+        });
+      }
+      FAB_IDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && fabBase[id] != null) el.style.bottom = (fabBase[id] + delta) + "px";
+      });
+    } else {
+      FAB_IDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.style.bottom = "";
+      });
+    }
   }
   function injectNbStyle() {
     if (document.getElementById("wpNbStyle")) return;
     var st = document.createElement("style");
     st.id = "wpNbStyle";
-    st.textContent =
-      "body.nb-on #themeBtn,body.nb-on #backTopBtn,body.nb-on #pwaInstall{transition:bottom .3s}" +
-      "body.nb-on #themeBtn{bottom:calc(var(--nbh,52px) + 12px)!important}" +
-      "body.nb-on #backTopBtn{bottom:calc(var(--nbh,52px) + 68px)!important}" +
-      "body.nb-on #pwaInstall{bottom:calc(var(--nbh,52px) + 128px)!important}" +
-      "@media(max-width:640px){body.nb-on #themeBtn{bottom:calc(var(--nbh,52px) + 10px)!important}" +
-      "body.nb-on #backTopBtn{bottom:calc(var(--nbh,52px) + 58px)!important}}";
+    st.textContent = "#themeBtn,#searchFab,#backTopBtn,#pwaInstall{transition:bottom .3s}";
     document.head.appendChild(st);
   }
   addEventListener("resize", function () {
-    var bar = document.getElementById("noticeBar");
-    if (bar && document.body.classList.contains("nb-on")) layoutNotice(true, bar);
+    if (document.body.classList.contains("nb-on")) layoutNotice(true);
   });
-  function hash(s) {
-    var h = 0;
-    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-    return String(h);
-  }
   function init() {
     injectNbStyle();
     fetch(NOTICE_URL + "?n=" + Date.now(), { cache: "no-store" })
@@ -400,7 +410,7 @@
       bar.appendChild(date);
       bar.appendChild(close);
       document.body.appendChild(bar);
-      layoutNotice(true, bar);
+      layoutNotice(true);
       requestAnimationFrame(function () { bar.classList.add("show"); });
     }
   }
