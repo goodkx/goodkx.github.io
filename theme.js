@@ -79,7 +79,7 @@
     });
 
     document.addEventListener("click", (e) => {
-      if (!pop.contains(e.target) && e.target !== btn) pop.classList.remove("open");
+      if (!pop.contains(e.target) && !btn.contains(e.target)) pop.classList.remove("open"); /* btn.contains：波纹 span 在按钮里，不能算点外面 */
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") pop.classList.remove("open");
