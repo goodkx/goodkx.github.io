@@ -5,7 +5,7 @@
    - 跨域请求（textdb 云数据等）：直连不缓存，保证数据最新
    - 离线兜底页：offline.html                              */
 
-const CACHE = "cccad-v1";
+const CACHE = "cccad-v2"; /* v2：清 v1 旧缓存（数字雨/鲸鲸全库等大版本更新） */
 const OFFLINE_URL = "offline.html";
 
 self.addEventListener("install", (e) => {
