@@ -40,6 +40,7 @@
     .gform .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
     #gbName {
       flex: 0 0 180px;
+      font-family: var(--mono);
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -94,36 +95,38 @@
     }
     .tretry:hover { color: var(--accent); border-color: var(--border-hover); }
 
-    .glist { display: flex; flex-direction: column; gap: 14px; }
+    .glist { display: flex; flex-direction: column; gap: 2px; }
     .gmsg {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 18px;
+      position: relative;
+      background: transparent;
+      border: 0;
+      border-left: 2px solid var(--border);
+      border-radius: 0;
+      padding: 6px 0 16px 20px;
       transition: border-color .3s;
     }
-    .gmsg:hover { border-color: var(--border-hover); }
+    .gmsg::before {
+      content: "";
+      position: absolute;
+      left: -5px; top: 14px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background .3s, box-shadow .3s;
+    }
+    .gmsg:hover { border-left-color: var(--border-hover); }
+    .gmsg:hover::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
     .gmsg .gh {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
       gap: 10px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .gmsg .who { display: flex; align-items: center; gap: 8px; }
-    .gmsg .avatar {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.95rem;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-    }
-    .gmsg .who b { color: var(--accent); font-size: 0.9rem; }
+    .gmsg .who b { color: var(--accent); font-family: var(--mono); font-size: 0.88rem; font-weight: 600; }
     .gmsg .time { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
-    .gmsg .gm { color: var(--text); font-size: 0.9rem; line-height: 1.9; word-break: break-word; }
+    .gmsg .gm { color: var(--text); font-size: 0.95rem; line-height: 1.85; word-break: break-word; }
     .chip.owner {
       color: var(--accent);
       background: var(--acc-soft-bg);
@@ -131,7 +134,7 @@
     }
 
     /* 表情回应 */
-    .gr { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .gr { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .rx {
       background: var(--panel); border: 1px solid var(--border); border-radius: 999px;
       color: var(--muted); font-family: var(--mono); font-size: .72rem;
@@ -150,24 +153,24 @@
     <span class="badge">💬 guestbook</span>
   </div>
 
-  <h1 data-word="CHAT">云端<span class="grad">涂鸦墙</span></h1>
+  <h1 data-word="CHAT">留言<span class="grad">涂鸦墙</span></h1>
 
   <div class="wrap">
 
-    <div class="backup-h">直连留言板 · 无需登录 · 留言全员可见</div>
+    <div class="backup-h">guestbook.log — 想说就说 · 永久保存</div>
 
     <div class="gform reveal">
       <div class="row">
-        <input id="gbName" maxlength="30" placeholder="怎么称呼你？（可留空）" />
-        <span id="gbStatus" class="offline">📡 连接中…</span>
-        <button class="tretry" id="gbRetry" type="button" title="重新尝试连接云端">🔄 重新连接</button>
-        <button class="tretry" id="gbAdmin" type="button" title="站长管理（删除留言）">🛡️ 站长</button>
-        <button class="tretry" id="gbExport" type="button" title="导出留言备份 JSON（站长）" style="display:none">⬇ 导出</button>
-        <button class="tretry" id="gbRestore" type="button" title="云端被清时：把本机镜像的留言推回云端" style="display:none">♻ 镜像恢复</button>
+        <input id="gbName" maxlength="30" placeholder="署名（留空 = 匿名过客）" />
+        <span id="gbStatus" class="offline">● 正在呼叫云端…</span>
+        <button class="tretry" id="gbRetry" type="button" title="重新尝试连接云端">重连</button>
+        <button class="tretry" id="gbAdmin" type="button" title="站长管理（删除留言）">站长</button>
+        <button class="tretry" id="gbExport" type="button" title="导出留言备份 JSON（站长）" style="display:none">导出</button>
+        <button class="tretry" id="gbRestore" type="button" title="云端被清时：把本机镜像的留言推回云端" style="display:none">镜像恢复</button>
       </div>
-      <textarea id="gbText" rows="3" maxlength="500" placeholder="留下你想说的话……"></textarea>
+      <textarea id="gbText" rows="3" maxlength="500" placeholder="想贴点什么？问好、吐槽、闲聊都收——"></textarea>
       <div class="row">
-        <button class="tbtn" id="gbPost" type="button">✉️ 发布留言</button>
+        <button class="tbtn" id="gbPost" type="button">贴上墙</button>
         <span class="hint" id="gbCount">0 / 500</span>
       </div>
     </div>
@@ -177,7 +180,7 @@
   </div>
 
   <p class="caption">
-    留言自带四级容灾——比某些大厂还稳 ｜ <b>所有访客可见，留言前请三思，删帖要找站长</b>
+    每一条都会被好好收着——本站比你还怕弄丢 ｜ <b>留言全员可见，删帖请找站长</b>
   </p>
 
   <div class="toast" id="toast" role="status"></div>
@@ -311,19 +314,12 @@
       }
       return false;
     }
-    function avatarFor(n) {
-      let h = 0;
-      for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-      return ["🌟", "🍀", "🌙", "☕", "🎈", "🐟", "🌸", "⚡"][h % 8];
-    }
-
     function render() {
       $("#gbList").innerHTML = messages.length
         ? messages.map((m, idx) => `
           <div class="gmsg">
             <div class="gh">
               <span class="who">
-                <span class="avatar">${avatarFor(m.n)}</span>
                 <b>${esc(m.n)}</b>
                 ${m.n === "CCCAD" ? '<span class="chip green owner">站长</span>' : ""}
                 ${isMine(m.t) ? '<span class="chip green">我</span>' : ""}
@@ -340,23 +336,17 @@
               }).join("")}
             </div>` : ""}
           </div>`).join("")
-        : `<div class="gmsg"><div class="gm">还没有留言，来抢第一个沙发吧！</div></div>`;
+        : `<div class="gmsg"><div class="gm">墙上还空着——第一笔由你来留。</div></div>`;
     }
 
     function updateStatus() {
       const s = $("#gbStatus");
-      if (sourceName === "edgeone") {
-        s.className = "cloud";
-        s.textContent = "☁️ 云端已连接（EdgeOne）· 所有访客可见";
-      } else if (sourceName === "textdb") {
-        s.className = "cloud";
-        s.textContent = "☁️ 云端已连接（textdb）· 所有访客可见";
-      } else if (sourceName === "supabase") {
-        s.className = "cloud";
-        s.textContent = "☁️ 云端已连接（Supabase）· 所有访客可见";
-      } else {
+      if (sourceName === "local") {
         s.className = "offline";
-        s.textContent = "📴 暂离线 · 已存本机，点「重新连接」重试";
+        s.textContent = "● 离线中 · 已存本机，可点「重连」";
+      } else {
+        s.className = "cloud";
+        s.textContent = "● 已同步 · 谁都能看到";
       }
     }
 
