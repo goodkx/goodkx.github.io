@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>成就柜 | CCCAD</title>
+  <meta name="description" content="访客成就柜 —— 徽章收集与战绩展示，解锁属于你的数字勋章。" />
+  <link rel="stylesheet" href="subpage.css?v=137" />
+  <link rel="stylesheet" href="theme.css?v=137" />
+  <link rel="stylesheet" href="search.css?v=137" />
+  <script src="theme.js?v=137"></script>
+  <script src="search.js?v=137"></script>
+  <script src="achievements.js?v=137"></script>
+  <style>
+    .backup-h {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 4px 0 22px;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .backup-h::before, .backup-h::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .ach-progress {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .ach-progress b { color: var(--accent); font-size: 1.1rem; }
+    .ach-progress .bar {
+      flex: 1;
+      max-width: 320px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .ach-progress .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--gradient);
+      border-radius: 999px;
+      transition: width .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 14px;
+    }
+    .ach-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 18px;
+      transition: transform .25s, border-color .3s, box-shadow .3s;
+    }
+    .ach-card:hover { transform: translateY(-4px); border-color: var(--border-hover); }
+    .ach-card .ic {
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.9rem;
+      border-radius: 14px;
+      background: var(--acc-soft-bg, rgba(0, 229, 160, 0.08));
+      border: 1px solid var(--acc-soft-bd, rgba(0, 229, 160, 0.25));
+      margin-bottom: 12px;
+    }
+    .ach-card h3 { font-size: 0.98rem; margin-bottom: 6px; }
+    .ach-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+    .ach-card .date { font-family: var(--mono); font-size: 0.66rem; color: var(--accent); margin-top: 10px; }
+    .ach-card.locked { opacity: 0.42; }
+    .ach-card.locked .ic { filter: grayscale(1); background: var(--panel); border-color: var(--border); }
+    .ach-card.locked:hover { transform: none; }
+    .ach-card.on {
+      border-color: var(--acc-soft-bd, rgba(0, 229, 160, 0.35));
+      box-shadow: 0 0 24px rgba(0, 229, 160, 0.06);
+    }
+    .ach-card.on h3 { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .ach-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+      .ach-card { padding: 16px 14px; }
+      .ach-card .ic { width: 42px; height: 42px; font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <a class="back" href="index.html">← 返回首页</a>
+    <span class="badge">🏅 achievements</span>
+  </div>
+
+  <h1 data-word="MEDALS">访客<span class="grad">成就柜</span></h1>
+
+  <div class="wrap">
+    <div class="backup-h">成就存在你的浏览器里 · 集齐全部是终极挑战</div>
+
+    <div class="ach-progress">
+      <span>已点亮 <b id="achCount">0</b> / <span id="achTotal">0</span> 枚</span>
+      <span class="bar"><i id="achBar"></i></span>
+    </div>
+
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+
+  <p class="caption">
+    多戳戳鲸鲸 · 试试换主题 · 深夜来访也有惊喜 —— 徽章只认你这台浏览器
+  </p>
+
+  <script>
+    (function () {
+      const grid = document.getElementById("achGrid");
+      const defs = window.ACH ? window.ACH.defs : {};
+      const order = window.ACH ? window.ACH.order : Object.keys(defs);
+      const data = window.ACH ? window.ACH.data() : {};
+      const total = order.length;
+      let lit = 0;
+      grid.innerHTML = order.map((id) => {
+        const d = defs[id] || { icon: "❔", name: id, desc: "" };
+        const ts = data[id];
+        if (ts) lit++;
+        const date = ts ? new Date(ts).toLocaleDateString("zh-CN") : "";
+        return '<div class="ach-card' + (ts ? " on" : " locked") + '">' +
+          '<div class="ic">' + d.icon + '</div>' +
+          '<h3>' + d.name + '</h3>' +
+          '<p>' + d.desc + '</p>' +
+          (ts ? '<div class="date">✓ ' + date + ' 点亮</div>' : '<div class="date">未解锁</div>') +
+          '</div>';
+      }).join("");
+      document.getElementById("achCount").textContent = lit;
+      document.getElementById("achTotal").textContent = total;
+      requestAnimationFrame(() => {
+        document.getElementById("achBar").style.width = Math.round((lit / total) * 100) + "%";
+      });
+    })();
+  </script>
+
+</body>
+</html>

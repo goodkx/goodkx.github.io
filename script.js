@@ -268,3 +268,149 @@ document.addEventListener("DOMContentLoaded", () => {
     typeRoles();
   }, 500);
 });
+
+/* ═══ 粒子聚形 Hero：上千粒子拼字，鼠标排斥回流，点击爆发重组 ═══ */
+(function () {
+  function init() {
+    var hero = document.getElementById("hero");
+    if (!hero || hero.dataset.particles) return;
+    if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    hero.dataset.particles = "1";
+    var canvas = document.createElement("canvas");
+    canvas.id = "particleHero";
+    canvas.setAttribute("aria-hidden", "true");
+    hero.prepend(canvas);
+    var ctx = canvas.getContext("2d");
+    var COLORS = ["0,229,160", "0,229,160", "0,229,160", "56,189,248"];
+    var SHAPES = ["CCCAD", "</>"];
+    var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
+    var raf = 0, morphT = 0, hidden = false, last = 0;
+    var mouse = { x: -9999, y: -9999 };
+
+    function sample() {
+      var off = document.createElement("canvas");
+      off.width = W; off.height = H;
+      var c = off.getContext("2d");
+      var fs = Math.min(W * 0.16, H * 0.34);
+      c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
+      c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText(SHAPES[shapeIdx], W / 2, H * 0.34);
+      var data = c.getImageData(0, 0, W, H).data;
+      var gap = W < 640 ? 7 : 5;
+      targets = [];
+      for (var y = 0; y < H; y += gap)
+        for (var x = 0; x < W; x += gap)
+          if (data[(y * W + x) * 4 + 3] > 128) targets.push({ x: x, y: y });
+      var tx0=1e9,ty0=1e9,tx1=-1,ty1=-1;
+      var cap = W < 640 ? 1200 : 2400;
+      if (targets.length > cap) {
+        var keep = [], step = targets.length / cap;
+        for (var k = 0; k < cap; k++) keep.push(targets[(k * step) | 0]);
+        targets = keep;
+      }
+      for (var q = 0; q < targets.length; q++) { var tp = targets[q]; if (tp.x < tx0) tx0 = tp.x; if (tp.x > tx1) tx1 = tp.x; if (tp.y < ty0) ty0 = tp.y; if (tp.y > ty1) ty1 = tp.y; }
+      window.__phero = { n: targets.length, fs: fs, bounds: [tx0, ty0, tx1, ty1], W: W, H: H, word: SHAPES[shapeIdx] };
+      while (parts.length > targets.length) parts.pop();
+      while (parts.length < targets.length) {
+        parts.push({
+          x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+          c: COLORS[(Math.random() * COLORS.length) | 0],
+          s: 0.9 + Math.random() * 1.4, a: 0.4 + Math.random() * 0.55
+        });
+      }
+    }
+    function fit() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = hero.clientWidth; H = hero.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sample();
+    }
+    hero.addEventListener("pointermove", function (e) {
+      var r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    }, { passive: true });
+    hero.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
+    hero.addEventListener("pointerdown", function (e) {
+      var r = hero.getBoundingClientRect();
+      var bx = e.clientX - r.left, by = e.clientY - r.top;
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        var dx = p.x - bx, dy = p.y - by, d = Math.hypot(dx, dy) || 1;
+        var f = Math.min(30, 1100 / d);
+        p.vx += (dx / d) * f; p.vy += (dy / d) * f;
+      }
+    });
+    function frame(now) {
+      if (hidden) return;
+      var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
+      last = now;
+      ctx.clearRect(0, 0, W, H);
+      var t = now / 1000;
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i], tg = targets[i];
+        var ax = (tg.x - p.x) * 9, ay = (tg.y - p.y) * 9;
+        var dx = p.x - mouse.x, dy = p.y - mouse.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < 10000) {
+          var d = Math.sqrt(d2) || 1;
+          var f = ((100 - d) / 100) * 950;
+          ax += (dx / d) * f; ay += (dy / d) * f;
+        }
+        p.vx = (p.vx + ax * dt) * 0.9;
+        p.vy = (p.vy + ay * dt) * 0.9;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = "rgb(" + p.c + ")";
+        ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
+      }
+      ctx.globalAlpha = 1;
+      if (now - morphT > 9000) {
+        morphT = now;
+        shapeIdx = (shapeIdx + 1) % SHAPES.length;
+        sample();
+      }
+    }
+    document.addEventListener("visibilitychange", function () {
+      hidden = document.hidden;
+      if (!hidden) last = performance.now();
+    });
+    addEventListener("resize", fit);
+    fit();
+    morphT = performance.now();
+    /* 本项目实测：内嵌浏览器 rAF 可能不触发（数字雨同款坑），用 setInterval 驱动 */
+    setInterval(function () { frame(performance.now()); }, 33);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+
+/* ═══ 05 导航卡：3D 倾斜跟随 + 光斑 ═══ */
+(function () {
+  function init() {
+    if (!window.matchMedia || !matchMedia("(pointer: fine)").matches) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll(".page-card").forEach(function (card) {
+      if (card.dataset.tilt) return;
+      card.dataset.tilt = "1";
+      card.classList.add("tilt");
+      card.addEventListener("pointermove", function (e) {
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        card.style.transform =
+          "perspective(900px) rotateX(" + ((0.5 - py) * 10).toFixed(2) +
+          "deg) rotateY(" + ((px - 0.5) * 12).toFixed(2) + "deg) translateY(-6px)";
+        card.style.setProperty("--gx", (px * 100).toFixed(1) + "%");
+        card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
+      }, { passive: true });
+      card.addEventListener("pointerleave", function () {
+        card.style.transform = "";
+      });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();

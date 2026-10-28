@@ -1002,3 +1002,54 @@ main, .nav, .footer { position: relative; z-index: 1; }
   }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ═══ 粒子聚形 Hero ═══ */
+#particleHero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero-inner { position: relative; z-index: 1; }
+
+/* ═══ 3D 立体卡片（05 导航区）═══ */
+.pages-grid { perspective: 1200px; }
+.page-card { position: relative; transform-style: preserve-3d; will-change: transform; }
+.page-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(320px circle at var(--gx, 50%) var(--gy, 50%), rgba(0, 229, 160, 0.12), transparent 55%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.page-card:hover::after { opacity: 1; }
+.page-card .page-icon, .page-card h3, .page-card .page-go { transform: translateZ(26px); }
+.page-card p { transform: translateZ(12px); }
+
+/* ═══ 滚动驱动动画（原生 view() 时间线，不支持的浏览器自动走原 reveal 过渡）═══ */
+@supports (animation-timeline: view()) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: revealView linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+  @keyframes revealView {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: none; }
+  }
+  .section-line {
+    transform-origin: left center;
+    animation: lineGrow linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 85%;
+  }
+  @keyframes lineGrow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+}

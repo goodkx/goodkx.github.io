@@ -13,6 +13,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <script src="theme.js?v=137"></script>
   <script src="search.js?v=137"></script>
+  <script src="achievements.js?v=137"></script>
   <script src="leaderboard.js?v=137"></script>
   <style>
     .game-wrap {
@@ -294,6 +295,7 @@
       }
       if (isGameOver()) {
         over = true;
+        if (window.ACH) ACH.unlock("g2048");
         render(mergedSet);
         $("#overScore").textContent = "得分 " + score;
         const lb = $("#gLb");

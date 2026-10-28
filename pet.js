@@ -227,7 +227,9 @@
     });
   }
 
+  var pokeCount = 0;
   function clickAction() {
+    if (++pokeCount >= 10 && window.ACH) ACH.unlock("pet");
     var now = performance.now();
     if (now - lastClick < 500) { lastClick = 0; openMenu(); return; }  /* 双击：呼出点播台 */
     lastClick = now;
@@ -407,6 +409,7 @@
     b.title = "召唤鲸鲸回来上班";
     b.setAttribute("aria-label", "召唤鲸鲸回来上班");
     b.textContent = "🐋";
+    if (window.ACH) ACH.unlock("petbye");
     b.addEventListener("click", function () {
       try { sessionStorage.removeItem("pet-off"); } catch (e) {}
       b.remove();

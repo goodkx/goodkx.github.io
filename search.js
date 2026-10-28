@@ -167,7 +167,7 @@
     input.addEventListener("keydown", (e) => {
       if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
       else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
-      else if (e.key === "Enter") { e.preventDefault(); go(); }
+      else if (e.key === "Enter") { e.preventDefault(); if (window.ACH) ACH.unlock("search"); go(); }
     });
 
     results.addEventListener("click", (e) => {

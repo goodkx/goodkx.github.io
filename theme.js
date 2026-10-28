@@ -39,6 +39,7 @@
     document.querySelectorAll("#themePop button").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === id);
     });
+    if (window.ACH) ACH.unlock("theme");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -74,6 +75,7 @@
       const b = e.target.closest("button[data-bg]");
       if (!b) return;
       if (window.siteBg) window.siteBg(b.dataset.bg);
+      if (window.ACH) ACH.unlock("rain");
       try { localStorage.setItem("site-bg", b.dataset.bg); } catch (err) {}
       pop.querySelectorAll("button[data-bg]").forEach((x) => x.classList.toggle("on", x === b));
     });
@@ -169,6 +171,7 @@
         document.body.appendChild(p);
         setTimeout(() => p.remove(), 6500);
       }
+      if (window.ACH) ACH.unlock("konami");
       document.title = "🚲 鹈鹕大军来袭！";
       setTimeout(() => { document.title = prevTitle; }, 2500);
     });

@@ -13,6 +13,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <script src="theme.js?v=137"></script>
   <script src="search.js?v=137"></script>
+  <script src="achievements.js?v=137"></script>
   <script src="leaderboard.js?v=137"></script>
   <style>
     .hud {
@@ -362,6 +363,7 @@
         lb.classList.add("show");
         $("#tLbName").value = LB.getName();
       } else lb.classList.remove("show");
+      if (window.ACH) ACH.unlock("gtetris");
       $("#tOver").classList.add("show");
     }
 
