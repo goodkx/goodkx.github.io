@@ -65,11 +65,11 @@
     render(game, mountSel, unit) {
       const mount = document.querySelector(mountSel);
       if (!mount) return;
-      mount.innerHTML = '<p class="lb-head">🏆 全站排名加载中…</p>';
+      mount.innerHTML = '<p class="lb-head">全站排名加载中…</p>';
       window.LB.fetchLb(game)
         .then((list) => {
           mount.innerHTML = list.length
-            ? '<p class="lb-head">🏆 全站排名 TOP ' + list.length + "</p>" +
+            ? '<p class="lb-head">全站排名 TOP ' + list.length + "</p>" +
               list.map((x, i) =>
                 '<div class="lb-row' + (i === 0 ? " first" : "") + '">' +
                 '<span class="rk">' + (i + 1) + "</span>" +
@@ -77,7 +77,7 @@
                 '<span class="sc">' + x.s + (unit ? " " + unit : "") + "</span>" +
                 '<span class="dt">' + esc(x.d || "") + "</span></div>"
               ).join("")
-            : '<p class="lb-head">🏆 榜单虚位以待 —— 成为第一个上榜的人！</p>';
+            : '<p class="lb-head">榜单虚位以待 —— 成为第一个上榜的人</p>';
         })
         .catch(() => {
           mount.innerHTML = '<p class="lb-head">排名暂时无法加载（网络原因）</p>';

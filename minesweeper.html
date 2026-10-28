@@ -124,31 +124,32 @@
     .lb-submit input:focus { border-color: var(--border-hover); }
     .lb-ok { color: var(--accent); font-family: var(--mono); font-size: .78rem; }
   </style>
+  <link rel="stylesheet" href="gameui.css?v=137" />
 </head>
 <body>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
     <a class="back" href="arcade.html">🕹 街机厅</a>
-    <span class="badge">💣 mines</span>
+    <span class="badge">mines</span>
   </div>
 
   <h1 data-word="MINES">经典 <span class="grad">扫雷</span></h1>
 
   <div class="wrap">
     <div class="mode-row">
-      <button type="button" data-m="easy" class="on">🙂 简单 9×9 · 10 雷</button>
-      <button type="button" data-m="hard">🔥 困难 16×16 · 40 雷</button>
+      <button type="button" data-m="easy" class="on">简单 9×9 · 10 雷</button>
+      <button type="button" data-m="hard">困难 16×16 · 40 雷</button>
     </div>
 
     <div class="hud">
-      <div><b id="mLeft">10</b><span>🚩 剩余雷数</span></div>
-      <div><b id="mTime">0s</b><span>⏱ 用时</span></div>
-      <button class="face-btn" id="mFace" type="button" aria-label="重新开始">😊</button>
+      <div><b id="mLeft">10</b><span>剩余雷数</span></div>
+      <div><b id="mTime">0s</b><span>用时</span></div>
+      <button class="tbtn ghost" id="mFace" type="button" title="重新开始">重开</button>
     </div>
 
     <div class="mode-row flag-mode">
-      <button type="button" id="mFlagMode">🚩 插旗模式：关（手机长按也可插旗）</button>
+      <button type="button" id="mFlagMode">插旗模式：关 · 手机长按也可插旗</button>
     </div>
 
     <div class="board" id="board"></div>
@@ -192,7 +193,6 @@
       clearInterval(timer); timer = null;
       $("#mTime").textContent = "0s";
       $("#mLeft").textContent = m.mines;
-      $("#mFace").textContent = "😊";
       $("#endPanel").classList.remove("show");
       $("#mLb").classList.remove("show");
       grid = Array.from({ length: m.rows * m.cols }, () => ({ mine: false, open: false, flag: false, n: 0 }));
@@ -295,7 +295,6 @@
           el.classList.add(i === hitIdx ? "boom" : "mine-show");
         }
       });
-      $("#mFace").textContent = "😵";
       $("#endTitle").textContent = "💥 踩雷了！";
       $("#endText").textContent = "坚持了 " + fmtTime(secs) + " —— 雷区最不缺的就是第二次机会。";
       $("#endRecord").textContent = "";
@@ -309,7 +308,6 @@
       clearInterval(timer);
       grid.forEach((c, i) => { if (c.mine && !c.flag) { c.flag = true; render(i); } });
       $("#mLeft").textContent = 0;
-      $("#mFace").textContent = "😎";
       const best = getBest();
       const isRecord = !best || secs < best;
       if (isRecord) {
@@ -317,7 +315,7 @@
       }
       $("#endTitle").textContent = "🎉 排雷成功！";
       $("#endText").textContent = fmtTime(secs) + " 清完 " + m.mines + " 颗雷 —— " +
-        (secs <= 30 ? "扫雷之神 🥇" : secs <= 90 ? "手感火热 🔥" : "稳扎稳打 👍");
+        (secs <= 30 ? "扫雷之神" : secs <= 90 ? "手感火热" : "稳扎稳打");
       $("#endRecord").textContent = isRecord ? "🌟 新纪录！" : "本机最佳：" + fmtTime(best);
       $("#mLb").classList.add("show");
       $("#mLbName").value = LB.getName();
@@ -354,7 +352,7 @@
 
     $("#mFlagMode").addEventListener("click", () => {
       flagMode = !flagMode;
-      $("#mFlagMode").textContent = flagMode ? "🚩 插旗模式：开（点按 = 插旗）" : "🚩 插旗模式：关（手机长按也可插旗）";
+      $("#mFlagMode").textContent = flagMode ? "插旗模式：开（点按 = 插旗）" : "插旗模式：关 · 手机长按也可插旗";
       $("#mFlagMode").classList.toggle("on", flagMode);
     });
     $("#mFace").addEventListener("click", build);

@@ -142,21 +142,22 @@
     .lb-row .sc { color: var(--accent); }
     .lb-row .dt { color: var(--muted); font-size: .62rem; }
   </style>
+  <link rel="stylesheet" href="gameui.css?v=137" />
 </head>
 <body>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
     <a class="back" href="arcade.html">🕹 街机厅</a>
-    <span class="badge">⌨️ typing</span>
+    <span class="badge">typing</span>
   </div>
 
   <h1 data-word="TYPING">极速 <span class="grad">打字测速</span></h1>
 
   <div class="wrap">
     <div class="mode-row">
-      <button type="button" data-m="30" class="on">⚡ 30 秒挑战</button>
-      <button type="button" data-m="60">⏱ 60 秒标准</button>
+      <button type="button" data-m="30" class="on">30 秒挑战</button>
+      <button type="button" data-m="60">60 秒标准</button>
     </div>
 
     <div class="hud">
@@ -170,20 +171,19 @@
       <div class="cur-word" id="curWord"></div>
       <div class="next-words" id="nextWords"></div>
       <div class="overlay" id="tOverlay">
-        <div class="big">⌨️</div>
-        <div class="tip">点击「开始」或直接敲键盘任意字母开始<br />输入单词后按 <b>空格</b> 提交 · 输错了 <b>退格</b> 修改<br />建议电脑端使用</div>
-        <button class="tbtn" id="tStart" type="button">▶ 开始挑战</button>
+        <div class="tip">敲任意字母即开始 · <b>空格</b> 提交 · <b>退格</b> 修改<br />手机能玩，但电脑更爽</div>
+        <button class="tbtn" id="tStart" type="button">开始挑战</button>
       </div>
     </div>
 
     <div class="win-panel" id="endPanel">
-      <h2>🏁 时间到！</h2>
+      <h2>时间到！</h2>
       <div class="win-wpm" id="endWpm">0</div>
       <p id="endText"></p>
       <span class="record" id="endRecord"></span>
       <div class="lb-submit" id="tLb">
         <input type="text" id="tLbName" maxlength="10" placeholder="昵称（10 字内）" />
-        <button class="tbtn" id="tLbGo" type="button">🏆 上榜</button>
+        <button class="tbtn" id="tLbGo" type="button">上榜</button>
       </div>
       <div class="row" style="justify-content:center; margin-top:16px">
         <button class="tbtn" id="tRestart">🔄 再来一局</button>
@@ -337,7 +337,7 @@
         LB.saveName(name);
         const s = stats();
         const res = await LB.submit("typing", name, s.wpm);
-        $("#tLb").innerHTML = '<span class="lb-ok">🏆 已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
+        $("#tLb").innerHTML = '<span class="lb-ok">已上榜 · 第 ' + res.rank + ' 名 ✓</span>';
         LB.render("typing", "#typingLb", "WPM");
       } catch (e) {
         btn.disabled = false;

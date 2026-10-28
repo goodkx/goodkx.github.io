@@ -99,13 +99,14 @@
 
     @media (max-width: 700px) { .stage-wrap { flex-direction: column; align-items: center; } }
   </style>
+  <link rel="stylesheet" href="gameui.css?v=137" />
 </head>
 <body>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
     <a class="back" href="arcade.html">🕹 街机厅</a>
-    <span class="badge">🧱 tetris</span>
+    <span class="badge">tetris</span>
   </div>
 
   <h1 data-word="TETRIS">俄罗斯 <span class="grad">方块</span></h1>
@@ -122,30 +123,30 @@
       <div class="stage">
         <canvas id="board" width="300" height="600"></canvas>
         <div class="overlay show" id="tStart">
-          <h2>🧱 俄罗斯方块</h2>
+          <h2>俄罗斯方块</h2>
           <p>← → 移动 · ↑ 旋转 · ↓ 软降<br />空格硬降（不建议上班时按）· P 暂停<br />触屏：滑动 + 下方按钮</p>
-          <button class="tbtn" id="tGo">🚀 开始游戏</button>
+          <button class="tbtn" id="tGo">开始游戏</button>
         </div>
         <div class="overlay" id="tPause">
-          <h2>⏸ 暂停中</h2>
+          <h2>暂停中</h2>
           <button class="tbtn" id="tResume">继续</button>
         </div>
         <div class="overlay" id="tOver">
-          <h2>💀 游戏结束</h2>
+          <h2>游戏结束</h2>
           <p id="tFinal"></p>
           <div class="lb-submit" id="tLb">
             <input type="text" id="tLbName" maxlength="10" placeholder="昵称（10 字内）" />
-            <button class="tbtn" id="tLbGo" type="button">🏆 上榜</button>
+            <button class="tbtn" id="tLbGo" type="button">上榜</button>
           </div>
-          <button class="tbtn" id="tAgain" style="margin-top:8px">🔄 再来一局</button>
+          <button class="tbtn" id="tAgain" style="margin-top:8px">再来一局</button>
         </div>
       </div>
 
       <div class="side">
         <div><h4>下一个</h4><div class="next-box"><canvas id="next" width="96" height="72"></canvas></div></div>
         <div><h4>操作</h4>
-          <button class="tbtn" id="tRot" style="width:100%;margin-bottom:8px">⟳ 旋转</button>
-          <button class="tbtn" id="tDrop" style="width:100%">⤓ 硬降</button>
+          <button class="tbtn ghost" id="tRot" style="width:100%;margin-bottom:8px">旋转</button>
+          <button class="tbtn ghost" id="tDrop" style="width:100%">硬降</button>
         </div>
       </div>
     </div>

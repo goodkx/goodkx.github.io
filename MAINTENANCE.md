@@ -21,7 +21,7 @@
 | admin-upload.html | 📤 站长照片上传台（GitHub Contents API 写 `gallery/p/`，统一 3:2 缩略图 + 原图） |
 | tools.html | 工具箱（14 个 `<section class="tool">`） |
 | shop.html | 小卖部（云端商品/订单，站长口令见文件内 ADMIN_PASS） |
-| game/tetris/memory/minesweeper.html | 四款游戏（都接 leaderboard.js） |
+| game/tetris/memory/minesweeper/typing.html | 五款游戏（都接 leaderboard.js；共享组件 gameui.css——按钮/统计卡/模式 pill 统一语言） |
 | guestbook.html | 云留言板（四级回退 + 站长管理 + JSON 导出） |
 | report.html | 年报（读各云端键出报告） |
 | live.html | 《高性价比人生指南》全文（第三方内容，CC BY 4.0，**不要改它的内部结构**） |

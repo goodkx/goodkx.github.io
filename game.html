@@ -158,22 +158,23 @@
     }
     .game-hint b { color: var(--accent-2); }
   </style>
+  <link rel="stylesheet" href="gameui.css?v=137" />
 </head>
 <body>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
     <a class="back" href="arcade.html">🕹 街机厅</a>
-    <span class="badge">🎮 2048</span>
+    <span class="badge">2048</span>
   </div>
 
   <h1 data-word="2048">2048 · <span class="grad">合并</span>挑战</h1>
 
   <div class="game-wrap">
-    <div class="score-row">
-      <div class="score-box"><b id="score">0</b><span>当前得分</span></div>
-      <div class="score-box"><b id="best">0</b><span>历史最佳</span></div>
-      <button class="gbtn" id="newGame" type="button">🔄 新游戏</button>
+    <div class="hud score-row">
+      <div><b id="score">0</b><span>当前得分</span></div>
+      <div><b id="best">0</b><span>历史最佳</span></div>
+      <button class="gbtn" id="newGame" type="button">新游戏</button>
     </div>
 
     <div id="boardWrap">
@@ -191,7 +192,7 @@
         <p id="overScore">得分 0</p>
         <div class="lb-submit" id="gLb">
           <input type="text" id="gLbName" maxlength="10" placeholder="昵称（10 字内）" />
-          <button class="gbtn" id="gLbGo" type="button">🏆 上榜</button>
+          <button class="gbtn" id="gLbGo" type="button">上榜</button>
         </div>
         <button class="gbtn" id="overNew" type="button">再来一局</button>
       </div>
