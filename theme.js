@@ -221,8 +221,9 @@
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
     });
-    let bgCur = "";
-    try { bgCur = localStorage.getItem("site-bg") || ""; } catch (e) {}
+    let bgCur = "rain";
+    try { bgCur = localStorage.getItem("site-bg"); } catch (e) {}
+    if (bgCur === null || bgCur === undefined) bgCur = "rain";
     pop.querySelectorAll("button[data-bg]").forEach((b) => {
       b.classList.toggle("on", (b.dataset.bg || "") === bgCur);
     });
@@ -430,8 +431,9 @@
     if (id === "rain") { stopRain(); startRain(); }
     else stopRain();
   };
-  var saved = "";
-  try { saved = localStorage.getItem("site-bg") || ""; } catch (e) {}
+  /* 默认背景 = 数字雨（站长拍板）；「🌌 默认氛围」= 显式关闭（存空串） */
+  var saved = "rain";
+  try { var raw = localStorage.getItem("site-bg"); if (raw !== null) saved = raw; } catch (e) {}
   function boot() {
     injectCss();
     if (saved === "rain") startRain();
