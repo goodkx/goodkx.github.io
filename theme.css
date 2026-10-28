@@ -785,3 +785,25 @@ html p a:hover { background-size: 100% 1.5px; }
   #noticeBar .nb-date { display: none; }
   #noticeBar .nb-text { font-size: .78rem; }
 }
+
+/* ═══ 全局卡片悬停 2.0：辉光边框 + 追光增强 + 图标弹跳（倾斜由 JS 写 inline）═══ */
+html .spot {
+  transition: transform .25s cubic-bezier(.22, 1, .36, 1), border-color .3s, box-shadow .3s;
+}
+html .spot:hover {
+  border-color: var(--acc-soft-bd, rgba(0, 229, 160, .42));
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .38), 0 0 22px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+html .spot:hover::before {
+  background: radial-gradient(430px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 15%, transparent), transparent 60%);
+}
+html .spot:hover .page-icon,
+html .spot:hover .ach-card .ic {
+  transform: translateY(-3px) scale(1.1) rotate(-4deg);
+}
+html .spot .page-icon,
+html .spot .ach-card .ic {
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+html .ach-card:hover .ic { transform: scale(1.1) rotate(-4deg); }

@@ -280,19 +280,33 @@
 /* ─────────── ✨ 追光卡：给全站卡片挂 .spot 并写入鼠标位置 ─────────── */
 (function () {
   var CARD_SEL = ".skill-card, .project-card, .page-card, .post, .photo, .tool, .ai-card, " +
-    ".fcard, .yr-card, .yr-title-card, .prod, .gmsg, .topic, .score-box, .mini-shop, .cab, .contact-box";
+    ".fcard, .yr-card, .yr-title-card, .prod, .gmsg, .topic, .score-box, .mini-shop, .cab, .contact-box, .ach-card";
   function init() {
     var fine = true;
     try { fine = matchMedia("(pointer: fine)").matches; } catch (e) {}
     if (!fine) return; /* 触屏设备无悬停，跳过 */
     document.querySelectorAll(CARD_SEL).forEach(function (el) { el.classList.add("spot"); });
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var current = null;
     document.addEventListener("mousemove", function (e) {
       var el = e.target.closest ? e.target.closest(".spot") : null;
+      if (current && current !== el) { current.style.transform = ""; current = null; }
       if (!el) return;
       var r = el.getBoundingClientRect();
-      el.style.setProperty("--mx", ((e.clientX - r.left) / r.width * 100).toFixed(1) + "%");
-      el.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      el.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
+      el.style.setProperty("--my", (py * 100).toFixed(1) + "%");
+      /* 3D 微倾斜（index 导航卡有专属强倾斜 data-tilt，让位给它） */
+      if (!el.dataset.tilt) {
+        el.style.transform = "perspective(800px) rotateX(" + ((0.5 - py) * 5).toFixed(2) +
+          "deg) rotateY(" + ((px - 0.5) * 7).toFixed(2) + "deg) translateY(-5px) scale(1.01)";
+        current = el;
+      }
     }, { passive: true });
+    document.addEventListener("mouseleave", function () {
+      if (current) { current.style.transform = ""; current = null; }
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
