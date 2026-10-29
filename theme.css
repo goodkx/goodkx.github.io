@@ -826,3 +826,18 @@ html .icon-btn:hover { transform: translateY(-2px) scale(1.1) rotate(-4deg); }
 html .badge { transition: transform .25s cubic-bezier(.34, 1.56, .64, 1); }
 html .badge:hover { transform: scale(1.06); }
 html .btn:active, html .gbtn:active, html .tbtn:active, html .icon-btn:active { transform: scale(.95); }
+
+/* ═══ 真悬浮：02 技能卡 / 05 导航卡悬停离地飘起 ═══ */
+@keyframes cardBob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+html .skill-card:hover, html .page-card:hover {
+  box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 36px color-mix(in srgb, var(--accent) 14%, transparent);
+  animation: cardBob 2.6s ease-in-out infinite;
+}
+html .skill-card { transform-style: preserve-3d; }
+html .skill-card > * { transform: translateZ(16px); }
+@media (prefers-reduced-motion: reduce) {
+  html .skill-card:hover, html .page-card:hover { animation: none; }
+}

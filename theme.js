@@ -299,8 +299,9 @@
       el.style.setProperty("--my", (py * 100).toFixed(1) + "%");
       /* 3D 微倾斜（index 导航卡有专属强倾斜 data-tilt，让位给它） */
       if (!el.dataset.tilt) {
-        el.style.transform = "perspective(800px) rotateX(" + ((0.5 - py) * 5).toFixed(2) +
-          "deg) rotateY(" + ((px - 0.5) * 7).toFixed(2) + "deg) translateY(-5px) scale(1.01)";
+        var deep = el.classList.contains("skill-card") || el.classList.contains("page-card");
+        el.style.transform = "perspective(900px) rotateX(" + ((0.5 - py) * (deep ? 6 : 5)).toFixed(2) +
+          "deg) rotateY(" + ((px - 0.5) * (deep ? 8 : 7)).toFixed(2) + "deg) translateY(" + (deep ? -15 : -5) + "px) scale(" + (deep ? 1.03 : 1.01) + ")";
         current = el;
       }
     }, { passive: true });

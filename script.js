@@ -403,7 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var py = (e.clientY - r.top) / r.height;
         card.style.transform =
           "perspective(900px) rotateX(" + ((0.5 - py) * 10).toFixed(2) +
-          "deg) rotateY(" + ((px - 0.5) * 12).toFixed(2) + "deg) translateY(-6px)";
+          "deg) rotateY(" + ((px - 0.5) * 12).toFixed(2) + "deg) translateY(-15px) scale(1.03)";
         card.style.setProperty("--gx", (px * 100).toFixed(1) + "%");
         card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
       }, { passive: true });
