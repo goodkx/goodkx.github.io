@@ -833,9 +833,11 @@ html .btn:active, html .gbtn:active, html .tbtn:active, html .icon-btn:active { 
   50% { translate: 0 -8px; }
 }
 html .skill-card:hover, html .page-card:hover {
-  box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 36px color-mix(in srgb, var(--accent) 14%, transparent);
-  animation: cardBob 2.6s ease-in-out infinite;
-}
+    box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 36px color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  html .skill-card:hover { animation: cardBob 2.6s ease-in-out infinite; }
+  /* 导航卡在横向滚动容器里，呼吸动画+长过渡会又晃又拖影 → 快速干脆的跟随 */
+  html .page-card { transition: transform .1s ease-out, border-color .3s, box-shadow .3s; }
 html .skill-card { transform-style: preserve-3d; }
 html .skill-card > * { transform: translateZ(16px); }
 @media (prefers-reduced-motion: reduce) {
