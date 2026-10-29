@@ -461,3 +461,40 @@
     boot();
   }
 })();
+
+/* ═══ 💥 全站点击迸发：任意点击处粒子小爆炸（减弱动效跳过）═══ */
+(function () {
+  function init() {
+    if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var st = document.createElement("style");
+    st.id = "burstStyle";
+    st.textContent =
+      ".burst-p{position:fixed;z-index:2000;pointer-events:none;border-radius:50%;" +
+      "animation:burstFly .55s cubic-bezier(.16,.84,.44,1) forwards}" +
+      "@keyframes burstFly{from{opacity:1;transform:translate(0,0) scale(1)}" +
+      "to{opacity:0;transform:translate(var(--bx),var(--by)) scale(.2)}}";
+    document.head.appendChild(st);
+    var COLORS = ["#00e5a0", "#38bdf8", "#d9ffef"];
+    document.addEventListener("pointerdown", function (e) {
+      if (e.button > 0) return;
+      for (var i = 0; i < 8; i++) {
+        var s = document.createElement("span");
+        s.className = "burst-p";
+        var ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.6;
+        var d = 16 + Math.random() * 30;
+        var size = 3 + Math.random() * 3;
+        s.style.cssText = "left:" + (e.clientX - size / 2) + "px;top:" + (e.clientY - size / 2) + "px;" +
+          "width:" + size + "px;height:" + size + "px;background:" +
+          COLORS[(Math.random() * COLORS.length) | 0] +
+          ";--bx:" + (Math.cos(ang) * d).toFixed(0) + "px;--by:" + (Math.sin(ang) * d).toFixed(0) + "px";
+        document.body.appendChild(s);
+        (function (el) { setTimeout(function () { el.remove(); }, 620); })(s);
+      }
+    }, { passive: true });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
