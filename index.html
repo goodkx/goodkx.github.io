@@ -1001,6 +1001,7 @@
     #dmToggle.off { opacity: .45; }
     html.dm-off .dm-band { display: none !important; }
     @media (max-width: 640px) { #dmToggle { right: 14px; bottom: 232px; width: 38px; height: 38px; } }
+    @media (max-width: 640px) { .hud-ro { display: none; } }
     .dm-stats { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-top: 16px; }
     .dm-stats b { color: var(--accent); font-size: .86rem; }
     .dm-stats a { color: var(--accent-2); text-decoration: none; }
@@ -1408,7 +1409,11 @@
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       /* 弹幕开关状态（记忆在本机） */
       let dmOff = false;
-      try { dmOff = localStorage.getItem("dm-off") === "1"; } catch (e) {}
+      try {
+        const saved = localStorage.getItem("dm-off");
+        /* 手机端默认关（小屏穿字太吵）；桌面默认开；用户手动切换后记住选择 */
+        dmOff = saved !== null ? saved === "1" : window.innerWidth < 640;
+      } catch (e) { dmOff = window.innerWidth < 640; }
       if (dmOff) document.documentElement.classList.add("dm-off");
       const band = document.createElement("div");
       band.className = "dm-band";
@@ -1451,16 +1456,17 @@
               if (el && n) el.textContent = n;
             })
             .catch(() => {});
-          /* 全屏高度内分 6 条轨道，避开最顶部导航与最底部按钮 */
-          const LANES = 6;
-          rows.forEach((m, i) => {
+          /* 全屏高度内分 6 条轨道，避开最顶部导航与最底部按钮；手机 3 轨 5 条减速防刷屏 */
+          const MOBILE_DM = window.innerWidth < 640;
+          const LANES = MOBILE_DM ? 3 : 6;
+          rows.slice(0, MOBILE_DM ? 5 : 14).forEach((m, i) => {
             const el = document.createElement("a");
             el.className = "dm";
             el.href = "guestbook.html";
             el.textContent = "💬 " + String(m.m || "").slice(0, 24) + " —— " + (m.n || "匿名");
       el.style.top = (10 + (i % LANES) * 11) + "%";
-            el.style.animationDuration = (18 + Math.random() * 14).toFixed(1) + "s";
-            el.style.animationDelay = (i * 2.4).toFixed(1) + "s";
+            el.style.animationDuration = (MOBILE_DM ? 30 + Math.random() * 20 : 18 + Math.random() * 14).toFixed(1) + "s";
+            el.style.animationDelay = (i * (MOBILE_DM ? 5 : 2.4)).toFixed(1) + "s";
             band.appendChild(el);
           });
         })

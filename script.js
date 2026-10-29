@@ -275,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     var hero = document.getElementById("hero");
     if (!hero || hero.dataset.particles) return;
     if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.innerWidth < 640) return; /* 手机端：字面藏在标题后不可见，纯耗电，直接跳过 */
     hero.dataset.particles = "1";
     var canvas = document.createElement("canvas");
     canvas.id = "particleHero";
