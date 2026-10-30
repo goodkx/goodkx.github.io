@@ -109,18 +109,22 @@ function initReveal() {
   items.forEach((el) => io.observe(el));
 }
 
-/* ─────────── 导航：高亮 + 移动端菜单 + 进度条 ─────────── */
+/* ─────────── 导航：玻璃 Dock + 魔法胶囊 + 滚动伸缩 + 移动端菜单 ─────────── */
 function initNav() {
   const links = $("#navLinks");
   const toggle = $("#navToggle");
+  const nav = $(".nav");
+  const pill = $("#dockPill");
+  const fine = window.matchMedia && matchMedia("(pointer: fine)").matches &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (toggle && links) {
     toggle.addEventListener("click", () => {
       const open = links.classList.toggle("open");
       toggle.classList.toggle("open", open);
       toggle.setAttribute("aria-expanded", String(open));
+      if (open && nav) nav.classList.remove("hide");   /* 菜单开着时 Dock 不许藏 */
     });
-    // 点击链接后收起菜单
     $$(".nav-links a").forEach((a) =>
       a.addEventListener("click", () => {
         links.classList.remove("open");
@@ -130,9 +134,38 @@ function initNav() {
     );
   }
 
+  /* 魔法胶囊：滑到当前激活项脚下 */
+  function movePill() {
+    if (!pill) return;
+    const act = links ? links.querySelector("a.active") : null;
+    if (!act || innerWidth <= 960) { pill.classList.remove("show"); return; }
+    const lr = links.getBoundingClientRect();
+    const ar = act.getBoundingClientRect();
+    pill.style.left = (ar.left - lr.left) + "px";
+    pill.style.width = ar.width + "px";
+    pill.classList.add("show");
+  }
+
+  /* Dock 放大镜：指针越近越浮起（仅精确指针） */
+  const dock = $("#navDock");
+  if (dock && fine) {
+    dock.addEventListener("pointermove", (e) => {
+      $$(".nav-links a").forEach((a) => {
+        const r = a.getBoundingClientRect();
+        const dx = Math.abs(e.clientX - (r.left + r.width / 2));
+        const mag = Math.max(0, 1 - dx / 260);
+        a.style.transform = "translateY(" + (-2.5 * mag).toFixed(1) + "px) scale(" + (1 + mag * 0.06).toFixed(3) + ")";
+      });
+    }, { passive: true });
+    dock.addEventListener("pointerleave", () => {
+      $$(".nav-links a").forEach((a) => (a.style.transform = ""));
+    });
+  }
+
   const sections = $$("main section[id]");
   const progress = $("#progress");
   const navLinks = $$(".nav-links a");
+  let lastY = 0;
 
   const onScroll = () => {
     const y = window.scrollY + 130;
@@ -143,14 +176,25 @@ function initNav() {
     navLinks.forEach((a) =>
       a.classList.toggle("active", a.getAttribute("href") === "#" + current)
     );
+    movePill();
     if (progress) {
       const h = document.documentElement;
       const max = h.scrollHeight - h.clientHeight;
       progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
     }
+    /* 下滑藏、上滑现；顶部常驻 */
+    const wy = window.scrollY;
+    if (nav) {
+      nav.classList.toggle("scrolled", wy > 30);
+      if (wy > 160 && wy > lastY + 6) nav.classList.add("hide");
+      else if (wy < lastY - 6 || wy <= 160) nav.classList.remove("hide");
+    }
+    lastY = wy;
   };
   window.addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", movePill);
   onScroll();
+  setTimeout(movePill, 400);
 }
 
 /* ─────────── Toast 提示 ─────────── */
