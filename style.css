@@ -1292,3 +1292,20 @@ html .nav-links a:hover::after { opacity: .9; }
   color: var(--muted);
 }
 .skill-lv b { color: var(--accent); font-size: .74rem; }
+
+/* ═══ 02 技能布局精修 ═══ */
+.skills-grid { grid-auto-flow: dense; }
+.skill-card.wide p { max-width: 52ch; }
+.skill-lv span { color: var(--muted); opacity: .85; }
+.skill-bar { position: relative; }
+.skill-bar i { position: relative; }
+.skill-bar i::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 50%;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #eaf2ff;
+  transform: translateY(-50%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 80%, transparent);
+}
