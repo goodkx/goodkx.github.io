@@ -1254,3 +1254,41 @@ html .nav-links a:hover::after { opacity: .9; }
   .glog-body { padding: 12px 14px; }
   .glog-stats .gs { padding: 5px 11px; font-size: .7rem; }
 }
+
+/* ═══ 02 技能：熟练度进度条（滚动驱动生长）+ 命令行刊头 ═══ */
+.skill-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-top: 16px;
+}
+.skill-bar i {
+  display: block;
+  height: 100%;
+  width: var(--lv);
+  background: var(--gradient);
+  border-radius: 999px;
+}
+@supports (animation-timeline: view()) {
+  .skill-bar i {
+    animation: skillGrow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 85%;
+  }
+  @keyframes skillGrow {
+    from { width: 0; }
+    to { width: var(--lv); }
+  }
+}
+.skill-lv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: .66rem;
+  color: var(--muted);
+}
+.skill-lv b { color: var(--accent); font-size: .74rem; }
