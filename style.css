@@ -514,8 +514,8 @@ html .nav-links a:hover::after { opacity: .9; }
 /* ─────────── 技能 ─────────── */
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  gap: 20px;
 }
 .skill-card {
   background: var(--card);
@@ -1295,7 +1295,7 @@ html .nav-links a:hover::after { opacity: .9; }
 
 /* ═══ 02 技能布局精修 ═══ */
 .skills-grid { grid-auto-flow: dense; }
-.skill-card.wide p { max-width: 52ch; }
+/* 宽窄混排已移除：全部等尺寸 */
 .skill-lv span { color: var(--muted); opacity: .85; }
 .skill-bar { position: relative; }
 .skill-bar i { position: relative; }
