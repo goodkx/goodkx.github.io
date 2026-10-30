@@ -195,6 +195,10 @@ function initNav() {
   addEventListener("resize", movePill);
   onScroll();
   setTimeout(movePill, 400);
+
+    /* 04 区：实时在站天数 */
+    const gd = document.getElementById("glogDays");
+    if (gd) gd.textContent = Math.max(1, Math.round((Date.now() - new Date("2026-09-26T00:00:00+08:00")) / 864e5));
 }
 
 /* ─────────── Toast 提示 ─────────── */

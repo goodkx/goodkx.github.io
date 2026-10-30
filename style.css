@@ -1144,3 +1144,113 @@ html .nav-links a:hover::after { opacity: .9; }
     to { transform: scaleX(1); }
   }
 }
+
+/* ═══ 04 经历：git log 提交史时间线 ═══ */
+.glog-cmd {
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+.glog-cmd span { animation: glogBlink 1.1s steps(1) infinite; }
+@keyframes glogBlink { 50% { opacity: 0; } }
+.glog-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.glog-stats .gs {
+  font-family: var(--mono);
+  font-size: .74rem;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+.glog-stats .gs b { color: var(--accent); font-weight: 700; }
+
+.glog { display: flex; flex-direction: column; }
+.glog-item {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 0 18px;
+  position: relative;
+  padding-bottom: 34px;
+}
+.glog-item:last-child { padding-bottom: 6px; }
+.glog-graph { position: relative; display: flex; justify-content: center; }
+.glog-graph::before {
+  content: "";
+  position: absolute;
+  top: 6px; bottom: -6px;
+  width: 2px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 45%, transparent), var(--border));
+  border-radius: 2px;
+}
+.glog-item:last-child .glog-graph::before { bottom: auto; height: 14px; }
+.glog-dot {
+  position: relative;
+  z-index: 1;
+  width: 12px; height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  transition: transform .25s, box-shadow .25s, background .25s;
+}
+.glog-item:hover .glog-dot {
+  transform: scale(1.25);
+  background: var(--accent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.glog-dot.pulse { animation: glogPulse 2s ease-in-out infinite; }
+@keyframes glogPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+.glog-body {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  transition: border-color .3s, box-shadow .3s, transform .25s;
+}
+.glog-item:hover .glog-body {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .3), 0 0 18px color-mix(in srgb, var(--accent) 8%, transparent);
+  transform: translateX(4px);
+}
+.glog-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: .7rem;
+}
+.glog-hash {
+  color: var(--accent);
+  background: var(--acc-soft-bg, rgba(0, 229, 160, .08));
+  border: 1px solid var(--acc-soft-bd, rgba(0, 229, 160, .25));
+  border-radius: 6px;
+  padding: 1px 8px;
+}
+.glog-date { color: var(--muted); }
+.glog-tag {
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1px 8px;
+}
+.glog-body h3 { font-size: 1rem; margin-bottom: 6px; }
+.glog-body p { font-size: .88rem; color: var(--muted); line-height: 1.8; margin: 0; }
+
+@media (max-width: 640px) {
+  .glog-item { grid-template-columns: 18px 1fr; gap: 0 12px; padding-bottom: 26px; }
+  .glog-body { padding: 12px 14px; }
+  .glog-stats .gs { padding: 5px 11px; font-size: .7rem; }
+}

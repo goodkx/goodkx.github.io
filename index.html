@@ -19,8 +19,8 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=145" />
-  <link rel="stylesheet" href="theme.css?v=145" />
+  <link rel="stylesheet" href="style.css?v=146" />
+  <link rel="stylesheet" href="theme.css?v=146" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
   <meta property="og:type" content="website" />
@@ -29,10 +29,10 @@
   <link rel="preconnect" href="https://textdb.dev" />
   <link rel="alternate" type="application/rss+xml" title="CCCAD 的数字小站 RSS" href="feed.xml" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=145"></script>
-  <link rel="stylesheet" href="search.css?v=145" />
-  <script src="search.js?v=145"></script>
-  <script src="achievements.js?v=145"></script>
+  <script src="theme.js?v=146"></script>
+  <link rel="stylesheet" href="search.css?v=146" />
+  <script src="search.js?v=146"></script>
+  <script src="achievements.js?v=146"></script>
 </head>
 <body>
 
@@ -309,30 +309,87 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="timeline" id="timeline-list">
-          <div class="timeline-item reveal">
-            <span class="timeline-dot"></span>
-            <span class="timeline-date">2026 · 10</span>
-            <h3>🌐 小站成型</h3>
-            <p>十九页、五款游戏、十四件工具——当初说好只写一个首页的，根本停不下来。</p>
+        <p class="glog-cmd" aria-hidden="true">$ git log --graph --date=short origin/main <span>▊</span></p>
+
+        <div class="glog-stats reveal">
+          <span class="gs">🗓 在站 <b id="glogDays">–</b> 天</span>
+          <span class="gs">🧩 <b>13</b> 张导航卡</span>
+          <span class="gs">🎮 <b>5</b> 款游戏</span>
+          <span class="gs">♾ 上不封顶</span>
+        </div>
+
+        <div class="glog" id="timeline-list">
+          <div class="glog-item reveal">
+            <div class="glog-graph"><span class="glog-dot pulse"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">c4f9e21</span><span class="glog-date">进行中</span><span class="glog-tag">HEAD</span></div>
+              <h3>🚧 持续迭代</h3>
+              <p>一周一更，欢迎常来——这个站没有 KPI，只有「诶这个能不能加」的贪心。</p>
+            </div>
           </div>
-          <div class="timeline-item reveal" style="--d:.1s">
-            <span class="timeline-dot"></span>
-            <span class="timeline-date">2026 · 09.28</span>
-            <h3>💬 留言板上云</h3>
-            <p>三天踩了审批、401、变量名三个坑——每个坑都爬出来了，还顺手写了篇博客当墓碑。</p>
+          <div class="glog-item reveal" style="--d:.05s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">a7b3d90</span><span class="glog-date">2026 · 10.29</span><span class="glog-tag">主题</span></div>
+              <h3>🐋 深海鲸入驻</h3>
+              <p>DeepSeek 主题上线，整站换上海洋蓝——鲸鲸终于有了自己颜色的家。</p>
+            </div>
           </div>
-          <div class="timeline-item reveal" style="--d:.2s">
-            <span class="timeline-dot"></span>
-            <span class="timeline-date">2026 · 09.27</span>
-            <h3>🌱 从一个深色首页开始</h3>
-            <p>和 AI 搭子从 &lt;html&gt; 敲到全站上线——它出活，我出想法，谁也不欠谁。</p>
+          <div class="glog-item reveal" style="--d:.1s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">f21c84a</span><span class="glog-date">2026 · 10.25</span><span class="glog-tag">前端</span></div>
+              <h3>🎇 一天四个新玩意</h3>
+              <p>粒子聚形、3D 导航卡、成就系统、玻璃 Dock——贪心的一天，一个都没舍得砍。</p>
+            </div>
           </div>
-          <div class="timeline-item reveal" style="--d:.3s">
-            <span class="timeline-dot"></span>
-            <span class="timeline-date">进行中</span>
-            <h3>🚧 持续迭代</h3>
-            <p>一周一更，欢迎常来——这个站没有 KPI，只有「诶这个能不能加」的贪心。</p>
+          <div class="glog-item reveal" style="--d:.15s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">9d4e77b</span><span class="glog-date">2026 · 10.21</span><span class="glog-tag">工具</span></div>
+              <h3>🛠️ 站长工作台</h3>
+              <p>照片上传台 + 一页管完的工作台，从此更新网站像发朋友圈一样简单。</p>
+            </div>
+          </div>
+          <div class="glog-item reveal" style="--d:.2s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">6e8a15c</span><span class="glog-date">2026 · 10.11</span><span class="glog-tag">游戏</span></div>
+              <h3>🎮 街机厅第五台机</h3>
+              <p>打字测速进驻、公告系统开播——五款游戏集齐，召唤全站排行榜。</p>
+            </div>
+          </div>
+          <div class="glog-item reveal" style="--d:.25s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">b52f603</span><span class="glog-date">2026 · 10.06</span><span class="glog-tag">游戏</span></div>
+              <h3>🕹️ 街机厅开张</h3>
+              <p>俄罗斯方块、扫雷正式进驻；某条贪吃蛇短暂服役后光荣退役（它自己提的）。</p>
+            </div>
+          </div>
+          <div class="glog-item reveal" style="--d:.3s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">3c9a1d8</span><span class="glog-date">2026 · 10.01</span><span class="glog-tag">功能</span></div>
+              <h3>📸 国庆三连发</h3>
+              <p>照片墙、年度报告、2048 同步上线——别人的假期在旅游，我的在部署。</p>
+            </div>
+          </div>
+          <div class="glog-item reveal" style="--d:.35s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">7f0b4e2</span><span class="glog-date">2026 · 09.28</span><span class="glog-tag">后端</span></div>
+              <h3>☁️ 留言板上云</h3>
+              <p>三天踩了审批、401、变量名三个坑——每个坑都爬出来了，还顺手写了篇博客当墓碑。</p>
+            </div>
+          </div>
+          <div class="glog-item reveal" style="--d:.4s">
+            <div class="glog-graph"><span class="glog-dot"></span></div>
+            <div class="glog-body">
+              <div class="glog-meta"><span class="glog-hash">1984a3f</span><span class="glog-date">2026 · 09.26</span><span class="glog-tag">起点</span></div>
+              <h3>🌱 第一次 git push</h3>
+              <p>和 AI 搭子从 &lt;html&gt; 敲到全站上线——它出活，我出想法，谁也不欠谁。</p>
+            </div>
           </div>
         </div>
       </div>
@@ -702,7 +759,7 @@
   <!-- 复制成功提示 -->
   <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
 
-  <script src="script.js?v=145"></script>
+  <script src="script.js?v=146"></script>
   <style>
     .visit-note { font-family: var(--mono); font-size: .74rem; color: var(--muted); opacity: .85; margin-bottom: 6px; }
     /* 粒子连线背景 */
@@ -1887,6 +1944,6 @@
         if (ey) ey.textContent = String(Math.max(0, Math.round(window.innerHeight - hy))).padStart(4, "0");
       }, 120);
     })();
-  </script>  <script src="pet.js?v=145" defer></script>
+  </script>  <script src="pet.js?v=146" defer></script>
 </body>
 </html>
