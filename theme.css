@@ -7,6 +7,8 @@
 
 /* ── 紫夜 ── */
 html[data-theme="violet"] {
+  --accent-rgb: 167, 139, 250;
+  --accent-2-rgb: 244, 114, 182;
   --bg: #0d0a1a;
   --bg-soft: #130e26;
   --card: rgba(26, 19, 48, 0.6);
@@ -32,6 +34,8 @@ html[data-theme="violet"] {
 
 /* ── 暖纸（浅色日间） ── */
 html[data-theme="paper"] {
+  --accent-rgb: 5, 150, 105;
+  --accent-2-rgb: 8, 145, 178;
   --bg: #f5f1e8;
   --bg-soft: #ece6d8;
   --card: rgba(255, 255, 255, 0.78);
@@ -57,6 +61,8 @@ html[data-theme="paper"] {
 
 /* ── 墨金（纯黑 OLED） ── */
 html[data-theme="amber"] {
+  --accent-rgb: 251, 191, 36;
+  --accent-2-rgb: 251, 146, 60;
   --bg: #000;
   --bg-soft: #0c0c0e;
   --card: rgba(24, 24, 26, 0.62);
@@ -151,6 +157,7 @@ html[data-theme="amber"] {
 #themePop .sw[data-c="violet"] { background: linear-gradient(120deg, #a78bfa, #f472b6); }
 #themePop .sw[data-c="paper"]  { background: linear-gradient(120deg, #059669, #0891b2); }
 #themePop .sw[data-c="amber"]  { background: linear-gradient(120deg, #fbbf24, #fb923c); }
+#themePop .sw[data-c="deepseek"] { background: linear-gradient(120deg, #4d6bfe, #7dd3fc); }
 
 @media (max-width: 640px) {
   #themeBtn { right: 14px; bottom: 14px; }
@@ -390,7 +397,7 @@ html body::before {
 }
 
 /* ── 深空绿 · 终端：CRT 扫描线 + 冷灰网格 ── */
-html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]) body::before {
+html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]) body::before {
   background-image:
     linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px),
@@ -416,7 +423,9 @@ html[data-theme="violet"] body::before {
     radial-gradient(1.4px 1.4px at 8% 88%, rgba(216, 180, 254, .4), transparent 55%);
   background-size: 44px 44px, 44px 44px, 340px 340px, 280px 280px, 420px 420px, 300px 300px, 460px 460px;
 }
-html[data-theme="violet"] { --card-radius: 10px; }
+html[data-theme="violet"] {
+  --accent-rgb: 167, 139, 250;
+  --accent-2-rgb: 244, 114, 182; --card-radius: 10px; }
 html[data-theme="violet"] :is(.grad-text, h1 .grad) {
   filter: drop-shadow(0 0 22px rgba(167, 139, 250, .55)) drop-shadow(0 0 7px rgba(244, 114, 182, .4));
 }
@@ -429,6 +438,8 @@ html[data-theme="paper"] body::before {
     radial-gradient(150% 120% at 50% 115%, rgba(146, 116, 62, .18), transparent 58%);
 }
 html[data-theme="paper"] {
+  --accent-rgb: 5, 150, 105;
+  --accent-2-rgb: 8, 145, 178;
   --accent: #b42318;           /* 印章红 */
   --accent-2: #a16207;         /* 琥珀褐 */
   --gradient: linear-gradient(120deg, #b42318 10%, #c2410c 90%);
@@ -466,6 +477,8 @@ html[data-theme="amber"] body::before {
   background-size: 44px 44px, 44px 44px, 480px 480px, 360px 360px, 560px 560px, 420px 420px, 100% 100%;
 }
 html[data-theme="amber"] {
+  --accent-rgb: 251, 191, 36;
+  --accent-2-rgb: 251, 146, 60;
   --border: rgba(251, 191, 36, .17);
   --card-radius: 14px;
 }
@@ -485,6 +498,43 @@ html[data-theme="amber"] :is(.grad-text, h1 .grad) {
   }
 }
 html[data-theme="amber"] ::selection { background: rgba(251, 191, 36, .3); }
+
+/* ─────────── 🐋 深海鲸 · DeepSeek 主题 ─────────── */
+html[data-theme="deepseek"] {
+  --bg: #060b1a;
+  --bg-soft: #0a1226;
+  --card: rgba(16, 27, 58, 0.6);
+  --border: rgba(91, 140, 255, 0.18);
+  --border-hover: rgba(91, 140, 255, 0.6);
+  --text: #e9eeff;
+  --muted: #8b96c8;
+  --accent: #5b8cff;
+  --accent-2: #7dd3fc;
+  --accent-rgb: 91, 140, 255;
+  --accent-2-rgb: 125, 211, 252;
+  --gradient: linear-gradient(120deg, #4d6bfe 10%, #7dd3fc 90%);
+  --panel: rgba(10, 18, 38, 0.92);
+  --nav-bg: rgba(6, 11, 26, 0.8);
+  --sb-thumb: #243562;
+  --glow-1: rgba(77, 107, 254, 0.2);
+  --glow-2: rgba(125, 211, 252, 0.13);
+  --acc-soft-bg: rgba(91, 140, 255, 0.12);
+  --acc-soft-bd: rgba(91, 140, 255, 0.42);
+}
+html[data-theme="deepseek"] ::selection { background: rgba(91, 140, 255, .32); }
+html[data-theme="deepseek"] :is(.grad-text, h1 .grad) {
+  background: linear-gradient(120deg, #7d9bff 10%, #7dd3fc 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-theme="deepseek"] body::before {
+  background-image:
+    linear-gradient(rgba(125, 211, 252, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, .045) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 4px);
+}
+
 
 /* ═════════════════════════════════════════════════════════════
    ✨ 高级感 · 动效层（2026-10 第二批）
@@ -843,3 +893,4 @@ html .skill-card > * { transform: translateZ(16px); }
 @media (prefers-reduced-motion: reduce) {
   html .skill-card:hover, html .page-card:hover { animation: none; }
 }
+html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]) { --accent-rgb: 0, 229, 160; --accent-2-rgb: 56, 189, 248; }

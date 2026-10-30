@@ -282,7 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas.setAttribute("aria-hidden", "true");
     hero.prepend(canvas);
     var ctx = canvas.getContext("2d");
-    var COLORS = ["0,229,160", "0,229,160", "0,229,160", "56,189,248"];
+    var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
+    document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
     var SHAPES = ["CCCAD", "</>"];
     var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
     var raf = 0, morphT = 0, hidden = false, last = 0;
@@ -315,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
       while (parts.length < targets.length) {
         parts.push({
           x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
-          c: COLORS[(Math.random() * COLORS.length) | 0],
+          ci: (Math.random() * 4) | 0,
           s: 0.9 + Math.random() * 1.4, a: 0.4 + Math.random() * 0.55
         });
       }
@@ -364,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
         p.x += p.vx * dt; p.y += p.vy * dt;
         var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
         ctx.globalAlpha = p.a;
-        ctx.fillStyle = "rgb(" + p.c + ")";
+        ctx.fillStyle = "rgb(" + PAL[p.ci] + ")";
         ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
       }
       ctx.globalAlpha = 1;

@@ -5,6 +5,14 @@
 (function () {
   const KEY = "site-theme";
 
+  /* 🎨 环境特效取色器：读当前主题 accent-rgb，切主题实时换色 */
+  window.__themeRGB = function () {
+    var cs = getComputedStyle(document.documentElement);
+    var a = (cs.getPropertyValue("--accent-rgb") || "").trim() || "0,229,160";
+    var b = (cs.getPropertyValue("--accent-2-rgb") || "").trim() || "56,189,248";
+    return [a, b];
+  };
+
   /* ── PWA：Service Worker 注册 + 安装入口（全站生效） ── */
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -21,14 +29,15 @@
     { id: "violet", name: "紫夜 · 霓虹" },
     { id: "paper",  name: "暖纸 · 印刷" },
     { id: "amber",  name: "墨金 · 鎏金" },
+    { id: "deepseek", name: "深海鲸 · DeepSeek" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）
   let saved = "";
-  try { saved = localStorage.getItem(KEY) || ""; } catch (e) {}
-  if (saved) {
-    document.documentElement.dataset.theme = saved;
-  }
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  /* 默认主题 = 深海鲸 · DeepSeek（站长拍板）；老访客的已存选择不受影响 */
+  if (saved === null || saved === undefined || saved === "") saved = "deepseek";
+  document.documentElement.dataset.theme = saved;
   /* 默认固定使用「深空绿 · 终端」：不再跟随系统深浅色 / 时段自动换肤。
      想换风格的访客点右下角 🎨 手动选择，选择会被记住。 */
 
@@ -40,6 +49,7 @@
       b.classList.toggle("on", b.dataset.t === id);
     });
     if (window.ACH) ACH.unlock("theme");
+    document.dispatchEvent(new CustomEvent("themechange"));
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -352,6 +362,8 @@
 /* ─────────── 🌧️ 背景氛围：01 数字雨（site-bg 记忆；canvas z-1 垫底，风格同终端配色） ─────────── */
 (function () {
   var canvas = null, timer = 0, cols = [];
+  var PAL = window.__themeRGB();
+  document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
   function injectCss() {
     if (document.getElementById("wpBgStyle")) return;
     var st = document.createElement("style");
@@ -383,7 +395,7 @@
         row: anywhere ? Math.random() * rows * 1.4 - 4 : -4 - Math.random() * 12,
         v: 6 + Math.random() * 9,                 /* 行/秒 */
         len: 8 + ((Math.random() * 14) | 0),
-        rgb: Math.random() < 0.82 ? "0,229,160" : "56,189,248",   /* 终端绿为主 · 站点蓝点缀 */
+        ci: Math.random() < 0.82 ? 0 : 1,   /* 调色板索引：主题色为主 · 点缀色 */
         cells: []
       };
     }
@@ -413,7 +425,7 @@
           var yy = c.cells[k].r * cell;
           if (yy < -cell || yy > H + cell) continue;
           var isHead = k === c.cells.length - 1;
-          ctx.fillStyle = isHead ? "#d9ffef" : c.rgb;
+          ctx.fillStyle = isHead ? "#eaf2ff" : "rgb(" + PAL[c.ci] + ")";
           ctx.globalAlpha = isHead ? 0.9 : Math.max(0.05, 0.5 * (1 - (c.cells.length - 1 - k) / c.len));
           ctx.fillText(c.cells[k].ch, x, yy);
         }
@@ -475,8 +487,8 @@
       "@keyframes burstFly{from{opacity:1;transform:translate(0,0) scale(1)}" +
       "to{opacity:0;transform:translate(var(--bx),var(--by)) scale(.2)}}";
     document.head.appendChild(st);
-    var COLORS = ["#00e5a0", "#38bdf8", "#d9ffef"];
     document.addEventListener("pointerdown", function (e) {
+      var COLORS = ["rgb(" + window.__themeRGB()[0] + ")", "rgb(" + window.__themeRGB()[1] + ")", "#eaf2ff"];
       if (e.button > 0) return;
       for (var i = 0; i < 8; i++) {
         var s = document.createElement("span");

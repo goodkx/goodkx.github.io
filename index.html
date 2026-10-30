@@ -19,8 +19,8 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=142" />
-  <link rel="stylesheet" href="theme.css?v=142" />
+  <link rel="stylesheet" href="style.css?v=143" />
+  <link rel="stylesheet" href="theme.css?v=143" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
   <meta property="og:type" content="website" />
@@ -29,10 +29,10 @@
   <link rel="preconnect" href="https://textdb.dev" />
   <link rel="alternate" type="application/rss+xml" title="CCCAD 的数字小站 RSS" href="feed.xml" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=142"></script>
-  <link rel="stylesheet" href="search.css?v=142" />
-  <script src="search.js?v=142"></script>
-  <script src="achievements.js?v=142"></script>
+  <script src="theme.js?v=143"></script>
+  <link rel="stylesheet" href="search.css?v=143" />
+  <script src="search.js?v=143"></script>
+  <script src="achievements.js?v=143"></script>
 </head>
 <body>
 
@@ -701,7 +701,7 @@
   <!-- 复制成功提示 -->
   <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
 
-  <script src="script.js?v=142"></script>
+  <script src="script.js?v=143"></script>
   <style>
     .visit-note { font-family: var(--mono); font-size: .74rem; color: var(--muted); opacity: .85; margin-bottom: 6px; }
     /* 粒子连线背景 */
@@ -997,7 +997,7 @@
       color: var(--accent); font-size: .95rem; cursor: pointer;
       z-index: 900; transition: transform .15s, box-shadow .2s, opacity .2s;
     }
-    #dmToggle:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 229, 160, .25); }
+    #dmToggle:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(var(--accent-rgb), .25); }
     #dmToggle.off { opacity: .45; }
     html.dm-off .dm-band { display: none !important; }
     @media (max-width: 640px) { #dmToggle { right: 14px; bottom: 232px; width: 38px; height: 38px; } }
@@ -1015,7 +1015,7 @@
       transition: transform .35s;
     }
     .project-card:hover::before, .skill-card:hover::before { transform: scaleX(1); }
-    ::selection { background: rgba(0, 229, 160, .32); }
+    ::selection { background: rgba(var(--accent-rgb), .32); }
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 999px; }
@@ -1053,7 +1053,7 @@
     .side-nav { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; z-index: 850; }
     .side-nav a { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--border-hover); transition: background .2s, box-shadow .2s; }
     .side-nav a:hover { background: var(--accent-2); }
-    .side-nav a.on { background: var(--accent); box-shadow: 0 0 10px rgba(0, 229, 160, .5); }
+    .side-nav a.on { background: var(--accent); box-shadow: 0 0 10px rgba(var(--accent-rgb), .5); }
     .side-nav a .tip {
       position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
       background: var(--card); border: 1px solid var(--border); border-radius: 6px;
@@ -1091,7 +1091,7 @@
       font-family: inherit; font-size: .68rem; font-weight: 700; padding: 4px 10px; cursor: pointer;
       transition: transform .15s, box-shadow .2s;
     }
-    .ms-item .mb:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 229, 160, .3); }
+    .ms-item .mb:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(var(--accent-rgb), .3); }
     .ms-loading { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
 
     /* ── 主页留言板（聊天卡片风格） ── */
@@ -1167,7 +1167,7 @@
       font-weight: 700;
       color: #06251a;
       background: var(--gradient);
-      box-shadow: 0 3px 10px rgba(0, 229, 160, .22);
+      box-shadow: 0 3px 10px rgba(var(--accent-rgb), .22);
       -webkit-user-select: none;
       user-select: none;
     }
@@ -1292,7 +1292,7 @@
       transition: transform .15s, box-shadow .2s, opacity .2s;
     }
     .gb-quick button::after { content: "↑"; font-size: .9rem; }
-    .gb-quick button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 229, 160, .3); }
+    .gb-quick button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(var(--accent-rgb), .3); }
     .gb-quick button:disabled { opacity: .6; cursor: default; }
 
     /* 底部提示与字数 */
@@ -1386,7 +1386,7 @@
           if (p.y < 0 || p.y > H) p.vy *= -1;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, 7);
-          ctx.fillStyle = "rgba(0, 229, 160, .7)";
+          ctx.fillStyle = "rgba(var(--accent-rgb), .7)";
           ctx.fill();
         }
         for (let i = 0; i < pts.length; i++) {
@@ -1886,6 +1886,6 @@
         if (ey) ey.textContent = String(Math.max(0, Math.round(window.innerHeight - hy))).padStart(4, "0");
       }, 120);
     })();
-  </script>  <script src="pet.js?v=142" defer></script>
+  </script>  <script src="pet.js?v=143" defer></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
   --bg-soft: #0e1420;
   --card: rgba(17, 25, 40, 0.6);
   --border: rgba(148, 163, 184, 0.14);
-  --border-hover: rgba(0, 229, 160, 0.45);
+  --border-hover: rgba(var(--accent-rgb), 0.45);
   --text: #e6edf3;
   --muted: #8b98a9;
   --accent: #00e5a0;
@@ -20,11 +20,11 @@
   --panel: rgba(13, 20, 32, 0.88);
   --nav-bg: rgba(10, 14, 22, 0.72);
   --sb-thumb: #223047;
-  --glow-1: rgba(0, 229, 160, 0.13);
+  --glow-1: rgba(var(--accent-rgb), 0.13);
   --glow-2: rgba(56, 189, 248, 0.11);
-  --acc-soft-bg: rgba(0, 229, 160, 0.08);
-  --acc-soft-bd: rgba(0, 229, 160, 0.2);
-  --acc-glow: rgba(0, 229, 160, 0.18);
+  --acc-soft-bg: rgba(var(--accent-rgb), 0.08);
+  --acc-soft-bd: rgba(var(--accent-rgb), 0.2);
+  --acc-glow: rgba(var(--accent-rgb), 0.18);
   --chip-c: #7dd3fc;
   --chip-bg: rgba(56, 189, 248, 0.08);
   --chip-bd: rgba(56, 189, 248, 0.18);
@@ -43,13 +43,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: rgba(0, 229, 160, 0.28); color: #fff; }
+::selection { background: rgba(var(--accent-rgb), 0.28); color: #fff; }
 
 /* 滚动条 */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 160, 0.5); }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-rgb), 0.5); }
 
 .container { width: min(1120px, 92%); margin: 0 auto; }
 
@@ -111,7 +111,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   width: 0;
   z-index: 1001;
   background: var(--gradient);
-  box-shadow: 0 0 10px rgba(0, 229, 160, 0.7);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7);
 }
 
 /* ─────────── 导航栏 ─────────── */
@@ -256,11 +256,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .btn-primary {
   background: var(--gradient);
   color: #06251a;
-  box-shadow: 0 4px 24px rgba(0, 229, 160, 0.25);
+  box-shadow: 0 4px 24px rgba(var(--accent-rgb), 0.25);
 }
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(0, 229, 160, 0.4);
+  box-shadow: 0 8px 32px rgba(var(--accent-rgb), 0.4);
 }
 .btn-ghost {
   background: transparent;
@@ -302,7 +302,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(0, 229, 160, 0.06);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(var(--accent-rgb), 0.06);
   animation: float 6s ease-in-out infinite;
 }
 @keyframes float {
@@ -418,7 +418,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .code-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 12px 40px rgba(0, 229, 160, 0.08);
+  box-shadow: 0 12px 40px rgba(var(--accent-rgb), 0.08);
 }
 .code-card-head {
   padding: 10px 18px;
@@ -456,7 +456,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .skill-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 229, 160, 0.07);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(var(--accent-rgb), 0.07);
 }
 .skill-icon {
   width: 48px; height: 48px;
@@ -506,7 +506,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .project-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 229, 160, 0.07);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(var(--accent-rgb), 0.07);
 }
 .project-top {
   display: flex;
@@ -541,7 +541,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .page-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 229, 160, 0.07);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(var(--accent-rgb), 0.07);
 }
 .page-icon {
   width: 52px;
@@ -606,7 +606,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   border-radius: 50%;
   background: var(--bg);
   border: 3px solid var(--accent);
-  box-shadow: 0 0 14px rgba(0, 229, 160, 0.5);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.5);
 }
 .timeline-date {
   font-family: var(--mono);
@@ -687,7 +687,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   margin-right: 9px;
   vertical-align: middle;
   border-width: 2px;
-  box-shadow: 0 0 10px rgba(0, 229, 160, .45);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), .45);
 }
 .hscroll-item .timeline-date {
   display: inline-block;
@@ -733,8 +733,8 @@ main, .nav, .footer { position: relative; z-index: 1; }
 /* 悬停时卡片抬升 + 描边发光，强化“选中”感 */
 :is(.skill-card, .project-card, .page-card).hscroll-item:hover {
   border-color: var(--accent);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, .38), 0 0 0 1px rgba(0, 229, 160, .30),
-              0 0 34px rgba(0, 229, 160, .14);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .38), 0 0 0 1px rgba(var(--accent-rgb), .30),
+              0 0 34px rgba(var(--accent-rgb), .14);
 }
 /* 键盘聚焦同样可见 */
 .hscroll-item:focus-visible {
@@ -847,7 +847,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .contact-box:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 50px rgba(0, 229, 160, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 50px rgba(var(--accent-rgb), 0.08);
 }
 .contact-title { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 14px; }
 .wave { display: inline-block; animation: wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; }
@@ -977,7 +977,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .admin-zone:hover {
   transform: translateY(-3px);
   border-color: var(--accent);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, .3), 0 0 26px var(--acc-glow, rgba(0, 229, 160, .08));
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .3), 0 0 26px var(--acc-glow, rgba(var(--accent-rgb), .08));
 }
 .az-icon { font-size: 2rem; line-height: 1; }
 .az-text { display: flex; flex-direction: column; gap: 4px; flex: 1 1 240px; min-width: 0; }
@@ -1022,7 +1022,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
   position: absolute; inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(320px circle at var(--gx, 50%) var(--gy, 50%), rgba(0, 229, 160, 0.12), transparent 55%);
+  background: radial-gradient(320px circle at var(--gx, 50%) var(--gy, 50%), rgba(var(--accent-rgb), 0.12), transparent 55%);
   opacity: 0;
   transition: opacity .3s;
 }

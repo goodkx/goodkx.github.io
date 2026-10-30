@@ -27,7 +27,7 @@
 | live.html | 《高性价比人生指南》全文（第三方内容，CC BY 4.0，**不要改它的内部结构**） |
 | style.css | 仅首页样式 |
 | subpage.css | 全部内页共用外壳（含刊头幽灵字） |
-| theme.css | 全站：四主题变量 + 质感层 + 动效层（**加载顺序在最后，html 前缀提优先级**） |
+| theme.css | 全站：五主题变量（含 🐋 深海鲸 · DeepSeek 默认主题） + 质感层 + 动效层（**加载顺序在最后，html 前缀提优先级**） |
 | theme.js | 全站：主题切换 + 背景氛围（默认/01 数字雨，site-bg 记忆）+ PWA + 浮动按钮 + 标题彩蛋 + 终端倾斜 + 页脚状态行 |
 | search.js / search.css | 全站搜索（Ctrl+K） |
 | leaderboard.js | 游戏排行榜共享模块（textdb 读写） |
