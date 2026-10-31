@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function sample() {
       var v = getVid(SHAPES[shapeIdx]);
       var vw = v.videoWidth, vh = v.videoHeight;
-      var box = Math.min(W * 0.8, H * 0.92);
+      var box = Math.min(W * 0.92, H * 0.92);
       var sc = box / Math.max(vw, vh);
       var w = vw * sc, h = vh * sc;
       var off = document.createElement("canvas");
@@ -434,6 +434,15 @@ document.addEventListener("DOMContentLoaded", () => {
       last = now;
       ctx.clearRect(0, 0, W, H);
       var t = now / 1000;
+      /* 全息暗晕：给浅色粒子垫对比度 */
+      if (targets && targets.length) {
+        var gx = W / 2, gy = H / 2;
+        var grd = ctx.createRadialGradient(gx, gy, 10, gx, gy, Math.max(W, H) * 0.36);
+        grd.addColorStop(0, "rgba(8, 14, 30, 0.66)");
+        grd.addColorStop(1, "rgba(8, 14, 30, 0)");
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, W, H);
+      }
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i], tg = targets[i];
         if (tg) {
@@ -452,7 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
         ctx.globalAlpha = p.a;
         ctx.fillStyle = p.col ? "rgb(" + p.col + ")" : "rgb(" + (window.__themeRGB ? window.__themeRGB()[0] : "91,140,255") + ")";
-        ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
+        ctx.fillRect(p.x + ox, p.y + oy, p.s * 1.3, p.s * 1.3);
       }
       ctx.globalAlpha = 1;
       /* 姿态轮换：9s 换一次采样（视频没就绪就等下一轮，保持漂移） */

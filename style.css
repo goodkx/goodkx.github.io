@@ -376,7 +376,9 @@ html .nav-links a:hover::after { opacity: .9; }
 
 /* 终端窗口 */
 .hero-terminal { perspective: 1000px; }
-#particleHero { position: absolute; inset: 0; z-index: 0; }
+.terminal { overflow: visible; }
+#particleHero { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 0; }
+
 .terminal {
   position: relative;
   background: color-mix(in srgb, var(--panel) 45%, transparent);
