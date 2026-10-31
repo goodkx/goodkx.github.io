@@ -317,12 +317,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 500);
 });
 
-/* ═══ 🐋 粒子看板娘：粒子取自鲸鲸视频帧，拼出 DeepSeek 本尊（位置+颜色双复原）═══ */
+/* ═══ 🐋 粒子看板娘 · 最终版：粒子取自鲸鲸视频帧（位置+颜色双复原），双姿态轮换 ═══ */
 (function () {
   function init() {
     var hero = document.getElementById("hero");
     var host = document.querySelector(".hero-terminal .terminal") || hero;
-    if (hero.dataset.particles) return;
+    if (!hero || hero.dataset.particles) return;
     var calm = false;
     try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
 
@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* 两个姿态源：待机 ⇄ 吃糖葫芦 */
     var SHAPES = ["idle.webm", "tanghulu.webm"];
     var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
-    var raf = 0, morphT = 0, hidden = false, last = 0;
+    var morphT = performance.now(), hidden = false, last = 0;
     var mouse = { x: -9999, y: -9999 };
 
     /* 隐藏视频：鲸鲸本尊的姿态源（提前预载） */
@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function sample() {
       var v = getVid(SHAPES[shapeIdx]);
       var vw = v.videoWidth, vh = v.videoHeight;
-      /* 1) 原生尺寸找角色包围盒 */
+      /* 1) 原生尺寸找角色包围盒（淡出帧返回空盒 → 跳过） */
       var tmp = document.createElement("canvas");
       tmp.width = vw; tmp.height = vh;
       var tc = tmp.getContext("2d");
@@ -380,11 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cx0 = Math.max(0, cx0 - 8); cy0 = Math.max(0, cy0 - 8);
       cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
       var cw = cx1 - cx0, ch = cy1 - cy0;
-      window.__smp = { vw: vw, vh: vh, cw: cw, ch: ch, bbox: [cx0, cy0, cx1, cy1], alphaTest: td[(Math.round(vh/2) * vw + Math.round(vw/2)) * 4 + 3], t: +v.currentTime.toFixed(1) };
-      if (cw < 24 || ch < 24) {
-        morphT = now - 8000;   /* 淡出帧：1s 后重试采样，直到抓到可见帧 */
-        return;
-      }
+      if (cw < 24 || ch < 24) return;   /* 淡出帧：沿用上一形状 */
       /* 2) 角色区域放大铺满画布 */
       var box = Math.min(W * 0.92, H * 0.92);
       var sc = box / Math.max(cw, ch);
@@ -396,12 +392,12 @@ document.addEventListener("DOMContentLoaded", () => {
       var data = c.getImageData(0, 0, W, H).data;
       var gap = W < 640 ? 6 : 4;
       targets = [];
-      for (var y = 0; y < H; y += gap)
-        for (var x = 0; x < W; x += gap) {
-          var i4 = (y * W + x) * 4;
+      for (var yy = 0; yy < H; yy += gap)
+        for (var xx = 0; xx < W; xx += gap) {
+          var i4 = (yy * W + xx) * 4;
           if (data[i4 + 3] > 110) {
             targets.push({
-              x: x, y: y,
+              x: xx, y: yy,
               col: data[i4] + "," + data[i4 + 1] + "," + data[i4 + 2]
             });
           }
@@ -417,7 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
         parts.push({
           x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
           col: null,
-          s: 2.2 + Math.random() * 1.8, a: 0.7 + Math.random() * 0.3,
+          s: 1.9 + Math.random() * 1.6, a: 0.62 + Math.random() * 0.38,
           dl: Math.random() * 0.5
         });
       }
@@ -452,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     var last = performance.now();
-    function frame(now) { try {
+    function frame(now) {
       var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
       last = now;
       ctx.clearRect(0, 0, W, H);
@@ -461,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (targets && targets.length) {
         var gx = W / 2, gy = H / 2;
         var grd = ctx.createRadialGradient(gx, gy, 10, gx, gy, Math.max(W, H) * 0.36);
-        grd.addColorStop(0, "rgba(8, 14, 30, 0.66)");
+        grd.addColorStop(0, "rgba(8, 14, 30, 0.5)");
         grd.addColorStop(1, "rgba(8, 14, 30, 0)");
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, W, H);
@@ -484,17 +480,15 @@ document.addEventListener("DOMContentLoaded", () => {
         var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
         ctx.globalAlpha = p.a;
         ctx.fillStyle = p.col ? "rgb(" + p.col + ")" : "rgb(" + (window.__themeRGB ? window.__themeRGB()[0] : "91,140,255") + ")";
-        ctx.fillRect(p.x + ox, p.y + oy, p.s * 1.3, p.s * 1.3);
+        ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
       }
       ctx.globalAlpha = 1;
-      /* 姿态轮换：9s 换一次采样（视频没就绪就等下一轮，保持漂移） */
+      /* 姿态轮换：9s 换一次采样 */
       if (now - morphT > 9000 && vidReady()) {
         morphT = now;
         shapeIdx = (shapeIdx + 1) % SHAPES.length;
         sample();
       }
-      } catch (e) { if (!window.__frameErr) window.__frameErr = (e.message || "?"); }
-      window.__frames = (window.__frames || 0) + 1;
     }
 
     document.addEventListener("visibilitychange", function () {
@@ -505,6 +499,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (vidReady()) fit();
     });
 
+    window.__dbg = function () {
+      var cv = document.getElementById("particleHero");
+      return { mode: "run", W: W, H: H, segs: parts.length, tg: targets ? targets.length : -1,
+               canvasW: cv ? cv.width : -1, canvasH: cv ? cv.height : -1,
+               styleW: cv ? cv.style.width : "-", hostW: host ? host.clientWidth : -1, hostH: host ? host.clientHeight : -1 };
+    };
     fit();
     if (calm) {
       /* 减弱动效：聚成看板娘静帧 */
