@@ -635,6 +635,20 @@ html .nav-links a:hover::after { opacity: .9; }
   opacity: 0.55;
   transition: opacity 0.3s, transform 0.3s;
 }
+.hscroll-item .page-go {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--accent);
+  background: var(--acc-soft-bg, rgba(0, 229, 160, .08));
+  border: 1px solid var(--acc-soft-bd, rgba(0, 229, 160, .25));
+  border-radius: 999px;
+  padding: 5px 14px;
+  opacity: 1;
+  transform: none;
+  transition: transform .25s, background .25s;
+}
+.hscroll-item:hover .page-go { transform: translateX(4px); background: var(--acc-soft-bd, rgba(0, 229, 160, .18)); }
 .page-card:hover .page-go { opacity: 1; transform: translateX(5px); }
 .page-card-add {
   background: transparent;
@@ -716,41 +730,64 @@ html .nav-links a:hover::after { opacity: .9; }
 .hscroll-item {
   position: relative;
   flex: 0 0 auto;
-  width: min(340px, 78vw);
-  padding: 20px 22px 22px 24px;
-  background: var(--card);
+  width: min(320px, 78vw);
+  padding: 26px 20px 20px;
+  text-align: center;
+  background: color-mix(in srgb, var(--card) 45%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+          backdrop-filter: blur(14px) saturate(1.25);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 18px;
   scroll-snap-align: start;
   overflow: hidden;
   transition: transform .3s, border-color .3s, box-shadow .3s;
 }
 .hscroll-item:hover {
-  transform: translateY(-4px);
+  transform: translateY(-8px);
   border-color: var(--border-hover);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, .32);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, .45), 0 0 26px color-mix(in srgb, var(--accent) 16%, transparent);
 }
-/* 左侧强调条 */
+/* 顶部流光带 */
 .hscroll-item::before {
   content: "";
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
-  opacity: .85;
+  left: 16%; right: 16%; top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: .75;
+  transition: left .3s, right .3s, opacity .3s;
 }
-/* 右上角序号水印 */
+.hscroll-item:hover::before { left: 4%; right: 4%; opacity: 1; }
+/* 右下角幽灵编号 */
 .hscroll-item::after {
   content: attr(data-idx);
   position: absolute;
-  right: 14px; top: 8px;
+  right: 10px; bottom: 0;
   font-family: var(--mono);
-  font-size: 1.9rem;
+  font-size: 2.5rem;
   font-weight: 700;
+  line-height: 1;
   color: var(--accent);
-  opacity: .13;
+  opacity: .09;
   pointer-events: none;
 }
+/* 大图标：渐变发光方块 */
+.hscroll-item .page-icon {
+  width: 58px; height: 58px;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  font-size: 1.7rem;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg,
+    color-mix(in srgb, var(--accent) 30%, transparent),
+    color-mix(in srgb, var(--accent-2) 14%, transparent));
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.hscroll-item:hover .page-icon { transform: scale(1.12) rotate(-6deg); }
+.hscroll-item h3 { font-size: 1.05rem; margin: 0 0 8px; }
+.hscroll-item p { font-size: .85rem; color: var(--muted); line-height: 1.7; margin: 0 0 14px; }
 .hscroll-item .timeline-dot {
   position: static;
   display: inline-block;
