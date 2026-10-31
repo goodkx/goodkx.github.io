@@ -51,11 +51,11 @@
 
       <nav class="nav-links" id="navLinks" aria-label="主导航">
         <span class="dock-pill" id="dockPill" aria-hidden="true"></span>
-        <a href="#about"><span class="nav-num">01.</span>关于</a>
-        <a href="#skills"><span class="nav-num">02.</span>技能</a>
-        <a href="#projects"><span class="nav-num">03.</span>项目</a>
-        <a href="#timeline"><span class="nav-num">04.</span>经历</a>
-        <a href="#pages"><span class="nav-num">05.</span>页面</a>
+        <a href="#pages"><span class="nav-num">01.</span>页面</a>
+        <a href="#about"><span class="nav-num">02.</span>关于</a>
+        <a href="#skills"><span class="nav-num">03.</span>技能</a>
+        <a href="#projects"><span class="nav-num">04.</span>项目</a>
+        <a href="#timeline"><span class="nav-num">05.</span>经历</a>
         <a href="#log"><span class="nav-num">06.</span>日志</a>
         <a href="#contact"><span class="nav-num">07.</span>联系</a>
       </nav>
@@ -130,10 +130,134 @@
     </section>
 
     <!-- ══════════ 01 关于 ══════════ -->
+    <!-- ══════════ 01 页面导航 ══════════
+         ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card hscroll-item" data-idx="01">…</a>，
+         改掉 href（指向你的新页面）、图标 emoji 和文字即可。
+         页面还没建时保持 href="#"，点击会弹出提示。 -->
+    <section id="pages" class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 class="section-title"><span class="num">01.</span>页面导航</h2>
+          <span class="section-line"></span>
+        </div>
+
+        <div class="hscroll-rows" id="pages-rows">
+          <div class="hscroll pages-row" id="pages-list" data-group="pages">
+            <a class="page-card reveal hscroll-item" href="live.html" data-idx="01">
+              <span class="page-icon">📖</span>
+              <h3>人生指南</h3>
+              <p>667 条循证建议 · 站长重点推荐</p>
+              <span class="page-go">去看 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="blog.html" data-idx="02">
+              <span class="page-icon">✍️</span>
+              <h3>博客</h3>
+              <p>记录学习笔记与一些想法</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="gallery.html" data-idx="03">
+              <span class="page-icon">📷</span>
+              <h3>相册</h3>
+              <p>用照片收藏生活里的瞬间</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="tools.html" data-idx="04">
+              <span class="page-icon">🧰</span>
+              <h3>工具箱</h3>
+              <p>14 个开箱即用的小工具</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="ai.html" data-idx="05">
+              <span class="page-icon">🤖</span>
+              <h3>AI 军火库</h3>
+              <p>25+ 当红 AI 工具精选</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="kaoyan.html" data-idx="06">
+              <span class="page-icon">🎓</span>
+              <h3>考研大纲</h3>
+              <p>27 软件工程考研全科备考大纲</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a class="page-card reveal hscroll-item" href="guestbook.html" data-idx="07">
+              <span class="page-icon">💬</span>
+              <h3>留言板</h3>
+              <p>留下你的痕迹，打个招呼</p>
+              <span class="page-go">去留言 →</span>
+            </a>
+            
+          </div>
+          <div class="hscroll pages-row" id="pages-list-b" data-group="pages">
+            <a style="--d:0.44" class="page-card reveal hscroll-item" href="arcade.html" data-idx="08">
+              <span class="page-icon">🕹</span>
+              <h3>街机厅</h3>
+              <p>四台机台 + 荣誉墙 · 成绩全站互通</p>
+              <span class="page-go">投币开玩 →</span>
+            </a>
+            
+            
+            <a style="--d:0.18" class="page-card reveal hscroll-item" href="report.html" data-idx="09">
+              <span class="page-icon">📊</span>
+              <h3>我的年报</h3>
+              <p>来访、打卡、留言——你的小站足迹</p>
+              <span class="page-go">查看报告 →</span>
+            </a>
+            <a style="--d:0.24" class="page-card reveal hscroll-item" href="shop.html" data-idx="10">
+              <span class="page-icon">🛒</span>
+              <h3>小卖部</h3>
+              <p>站长手作好物 · 扫码付款</p>
+              <span class="page-go">去逛逛 →</span>
+            </a>
+            <a style="--d:0.26" class="page-card reveal hscroll-item" href="achievements.html" data-idx="11">
+              <div class="page-icon">🏅</div>
+              <h3>成就柜</h3>
+              <p>访客徽章收集——解锁属于你的战绩</p>
+              <span class="page-go">看看战绩 →</span>
+            </a>
+            <a style="--d:0.30" class="page-card reveal hscroll-item" href="links.html" data-idx="11">
+              <span class="page-icon">🤝</span>
+              <h3>友链</h3>
+              <p>朋友们的小站，以及申请友链</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            <a style="--d:0.36" class="page-card reveal hscroll-item" href="pelican.html" data-idx="12">
+              <span class="page-icon">🚲</span>
+              <h3>鹈鹕彩蛋</h3>
+              <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
+              <span class="page-go">打开页面 →</span>
+            </a>
+            
+            
+          </div>
+          <a class="page-card page-card-add reveal" style="--d:0.42" href="#" data-toast="新建一个 html（可复制 blog.html 的框架），再把一张卡片指向它 ✨">
+            <span class="page-icon">➕</span>
+            <h3>待续……</h3>
+            <p>新建一个 html 页面，再复制一张卡片指向它</p>
+            <span class="page-go">复制即用 →</span>
+          </a>
+        </div>
+        <p class="hscroll-hint">↔ 两行同时滚动 · 拖动查看全部</p>
+      </div>
+    </section>
+
+    <!-- ══════════ 05b 站长专区（独立一块，随页面滚动出现；不混进访客页面导航） ══════════ -->
+    <section id="admin-zone" class="section">
+      <div class="container">
+        <a class="admin-zone reveal" href="admin.html" rel="nofollow">
+          <span class="az-icon">🛠</span>
+          <span class="az-text">
+            <strong>站长工作台</strong>
+            <span class="az-sub">照片 · 小店 · 订单 · 留言 · 部署，一页管完</span>
+          </span>
+          <span class="az-go">进去管理 →</span>
+        </a>
+      </div>
+    </section>
+
     <section id="about" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">01.</span>关于我</h2>
+          <h2 class="section-title"><span class="num">02.</span>关于我</h2>
           <span class="section-line"></span>
         </div>
 
@@ -177,7 +301,7 @@
     <section id="skills" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">02.</span>技能</h2>
+          <h2 class="section-title"><span class="num">03.</span>技能</h2>
           <span class="section-line"></span>
         </div>
 
@@ -287,7 +411,7 @@
     <section id="projects" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">03.</span>项目</h2>
+          <h2 class="section-title"><span class="num">04.</span>项目</h2>
           <span class="section-line"></span>
         </div>
 
@@ -348,7 +472,7 @@
     <section id="timeline" class="section">
       <div class="container">
         <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">04.</span>经历</h2>
+          <h2 class="section-title"><span class="num">05.</span>经历</h2>
           <span class="section-line"></span>
         </div>
 
@@ -475,130 +599,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ══════════ 04 页面导航 ══════════
-         ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card hscroll-item" data-idx="01">…</a>，
-         改掉 href（指向你的新页面）、图标 emoji 和文字即可。
-         页面还没建时保持 href="#"，点击会弹出提示。 -->
-    <section id="pages" class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <h2 class="section-title"><span class="num">05.</span>页面导航</h2>
-          <span class="section-line"></span>
-        </div>
-
-        <div class="hscroll-rows" id="pages-rows">
-          <div class="hscroll pages-row" id="pages-list" data-group="pages">
-            <a class="page-card reveal hscroll-item" href="live.html" data-idx="01">
-              <span class="page-icon">📖</span>
-              <h3>人生指南</h3>
-              <p>667 条循证建议 · 站长重点推荐</p>
-              <span class="page-go">去看 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="blog.html" data-idx="02">
-              <span class="page-icon">✍️</span>
-              <h3>博客</h3>
-              <p>记录学习笔记与一些想法</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="gallery.html" data-idx="03">
-              <span class="page-icon">📷</span>
-              <h3>相册</h3>
-              <p>用照片收藏生活里的瞬间</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="tools.html" data-idx="04">
-              <span class="page-icon">🧰</span>
-              <h3>工具箱</h3>
-              <p>14 个开箱即用的小工具</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="ai.html" data-idx="05">
-              <span class="page-icon">🤖</span>
-              <h3>AI 军火库</h3>
-              <p>25+ 当红 AI 工具精选</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="kaoyan.html" data-idx="06">
-              <span class="page-icon">🎓</span>
-              <h3>考研大纲</h3>
-              <p>27 软件工程考研全科备考大纲</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a class="page-card reveal hscroll-item" href="guestbook.html" data-idx="07">
-              <span class="page-icon">💬</span>
-              <h3>留言板</h3>
-              <p>留下你的痕迹，打个招呼</p>
-              <span class="page-go">去留言 →</span>
-            </a>
-            
-          </div>
-          <div class="hscroll pages-row" id="pages-list-b" data-group="pages">
-            <a style="--d:0.44" class="page-card reveal hscroll-item" href="arcade.html" data-idx="08">
-              <span class="page-icon">🕹</span>
-              <h3>街机厅</h3>
-              <p>四台机台 + 荣誉墙 · 成绩全站互通</p>
-              <span class="page-go">投币开玩 →</span>
-            </a>
-            
-            
-            <a style="--d:0.18" class="page-card reveal hscroll-item" href="report.html" data-idx="09">
-              <span class="page-icon">📊</span>
-              <h3>我的年报</h3>
-              <p>来访、打卡、留言——你的小站足迹</p>
-              <span class="page-go">查看报告 →</span>
-            </a>
-            <a style="--d:0.24" class="page-card reveal hscroll-item" href="shop.html" data-idx="10">
-              <span class="page-icon">🛒</span>
-              <h3>小卖部</h3>
-              <p>站长手作好物 · 扫码付款</p>
-              <span class="page-go">去逛逛 →</span>
-            </a>
-            <a style="--d:0.26" class="page-card reveal hscroll-item" href="achievements.html" data-idx="11">
-              <div class="page-icon">🏅</div>
-              <h3>成就柜</h3>
-              <p>访客徽章收集——解锁属于你的战绩</p>
-              <span class="page-go">看看战绩 →</span>
-            </a>
-            <a style="--d:0.30" class="page-card reveal hscroll-item" href="links.html" data-idx="11">
-              <span class="page-icon">🤝</span>
-              <h3>友链</h3>
-              <p>朋友们的小站，以及申请友链</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            <a style="--d:0.36" class="page-card reveal hscroll-item" href="pelican.html" data-idx="12">
-              <span class="page-icon">🚲</span>
-              <h3>鹈鹕彩蛋</h3>
-              <p>一只会踩单车的鹈鹕，纯 SVG 手绘动画</p>
-              <span class="page-go">打开页面 →</span>
-            </a>
-            
-            
-          </div>
-          <a class="page-card page-card-add reveal" style="--d:0.42" href="#" data-toast="新建一个 html（可复制 blog.html 的框架），再把一张卡片指向它 ✨">
-            <span class="page-icon">➕</span>
-            <h3>待续……</h3>
-            <p>新建一个 html 页面，再复制一张卡片指向它</p>
-            <span class="page-go">复制即用 →</span>
-          </a>
-        </div>
-        <p class="hscroll-hint">↔ 两行同时滚动 · 拖动查看全部</p>
-      </div>
-    </section>
-
-    <!-- ══════════ 05b 站长专区（独立一块，随页面滚动出现；不混进访客页面导航） ══════════ -->
-    <section id="admin-zone" class="section">
-      <div class="container">
-        <a class="admin-zone reveal" href="admin.html" rel="nofollow">
-          <span class="az-icon">🛠</span>
-          <span class="az-text">
-            <strong>站长工作台</strong>
-            <span class="az-sub">照片 · 小店 · 订单 · 留言 · 部署，一页管完</span>
-          </span>
-          <span class="az-go">进去管理 →</span>
-        </a>
       </div>
     </section>
 
@@ -1623,8 +1623,8 @@
       buildSideNav();
       function buildSideNav() {
         const SECTIONS = [
-          ["hero", "首页"], ["about", "关于"], ["skills", "技能"], ["projects", "项目"], ["timeline", "经历"],
-          ["pages", "页面"], ["log", "日志"], ["contact", "联系"],
+          ["hero", "首页"], ["pages", "页面"], ["about", "关于"], ["skills", "技能"], ["projects", "项目"],
+          ["timeline", "经历"], ["log", "日志"], ["contact", "联系"],
         ];
         const nav = document.createElement("nav");
         nav.className = "side-nav";
