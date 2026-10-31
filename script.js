@@ -464,3 +464,53 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
+
+/* ═══ 🐋 背景线条画：线条小鲸鱼 + 看板娘线稿，随机散布无规律 ═══ */
+(function () {
+  function init() {
+    if (!document.body.classList.contains("page-home")) return;
+    var WHALE = '<svg viewBox="0 0 120 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M15 42 Q30 18 65 16 Q92 15 100 34 Q104 42 98 50 Q80 64 45 62 Q22 60 15 42 Z"/>' +
+      '<path d="M15 42 Q5 30 2 20"/><path d="M15 42 Q4 50 3 60"/>' +
+      '<path d="M30 54 Q45 58 62 55"/><path d="M34 58 Q46 61 58 59"/>' +
+      '<circle cx="80" cy="33" r="2.4" fill="currentColor" stroke="none"/>' +
+      '<path d="M55 52 Q60 62 72 59"/>' +
+      '<path d="M80 13 Q82 4 90 6"/><path d="M80 13 Q76 6 70 8"/>' +
+      '</svg>';
+    var GIRL = '<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<ellipse cx="50" cy="32" rx="18" ry="17"/>' +
+      '<path d="M33 26 Q50 12 67 26"/>' +
+      '<path d="M33 22 Q14 30 16 62 Q17 70 24 66"/>' +
+      '<path d="M67 22 Q86 30 84 62 Q83 70 76 66"/>' +
+      '<path d="M31 17 Q50 5 69 17"/>' +
+      '<path d="M38 48 Q36 60 30 78 Q28 88 40 90 L60 90 Q72 88 70 78 Q64 60 62 48"/>' +
+      '<path d="M38 52 Q28 62 34 70"/><path d="M62 52 Q72 62 66 70"/>' +
+      '<path d="M42 48 L50 54 L58 48"/>' +
+      '<path d="M44 90 L44 100"/><path d="M56 90 L56 100"/>' +
+      '<path d="M43 34 Q45 36 47 34"/><path d="M53 34 Q55 36 57 34"/>' +
+      '<path d="M46 42 Q50 45 54 42"/>' +
+      '</svg>';
+    var KINDS = [WHALE, GIRL];
+    var mobile = innerWidth < 640;
+    var COUNT = mobile ? 6 : 13;
+    var layer = document.createElement("div");
+    layer.className = "bg-art";
+    layer.setAttribute("aria-hidden", "true");
+    for (var i = 0; i < COUNT; i++) {
+      var wrap = document.createElement("div");
+      var kind = KINDS[i % 2];
+      var size = (kind === WHALE ? 110 : 90) + Math.random() * (mobile ? 50 : 110);
+      wrap.innerHTML = kind;
+      var svg = wrap.firstChild;
+      svg.style.width = size.toFixed(0) + "px";
+      svg.style.left = (Math.random() * 88).toFixed(1) + "%";
+      svg.style.top = (Math.random() * 88).toFixed(1) + "%";
+      svg.style.transform = "rotate(" + ((Math.random() * 44 - 22)).toFixed(0) + "deg)";
+      svg.style.opacity = (0.05 + Math.random() * 0.08).toFixed(2);
+      layer.appendChild(svg);
+    }
+    document.body.appendChild(layer);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();

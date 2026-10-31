@@ -1356,3 +1356,18 @@ html .nav-links a:hover::after { opacity: .9; }
   transform: translateY(-50%);
   box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 80%, transparent);
 }
+
+/* ═══ 背景线条画：线条小鲸鱼 + 看板娘线稿，随机散布 ═══ */
+body.page-home .bg-grid { display: none; }
+.bg-art {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-art svg {
+  position: absolute;
+  color: var(--accent);
+  opacity: .1;
+}

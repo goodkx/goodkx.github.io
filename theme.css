@@ -894,3 +894,6 @@ html .skill-card > * { transform: translateZ(16px); }
   html .skill-card:hover, html .page-card:hover { animation: none; }
 }
 html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]) { --accent-rgb: 0, 229, 160; --accent-2-rgb: 56, 189, 248; }
+
+/* ═══ 首页背景：网格退役，改用散落的线条画（.bg-art 由 script.js 生成）═══ */
+body.page-home::before { background-image: none !important; }
