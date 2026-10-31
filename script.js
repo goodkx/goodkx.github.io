@@ -332,19 +332,42 @@ document.addEventListener("DOMContentLoaded", () => {
     var ctx = canvas.getContext("2d");
     var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
     document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
-    var SHAPES = ["CCCAD", "</>"];
+    var SHAPES = ["whale", "DEEPSEEK"];
     var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
     var raf = 0, morphT = 0, hidden = false, last = 0;
     var mouse = { x: -9999, y: -9999 };
 
+    /* 🐋 DeepSeek 鲸鱼剪影（填充路径，眼窝挖洞） */
+    var WHALE_PATH =
+      "M18 78 C18 58 40 40 78 36 C112 32 148 38 168 58 C178 68 182 80 178 90 " +
+      "L196 74 C204 88 204 100 196 112 L176 98 C170 112 150 122 122 124 " +
+      "C88 127 48 118 30 98 C22 90 18 84 18 78 Z";
     function sample() {
       var off = document.createElement("canvas");
       off.width = W; off.height = H;
       var c = off.getContext("2d");
-      var fs = Math.min(W * 0.16, H * 0.34);
-      c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
-      c.textAlign = "center"; c.textBaseline = "middle";
-      c.fillText(SHAPES[shapeIdx], W / 2, H * 0.34);
+      var word = SHAPES[shapeIdx];
+      if (word === "whale") {
+        var bw = Math.min(W * 0.5, H * 0.72, 620);
+        var sc = bw / 220;
+        var w = 220 * sc, h = 140 * sc;
+        c.translate(W * 0.34 - w / 2, H * 0.34 - h / 2);
+        c.scale(sc, sc);
+        c.fillStyle = "#fff";
+        c.fill(new Path2D(WHALE_PATH));
+        /* 眼窝 */
+        c.globalCompositeOperation = "destination-out";
+        c.beginPath(); c.ellipse(52, 72, 6.5, 7.5, 0, 0, Math.PI * 2); c.fill();
+        /* 嘴缝 */
+        c.beginPath(); c.lineWidth = 2.4; c.strokeStyle = "#fff";
+        c.moveTo(24, 88); c.quadraticCurveTo(40, 97, 58, 95); c.stroke();
+        c.globalCompositeOperation = "source-over";
+      } else {
+        var fs = Math.min(W * (word.length > 6 ? 0.075 : 0.16), H * 0.34);
+        c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
+        c.textAlign = "center"; c.textBaseline = "middle";
+        c.fillText(word, W / 2, H * 0.34);
+      }
       var data = c.getImageData(0, 0, W, H).data;
       var gap = W < 640 ? 7 : 5;
       targets = [];
