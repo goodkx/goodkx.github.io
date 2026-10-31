@@ -363,13 +363,33 @@ document.addEventListener("DOMContentLoaded", () => {
     function sample() {
       var v = getVid(SHAPES[shapeIdx]);
       var vw = v.videoWidth, vh = v.videoHeight;
+      /* 1) 原生尺寸找角色包围盒 */
+      var tmp = document.createElement("canvas");
+      tmp.width = vw; tmp.height = vh;
+      var tc = tmp.getContext("2d");
+      tc.drawImage(v, 0, 0);
+      var td = tc.getImageData(0, 0, vw, vh).data;
+      var cx0 = vw, cy0 = vh, cx1 = 0, cy1 = 0;
+      for (var y = 0; y < vh; y += 2)
+        for (var x = 0; x < vw; x += 2) {
+          if (td[(y * vw + x) * 4 + 3] > 110) {
+            if (x < cx0) cx0 = x; if (x > cx1) cx1 = x;
+            if (y < cy0) cy0 = y; if (y > cy1) cy1 = y;
+          }
+        }
+      cx0 = Math.max(0, cx0 - 8); cy0 = Math.max(0, cy0 - 8);
+      cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
+      var cw = cx1 - cx0, ch = cy1 - cy0;
+      window.__smp = { vw: vw, vh: vh, cw: cw, ch: ch, bbox: [cx0, cy0, cx1, cy1], alphaTest: td[(Math.round(vh/2) * vw + Math.round(vw/2)) * 4 + 3], t: +v.currentTime.toFixed(1) };
+      if (cw < 24 || ch < 24) return;   /* 淡出帧：角色不可见，沿用上一形状 */
+      /* 2) 角色区域放大铺满画布 */
       var box = Math.min(W * 0.92, H * 0.92);
-      var sc = box / Math.max(vw, vh);
-      var w = vw * sc, h = vh * sc;
+      var sc = box / Math.max(cw, ch);
+      var w = cw * sc, h = ch * sc;
       var off = document.createElement("canvas");
       off.width = W; off.height = H;
       var c = off.getContext("2d");
-      c.drawImage(v, W / 2 - w / 2, H * 0.5 - h / 2, w, h);
+      c.drawImage(tmp, cx0, cy0, cw, ch, W / 2 - w / 2, H / 2 - h / 2, w, h);
       var data = c.getImageData(0, 0, W, H).data;
       var gap = W < 640 ? 6 : 4;
       targets = [];
@@ -429,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     var last = performance.now();
-    function frame(now) {
+    function frame(now) { try {
       var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
       last = now;
       ctx.clearRect(0, 0, W, H);
@@ -470,6 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
         shapeIdx = (shapeIdx + 1) % SHAPES.length;
         sample();
       }
+      } catch (e) { if (!window.__frameErr) window.__frameErr = (e.message || "?"); }
+      window.__frames = (window.__frames || 0) + 1;
     }
 
     document.addEventListener("visibilitychange", function () {

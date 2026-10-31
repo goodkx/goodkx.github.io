@@ -445,9 +445,7 @@
       draw();
       return;                   /* 不启动循环 */
     }
-    timer = setInterval(function () {
-      if (!document.hidden) draw();
-    }, 50);
+    timer = setInterval(function () { draw(); }, 50);
     addEventListener("resize", function () {
       if (!canvas) return;
       fit();
