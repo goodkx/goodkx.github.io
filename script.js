@@ -317,252 +317,150 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 500);
 });
 
-/* ═══ 🐋 线条聚形 · 精修版：直线群组形 → 散开 → 再组形，无限循环 ═══ */
+/* ═══ 粒子聚形 Hero：上千粒子拼字，鼠标排斥回流，点击爆发重组 ═══ */
 (function () {
   function init() {
-    if (!document.body.classList.contains("page-home")) return;
-    var calm = false;
-    try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-
+    var hero = document.getElementById("hero");
+    if (!hero || hero.dataset.particles) return;
+    if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.innerWidth < 640) return; /* 手机端：字面藏在标题后不可见，纯耗电，直接跳过 */
+    hero.dataset.particles = "1";
     var canvas = document.createElement("canvas");
-    canvas.id = "bgLines";
+    canvas.id = "particleHero";
     canvas.setAttribute("aria-hidden", "true");
-    document.body.appendChild(canvas);
+    hero.prepend(canvas);
     var ctx = canvas.getContext("2d");
-
-    var SHAPES = [
-      { vb: [120, 72], paths: [
-        "M15 42 Q30 18 65 16 Q92 15 100 34 Q104 42 98 50 Q80 64 45 62 Q22 60 15 42 Z",
-        "M15 42 Q5 30 2 20",
-        "M15 42 Q4 50 3 60",
-        "M28 52 Q48 58 76 50",
-        "M31 56 Q48 61 72 54",
-        "M34 59 Q48 63 66 58",
-        "M55 52 Q60 62 72 59",
-        "M70 44 Q82 47 93 41",
-        "M78 30 Q80 33 82 30",
-        "M80 13 Q82 4 90 6",
-        "M80 13 Q76 6 70 8",
-        "M86 2 Q88 -1 91 1",
-        "M74 3 Q72 0 69 2",
-        "M92 8 Q95 6 97 8"
-      ]},
-      { vb: [100, 132], paths: [
-        "M35 24 Q33 44 50 47 Q67 44 65 24 Q63 10 50 10 Q37 10 35 24",
-        "M33 22 Q35 8 50 7 Q65 8 67 22",
-        "M40 20 Q44 13 48 20",
-        "M52 19 Q56 12 60 19",
-        "M33 22 Q29 31 34 38",
-        "M67 22 Q71 31 66 38",
-        "M31 20 Q10 26 12 58 Q13 70 22 68 Q26 66 24 56 Q22 40 34 30",
-        "M69 20 Q90 26 88 58 Q87 70 78 68 Q74 66 76 56 Q78 40 66 30",
-        "M30 24 Q27 28 29 31",
-        "M70 24 Q73 28 71 31",
-        "M31 14 Q50 2 69 14",
-        "M36 10 Q39 5 43 9",
-        "M46 6 Q50 3 54 6",
-        "M57 8 Q61 4 64 9",
-        "M40 32 Q42 27 45 32 Q43 36 40 32",
-        "M55 32 Q57 27 60 32 Q58 36 55 32",
-        "M36 38 Q38 40 40 38",
-        "M60 38 Q62 40 64 38",
-        "M47 41 Q50 43 53 41",
-        "M38 50 Q34 62 32 74 Q31 82 38 84 L62 84 Q69 82 68 74 Q66 62 62 50",
-        "M42 52 L40 80",
-        "M58 52 L60 80",
-        "M40 80 Q50 84 60 80",
-        "M32 74 Q36 78 40 74 Q44 78 48 74 Q52 78 56 74 Q60 78 64 74 Q67 77 68 74",
-        "M38 51 Q26 58 30 68 Q32 72 36 70",
-        "M30 66 Q33 69 36 66",
-        "M62 51 Q74 58 70 68 Q68 72 64 70",
-        "M70 66 Q67 69 64 66",
-        "M40 74 Q50 80 60 74 Q50 68 40 74",
-        "M44 84 L43 96",
-        "M56 84 L57 96",
-        "M40 97 Q43 100 46 97",
-        "M54 97 Q57 100 60 97"
-      ]}
-    ];
-    var shapeIdx = 0;
-
-    var W = 0, H = 0, segs = [], targets = null, mode = "drift", phaseT = 0;
-    var PAL = null;
-    function readPal() {
-      try {
-        var cs = getComputedStyle(document.documentElement);
-        var a = (cs.getPropertyValue("--accent-rgb") || "").trim() || "91,140,255";
-        var b = (cs.getPropertyValue("--accent-2-rgb") || "").trim() || "125,211,252";
-        PAL = [a, b];
-      } catch (e) { PAL = ["91,140,255", "125,211,252"]; }
-    }
-    document.addEventListener("themechange", function () { readPal(); });
-    readPal();
-
+    var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
+    document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
+    var SHAPES = ["CCCAD", "</>"];
+    var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
+    var raf = 0, morphT = 0, hidden = false, last = 0;
     var mouse = { x: -9999, y: -9999 };
-    var CAP = innerWidth < 640 ? 520 : 1050;
-    var scatterT = 1.7, formT = 4.4, holdT = 2.6;
-    var frames = 0, frameErr = "none";
-
-    function fit() {
-      var dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = innerWidth; H = innerHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      canvas.style.width = W + "px"; canvas.style.height = H + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      targets = null;
-    }
 
     function sample() {
-      var sp = SHAPES[shapeIdx];
-      var box = Math.min(W * 0.56, H * 0.64, 680);
-      var sc = box / Math.max(sp.vb[0], sp.vb[1]);
-      var w = sp.vb[0] * sc, h = sp.vb[1] * sc;
-      var ox = W * 0.42 - w / 2, oy = H * 0.38 - h / 2;
       var off = document.createElement("canvas");
       off.width = W; off.height = H;
       var c = off.getContext("2d");
-      c.translate(ox, oy); c.scale(sc, sc);
-      c.strokeStyle = "#fff"; c.lineCap = "round"; c.lineJoin = "round";
-      c.lineWidth = 2.4 / sc;
-      sp.paths.forEach(function (p) { c.stroke(new Path2D(p)); });
-      var img = c.getImageData(0, 0, W, H).data;
-      var pts = [];
-      var step = W < 640 ? 3 : 2;
-      for (var y = 0; y < H; y += step) {
-        for (var x = 0; x < W; x += step) {
-          var i4 = (y * W + x) * 4 + 3;
-          if (img[i4] > 60) {
-            var edge = x < step || y < step || x >= W - step || y >= H - step ||
-              img[i4 - 4] < 60 || img[i4 + 4] < 60 ||
-              img[i4 - W * 4] < 60 || img[i4 + W * 4] < 60;
-            if (edge) pts.push({ x: x, y: y });
-          }
-        }
+      var fs = Math.min(W * 0.16, H * 0.34);
+      c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
+      c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText(SHAPES[shapeIdx], W / 2, H * 0.34);
+      var data = c.getImageData(0, 0, W, H).data;
+      var gap = W < 640 ? 7 : 5;
+      targets = [];
+      for (var y = 0; y < H; y += gap)
+        for (var x = 0; x < W; x += gap)
+          if (data[(y * W + x) * 4 + 3] > 128) targets.push({ x: x, y: y });
+      var tx0=1e9,ty0=1e9,tx1=-1,ty1=-1;
+      var cap = W < 640 ? 1200 : 2400;
+      if (targets.length > cap) {
+        var keep = [], step = targets.length / cap;
+        for (var k = 0; k < cap; k++) keep.push(targets[(k * step) | 0]);
+        targets = keep;
       }
-      if (pts.length > CAP) {
-        var keep = [], stp = pts.length / CAP;
-        for (var k = 0; k < CAP; k++) keep.push(pts[(k * stp) | 0]);
-        pts = keep;
-      }
-      for (var a = 0; a < pts.length; a++) {
-        var best = 1e18, bang = 0;
-        for (var b = 0; b < pts.length; b++) {
-          if (b === a) continue;
-          var ddx = pts[a].x - pts[b].x, ddy = pts[a].y - pts[b].y;
-          var dd = ddx * ddx + ddy * ddy;
-          if (dd < best) { best = dd; bang = Math.atan2(ddy, ddx); }
-        }
-        pts[a].ang = bang;
-      }
-      targets = pts;
-      while (segs.length > targets.length) segs.pop();
-      while (segs.length < targets.length) {
-        segs.push({
-          x: Math.random() * W, y: Math.random() * H,
-          a: Math.random() * Math.PI * 2, va: (Math.random() - 0.5) * 0.05,
-          vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 1.4,
-          len: 4.5 + Math.random() * 4,
-          ci: Math.random() < 0.8 ? 0 : 1,
-          al: 0.4 + Math.random() * 0.5,
-          dl: Math.random() * 0.5
+      for (var q = 0; q < targets.length; q++) { var tp = targets[q]; if (tp.x < tx0) tx0 = tp.x; if (tp.x > tx1) tx1 = tp.x; if (tp.y < ty0) ty0 = tp.y; if (tp.y > ty1) ty1 = tp.y; }
+      window.__phero = { n: targets.length, fs: fs, bounds: [tx0, ty0, tx1, ty1], W: W, H: H, word: SHAPES[shapeIdx] };
+      while (parts.length > targets.length) parts.pop();
+      while (parts.length < targets.length) {
+        parts.push({
+          x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+          ci: (Math.random() * 4) | 0,
+          s: 0.9 + Math.random() * 1.4, a: 0.4 + Math.random() * 0.55
         });
       }
     }
-
-    function shortest(a) { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; }
-
-    function kick() {
-      var cx = W * 0.42, cy = H * 0.38;
-      for (var i = 0; i < segs.length; i++) {
-        var s = segs[i];
-        var dx = s.x - cx, dy = s.y - cy, d = Math.hypot(dx, dy) || 1;
-        var f = Math.min(13, 750 / d);
-        s.vx += (dx / d) * f + (Math.random() - 0.5) * 2.5;
-        s.vy += (dy / d) * f + (Math.random() - 0.5) * 2.5;
-        s.va = (Math.random() - 0.5) * 0.12;
-      }
+    function fit() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = hero.clientWidth; H = hero.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sample();
     }
-
-    var last = performance.now();
+    hero.addEventListener("pointermove", function (e) {
+      var r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    }, { passive: true });
+    hero.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
+    hero.addEventListener("pointerdown", function (e) {
+      var r = hero.getBoundingClientRect();
+      var bx = e.clientX - r.left, by = e.clientY - r.top;
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        var dx = p.x - bx, dy = p.y - by, d = Math.hypot(dx, dy) || 1;
+        var f = Math.min(30, 1100 / d);
+        p.vx += (dx / d) * f; p.vy += (dy / d) * f;
+      }
+    });
     function frame(now) {
-      frames++;
-      try {
-        var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
-        last = now;
-        phaseT += dt;
-        ctx.clearRect(0, 0, W, H);
-        var t = now / 1000;
-
-        if (mode === "drift" && phaseT > scatterT) {
-          sample(); mode = "form"; phaseT = 0;
-          for (var d = 0; d < segs.length; d++) segs[d].dl = (d % 50) * 0.012 + Math.random() * 0.22;
-        } else if (mode === "form" && phaseT > formT + holdT) {
-          kick(); mode = "drift"; phaseT = 0;
-          shapeIdx = (shapeIdx + 1) % SHAPES.length;
-          targets = null;
+      if (hidden) return;
+      var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
+      last = now;
+      ctx.clearRect(0, 0, W, H);
+      var t = now / 1000;
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i], tg = targets[i];
+        var ax = (tg.x - p.x) * 9, ay = (tg.y - p.y) * 9;
+        var dx = p.x - mouse.x, dy = p.y - mouse.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < 10000) {
+          var d = Math.sqrt(d2) || 1;
+          var f = ((100 - d) / 100) * 950;
+          ax += (dx / d) * f; ay += (dy / d) * f;
         }
-
-        for (var i = 0; i < segs.length; i++) {
-          var s = segs[i];
-          var forming = mode === "form" && targets && targets[i] && phaseT > s.dl;
-          if (forming) {
-            var tg = targets[i];
-            s.vx += (tg.x - s.x) * 0.11; s.vy += (tg.y - s.y) * 0.11;
-            s.a += shortest(tg.ang - s.a) * 0.16;
-            s.va *= 0.85;
-          } else {
-            s.vx += (Math.random() - 0.5) * 0.11; s.vy += (Math.random() - 0.5) * 0.11;
-            s.a += s.va;
-            if (s.x < -20) s.vx += 0.5; if (s.x > W + 20) s.vx -= 0.5;
-            if (s.y < -20) s.vy += 0.5; if (s.y > H + 20) s.vy -= 0.5;
-          }
-          var dx = s.x - mouse.x, dy = s.y - mouse.y, d2 = dx * dx + dy * dy;
-          if (d2 < 8100) {
-            var dd = Math.sqrt(d2) || 1, f = ((90 - dd) / 90) * 6;
-            s.vx += (dx / dd) * f; s.vy += (dy / dd) * f;
-          }
-          s.vx *= 0.92; s.vy *= 0.92;
-          s.x += s.vx * dt * 60; s.y += s.vy * dt * 60;
-
-          var breathe = (mode === "form" && phaseT > formT) ? Math.sin(t * 2 + i * 0.35) * 0.7 : 0;
-          var hl = s.len / 2;
-          var ca = Math.cos(s.a) * hl, sa = Math.sin(s.a) * hl;
-          var x1 = s.x - ca, y1 = s.y - sa + breathe, x2 = s.x + ca, y2 = s.y + sa + breathe;
-          ctx.strokeStyle = "rgb(" + PAL[s.ci] + ")";
-          ctx.globalAlpha = s.al * 0.22;
-          ctx.lineWidth = 3.2;
-          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-          ctx.globalAlpha = s.al;
-          ctx.lineWidth = 1.25;
-          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-      } catch (e) {
-        if (frameErr === "none") frameErr = (e.message || "?") + " @ " + String(e.stack || "").split("\n")[1];
+        p.vx = (p.vx + ax * dt) * 0.9;
+        p.vy = (p.vy + ay * dt) * 0.9;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = "rgb(" + PAL[p.ci] + ")";
+        ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
+      }
+      ctx.globalAlpha = 1;
+      if (now - morphT > 9000) {
+        morphT = now;
+        shapeIdx = (shapeIdx + 1) % SHAPES.length;
+        sample();
       }
     }
-
-    document.addEventListener("pointermove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-    document.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
-    document.addEventListener("visibilitychange", function () { last = performance.now(); });
+    document.addEventListener("visibilitychange", function () {
+      hidden = document.hidden;
+      if (!hidden) last = performance.now();
+    });
     addEventListener("resize", fit);
-
     fit();
-    window.__dbg = function () {
-      return { mode: mode, segs: segs.length, tg: targets ? targets.length : -1,
-               phaseT: +phaseT.toFixed(1), frames: frames, frameErr: frameErr,
-               shape: SHAPES[shapeIdx] === SHAPES[0] ? "whale" : "girl" };
-    };
-    if (calm) {
-      sample(); mode = "form";
-      for (var i = 0; i < segs.length; i++) { segs[i].x = targets[i].x; segs[i].y = targets[i].y; segs[i].a = targets[i].ang; }
-      frame(performance.now());
-      return;
-    }
-    setInterval(function () { frame(performance.now()); }, 30);
+    morphT = performance.now();
+    /* 本项目实测：内嵌浏览器 rAF 可能不触发（数字雨同款坑），用 setInterval 驱动 */
+    setInterval(function () { frame(performance.now()); }, 33);
   }
-  try {
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-    else init();
-  } catch (e) { window.__morphErr = (e.message || "?"); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+
+/* ═══ 05 导航卡：3D 倾斜跟随 + 光斑 ═══ */
+(function () {
+  function init() {
+    if (!window.matchMedia || !matchMedia("(pointer: fine)").matches) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll(".page-card").forEach(function (card) {
+      if (card.dataset.tilt) return;
+      card.dataset.tilt = "1";
+      card.classList.add("tilt");
+      card.addEventListener("pointermove", function (e) {
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        card.style.transform =
+          "perspective(900px) rotateX(" + ((0.5 - py) * 10).toFixed(2) +
+          "deg) rotateY(" + ((px - 0.5) * 12).toFixed(2) + "deg) translateY(-15px) scale(1.03)";
+        card.style.setProperty("--gx", (px * 100).toFixed(1) + "%");
+        card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
+      }, { passive: true });
+      card.addEventListener("pointerleave", function () {
+        card.style.transform = "";
+      });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
