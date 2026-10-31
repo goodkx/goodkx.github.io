@@ -361,65 +361,76 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function sample() {
-      var v = getVid(SHAPES[shapeIdx]);
-      var vw = v.videoWidth, vh = v.videoHeight;
-      /* 1) 原生尺寸找角色包围盒（淡出帧返回空盒 → 跳过） */
-      var tmp = document.createElement("canvas");
-      tmp.width = vw; tmp.height = vh;
-      var tc = tmp.getContext("2d");
-      tc.drawImage(v, 0, 0);
-      var td = tc.getImageData(0, 0, vw, vh).data;
-      var cx0 = vw, cy0 = vh, cx1 = 0, cy1 = 0;
-      for (var y = 0; y < vh; y += 2)
-        for (var x = 0; x < vw; x += 2) {
-          if (td[(y * vw + x) * 4 + 3] > 110) {
-            if (x < cx0) cx0 = x; if (x > cx1) cx1 = x;
-            if (y < cy0) cy0 = y; if (y > cy1) cy1 = y;
+      try {
+        var v = getVid(SHAPES[shapeIdx]);
+        var vw = v.videoWidth, vh = v.videoHeight;
+        /* 1) 原生尺寸找角色包围盒（淡出帧返回空盒 → 跳过） */
+        var tmp = document.createElement("canvas");
+        tmp.width = vw; tmp.height = vh;
+        var tc = tmp.getContext("2d");
+        tc.drawImage(v, 0, 0);
+        var td = tc.getImageData(0, 0, vw, vh).data;
+        var cx0 = vw, cy0 = vh, cx1 = 0, cy1 = 0;
+        for (var y = 0; y < vh; y += 2)
+          for (var x = 0; x < vw; x += 2) {
+            if (td[(y * vw + x) * 4 + 3] > 110) {
+              if (x < cx0) cx0 = x; if (x > cx1) cx1 = x;
+              if (y < cy0) cy0 = y; if (y > cy1) cy1 = y;
+            }
           }
-        }
-      cx0 = Math.max(0, cx0 - 8); cy0 = Math.max(0, cy0 - 8);
-      cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
-      var cw = cx1 - cx0, ch = cy1 - cy0;
-      if (cw < 24 || ch < 24) return;   /* 淡出帧：沿用上一形状 */
-      /* 2) 角色区域放大铺满画布 */
-      var box = Math.min(W * 0.92, H * 0.92);
-      var sc = box / Math.max(cw, ch);
-      var w = cw * sc, h = ch * sc;
-      var off = document.createElement("canvas");
-      off.width = W; off.height = H;
-      var c = off.getContext("2d");
-      c.drawImage(tmp, cx0, cy0, cw, ch, W / 2 - w / 2, H / 2 - h / 2, w, h);
-      var data = c.getImageData(0, 0, W, H).data;
-      var gap = W < 640 ? 6 : 4;
-      targets = [];
-      for (var yy = 0; yy < H; yy += gap)
-        for (var xx = 0; xx < W; xx += gap) {
-          var i4 = (yy * W + xx) * 4;
-          if (data[i4 + 3] > 110) {
-            targets.push({
-              x: xx, y: yy,
-              col: data[i4] + "," + data[i4 + 1] + "," + data[i4 + 2]
-            });
+        cx0 = Math.max(0, cx0 - 8); cy0 = Math.max(0, cy0 - 8);
+        cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
+        var cw = cx1 - cx0, ch = cy1 - cy0;
+        if (cw < 24 || ch < 24) {
+          /* 淡出帧：0.5s 后重试采样，直到抓到可见帧 */
+          if ((window.__smpRetry || 0) < 10) {
+            window.__smpRetry = (window.__smpRetry || 0) + 1;
+            setTimeout(function () { sample(); }, 500);
           }
+          return;
         }
-      var cap = W < 640 ? 700 : 1400;
-      if (targets.length > cap) {
-        var keep = [], stp = targets.length / cap;
-        for (var k = 0; k < cap; k++) keep.push(targets[(k * stp) | 0]);
-        targets = keep;
-      }
-      while (parts.length > targets.length) parts.pop();
-      while (parts.length < targets.length) {
-        parts.push({
-          x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
-          col: null,
-          s: 1.9 + Math.random() * 1.6, a: 0.62 + Math.random() * 0.38,
-          dl: Math.random() * 0.5
-        });
-      }
-      for (var q = 0; q < parts.length; q++) {
-        if (targets[q]) parts[q].col = targets[q].col;   /* 粒子提前记住本尊的颜色 */
-      }
+        window.__smpRetry = 0;
+        /* 2) 角色区域放大铺满画布 */
+        var box = Math.min(W * 0.92, H * 0.92);
+        var sc = box / Math.max(cw, ch);
+        var w = cw * sc, h = ch * sc;
+        var off = document.createElement("canvas");
+        off.width = W; off.height = H;
+        var c = off.getContext("2d");
+        c.drawImage(tmp, cx0, cy0, cw, ch, W / 2 - w / 2, H / 2 - h / 2, w, h);
+        var data = c.getImageData(0, 0, W, H).data;
+        var gap = W < 640 ? 6 : 4;
+        targets = [];
+        for (var yy = 0; yy < H; yy += gap)
+          for (var xx = 0; xx < W; xx += gap) {
+            var i4 = (yy * W + xx) * 4;
+            if (data[i4 + 3] > 110) {
+              targets.push({
+                x: xx, y: yy,
+                col: data[i4] + "," + data[i4 + 1] + "," + data[i4 + 2]
+              });
+            }
+          }
+        var cap = W < 640 ? 700 : 1400;
+        if (targets.length > cap) {
+          var keep = [], stp = targets.length / cap;
+          for (var k = 0; k < cap; k++) keep.push(targets[(k * stp) | 0]);
+          targets = keep;
+        }
+        while (parts.length > targets.length) parts.pop();
+        while (parts.length < targets.length) {
+          parts.push({
+            x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+            col: null,
+            s: 2.2 + Math.random() * 1.8, a: 0.7 + Math.random() * 0.3,
+            dl: Math.random() * 0.5
+          });
+        }
+        for (var q = 0; q < parts.length; q++) {
+          if (targets[q]) parts[q].col = targets[q].col;   /* 粒子提前记住本尊的颜色 */
+        }
+        window.__smpOK = true;
+      } catch (e) { window.__smpErr = (e.message || "?"); }
     }
 
     function fit() {
@@ -522,6 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     setInterval(function () { frame(performance.now()); }, 30);
+    window.__dbg = function () { return { smpOK: window.__smpOK || false, smpErr: window.__smpErr || "none", retry: window.__smpRetry || 0, segs: parts.length, tg: targets ? targets.length : -1, W: W, H: H }; };
   }
   try {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
