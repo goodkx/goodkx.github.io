@@ -317,229 +317,126 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 500);
 });
 
-/* ═══ 🐋 粒子看板娘 · 最终版：粒子取自鲸鲸视频帧（位置+颜色双复原），双姿态轮换 ═══ */
+/* ═══ 粒子聚形 Hero：上千粒子拼字，鼠标排斥回流，点击爆发重组 ═══ */
 (function () {
   function init() {
     var hero = document.getElementById("hero");
-    var host = document.querySelector(".hero-terminal .terminal") || hero;
     if (!hero || hero.dataset.particles) return;
-    var calm = false;
-    try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-
+    if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.innerWidth < 640) return; /* 手机端：字面藏在标题后不可见，纯耗电，直接跳过 */
+    hero.dataset.particles = "1";
     var canvas = document.createElement("canvas");
     canvas.id = "particleHero";
     canvas.setAttribute("aria-hidden", "true");
-    host.appendChild(canvas);
+    hero.prepend(canvas);
     var ctx = canvas.getContext("2d");
-
-    /* 两个姿态源：待机 ⇄ 吃糖葫芦 */
-    var SHAPES = ["idle.webm", "tanghulu.webm"];
+    var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
+    document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
+    var SHAPES = ["CCCAD", "</>"];
     var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
-    var morphT = performance.now(), hidden = false, last = 0;
+    var raf = 0, morphT = 0, hidden = false, last = 0;
     var mouse = { x: -9999, y: -9999 };
 
-    /* 隐藏视频：鲸鲸本尊的姿态源（提前预载） */
-    var petVids = {};
-    function getVid(file) {
-      if (!petVids[file]) {
-        var v = document.createElement("video");
-        v.src = "pet/" + file;
-        v.muted = true; v.loop = true; v.autoplay = true;
-        v.setAttribute("playsinline", ""); v.preload = "auto";
-        v.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:4px;height:4px;opacity:0;pointer-events:none";
-        document.body.appendChild(v);
-        v.play().catch(function () {});
-        petVids[file] = v;
-      }
-      return petVids[file];
-    }
-    getVid(SHAPES[0]); getVid(SHAPES[1]);   /* 预载两个姿态 */
-
-    function vidReady() {
-      var v = getVid(SHAPES[shapeIdx]);
-      return v.readyState >= 2 && v.videoWidth > 0;
-    }
-
     function sample() {
-      try {
-        var v = getVid(SHAPES[shapeIdx]);
-        var vw = v.videoWidth, vh = v.videoHeight;
-        /* 1) 原生尺寸找角色包围盒（淡出帧返回空盒 → 跳过） */
-        var tmp = document.createElement("canvas");
-        tmp.width = vw; tmp.height = vh;
-        var tc = tmp.getContext("2d");
-        tc.drawImage(v, 0, 0);
-        var td = tc.getImageData(0, 0, vw, vh).data;
-        var cx0 = vw, cy0 = vh, cx1 = 0, cy1 = 0;
-        for (var y = 0; y < vh; y += 2)
-          for (var x = 0; x < vw; x += 2) {
-            if (td[(y * vw + x) * 4 + 3] > 110) {
-              if (x < cx0) cx0 = x; if (x > cx1) cx1 = x;
-              if (y < cy0) cy0 = y; if (y > cy1) cy1 = y;
-            }
-          }
-        cx0 = Math.max(0, cx0 - 8); cy0 = Math.max(0, cy0 - 8);
-        cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
-        var cw = cx1 - cx0, ch = cy1 - cy0;
-        if (cw < 24 || ch < 24) {
-          /* 淡出帧：0.5s 后重试采样，直到抓到可见帧 */
-          if ((window.__smpRetry || 0) < 10) {
-            window.__smpRetry = (window.__smpRetry || 0) + 1;
-            setTimeout(function () { sample(); }, 500);
-          }
-          return;
-        }
-        window.__smpRetry = 0;
-        /* 2) 角色区域放大铺满画布 */
-        var box = Math.min(W * 0.92, H * 0.92);
-        var sc = box / Math.max(cw, ch);
-        var w = cw * sc, h = ch * sc;
-        var off = document.createElement("canvas");
-        off.width = W; off.height = H;
-        var c = off.getContext("2d");
-        c.drawImage(tmp, cx0, cy0, cw, ch, W / 2 - w / 2, H / 2 - h / 2, w, h);
-        var data = c.getImageData(0, 0, W, H).data;
-        var gap = W < 640 ? 6 : 4;
-        targets = [];
-        for (var yy = 0; yy < H; yy += gap)
-          for (var xx = 0; xx < W; xx += gap) {
-            var i4 = (yy * W + xx) * 4;
-            if (data[i4 + 3] > 110) {
-              targets.push({
-                x: xx, y: yy,
-                col: data[i4] + "," + data[i4 + 1] + "," + data[i4 + 2]
-              });
-            }
-          }
-        var cap = W < 640 ? 700 : 1400;
-        if (targets.length > cap) {
-          var keep = [], stp = targets.length / cap;
-          for (var k = 0; k < cap; k++) keep.push(targets[(k * stp) | 0]);
-          targets = keep;
-        }
-        while (parts.length > targets.length) parts.pop();
-        while (parts.length < targets.length) {
-          parts.push({
-            x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
-            col: null,
-            s: 2.2 + Math.random() * 1.8, a: 0.7 + Math.random() * 0.3,
-            dl: Math.random() * 0.5
-          });
-        }
-        for (var q = 0; q < parts.length; q++) {
-          if (targets[q]) parts[q].col = targets[q].col;   /* 粒子提前记住本尊的颜色 */
-        }
-        window.__smpOK = true;
-      } catch (e) { window.__smpErr = (e.message || "?"); }
+      var off = document.createElement("canvas");
+      off.width = W; off.height = H;
+      var c = off.getContext("2d");
+      var fs = Math.min(W * 0.16, H * 0.34);
+      c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
+      c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText(SHAPES[shapeIdx], W / 2, H * 0.34);
+      var data = c.getImageData(0, 0, W, H).data;
+      var gap = W < 640 ? 7 : 5;
+      targets = [];
+      for (var y = 0; y < H; y += gap)
+        for (var x = 0; x < W; x += gap)
+          if (data[(y * W + x) * 4 + 3] > 128) targets.push({ x: x, y: y });
+      var tx0=1e9,ty0=1e9,tx1=-1,ty1=-1;
+      var cap = W < 640 ? 1200 : 2400;
+      if (targets.length > cap) {
+        var keep = [], step = targets.length / cap;
+        for (var k = 0; k < cap; k++) keep.push(targets[(k * step) | 0]);
+        targets = keep;
+      }
+      for (var q = 0; q < targets.length; q++) { var tp = targets[q]; if (tp.x < tx0) tx0 = tp.x; if (tp.x > tx1) tx1 = tp.x; if (tp.y < ty0) ty0 = tp.y; if (tp.y > ty1) ty1 = tp.y; }
+      window.__phero = { n: targets.length, fs: fs, bounds: [tx0, ty0, tx1, ty1], W: W, H: H, word: SHAPES[shapeIdx] };
+      while (parts.length > targets.length) parts.pop();
+      while (parts.length < targets.length) {
+        parts.push({
+          x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
+          ci: (Math.random() * 4) | 0,
+          s: 0.9 + Math.random() * 1.4, a: 0.4 + Math.random() * 0.55
+        });
+      }
     }
-
     function fit() {
       var dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = host.clientWidth; H = host.clientHeight;
+      W = hero.clientWidth; H = hero.clientHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
       canvas.style.width = W + "px"; canvas.style.height = H + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       sample();
     }
-
-    host.addEventListener("pointermove", function (e) {
-      var r = host.getBoundingClientRect();
+    hero.addEventListener("pointermove", function (e) {
+      var r = hero.getBoundingClientRect();
       mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
     }, { passive: true });
-    host.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
-    host.addEventListener("pointerdown", function (e) {
-      var r = host.getBoundingClientRect();
+    hero.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
+    hero.addEventListener("pointerdown", function (e) {
+      var r = hero.getBoundingClientRect();
       var bx = e.clientX - r.left, by = e.clientY - r.top;
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i];
         var dx = p.x - bx, dy = p.y - by, d = Math.hypot(dx, dy) || 1;
-        var f = Math.min(26, 900 / d);
+        var f = Math.min(30, 1100 / d);
         p.vx += (dx / d) * f; p.vy += (dy / d) * f;
       }
     });
-
-    var last = performance.now();
     function frame(now) {
-      window.__fr = { now: Math.round(now), morphT: Math.round(morphT), vidR: (function () { try { return getVid(SHAPES[shapeIdx]).readyState; } catch (e) { return "err"; } }()) };
+      if (hidden) return;
       var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
       last = now;
       ctx.clearRect(0, 0, W, H);
       var t = now / 1000;
-      /* 全息暗晕：给浅色粒子垫对比度 */
-      if (targets && targets.length) {
-        var gx = W / 2, gy = H / 2;
-        var grd = ctx.createRadialGradient(gx, gy, 10, gx, gy, Math.max(W, H) * 0.36);
-        grd.addColorStop(0, "rgba(8, 14, 30, 0.5)");
-        grd.addColorStop(1, "rgba(8, 14, 30, 0)");
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, W, H);
-      }
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i], tg = targets[i];
-        if (tg) {
-          var ax = (tg.x - p.x) * 8, ay = (tg.y - p.y) * 8;
-          var dx = p.x - mouse.x, dy = p.y - mouse.y;
-          var d2 = dx * dx + dy * dy;
-          if (d2 < 10000) {
-            var d = Math.sqrt(d2) || 1;
-            var f = ((100 - d) / 100) * 950;
-            ax += (dx / d) * f; ay += (dy / d) * f;
-          }
-          p.vx = (p.vx + ax * dt) * 0.9;
-          p.vy = (p.vy + ay * dt) * 0.9;
-          p.x += p.vx * dt; p.y += p.vy * dt;
+        var ax = (tg.x - p.x) * 9, ay = (tg.y - p.y) * 9;
+        var dx = p.x - mouse.x, dy = p.y - mouse.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < 10000) {
+          var d = Math.sqrt(d2) || 1;
+          var f = ((100 - d) / 100) * 950;
+          ax += (dx / d) * f; ay += (dy / d) * f;
         }
+        p.vx = (p.vx + ax * dt) * 0.9;
+        p.vy = (p.vy + ay * dt) * 0.9;
+        p.x += p.vx * dt; p.y += p.vy * dt;
         var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
         ctx.globalAlpha = p.a;
-        ctx.fillStyle = p.col ? "rgb(" + p.col + ")" : "rgb(" + (window.__themeRGB ? window.__themeRGB()[0] : "91,140,255") + ")";
+        ctx.fillStyle = "rgb(" + PAL[p.ci] + ")";
         ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
       }
       ctx.globalAlpha = 1;
-      /* 姿态轮换：9s 换一次采样 */
-      if (now - morphT > 9000 && vidReady()) {
+      if (now - morphT > 9000) {
         morphT = now;
         shapeIdx = (shapeIdx + 1) % SHAPES.length;
         sample();
       }
     }
-
     document.addEventListener("visibilitychange", function () {
       hidden = document.hidden;
       if (!hidden) last = performance.now();
     });
-    addEventListener("resize", function () {
-      if (vidReady()) fit();
-    });
-
-    window.__dbg = function () {
-      var cv = document.getElementById("particleHero");
-      return { mode: "run", W: W, H: H, segs: parts.length, tg: targets ? targets.length : -1,
-               canvasW: cv ? cv.width : -1, canvasH: cv ? cv.height : -1,
-               styleW: cv ? cv.style.width : "-", hostW: host ? host.clientWidth : -1, hostH: host ? host.clientHeight : -1 };
-    };
+    addEventListener("resize", fit);
     fit();
-    if (calm) {
-      /* 减弱动效：聚成看板娘静帧 */
-      var waitT = setInterval(function () {
-        if (vidReady()) {
-          clearInterval(waitT);
-          sample();
-          for (var i = 0; i < parts.length; i++) {
-            if (targets[i]) { parts[i].x = targets[i].x; parts[i].y = targets[i].y; }
-          }
-          frame(performance.now());
-        }
-      }, 400);
-      return;
-    }
-    setInterval(function () { frame(performance.now()); }, 30);
-    window.__dbg = function () { return { smpOK: window.__smpOK || false, smpErr: window.__smpErr || "none", retry: window.__smpRetry || 0, segs: parts.length, tg: targets ? targets.length : -1, W: W, H: H }; };
+    morphT = performance.now();
+    /* 本项目实测：内嵌浏览器 rAF 可能不触发（数字雨同款坑），用 setInterval 驱动 */
+    setInterval(function () { frame(performance.now()); }, 33);
   }
-  try {
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-    else init();
-  } catch (e) { window.__morphErr = (e.message || "?"); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
+
 
 /* ═══ 05 导航卡：3D 倾斜跟随 + 光斑 ═══ */
 (function () {
