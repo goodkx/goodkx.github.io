@@ -449,6 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     var last = performance.now();
     function frame(now) {
+      window.__fr = { now: Math.round(now), morphT: Math.round(morphT), vidR: (function () { try { return getVid(SHAPES[shapeIdx]).readyState; } catch (e) { return "err"; } }()) };
       var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
       last = now;
       ctx.clearRect(0, 0, W, H);
