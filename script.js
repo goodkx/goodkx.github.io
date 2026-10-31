@@ -321,14 +321,15 @@ document.addEventListener("DOMContentLoaded", () => {
 (function () {
   function init() {
     var hero = document.getElementById("hero");
-    if (!hero || hero.dataset.particles) return;
+    var host = document.querySelector(".hero-terminal .terminal") || hero;
+    if (hero.dataset.particles) return;
     var calm = false;
     try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
 
     var canvas = document.createElement("canvas");
     canvas.id = "particleHero";
     canvas.setAttribute("aria-hidden", "true");
-    hero.prepend(canvas);
+    host.appendChild(canvas);
     var ctx = canvas.getContext("2d");
 
     /* 两个姿态源：待机 ⇄ 吃糖葫芦 */
@@ -362,14 +363,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function sample() {
       var v = getVid(SHAPES[shapeIdx]);
       var vw = v.videoWidth, vh = v.videoHeight;
-      var box = Math.min(W * 0.46, H * 0.68);
+      var box = Math.min(W * 0.8, H * 0.92);
       var sc = box / Math.max(vw, vh);
       var w = vw * sc, h = vh * sc;
-      var ox = W * 0.37 - w / 2, oy = H * 0.36 - h / 2;
       var off = document.createElement("canvas");
       off.width = W; off.height = H;
       var c = off.getContext("2d");
-      c.drawImage(v, ox, oy, w, h);
+      c.drawImage(v, W / 2 - w / 2, H * 0.5 - h / 2, w, h);
       var data = c.getImageData(0, 0, W, H).data;
       var gap = W < 640 ? 6 : 4;
       targets = [];
@@ -394,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
         parts.push({
           x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
           col: null,
-          s: 1.4 + Math.random() * 1.6, a: 0.55 + Math.random() * 0.45,
+          s: 2.2 + Math.random() * 1.8, a: 0.7 + Math.random() * 0.3,
           dl: Math.random() * 0.5
         });
       }
@@ -405,20 +405,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function fit() {
       var dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = hero.clientWidth; H = hero.clientHeight;
+      W = host.clientWidth; H = host.clientHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
       canvas.style.width = W + "px"; canvas.style.height = H + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       sample();
     }
 
-    hero.addEventListener("pointermove", function (e) {
-      var r = hero.getBoundingClientRect();
+    host.addEventListener("pointermove", function (e) {
+      var r = host.getBoundingClientRect();
       mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
     }, { passive: true });
-    hero.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
-    hero.addEventListener("pointerdown", function (e) {
-      var r = hero.getBoundingClientRect();
+    host.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
+    host.addEventListener("pointerdown", function (e) {
+      var r = host.getBoundingClientRect();
       var bx = e.clientX - r.left, by = e.clientY - r.top;
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i];
