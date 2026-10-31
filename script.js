@@ -381,7 +381,10 @@ document.addEventListener("DOMContentLoaded", () => {
       cx1 = Math.min(vw, cx1 + 8); cy1 = Math.min(vh, cy1 + 8);
       var cw = cx1 - cx0, ch = cy1 - cy0;
       window.__smp = { vw: vw, vh: vh, cw: cw, ch: ch, bbox: [cx0, cy0, cx1, cy1], alphaTest: td[(Math.round(vh/2) * vw + Math.round(vw/2)) * 4 + 3], t: +v.currentTime.toFixed(1) };
-      if (cw < 24 || ch < 24) return;   /* 淡出帧：角色不可见，沿用上一形状 */
+      if (cw < 24 || ch < 24) {
+        morphT = now - 8000;   /* 淡出帧：1s 后重试采样，直到抓到可见帧 */
+        return;
+      }
       /* 2) 角色区域放大铺满画布 */
       var box = Math.min(W * 0.92, H * 0.92);
       var sc = box / Math.max(cw, ch);
