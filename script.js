@@ -317,199 +317,203 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 500);
 });
 
-/* ═══ 粒子聚形 Hero：上千粒子拼字，鼠标排斥回流，点击爆发重组 ═══ */
-(function () {
-  function init() {
-    var hero = document.getElementById("hero");
-    if (!hero || hero.dataset.particles) return;
-    if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (window.innerWidth < 640) return; /* 手机端：字面藏在标题后不可见，纯耗电，直接跳过 */
-    hero.dataset.particles = "1";
-    var canvas = document.createElement("canvas");
-    canvas.id = "particleHero";
-    canvas.setAttribute("aria-hidden", "true");
-    hero.prepend(canvas);
-    var ctx = canvas.getContext("2d");
-    var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
-    document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
-    var SHAPES = ["CCCAD", "</>"];
-    var shapeIdx = 0, W = 0, H = 0, parts = [], targets = [];
-    var raf = 0, morphT = 0, hidden = false, last = 0;
-    var mouse = { x: -9999, y: -9999 };
-
-    function sample() {
-      var off = document.createElement("canvas");
-      off.width = W; off.height = H;
-      var c = off.getContext("2d");
-      var fs = Math.min(W * 0.16, H * 0.34);
-      c.font = "900 " + fs.toFixed(0) + "px ui-monospace, Consolas, monospace";
-      c.textAlign = "center"; c.textBaseline = "middle";
-      c.fillText(SHAPES[shapeIdx], W / 2, H * 0.34);
-      var data = c.getImageData(0, 0, W, H).data;
-      var gap = W < 640 ? 7 : 5;
-      targets = [];
-      for (var y = 0; y < H; y += gap)
-        for (var x = 0; x < W; x += gap)
-          if (data[(y * W + x) * 4 + 3] > 128) targets.push({ x: x, y: y });
-      var tx0=1e9,ty0=1e9,tx1=-1,ty1=-1;
-      var cap = W < 640 ? 1200 : 2400;
-      if (targets.length > cap) {
-        var keep = [], step = targets.length / cap;
-        for (var k = 0; k < cap; k++) keep.push(targets[(k * step) | 0]);
-        targets = keep;
-      }
-      for (var q = 0; q < targets.length; q++) { var tp = targets[q]; if (tp.x < tx0) tx0 = tp.x; if (tp.x > tx1) tx1 = tp.x; if (tp.y < ty0) ty0 = tp.y; if (tp.y > ty1) ty1 = tp.y; }
-      window.__phero = { n: targets.length, fs: fs, bounds: [tx0, ty0, tx1, ty1], W: W, H: H, word: SHAPES[shapeIdx] };
-      while (parts.length > targets.length) parts.pop();
-      while (parts.length < targets.length) {
-        parts.push({
-          x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0,
-          ci: (Math.random() * 4) | 0,
-          s: 0.9 + Math.random() * 1.4, a: 0.4 + Math.random() * 0.55
-        });
-      }
-    }
-    function fit() {
-      var dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = hero.clientWidth; H = hero.clientHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      canvas.style.width = W + "px"; canvas.style.height = H + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      sample();
-    }
-    hero.addEventListener("pointermove", function (e) {
-      var r = hero.getBoundingClientRect();
-      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
-    }, { passive: true });
-    hero.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
-    hero.addEventListener("pointerdown", function (e) {
-      var r = hero.getBoundingClientRect();
-      var bx = e.clientX - r.left, by = e.clientY - r.top;
-      for (var i = 0; i < parts.length; i++) {
-        var p = parts[i];
-        var dx = p.x - bx, dy = p.y - by, d = Math.hypot(dx, dy) || 1;
-        var f = Math.min(30, 1100 / d);
-        p.vx += (dx / d) * f; p.vy += (dy / d) * f;
-      }
-    });
-    function frame(now) {
-      if (hidden) return;
-      var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
-      last = now;
-      ctx.clearRect(0, 0, W, H);
-      var t = now / 1000;
-      for (var i = 0; i < parts.length; i++) {
-        var p = parts[i], tg = targets[i];
-        var ax = (tg.x - p.x) * 9, ay = (tg.y - p.y) * 9;
-        var dx = p.x - mouse.x, dy = p.y - mouse.y;
-        var d2 = dx * dx + dy * dy;
-        if (d2 < 10000) {
-          var d = Math.sqrt(d2) || 1;
-          var f = ((100 - d) / 100) * 950;
-          ax += (dx / d) * f; ay += (dy / d) * f;
-        }
-        p.vx = (p.vx + ax * dt) * 0.9;
-        p.vy = (p.vy + ay * dt) * 0.9;
-        p.x += p.vx * dt; p.y += p.vy * dt;
-        var ox = Math.sin(t * 1.4 + i) * 1.1, oy = Math.cos(t * 1.1 + i * 0.7) * 1.1;
-        ctx.globalAlpha = p.a;
-        ctx.fillStyle = "rgb(" + PAL[p.ci] + ")";
-        ctx.fillRect(p.x + ox, p.y + oy, p.s, p.s);
-      }
-      ctx.globalAlpha = 1;
-      if (now - morphT > 9000) {
-        morphT = now;
-        shapeIdx = (shapeIdx + 1) % SHAPES.length;
-        sample();
-      }
-    }
-    document.addEventListener("visibilitychange", function () {
-      hidden = document.hidden;
-      if (!hidden) last = performance.now();
-    });
-    addEventListener("resize", fit);
-    fit();
-    morphT = performance.now();
-    /* 本项目实测：内嵌浏览器 rAF 可能不触发（数字雨同款坑），用 setInterval 驱动 */
-    setInterval(function () { frame(performance.now()); }, 33);
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
-})();
-
-/* ═══ 05 导航卡：3D 倾斜跟随 + 光斑 ═══ */
-(function () {
-  function init() {
-    if (!window.matchMedia || !matchMedia("(pointer: fine)").matches) return;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    document.querySelectorAll(".page-card").forEach(function (card) {
-      if (card.dataset.tilt) return;
-      card.dataset.tilt = "1";
-      card.classList.add("tilt");
-      card.addEventListener("pointermove", function (e) {
-        var r = card.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width;
-        var py = (e.clientY - r.top) / r.height;
-        card.style.transform =
-          "perspective(900px) rotateX(" + ((0.5 - py) * 10).toFixed(2) +
-          "deg) rotateY(" + ((px - 0.5) * 12).toFixed(2) + "deg) translateY(-15px) scale(1.03)";
-        card.style.setProperty("--gx", (px * 100).toFixed(1) + "%");
-        card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
-      }, { passive: true });
-      card.addEventListener("pointerleave", function () {
-        card.style.transform = "";
-      });
-    });
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
-})();
-
-/* ═══ 🐋 背景线条画：线条小鲸鱼 + 看板娘线稿，随机散布无规律 ═══ */
+/* ═══ 🐋 线条聚形：几百条小直线散开漂浮 → 排列组合成鲸鱼/看板娘 → 再散开，无限循环 ═══ */
 (function () {
   function init() {
     if (!document.body.classList.contains("page-home")) return;
-    var WHALE = '<svg viewBox="0 0 120 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M15 42 Q30 18 65 16 Q92 15 100 34 Q104 42 98 50 Q80 64 45 62 Q22 60 15 42 Z"/>' +
-      '<path d="M15 42 Q5 30 2 20"/><path d="M15 42 Q4 50 3 60"/>' +
-      '<path d="M30 54 Q45 58 62 55"/><path d="M34 58 Q46 61 58 59"/>' +
-      '<circle cx="80" cy="33" r="2.4" fill="currentColor" stroke="none"/>' +
-      '<path d="M55 52 Q60 62 72 59"/>' +
-      '<path d="M80 13 Q82 4 90 6"/><path d="M80 13 Q76 6 70 8"/>' +
-      '</svg>';
-    var GIRL = '<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<ellipse cx="50" cy="32" rx="18" ry="17"/>' +
-      '<path d="M33 26 Q50 12 67 26"/>' +
-      '<path d="M33 22 Q14 30 16 62 Q17 70 24 66"/>' +
-      '<path d="M67 22 Q86 30 84 62 Q83 70 76 66"/>' +
-      '<path d="M31 17 Q50 5 69 17"/>' +
-      '<path d="M38 48 Q36 60 30 78 Q28 88 40 90 L60 90 Q72 88 70 78 Q64 60 62 48"/>' +
-      '<path d="M38 52 Q28 62 34 70"/><path d="M62 52 Q72 62 66 70"/>' +
-      '<path d="M42 48 L50 54 L58 48"/>' +
-      '<path d="M44 90 L44 100"/><path d="M56 90 L56 100"/>' +
-      '<path d="M43 34 Q45 36 47 34"/><path d="M53 34 Q55 36 57 34"/>' +
-      '<path d="M46 42 Q50 45 54 42"/>' +
-      '</svg>';
-    var KINDS = [WHALE, GIRL];
-    var mobile = innerWidth < 640;
-    var COUNT = mobile ? 6 : 13;
-    var layer = document.createElement("div");
-    layer.className = "bg-art";
-    layer.setAttribute("aria-hidden", "true");
-    for (var i = 0; i < COUNT; i++) {
-      var wrap = document.createElement("div");
-      var kind = KINDS[i % 2];
-      var size = (kind === WHALE ? 110 : 90) + Math.random() * (mobile ? 50 : 110);
-      wrap.innerHTML = kind;
-      var svg = wrap.firstChild;
-      svg.style.width = size.toFixed(0) + "px";
-      svg.style.left = (Math.random() * 88).toFixed(1) + "%";
-      svg.style.top = (Math.random() * 88).toFixed(1) + "%";
-      svg.style.transform = "rotate(" + ((Math.random() * 44 - 22)).toFixed(0) + "deg)";
-      svg.style.opacity = (0.05 + Math.random() * 0.08).toFixed(2);
-      layer.appendChild(svg);
+    var calm = false;
+    try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+
+    var canvas = document.createElement("canvas");
+    canvas.id = "bgLines";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext("2d");
+
+    /* 形象库：纯描边路径（viewBox 内坐标），渲染到离屏后采样轮廓 */
+    var SHAPES = [
+      { vb: [120, 72], paths: [
+        "M15 42 Q30 18 65 16 Q92 15 100 34 Q104 42 98 50 Q80 64 45 62 Q22 60 15 42 Z",
+        "M15 42 Q5 30 2 20",
+        "M15 42 Q4 50 3 60",
+        "M30 54 Q45 58 62 55",
+        "M34 58 Q46 61 58 59",
+        "M55 52 Q60 62 72 59",
+        "M80 13 Q82 4 90 6",
+        "M80 13 Q76 6 70 8"
+      ]},
+      { vb: [100, 130], paths: [
+        "M38 48 Q36 60 30 78 Q28 88 40 90 L60 90 Q72 88 70 78 Q64 60 62 48",
+        "M38 52 Q28 62 34 70",
+        "M62 52 Q72 62 66 70",
+        "M42 48 L50 54 L58 48",
+        "M44 90 L44 100",
+        "M56 90 L56 100",
+        "M33 26 Q50 12 67 26",
+        "M33 22 Q14 30 16 62 Q17 70 24 66",
+        "M67 22 Q86 30 84 62 Q83 70 76 66",
+        "M31 17 Q50 5 69 17",
+        "M43 34 Q45 36 47 34",
+        "M53 34 Q55 36 57 34",
+        "M46 42 Q50 45 54 42"
+      ]}
+    ];
+    var shapeIdx = 0;
+
+    var W = 0, H = 0, segs = [], targets = null, mode = "drift", phaseT = 0;
+    var PAL = window.__themeRGB ? window.__themeRGB() : ["0,229,160", "56,189,248"];
+    document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
+    var mouse = { x: -9999, y: -9999 };
+    var CAP = innerWidth < 640 ? 260 : 480;
+    var DT = 30, scatterT = 1.6, formT = 4.2, holdT = 2.4;
+
+    function fit() {
+      var dpr = Math.min(2, devicePixelRatio || 1);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      targets = null;   /* 触发重采样 */
     }
-    document.body.appendChild(layer);
+
+    /* 采样形象轮廓：描边渲染 → 取边缘像素 → 计算每点切线角 */
+    function sample() {
+      var sp = SHAPES[shapeIdx];
+      var box = Math.min(W * 0.56, H * 0.62, 640);
+      var sc = box / Math.max(sp.vb[0], sp.vb[1]);
+      var w = sp.vb[0] * sc, h = sp.vb[1] * sc;
+      var ox = W * 0.42 - w / 2, oy = H * 0.38 - h / 2;
+      var off = document.createElement("canvas");
+      off.width = W; off.height = H;
+      var c = off.getContext("2d");
+      c.translate(ox, oy); c.scale(sc, sc);
+      c.strokeStyle = "#fff"; c.lineCap = "round"; c.lineJoin = "round";
+      c.lineWidth = 2.6 / sc;
+      sp.paths.forEach(function (p) { c.stroke(new Path2D(p)); });
+      var img = c.getImageData(0, 0, W, H).data;
+      var pts = [];
+      var step = W < 640 ? 4 : 3;
+      for (var y = 0; y < H; y += step) {
+        for (var x = 0; x < W; x += step) {
+          var i4 = (y * W + x) * 4 + 3;
+          if (img[i4] > 60) {
+            var edge =
+              x === 0 || y === 0 || x === W - step || y === H - step ||
+              img[i4 - 4] < 60 || img[i4 + 4] < 60 ||
+              img[i4 - W * 4] < 60 || img[i4 + W * 4] < 60;
+            if (edge) pts.push({ x: x, y: y });
+          }
+        }
+      }
+      /* 抽稀到段数上限 */
+      if (pts.length > CAP) {
+        var keep = [], stp = pts.length / CAP;
+        for (var k = 0; k < CAP; k++) keep.push(pts[(k * stp) | 0]);
+        pts = keep;
+      }
+      /* 切线角：最近邻方向 */
+      for (var a = 0; a < pts.length; a++) {
+        var best = 1e9, bang = 0;
+        for (var b = 0; b < pts.length; b++) {
+          if (b === a) continue;
+          var dd = (pts[a].x - pts[b].x) * (pts[a].x - pts[b].x) + (pts[a].y - pts[b].y) * (pts[a].y - pts[b].y);
+          if (dd < best) { best = dd; bang = Math.atan2(pts[a].y - pts[b].y, pts[a].x - pts[b].x); }
+        }
+        pts[a].ang = bang;
+      }
+      targets = pts;
+      /* 段数对齐 */
+      while (segs.length > targets.length) segs.pop();
+      while (segs.length < targets.length) {
+        segs.push({
+          x: Math.random() * W, y: Math.random() * H,
+          a: Math.random() * Math.PI * 2, va: (Math.random() - 0.5) * 0.06,
+          vx: (Math.random() - 0.5) * 1.6, vy: (Math.random() - 0.5) * 1.6,
+          len: 6 + Math.random() * 9,
+          ci: Math.random() < 0.8 ? 0 : 1,
+          al: 0.35 + Math.random() * 0.5
+        });
+      }
+    }
+
+    function shortest(a) { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; }
+
+    function kick() {
+      var cx = W / 2, cy = H * 0.38;
+      for (var i = 0; i < segs.length; i++) {
+        var s = segs[i];
+        var dx = s.x - cx, dy = s.y - cy, d = Math.hypot(dx, dy) || 1;
+        var f = Math.min(14, 700 / d);
+        s.vx += (dx / d) * f + (Math.random() - 0.5) * 3;
+        s.vy += (dy / d) * f + (Math.random() - 0.5) * 3;
+        s.va = (Math.random() - 0.5) * 0.14;
+      }
+    }
+
+    var last = performance.now();
+    function frame(now) {
+      var dt = Math.min(0.05, (now - last) / 1000) || 0.016;
+      last = now;
+      phaseT += dt;
+      ctx.clearRect(0, 0, W, H);
+      var t = now / 1000;
+
+      if (mode === "drift" && phaseT > scatterT) {
+        sample(); mode = "form"; phaseT = 0;
+      } else if (mode === "form" && phaseT > formT + holdT) {
+        kick(); mode = "drift"; phaseT = 0;
+        shapeIdx = (shapeIdx + 1) % SHAPES.length;
+        targets = null;
+      }
+
+      for (var i = 0; i < segs.length; i++) {
+        var s = segs[i];
+        if (mode === "form" && targets && targets[i]) {
+          var tg = targets[i];
+          s.vx += (tg.x - s.x) * 0.09; s.vy += (tg.y - s.y) * 0.09;
+          s.a += shortest(tg.ang - s.a) * 0.14;
+          s.va *= 0.9;
+        } else {
+          s.vx += (Math.random() - 0.5) * 0.12; s.vy += (Math.random() - 0.5) * 0.12;
+          s.a += s.va;
+          if (s.x < -20) s.vx += 0.6; if (s.x > W + 20) s.vx -= 0.6;
+          if (s.y < -20) s.vy += 0.6; if (s.y > H + 20) s.vy -= 0.6;
+        }
+        /* 鼠标排斥 */
+        var dx = s.x - mouse.x, dy = s.y - mouse.y, d2 = dx * dx + dy * dy;
+        if (d2 < 8100) {
+          var d = Math.sqrt(d2) || 1, f = ((90 - d) / 90) * 6;
+          s.vx += (dx / d) * f; s.vy += (dy / d) * f;
+        }
+        s.vx *= 0.92; s.vy *= 0.92;
+        s.x += s.vx * dt * 60; s.y += s.vy * dt * 60;
+
+        var hl = s.len / 2;
+        ctx.globalAlpha = s.al;
+        ctx.strokeStyle = "rgb(" + PAL[s.ci] + ")";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(s.x - Math.cos(s.a) * hl, s.y - Math.sin(s.a) * hl);
+        ctx.lineTo(s.x + Math.cos(s.a) * hl, s.y + Math.sin(s.a) * hl);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    document.addEventListener("pointermove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    document.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
+    document.addEventListener("visibilitychange", function () { last = performance.now(); });
+    addEventListener("resize", fit);
+
+    fit();
+    if (calm) {
+      /* 减弱动效：只画一次聚合成鲸鱼的静帧 */
+      sample(); mode = "form";
+      for (var i = 0; i < segs.length; i++) { segs[i].x = targets[i].x; segs[i].y = targets[i].y; segs[i].a = targets[i].ang; }
+      frame(performance.now());
+      return;
+    }
+    setInterval(function () { frame(performance.now()); }, DT);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
