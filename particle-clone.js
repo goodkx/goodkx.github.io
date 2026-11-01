@@ -10,13 +10,20 @@
 
   /* 预生成的静态帧（28~32KB/张），比 440KB 的视频快一个量级 */
   var POSES = [
-    { file: "idle.webp",        name: "发呆",   hold: 13000, line: "我在这儿站了很久了，你终于滑到我了。" },
-    { file: "code.webp",        name: "敲代码", hold: 11000, line: "又在改 CSS？这次一定能对齐。" },
-    { file: "click-happy.webp", name: "开心",   hold: 9000,  line: "别戳了，我本来就是这个像素密度。" },
-    { file: "liondance.webp",   name: "醒狮",   hold: 11000, line: "醒狮只是兼职，本职是当粒子。" },
-    { file: "tanghulu.webp",    name: "糖葫芦", hold: 10000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
-    { file: "sleep.webp",       name: "打盹",   hold: 10000, line: "夜深了，粒子也要睡……才怪。" }
+    { file: "idle.webp",        name: "发呆",     hold: 9000, line: "我在这儿站了很久了，你终于滑到我了。" },
+    { file: "code.webp",        name: "敲代码",   hold: 8000, line: "又在改 CSS？这次一定能对齐。" },
+    { file: "click-happy.webp", name: "开心",     hold: 7000, line: "别戳了，我本来就是这个像素密度。" },
+    { file: "liondance.webp",   name: "醒狮",     hold: 8000, line: "醒狮只是兼职，本职是当粒子。" },
+    { file: "tanghulu.webp",    name: "糖葫芦",   hold: 8000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
+    { file: "sleep.webp",       name: "打盹",     hold: 8000, line: "夜深了，粒子也要睡……才怪。" },
+    { file: "a023.webp",        name: "吃Token",  hold: 8000, line: "Token 不好吃，但比 bug 好咽。" },
+    { file: "a048.webp",        name: "吐泡泡",   hold: 8000, line: "鲸鲸吐的不是泡泡，是缓存。" },
+    { file: "a049.webp",        name: "宅舞",     hold: 8000, line: "别问我为什么跳，粒子太多得抖一抖。" },
+    { file: "a034.webp",        name: "东张西望", hold: 8000, line: "找谁？这儿除了粒子没别人。" },
+    { file: "a005.webp",        name: "拆礼物",   hold: 8000, line: "礼盒里是我的 commit 记录，别看。" },
+    { file: "a041.webp",        name: "忙碌",     hold: 8000, line: "忙着从 97 个动作里挑 12 个给你看。" }
   ];
+
 
   var reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var isMobile = !!(window.matchMedia && matchMedia("(max-width: 640px)").matches);
@@ -305,13 +312,13 @@
     for (var i = 0; i < n; i++) {
       var p = parts[i], t = points[i];
       if (!p.has) {
-        p.x = t.x;
-        p.y = t.y;
+        p.x = W * 0.5 + (Math.random() - 0.5) * 70;
+        p.y = H * 0.52 + (Math.random() - 0.5) * 70;
         p.has = true;
       }
       p.tx = t.x; p.ty = t.y;
       p.r = t.r; p.a = t.a; p.col = t.col; p.glow = t.glow;
-      p.delay = reduce ? 0 : (i / n) * 0.5 + Math.random() * 0.18;
+      p.delay = reduce ? 0 : (i / n) * 0.8 + Math.random() * 0.2;
       p.start = t0;
       if (reduce) { p.x = t.x; p.y = t.y; p.vx = 0; p.vy = 0; }
     }
@@ -377,8 +384,8 @@
       p.x += p.vx * dt;
       p.y += p.vy * dt;
 
-      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.16;
-      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.16;
+      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.28;
+      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.28;
     }
   }
 
@@ -443,7 +450,11 @@
   }
 
   function nextPose() {
-    poseIdx = (poseIdx + 1) % POSES.length;
+    var next = poseIdx;
+    if (POSES.length > 1) {
+      while (next === poseIdx) next = (Math.random() * POSES.length) | 0;
+    }
+    poseIdx = next;
     var pose = POSES[poseIdx];
     poseAt = performance.now();
     samplePose(getFrame(pose.file), pose.name, pose.line);
@@ -488,7 +499,7 @@
   strip.addEventListener("pointerdown", function (e) {
     if (e.target.closest && e.target.closest("a,button")) return;
     burst();
-    say(POSES[poseIdx].line);
+    nextPose();
   });
 
   var rz = 0;
