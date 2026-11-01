@@ -58,7 +58,6 @@
     var v = vids[file];
     if (!v) {
       v = document.createElement("video");
-      v.src = "pet/" + file;
       v.muted = true;
       v.loop = true;
       v.autoplay = true;
@@ -66,7 +65,11 @@
       v.preload = "auto";
       v.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:2px;height:2px;opacity:0;pointer-events:none";
       document.body.appendChild(v);
-      v.play().catch(function () {});
+      /* 走 fetch + blob：线上直接 src 会卡在 Range 请求，readyState 升不上去 */
+      fetch("pet/" + file)
+        .then(function (r) { return r.blob(); })
+        .then(function (b) { v.src = URL.createObjectURL(b); v.play().catch(function () {}); })
+        .catch(function () { v.src = "pet/" + file; v.play().catch(function () {}); });
       vids[file] = v;
     }
     return v;
