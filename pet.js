@@ -568,9 +568,11 @@
     try { console.info("🐋 鲸鲸 · 形象与动画素材来自 PC2005-cloud/dsh-pet（MIT License）"); } catch (e) {}
   }
 
+  /* 首屏优先：宠物素材 430KB，等页面首屏渲染完再加载 */
+  function bootLater() { setTimeout(init, 1600); }
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", bootLater);
   } else {
-    init();
+    bootLater();
   }
 })();
