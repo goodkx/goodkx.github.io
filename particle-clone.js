@@ -7,16 +7,15 @@
 
   var strip = document.getElementById("petStrip");
   if (!strip) return;
-  if (!document.createElement("video").canPlayType) return;
 
-  /* 只用 pet/ 根目录的常驻素材，不触发 pet/all/ 按需包 */
+  /* 预生成的静态帧（28~32KB/张），比 440KB 的视频快一个量级 */
   var POSES = [
-    { file: "idle.webm",        name: "发呆",   hold: 13000, line: "我在这儿站了很久了，你终于滑到我了。" },
-    { file: "code.webm",        name: "敲代码", hold: 11000, line: "又在改 CSS？这次一定能对齐。" },
-    { file: "click-happy.webm", name: "开心",   hold: 9000,  line: "别戳了，我本来就是这个像素密度。" },
-    { file: "liondance.webm",   name: "醒狮",   hold: 11000, line: "醒狮只是兼职，本职是当粒子。" },
-    { file: "tanghulu.webm",    name: "糖葫芦", hold: 10000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
-    { file: "sleep.webm",       name: "打盹",   hold: 10000, line: "夜深了，粒子也要睡……才怪。" }
+    { file: "idle.webp",        name: "发呆",   hold: 13000, line: "我在这儿站了很久了，你终于滑到我了。" },
+    { file: "code.webp",        name: "敲代码", hold: 11000, line: "又在改 CSS？这次一定能对齐。" },
+    { file: "click-happy.webp", name: "开心",   hold: 9000,  line: "别戳了，我本来就是这个像素密度。" },
+    { file: "liondance.webp",   name: "醒狮",   hold: 11000, line: "醒狮只是兼职，本职是当粒子。" },
+    { file: "tanghulu.webp",    name: "糖葫芦", hold: 10000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
+    { file: "sleep.webp",       name: "打盹",   hold: 10000, line: "夜深了，粒子也要睡……才怪。" }
   ];
 
   var reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -41,7 +40,7 @@
   var W = 0, H = 0;
   var parts = [];
   var groups = [];
-  var vids = {};
+  var frames = {};
   var poseIdx = 0;
   var poseAt = 0;
   var burstUntil = 0;
@@ -54,25 +53,15 @@
   var stats = { parts: 0, groups: 0, pose: "", samples: 0, fps: 0 };
   window.__stripStats = stats;
 
-  function getVid(file) {
-    var v = vids[file];
-    if (!v) {
-      v = document.createElement("video");
-      v.muted = true;
-      v.loop = true;
-      v.autoplay = true;
-      v.setAttribute("playsinline", "");
-      v.preload = "auto";
-      v.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:2px;height:2px;opacity:0;pointer-events:none";
-      document.body.appendChild(v);
-      /* 走 fetch + blob：线上直接 src 会卡在 Range 请求，readyState 升不上去 */
-      fetch("pet/" + file)
-        .then(function (r) { return r.blob(); })
-        .then(function (b) { v.src = URL.createObjectURL(b); v.play().catch(function () {}); })
-        .catch(function () { v.src = "pet/" + file; v.play().catch(function () {}); });
-      vids[file] = v;
+  function getFrame(name) {
+    var img = frames[name];
+    if (!img) {
+      img = new Image();
+      img.src = "pet/frames/" + name;
+      img.alt = "";
+      frames[name] = img;
     }
-    return v;
+    return img;
   }
 
   function fit() {
@@ -87,15 +76,15 @@
   }
 
   /* ── 采样：核心包围盒 + 边缘分层 ── */
-  function capture(v) {
-    if (!v || v.readyState < 2 || !v.videoWidth) return null;
-    var vw = v.videoWidth, vh = v.videoHeight;
+  function capture(img) {
+    if (!img || !img.complete || !img.naturalWidth) return null;
+    var vw = img.naturalWidth, vh = img.naturalHeight;
     if (sampleCanvas.width !== vw || sampleCanvas.height !== vh) {
       sampleCanvas.width = vw;
       sampleCanvas.height = vh;
     }
     sampleCtx.clearRect(0, 0, vw, vh);
-    try { sampleCtx.drawImage(v, 0, 0, vw, vh); } catch (e) { return null; }
+    try { sampleCtx.drawImage(img, 0, 0, vw, vh); } catch (e) { return null; }
     var data;
     try { data = sampleCtx.getImageData(0, 0, vw, vh).data; } catch (e) { return null; }
 
@@ -425,53 +414,38 @@
     ctx.globalAlpha = 1;
   }
 
-  function usePose(v, name) {
-    var got = capture(v);
+  function usePose(img, name) {
+    var got = capture(img);
     if (!got) return false;
     sync(got, name);
     return true;
   }
 
-  /* 统一定格在片段 30% 处再采样：避开首帧淡入，也避免每次采到不同动作帧 */
-  function samplePose(v, name, line, after) {
+  /* 静态帧加载完直接采样，不用 seek、不用等缓冲 */
+  function samplePose(img, name, line, after) {
     var done = false, attempts = 0;
     function run() {
       if (done) return;
-      /* seek 之后 readyState 可能短暂回落，等缓冲够了再采，避免整段空掉 */
-      if (v.readyState < 2 && attempts++ < 20) { setTimeout(run, 200); return; }
+      if (!img.complete || !img.naturalWidth) {
+        if (attempts++ < 40) { setTimeout(run, 120); return; }
+        done = true;
+        if (after) after(false);
+        return;
+      }
       done = true;
-      var ok = usePose(v, name);
-      if (!ok && attempts++ < 20) { done = false; setTimeout(run, 250); return; }
+      var ok = usePose(img, name);
       if (ok && line) say(line);
       if (after) after(ok);
     }
-    if (!v.duration || !isFinite(v.duration)) { run(); return; }
-    var t = v.duration * 0.3;
-    if (Math.abs(v.currentTime - t) < 0.08) { run(); return; }
-    var onSeek = function () {
-      v.removeEventListener('seeked', onSeek);
-      setTimeout(run, 60);
-    };
-    v.addEventListener('seeked', onSeek);
-    try { v.currentTime = t; } catch (e) { run(); }
-    setTimeout(function () {
-      if (!done) { v.removeEventListener('seeked', onSeek); run(); }
-    }, 1500);
+    if (img.decode) img.decode().then(run).catch(run);
+    else run();
   }
 
   function nextPose() {
     poseIdx = (poseIdx + 1) % POSES.length;
     var pose = POSES[poseIdx];
     poseAt = performance.now();
-    var v = getVid(pose.file);
-    var tries = 0;
-    (function wait() {
-      if (v.readyState >= 2 && v.videoWidth) {
-        samplePose(v, pose.name, pose.line);
-        return;
-      }
-      if (tries++ < 50) setTimeout(wait, 150);
-    })();
+    samplePose(getFrame(pose.file), pose.name, pose.line);
   }
 
   var last = 0, fpsAcc = 0, fpsN = 0, degradeAt = 0, degradeN = 0;
@@ -521,7 +495,7 @@
     clearTimeout(rz);
     rz = setTimeout(function () {
       fit();
-      usePose(getVid(POSES[poseIdx].file), POSES[poseIdx].name);
+      usePose(getFrame(POSES[poseIdx].file), POSES[poseIdx].name);
     }, 240);
   });
 
@@ -542,17 +516,10 @@
 
   function boot() {
     fit();
-    var v = getVid(POSES[0].file);
-    var tries = 0;
-    (function wait() {
-      if (v.readyState >= 2 && v.videoWidth) {
-        poseAt = performance.now();
-        samplePose(v, POSES[0].name, "", function (ok) { if (ok) start(); });
-        return;
-      }
-      if (tries++ < 60) setTimeout(wait, 160);
-      else if (!started) line.textContent = "分身素材没加载出来，刷新试试。";
-    })();
+    samplePose(getFrame(POSES[0].file), POSES[0].name, "", function (ok) {
+      if (ok) start();
+      else line.textContent = "分身素材没加载出来，刷新试试。";
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
