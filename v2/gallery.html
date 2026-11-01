@@ -6,7 +6,7 @@
 <meta name="description" content="CCCAD 的相册：用照片收藏生活里的瞬间。" />
 <meta name="color-scheme" content="dark light" />
 <title>相册 | CCCAD · v2</title>
-<link rel="stylesheet" href="style.css?v=219" />
+<link rel="stylesheet" href="style.css?v=220" />
 </head>
 <body>
 
@@ -68,8 +68,8 @@
   </div>
 </footer>
 
-<script src="data/photos.js?v=219"></script>
-<script src="theme.js?v=219"></script>
+<script src="data/photos.js?v=220"></script>
+<script src="theme.js?v=220"></script>
 <script>
 (function () {
   var photos = window.PHOTOS || [];
@@ -78,8 +78,8 @@
   var lbImg = document.getElementById("lbImg");
 
   grid.innerHTML = photos.map(function (p) {
-    return '<figure data-full="../gallery/p/' + p.o + '" tabindex="0" role="button" aria-label="查看原图 ' + p.d + '">' +
-      '<img src="../gallery/p/' + p.t + '" alt="相册照片 ' + p.d + '" loading="lazy" />' +
+    return '<figure data-full="' + p.o + '" tabindex="0" role="button" aria-label="查看原图 ' + p.d + '">' +
+      '<img src="' + p.t + '" alt="相册照片 ' + p.d + '" loading="lazy" />' +
       "<figcaption>" + p.d + "</figcaption>" +
       "</figure>";
   }).join("");
