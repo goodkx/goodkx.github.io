@@ -7,6 +7,8 @@
 
   var strip = document.getElementById("petStrip");
   if (!strip) return;
+  /* 允许子站复用：data-frames 指定帧目录，默认沿用 pet/frames/ */
+  var FRAME_DIR = strip.getAttribute("data-frames") || "pet/frames/";
 
   /* 预生成的静态帧（28~32KB/张），比 440KB 的视频快一个量级 */
   var POSES = [
@@ -64,7 +66,7 @@
     var img = frames[name];
     if (!img) {
       img = new Image();
-      img.src = "pet/frames/" + name;
+      img.src = FRAME_DIR + name;
       img.alt = "";
       frames[name] = img;
     }
@@ -131,13 +133,13 @@
     var cw = x1 - x0, ch = y1 - y0;
 
     /* 等比放进展示带，角色本体占高约 78% */
-    var targetH = H * (isMobile ? 0.82 : 0.84);
+    var targetH = H * (isMobile ? 0.76 : 0.78);
     var sc = targetH / ch;
     var maxW = W * 0.86;
     if (cw * sc > maxW) sc = maxW / cw;
     var drawW = cw * sc, drawH = ch * sc;
     var ox = (W - drawW) / 2 - x0 * sc;
-    var oy = H * 0.49 - drawH / 2 - y0 * sc;
+    var oy = H * 0.54 - drawH / 2 - y0 * sc;
 
     var budget = isMobile ? 3400 : 6200;
     var headY = y0 + ch * 0.52;
