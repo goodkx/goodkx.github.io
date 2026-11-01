@@ -140,7 +140,7 @@
     var ox = (W - drawW) / 2 - x0 * sc;
     var oy = H * 0.54 - drawH / 2 - y0 * sc;
 
-    var budget = isMobile ? 3000 : 5000;
+    var budget = isMobile ? 3400 : 6200;
     var gap = Math.max(1, Math.round(Math.sqrt((cw * ch) / (budget * 1.6))));
     var headY = y0 + ch * 0.52;
     var mask = new Uint8Array(vw * vh);
@@ -166,14 +166,14 @@
           var r = tone(data[j2], a);
           var g = tone(data[j2 + 1], a);
           var b = tone(data[j2 + 2], a);
-          var jx = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.22;
+          var jx = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.14;
           var jy = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.22;
           var rad = Math.max(0.95, step * sc * 0.68);
           next.push({
             x: ox + (sx + jx) * sc,
             y: oy + (sy + jy) * sc,
-            r: rad * (a > 0.72 ? 1 : a > 0.4 ? 0.94 : 0.82),
-            a: a > 0.72 ? 1 : a > 0.4 ? 0.92 : 0.62,
+            r: rad * (a > 0.72 ? 1.04 : a > 0.4 ? 0.96 : 0.86),
+            a: a > 0.72 ? 1 : a > 0.4 ? 0.9 : 0.6,
             col: r + "," + g + "," + b,
             glow: a <= 0.4
           });
@@ -207,15 +207,21 @@
       }
     }
     cand.sort(function (m, n) { return n.d - m.d; });
-    var edgeN = Math.min(2600, cand.length);
+    var edgeN = Math.min(isMobile ? 1800 : 3200, cand.length);
     for (var ci = 0; ci < edgeN; ci++) {
       var c = cand[ci];
+      /* 高光边缘（发饰、眼睛高光、裙边）再提一档，勾出亮线 */
+      var hi = lum(c.j) > 196;
+      var cr = tone(data[c.j], c.a);
+      var cg = tone(data[c.j + 1], c.a);
+      var cb = tone(data[c.j + 2], c.a);
+      if (hi) { cr = Math.min(255, cr + 26); cg = Math.min(255, cg + 26); cb = Math.min(255, cb + 26); }
       next.push({
         x: ox + c.x * sc,
         y: oy + c.y * sc,
-        r: Math.max(1, sc * 1.06),
+        r: Math.max(1, sc * (hi ? 1.12 : 1.04)),
         a: 1,
-        col: tone(data[c.j], c.a) + "," + tone(data[c.j + 1], c.a) + "," + tone(data[c.j + 2], c.a),
+        col: cr + "," + cg + "," + cb,
         glow: false,
         edge: true
       });
@@ -244,7 +250,7 @@
     }
     if (!next.length) return null;
 
-    var cap = Math.round(budget * 2);
+    var cap = Math.round(budget * 2.1);
     if (next.length > cap) {
       /* 抽稀时优先保住边缘点，否则轮廓又被抹平 */
       var edges = [], rest = [], ei;
@@ -284,11 +290,12 @@
       var key = col + "|" + p.a;
       var g = map[key];
       if (!g) {
-        g = map[key] = { col: col, a: p.a, glow: p.glow, items: [] };
+        g = map[key] = { col: col, a: p.a, glow: p.glow, items: [], lum: (function () { var q = col.split(','); return q[0] * 0.299 + q[1] * 0.587 + q[2] * 0.114; })() };
         list.push(g);
       }
       g.items.push(p);
     }
+    list.sort(function (a, b) { return a.lum - b.lum; });
     groups = list;
     stats.groups = list.length;
     stats.accent = accent.join(",");
@@ -318,6 +325,16 @@
     buildGroups();
     stats.parts = n;
     stats.pose = poseName;
+  }
+
+  function thin(ratio) {
+    var keep = [];
+    for (var i = 0; i < parts.length; i++) {
+      if (Math.random() > ratio) keep.push(parts[i]);
+    }
+    parts = keep;
+    buildGroups();
+    stats.parts = parts.length;
   }
 
   function say(text) {
@@ -367,8 +384,8 @@
       p.x += p.vx * dt;
       p.y += p.vy * dt;
 
-      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.32;
-      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.32;
+      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.16;
+      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.16;
     }
   }
 
@@ -398,7 +415,7 @@
       ctx.fillStyle = "rgb(" + g.col + ")";
       for (k = 0; k < items.length; k++) {
         p = items[k];
-        ctx.fillRect(p.x + p.dx, p.y + p.dy, p.r, p.r);
+        ctx.fillRect(Math.round((p.x + p.dx) * 2) / 2, Math.round((p.y + p.dy) * 2) / 2, p.r, p.r);
       }
     }
     ctx.globalAlpha = 1;
@@ -426,7 +443,7 @@
     })();
   }
 
-  var last = 0, fpsAcc = 0, fpsN = 0;
+  var last = 0, fpsAcc = 0, fpsN = 0, degradeAt = 0, degradeN = 0;
   function loop(now) {
     requestAnimationFrame(loop);
     if (!visible || document.hidden) { last = now; return; }
@@ -437,6 +454,14 @@
     fpsAcc += dt; fpsN++;
     if (fpsAcc > 1) { stats.fps = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
     if (now - poseAt > POSES[poseIdx].hold) nextPose();
+
+    /* 弱机保护：连续掉帧就分两档削粒子，避免整段动画卡住 */
+    if (degradeN < 2 && stats.fps && stats.fps < 34 && parts.length > 5000) {
+      if (!degradeAt) degradeAt = now;
+      else if (now - degradeAt > 2500) { thin(0.18); degradeAt = 0; degradeN++; }
+    } else if (stats.fps >= 40) {
+      degradeAt = 0;
+    }
   }
 
   function start() {
