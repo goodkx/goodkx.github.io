@@ -141,7 +141,6 @@
     var oy = H * 0.54 - drawH / 2 - y0 * sc;
 
     var budget = isMobile ? 3400 : 6200;
-    var gap = Math.max(1, Math.round(Math.sqrt((cw * ch) / (budget * 1.6))));
     var headY = y0 + ch * 0.52;
     var mask = new Uint8Array(vw * vh);
     var next = [];
@@ -153,15 +152,16 @@
       return c < 0 ? 0 : c > 255 ? 255 : Math.round(c);
     }
 
-    function scan(yStart, yEnd, step, limit) {
-      for (var sy = yStart; sy < yEnd; sy += step) {
+    function scan(yStart, yEnd, stepArg, limit) {
+      for (var sy = yStart; sy < yEnd; ) {
+        var step = Math.max(1, Math.round(typeof stepArg === 'function' ? stepArg(sy) : stepArg));
         for (var sx = x0; sx < x1; sx += step) {
           if (limit && next.length >= limit) return;
           var px = sx | 0, py = sy | 0, key = py * vw + px;
           if (mask[key]) continue;
           var j2 = key * 4;
           var a = alphaOK ? data[j2 + 3] / 255 : (isSolid(j2) ? 1 : 0);
-          if (a < (alphaOK ? 0.12 : 0.01)) continue;
+          if (a < (alphaOK ? 0.07 : 0.01)) continue;
           mask[key] = 1;
           var r = tone(data[j2], a);
           var g = tone(data[j2 + 1], a);
@@ -178,12 +178,12 @@
             glow: a <= 0.4
           });
         }
+        sy += step;
       }
     }
 
-    /* 头部细采（五官在这里，粒子也小），身体再按 gap 补满 */
-    scan(y0, headY, 2, 0);
-    scan(y0, y1, gap, 0);
+    /* 全身统一 2px 细采：不再分头部/身体，密度自始至终一致 */
+    scan(y0, y1, 2, 0);
 
     /* 第三轮：按梯度挑选边缘像素，优先保住眼睛、嘴、发饰这些高频细节 */
     function lum(j) { return data[j] * 0.299 + data[j + 1] * 0.587 + data[j + 2] * 0.114; }
@@ -228,7 +228,8 @@
     }
     /* 第四轮：脸部高亮区再加密一倍，让五官有足够的点可以落 */
     var faceCap = isMobile ? 700 : 1400, faceN = 0;
-    for (var fy = y0 | 0; fy < headY && faceN < faceCap; fy += 1) {
+    var faceTop = (y0 + ch * 0.08) | 0, faceBottom = (y0 + ch * 0.46) | 0;
+    for (var fy = faceTop; fy < faceBottom && faceN < faceCap; fy += 1) {
       for (var fx = x0 | 0; fx < x1 && faceN < faceCap; fx += 1) {
         var fk = fy * vw + fx;
         if (mask[fk]) continue;
@@ -250,7 +251,7 @@
     }
     if (!next.length) return null;
 
-    var cap = Math.round(budget * 2.1);
+    var cap = Math.round(budget * 3.4);
     if (next.length > cap) {
       /* 抽稀时优先保住边缘点，否则轮廓又被抹平 */
       var edges = [], rest = [], ei;
@@ -428,6 +429,30 @@
     return true;
   }
 
+  /* 统一定格在片段 30% 处再采样：避开首帧淡入，也避免每次采到不同动作帧 */
+  function samplePose(v, name, line, after) {
+    var done = false;
+    function run() {
+      if (done) return;
+      done = true;
+      var ok = usePose(v, name);
+      if (ok && line) say(line);
+      if (after) after(ok);
+    }
+    if (!v.duration || !isFinite(v.duration)) { run(); return; }
+    var t = v.duration * 0.3;
+    if (Math.abs(v.currentTime - t) < 0.08) { run(); return; }
+    var onSeek = function () {
+      v.removeEventListener('seeked', onSeek);
+      setTimeout(run, 60);
+    };
+    v.addEventListener('seeked', onSeek);
+    try { v.currentTime = t; } catch (e) { run(); }
+    setTimeout(function () {
+      if (!done) { v.removeEventListener('seeked', onSeek); run(); }
+    }, 1500);
+  }
+
   function nextPose() {
     poseIdx = (poseIdx + 1) % POSES.length;
     var pose = POSES[poseIdx];
@@ -436,7 +461,7 @@
     var tries = 0;
     (function wait() {
       if (v.readyState >= 2 && v.videoWidth) {
-        if (usePose(v, pose.name)) say(pose.line);
+        samplePose(v, pose.name, pose.line);
         return;
       }
       if (tries++ < 50) setTimeout(wait, 150);
@@ -516,7 +541,8 @@
     (function wait() {
       if (v.readyState >= 2 && v.videoWidth) {
         poseAt = performance.now();
-        if (usePose(v, POSES[0].name)) { start(); return; }
+        samplePose(v, POSES[0].name, "", function (ok) { if (ok) start(); });
+        return;
       }
       if (tries++ < 60) setTimeout(wait, 160);
       else if (!started) line.textContent = "分身素材没加载出来，刷新试试。";
