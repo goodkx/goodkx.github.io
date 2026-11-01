@@ -421,24 +421,25 @@
     return true;
   }
 
-  /* 静态帧加载完直接采样，不用 seek、不用等缓冲 */
+  /* 静态帧加载完直接采样：轮询图片状态，不依赖 decode() 的 Promise */
   function samplePose(img, name, line, after) {
     var done = false, attempts = 0;
-    function run() {
+    function finish(ok) {
       if (done) return;
-      if (!img.complete || !img.naturalWidth) {
-        if (attempts++ < 40) { setTimeout(run, 120); return; }
-        done = true;
-        if (after) after(false);
-        return;
-      }
       done = true;
-      var ok = usePose(img, name);
-      if (ok && line) say(line);
-      if (after) after(ok);
+      stats.img = img.complete ? img.naturalWidth : -1;
+      var got = ok && usePose(img, name);
+      if (got && line) say(line);
+      if (after) after(got);
     }
-    if (img.decode) img.decode().then(run).catch(run);
-    else run();
+    function attempt() {
+      if (done) return;
+      if (img.complete && img.naturalWidth > 0) { finish(true); return; }
+      if (img.complete && img.naturalWidth === 0) { finish(false); return; }
+      if (attempts++ > 70) { finish(false); return; }
+      setTimeout(attempt, 140);
+    }
+    attempt();
   }
 
   function nextPose() {
