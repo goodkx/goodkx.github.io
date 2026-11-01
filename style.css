@@ -1404,6 +1404,30 @@ html .nav-links a:hover::after { opacity: .9; }
   color: var(--text);
   opacity: .85;
 }
+.pet-strip { cursor: crosshair; }
+.ps-line {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  z-index: 2;
+  max-width: min(88%, 620px);
+  padding: 7px 15px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity .35s ease, transform .35s ease;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+.ps-line.show { opacity: .94; transform: translate(-50%, 0); }
 @media (max-width: 640px) {
   .pet-strip { height: 360px; }
+  .ps-line { bottom: 16px; font-size: .72rem; max-width: 92%; }
 }
