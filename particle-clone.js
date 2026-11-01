@@ -457,7 +457,8 @@
     poseIdx = next;
     var pose = POSES[poseIdx];
     poseAt = performance.now();
-    samplePose(getFrame(pose.file), pose.name, pose.line);
+    say(pose.line);
+    samplePose(getFrame(pose.file), pose.name);
   }
 
   var last = 0, fpsAcc = 0, fpsN = 0, degradeAt = 0, degradeN = 0;
@@ -485,6 +486,14 @@
     if (started) return;
     started = true;
     requestAnimationFrame(function (now) { last = now; if (!reduce) loop(now); else draw(); });
+    /* 首屏稳定后每 1.2 秒预取一张，切换动作时基本已就绪 */
+    var pi = 1;
+    (function preload() {
+      if (pi >= POSES.length) return;
+      getFrame(POSES[pi].file);
+      pi++;
+      setTimeout(preload, 1200);
+    })();
   }
 
   strip.addEventListener("pointermove", function (e) {
