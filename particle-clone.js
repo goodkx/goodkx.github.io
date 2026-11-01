@@ -431,11 +431,14 @@
 
   /* 统一定格在片段 30% 处再采样：避开首帧淡入，也避免每次采到不同动作帧 */
   function samplePose(v, name, line, after) {
-    var done = false;
+    var done = false, attempts = 0;
     function run() {
       if (done) return;
+      /* seek 之后 readyState 可能短暂回落，等缓冲够了再采，避免整段空掉 */
+      if (v.readyState < 2 && attempts++ < 20) { setTimeout(run, 200); return; }
       done = true;
       var ok = usePose(v, name);
+      if (!ok && attempts++ < 20) { done = false; setTimeout(run, 250); return; }
       if (ok && line) say(line);
       if (after) after(ok);
     }
