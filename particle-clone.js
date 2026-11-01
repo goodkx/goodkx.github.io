@@ -131,13 +131,13 @@
     var cw = x1 - x0, ch = y1 - y0;
 
     /* 等比放进展示带，角色本体占高约 78% */
-    var targetH = H * (isMobile ? 0.76 : 0.78);
+    var targetH = H * (isMobile ? 0.82 : 0.84);
     var sc = targetH / ch;
     var maxW = W * 0.86;
     if (cw * sc > maxW) sc = maxW / cw;
     var drawW = cw * sc, drawH = ch * sc;
     var ox = (W - drawW) / 2 - x0 * sc;
-    var oy = H * 0.54 - drawH / 2 - y0 * sc;
+    var oy = H * 0.49 - drawH / 2 - y0 * sc;
 
     var budget = isMobile ? 3400 : 6200;
     var headY = y0 + ch * 0.52;

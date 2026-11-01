@@ -1366,13 +1366,8 @@ html .nav-links a:hover::after { opacity: .9; }
 /* ═══ 🎴 看板娘粒子分身展示带 ═══ */
 .pet-strip {
   position: relative;
-  height: 460px;
-  margin: 30px 0 10px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  background:
-    radial-gradient(900px 300px at 50% 60%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%),
-    var(--bg-soft);
+  height: 440px;
+  margin: 8px 0 0;
   overflow: hidden;
 }
 .pet-strip #petStripCanvas {
@@ -1381,30 +1376,6 @@ html .nav-links a:hover::after { opacity: .9; }
   width: 100%;
   height: 100%;
 }
-.ps-head {
-  position: absolute;
-  top: 22px; left: 0; right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  z-index: 1;
-  pointer-events: none;
-}
-.ps-tag {
-  font-family: var(--mono);
-  font-size: .68rem;
-  letter-spacing: 2px;
-  color: var(--accent);
-  opacity: .8;
-}
-.ps-title {
-  font-family: var(--mono);
-  font-size: .92rem;
-  color: var(--text);
-  opacity: .85;
-}
-.pet-strip { cursor: crosshair; }
 .ps-line {
   position: absolute;
   left: 50%;
@@ -1428,6 +1399,6 @@ html .nav-links a:hover::after { opacity: .9; }
 }
 .ps-line.show { opacity: .94; transform: translate(-50%, 0); }
 @media (max-width: 640px) {
-  .pet-strip { height: 360px; }
-  .ps-line { bottom: 16px; font-size: .72rem; max-width: 92%; }
+  .pet-strip { height: 340px; }
+  .ps-line { bottom: 12px; font-size: .72rem; max-width: 92%; }
 }
