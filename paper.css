@@ -429,3 +429,100 @@ pre {
   border: 3px solid transparent;
   background-clip: padding-box;
 }
+
+/* ═══════════════════════════════════════════════════════
+   鼠标交互 + 布局细节
+   ═══════════════════════════════════════════════════════ */
+
+/* 光标暖光：在 body 背景之上、内容之下 */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(255, 238, 200, 0.55) 0%, rgba(255, 238, 200, 0) 62%);
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  transition: opacity 400ms ease;
+  will-change: transform;
+}
+
+/* 卡片聚光：光随鼠标在卡面上移动 */
+.page-card,
+.feat-card,
+.post-item,
+.az-item,
+.mini-shop,
+.contact-box,
+.bento-card,
+.tool-card {
+  background-image: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(168, 68, 42, 0.055),
+    transparent 72%
+  );
+}
+
+/* 点击墨迹 */
+.ink-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(168, 68, 42, 0.22) 0%, rgba(168, 68, 42, 0.04) 68%);
+  transform: scale(0);
+  opacity: 0.95;
+  animation: ink-spread 600ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes ink-spread {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* 可点元素的指针与按压反馈 */
+a, button, .page-card, .feat-card, .chip, .tool-chip { cursor: pointer; }
+a:active, button:active, .page-card:active { transform: translateY(1px) !important; }
+
+/* ── 布局节奏：统一容器、行宽、卡片内边距 ── */
+.container { width: min(1120px, 92%) !important; }
+
+.page-card p,
+.feat-card p,
+.prose p,
+.hero-desc,
+.about-copy p {
+  max-width: 68ch;
+}
+
+.page-card { padding: 26px 24px !important; }
+
+/* 标题与正文的呼吸 */
+.section-title { margin-bottom: 6px; }
+.section-title + p,
+.section-title + .section-sub { margin-top: 10px; }
+
+/* ── 界面细节：表格、代码、图片、焦点 ── */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.prose pre { overflow-x: auto; }
+
+img { height: auto; }
+
+:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 3px !important;
+  border-radius: 2px;
+}
+
+/* 交互降级：触屏与减弱动效下不出光标光 */
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-glow { display: none !important; }
+  .ink-ripple { animation: none !important; opacity: 0 !important; }
+}
