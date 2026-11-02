@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="CCCAD 的写作列表：踩坑记录、教程与一些想法。" />
+<meta name="color-scheme" content="light" />
+<title>写作 | CCCAD</title>
+<link rel="stylesheet" href="style.css?v=224" />
+</head>
+<body>
+
+<header class="gnav">
+  <div class="gnav-inner">
+    <a class="gnav-logo" href="index.html">CCCAD</a>
+    <a href="index.html#pages" class="hide-sm">页面</a>
+    <a href="blog.html" class="hide-sm">写作</a>
+    <a href="tools.html" class="hide-sm">工具</a>
+    <a href="gallery.html" class="hide-sm">相册</a>
+    <a href="arcade.html" class="hide-sm">街机厅</a>
+    <span class="gnav-right"><a href="../index.html">返回旧版</a></span>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero" id="listWrap">
+    <p class="eyebrow">写作</p>
+    <h1>踩过的坑，都记在这。</h1>
+    <p>从踩坑到教程，按时间倒序排列。</p>
+  </section>
+  <div class="list" id="list"></div>
+
+  <article id="articleWrap" hidden>
+    <div class="article-hd">
+      <a class="back" href="#">‹ 返回列表</a>
+      <h1 id="aTitle"></h1>
+      <div class="meta" id="aMeta"></div>
+    </div>
+    <div class="prose" id="aBody"></div>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="blog.html">写作</a>
+      <a href="tools.html">工具箱</a>
+      <a href="gallery.html">相册</a>
+      <a href="arcade.html">街机厅</a>
+      <a href="../index.html">旧版首页</a>
+    </div>
+    <div class="footer-meta">
+      <span>CCCAD · 苹果风预览版 v2</span>
+      <span>BUILD 221 · 静态 · 零依赖</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data/posts.js?v=224"></script>
+<script src="app.js?v=224"></script>
+<script>
+(function () {
+  var POSTS = window.POSTS || {};
+  var listEl = document.getElementById("list");
+  var listWrap = document.getElementById("listWrap");
+  var articleWrap = document.getElementById("articleWrap");
+  var aTitle = document.getElementById("aTitle");
+  var aMeta = document.getElementById("aMeta");
+  var aBody = document.getElementById("aBody");
+  var baseTitle = document.title;
+
+  var items = Object.keys(POSTS).map(function (k) {
+    var p = POSTS[k];
+    p.slug = k;
+    return p;
+  }).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+
+  listEl.innerHTML = items.map(function (p) {
+    return '<a class="row" href="#/' + p.slug + '">' +
+      '<span class="date">' + p.date + "</span>" +
+      "<h3>" + p.title + "</h3>" +
+      '<span class="cat">' + (p.tags && p.tags[0] ? p.tags[0] : "") + "</span>" +
+      "</a>";
+  }).join("");
+
+  function route() {
+    var m = location.hash.match(/^#\/([\w-]+)$/);
+    var p = m && POSTS[m[1]];
+    if (p) {
+      listWrap.hidden = true;
+      listEl.hidden = true;
+      articleWrap.hidden = false;
+      aTitle.textContent = p.title;
+      aMeta.textContent = p.date + (p.tags && p.tags.length ? " · " + p.tags.join(" · ") : "");
+      aBody.innerHTML = p.html;
+      document.title = p.title + " | CCCAD";
+      window.scrollTo(0, 0);
+    } else {
+      listWrap.hidden = false;
+      listEl.hidden = false;
+      articleWrap.hidden = true;
+      document.title = baseTitle;
+    }
+  }
+
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>

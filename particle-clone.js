@@ -7,17 +7,25 @@
 
   var strip = document.getElementById("petStrip");
   if (!strip) return;
-  if (!document.createElement("video").canPlayType) return;
+  /* 允许子站复用：data-frames 指定帧目录，默认沿用 pet/frames/ */
+  var FRAME_DIR = strip.getAttribute("data-frames") || "pet/frames/";
 
-  /* 只用 pet/ 根目录的常驻素材，不触发 pet/all/ 按需包 */
+  /* 预生成的静态帧（28~32KB/张），比 440KB 的视频快一个量级 */
   var POSES = [
-    { file: "idle.webm",        name: "发呆",   hold: 13000, line: "我在这儿站了很久了，你终于滑到我了。" },
-    { file: "code.webm",        name: "敲代码", hold: 11000, line: "又在改 CSS？这次一定能对齐。" },
-    { file: "click-happy.webm", name: "开心",   hold: 9000,  line: "别戳了，我本来就是这个像素密度。" },
-    { file: "liondance.webm",   name: "醒狮",   hold: 11000, line: "醒狮只是兼职，本职是当粒子。" },
-    { file: "tanghulu.webm",    name: "糖葫芦", hold: 10000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
-    { file: "sleep.webm",       name: "打盹",   hold: 10000, line: "夜深了，粒子也要睡……才怪。" }
+    { file: "idle.webp",        name: "发呆",     hold: 9000, line: "我在这儿站了很久了，你终于滑到我了。" },
+    { file: "code.webp",        name: "敲代码",   hold: 8000, line: "又在改 CSS？这次一定能对齐。" },
+    { file: "click-happy.webp", name: "开心",     hold: 7000, line: "别戳了，我本来就是这个像素密度。" },
+    { file: "liondance.webp",   name: "醒狮",     hold: 8000, line: "醒狮只是兼职，本职是当粒子。" },
+    { file: "tanghulu.webp",    name: "糖葫芦",   hold: 8000, line: "糖葫芦好吃，可糖衣会反光，粒子挡不住。" },
+    { file: "sleep.webp",       name: "打盹",     hold: 8000, line: "夜深了，粒子也要睡……才怪。" },
+    { file: "a023.webp",        name: "吃Token",  hold: 8000, line: "Token 不好吃，但比 bug 好咽。" },
+    { file: "a048.webp",        name: "吐泡泡",   hold: 8000, line: "鲸鲸吐的不是泡泡，是缓存。" },
+    { file: "a049.webp",        name: "宅舞",     hold: 8000, line: "别问我为什么跳，粒子太多得抖一抖。" },
+    { file: "a034.webp",        name: "东张西望", hold: 8000, line: "找谁？这儿除了粒子没别人。" },
+    { file: "a005.webp",        name: "拆礼物",   hold: 8000, line: "礼盒里是我的 commit 记录，别看。" },
+    { file: "a041.webp",        name: "忙碌",     hold: 8000, line: "忙着从 97 个动作里挑 12 个给你看。" }
   ];
+
 
   var reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var isMobile = !!(window.matchMedia && matchMedia("(max-width: 640px)").matches);
@@ -41,7 +49,7 @@
   var W = 0, H = 0;
   var parts = [];
   var groups = [];
-  var vids = {};
+  var frames = {};
   var poseIdx = 0;
   var poseAt = 0;
   var burstUntil = 0;
@@ -54,22 +62,15 @@
   var stats = { parts: 0, groups: 0, pose: "", samples: 0, fps: 0 };
   window.__stripStats = stats;
 
-  function getVid(file) {
-    var v = vids[file];
-    if (!v) {
-      v = document.createElement("video");
-      v.src = "pet/" + file;
-      v.muted = true;
-      v.loop = true;
-      v.autoplay = true;
-      v.setAttribute("playsinline", "");
-      v.preload = "auto";
-      v.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:2px;height:2px;opacity:0;pointer-events:none";
-      document.body.appendChild(v);
-      v.play().catch(function () {});
-      vids[file] = v;
+  function getFrame(name) {
+    var img = frames[name];
+    if (!img) {
+      img = new Image();
+      img.src = FRAME_DIR + name;
+      img.alt = "";
+      frames[name] = img;
     }
-    return v;
+    return img;
   }
 
   function fit() {
@@ -84,15 +85,15 @@
   }
 
   /* ── 采样：核心包围盒 + 边缘分层 ── */
-  function capture(v) {
-    if (!v || v.readyState < 2 || !v.videoWidth) return null;
-    var vw = v.videoWidth, vh = v.videoHeight;
+  function capture(img) {
+    if (!img || !img.complete || !img.naturalWidth) return null;
+    var vw = img.naturalWidth, vh = img.naturalHeight;
     if (sampleCanvas.width !== vw || sampleCanvas.height !== vh) {
       sampleCanvas.width = vw;
       sampleCanvas.height = vh;
     }
     sampleCtx.clearRect(0, 0, vw, vh);
-    try { sampleCtx.drawImage(v, 0, 0, vw, vh); } catch (e) { return null; }
+    try { sampleCtx.drawImage(img, 0, 0, vw, vh); } catch (e) { return null; }
     var data;
     try { data = sampleCtx.getImageData(0, 0, vw, vh).data; } catch (e) { return null; }
 
@@ -140,8 +141,7 @@
     var ox = (W - drawW) / 2 - x0 * sc;
     var oy = H * 0.54 - drawH / 2 - y0 * sc;
 
-    var budget = isMobile ? 3000 : 5000;
-    var gap = Math.max(1, Math.round(Math.sqrt((cw * ch) / (budget * 1.6))));
+    var budget = isMobile ? 3400 : 6200;
     var headY = y0 + ch * 0.52;
     var mask = new Uint8Array(vw * vh);
     var next = [];
@@ -153,37 +153,38 @@
       return c < 0 ? 0 : c > 255 ? 255 : Math.round(c);
     }
 
-    function scan(yStart, yEnd, step, limit) {
-      for (var sy = yStart; sy < yEnd; sy += step) {
+    function scan(yStart, yEnd, stepArg, limit) {
+      for (var sy = yStart; sy < yEnd; ) {
+        var step = Math.max(1, Math.round(typeof stepArg === 'function' ? stepArg(sy) : stepArg));
         for (var sx = x0; sx < x1; sx += step) {
           if (limit && next.length >= limit) return;
           var px = sx | 0, py = sy | 0, key = py * vw + px;
           if (mask[key]) continue;
           var j2 = key * 4;
           var a = alphaOK ? data[j2 + 3] / 255 : (isSolid(j2) ? 1 : 0);
-          if (a < (alphaOK ? 0.12 : 0.01)) continue;
+          if (a < (alphaOK ? 0.07 : 0.01)) continue;
           mask[key] = 1;
           var r = tone(data[j2], a);
           var g = tone(data[j2 + 1], a);
           var b = tone(data[j2 + 2], a);
-          var jx = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.22;
+          var jx = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.14;
           var jy = step < 2 ? 0 : (Math.random() - 0.5) * step * 0.22;
           var rad = Math.max(0.95, step * sc * 0.68);
           next.push({
             x: ox + (sx + jx) * sc,
             y: oy + (sy + jy) * sc,
-            r: rad * (a > 0.72 ? 1 : a > 0.4 ? 0.94 : 0.82),
-            a: a > 0.72 ? 1 : a > 0.4 ? 0.92 : 0.62,
+            r: rad * (a > 0.72 ? 1.04 : a > 0.4 ? 0.96 : 0.86),
+            a: a > 0.72 ? 1 : a > 0.4 ? 0.9 : 0.6,
             col: r + "," + g + "," + b,
             glow: a <= 0.4
           });
         }
+        sy += step;
       }
     }
 
-    /* 头部细采（五官在这里，粒子也小），身体再按 gap 补满 */
-    scan(y0, headY, 2, 0);
-    scan(y0, y1, gap, 0);
+    /* 全身统一 2px 细采：不再分头部/身体，密度自始至终一致 */
+    scan(y0, y1, 2, 0);
 
     /* 第三轮：按梯度挑选边缘像素，优先保住眼睛、嘴、发饰这些高频细节 */
     function lum(j) { return data[j] * 0.299 + data[j + 1] * 0.587 + data[j + 2] * 0.114; }
@@ -207,22 +208,29 @@
       }
     }
     cand.sort(function (m, n) { return n.d - m.d; });
-    var edgeN = Math.min(2600, cand.length);
+    var edgeN = Math.min(isMobile ? 1800 : 3200, cand.length);
     for (var ci = 0; ci < edgeN; ci++) {
       var c = cand[ci];
+      /* 高光边缘（发饰、眼睛高光、裙边）再提一档，勾出亮线 */
+      var hi = lum(c.j) > 196;
+      var cr = tone(data[c.j], c.a);
+      var cg = tone(data[c.j + 1], c.a);
+      var cb = tone(data[c.j + 2], c.a);
+      if (hi) { cr = Math.min(255, cr + 26); cg = Math.min(255, cg + 26); cb = Math.min(255, cb + 26); }
       next.push({
         x: ox + c.x * sc,
         y: oy + c.y * sc,
-        r: Math.max(1, sc * 1.06),
+        r: Math.max(1, sc * (hi ? 1.12 : 1.04)),
         a: 1,
-        col: tone(data[c.j], c.a) + "," + tone(data[c.j + 1], c.a) + "," + tone(data[c.j + 2], c.a),
+        col: cr + "," + cg + "," + cb,
         glow: false,
         edge: true
       });
     }
     /* 第四轮：脸部高亮区再加密一倍，让五官有足够的点可以落 */
     var faceCap = isMobile ? 700 : 1400, faceN = 0;
-    for (var fy = y0 | 0; fy < headY && faceN < faceCap; fy += 1) {
+    var faceTop = (y0 + ch * 0.08) | 0, faceBottom = (y0 + ch * 0.46) | 0;
+    for (var fy = faceTop; fy < faceBottom && faceN < faceCap; fy += 1) {
       for (var fx = x0 | 0; fx < x1 && faceN < faceCap; fx += 1) {
         var fk = fy * vw + fx;
         if (mask[fk]) continue;
@@ -244,7 +252,7 @@
     }
     if (!next.length) return null;
 
-    var cap = Math.round(budget * 2);
+    var cap = Math.round(budget * 3.4);
     if (next.length > cap) {
       /* 抽稀时优先保住边缘点，否则轮廓又被抹平 */
       var edges = [], rest = [], ei;
@@ -284,11 +292,12 @@
       var key = col + "|" + p.a;
       var g = map[key];
       if (!g) {
-        g = map[key] = { col: col, a: p.a, glow: p.glow, items: [] };
+        g = map[key] = { col: col, a: p.a, glow: p.glow, items: [], lum: (function () { var q = col.split(','); return q[0] * 0.299 + q[1] * 0.587 + q[2] * 0.114; })() };
         list.push(g);
       }
       g.items.push(p);
     }
+    list.sort(function (a, b) { return a.lum - b.lum; });
     groups = list;
     stats.groups = list.length;
     stats.accent = accent.join(",");
@@ -305,19 +314,29 @@
     for (var i = 0; i < n; i++) {
       var p = parts[i], t = points[i];
       if (!p.has) {
-        p.x = t.x;
-        p.y = t.y;
+        p.x = W * 0.5 + (Math.random() - 0.5) * 70;
+        p.y = H * 0.52 + (Math.random() - 0.5) * 70;
         p.has = true;
       }
       p.tx = t.x; p.ty = t.y;
       p.r = t.r; p.a = t.a; p.col = t.col; p.glow = t.glow;
-      p.delay = reduce ? 0 : (i / n) * 0.5 + Math.random() * 0.18;
+      p.delay = reduce ? 0 : (i / n) * 0.8 + Math.random() * 0.2;
       p.start = t0;
       if (reduce) { p.x = t.x; p.y = t.y; p.vx = 0; p.vy = 0; }
     }
     buildGroups();
     stats.parts = n;
     stats.pose = poseName;
+  }
+
+  function thin(ratio) {
+    var keep = [];
+    for (var i = 0; i < parts.length; i++) {
+      if (Math.random() > ratio) keep.push(parts[i]);
+    }
+    parts = keep;
+    buildGroups();
+    stats.parts = parts.length;
   }
 
   function say(text) {
@@ -367,8 +386,8 @@
       p.x += p.vx * dt;
       p.y += p.vy * dt;
 
-      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.32;
-      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.32;
+      p.dx = Math.sin(t * 1.05 + i * 0.31) * 0.28;
+      p.dy = Math.cos(t * 0.87 + i * 0.23) * 0.28;
     }
   }
 
@@ -398,35 +417,53 @@
       ctx.fillStyle = "rgb(" + g.col + ")";
       for (k = 0; k < items.length; k++) {
         p = items[k];
-        ctx.fillRect(p.x + p.dx, p.y + p.dy, p.r, p.r);
+        ctx.fillRect(Math.round((p.x + p.dx) * 2) / 2, Math.round((p.y + p.dy) * 2) / 2, p.r, p.r);
       }
     }
     ctx.globalAlpha = 1;
   }
 
-  function usePose(v, name) {
-    var got = capture(v);
+  function usePose(img, name) {
+    var got = capture(img);
     if (!got) return false;
     sync(got, name);
     return true;
   }
 
-  function nextPose() {
-    poseIdx = (poseIdx + 1) % POSES.length;
-    var pose = POSES[poseIdx];
-    poseAt = performance.now();
-    var v = getVid(pose.file);
-    var tries = 0;
-    (function wait() {
-      if (v.readyState >= 2 && v.videoWidth) {
-        if (usePose(v, pose.name)) say(pose.line);
-        return;
-      }
-      if (tries++ < 50) setTimeout(wait, 150);
-    })();
+  /* 静态帧加载完直接采样：轮询图片状态，不依赖 decode() 的 Promise */
+  function samplePose(img, name, line, after) {
+    var done = false, attempts = 0;
+    function finish(ok) {
+      if (done) return;
+      done = true;
+      stats.img = img.complete ? img.naturalWidth : -1;
+      var got = ok && usePose(img, name);
+      if (got && line) say(line);
+      if (after) after(got);
+    }
+    function attempt() {
+      if (done) return;
+      if (img.complete && img.naturalWidth > 0) { finish(true); return; }
+      if (img.complete && img.naturalWidth === 0) { finish(false); return; }
+      if (attempts++ > 70) { finish(false); return; }
+      setTimeout(attempt, 140);
+    }
+    attempt();
   }
 
-  var last = 0, fpsAcc = 0, fpsN = 0;
+  function nextPose() {
+    var next = poseIdx;
+    if (POSES.length > 1) {
+      while (next === poseIdx) next = (Math.random() * POSES.length) | 0;
+    }
+    poseIdx = next;
+    var pose = POSES[poseIdx];
+    poseAt = performance.now();
+    say(pose.line);
+    samplePose(getFrame(pose.file), pose.name);
+  }
+
+  var last = 0, fpsAcc = 0, fpsN = 0, degradeAt = 0, degradeN = 0;
   function loop(now) {
     requestAnimationFrame(loop);
     if (!visible || document.hidden) { last = now; return; }
@@ -437,12 +474,28 @@
     fpsAcc += dt; fpsN++;
     if (fpsAcc > 1) { stats.fps = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
     if (now - poseAt > POSES[poseIdx].hold) nextPose();
+
+    /* 弱机保护：连续掉帧就分两档削粒子，避免整段动画卡住 */
+    if (degradeN < 2 && stats.fps && stats.fps < 34 && parts.length > 5000) {
+      if (!degradeAt) degradeAt = now;
+      else if (now - degradeAt > 2500) { thin(0.18); degradeAt = 0; degradeN++; }
+    } else if (stats.fps >= 40) {
+      degradeAt = 0;
+    }
   }
 
   function start() {
     if (started) return;
     started = true;
     requestAnimationFrame(function (now) { last = now; if (!reduce) loop(now); else draw(); });
+    /* 首屏稳定后每 1.2 秒预取一张，切换动作时基本已就绪 */
+    var pi = 1;
+    (function preload() {
+      if (pi >= POSES.length) return;
+      getFrame(POSES[pi].file);
+      pi++;
+      setTimeout(preload, 1200);
+    })();
   }
 
   strip.addEventListener("pointermove", function (e) {
@@ -457,7 +510,7 @@
   strip.addEventListener("pointerdown", function (e) {
     if (e.target.closest && e.target.closest("a,button")) return;
     burst();
-    say(POSES[poseIdx].line);
+    nextPose();
   });
 
   var rz = 0;
@@ -465,7 +518,7 @@
     clearTimeout(rz);
     rz = setTimeout(function () {
       fit();
-      usePose(getVid(POSES[poseIdx].file), POSES[poseIdx].name);
+      usePose(getFrame(POSES[poseIdx].file), POSES[poseIdx].name);
     }, 240);
   });
 
@@ -486,16 +539,10 @@
 
   function boot() {
     fit();
-    var v = getVid(POSES[0].file);
-    var tries = 0;
-    (function wait() {
-      if (v.readyState >= 2 && v.videoWidth) {
-        poseAt = performance.now();
-        if (usePose(v, POSES[0].name)) { start(); return; }
-      }
-      if (tries++ < 60) setTimeout(wait, 160);
-      else if (!started) line.textContent = "分身素材没加载出来，刷新试试。";
-    })();
+    samplePose(getFrame(POSES[0].file), POSES[0].name, "", function (ok) {
+      if (ok) start();
+      else line.textContent = "分身素材没加载出来，刷新试试。";
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
