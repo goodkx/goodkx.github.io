@@ -1,0 +1,260 @@
+/* ═══════════════════════════════════════════════════════════
+   paper.css · 纸感覆盖层
+   加载在所有样式之后，只改材质/配色/字体，不动布局与类名
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 默认：暖纸 ── */
+:root {
+  --bg: #f6f3ec;
+  --bg-soft: #efeae0;
+  --card: #fffdf8;
+  --border: rgba(27, 25, 22, 0.12);
+  --border-hover: rgba(168, 68, 42, 0.45);
+  --text: #1b1916;
+  --muted: #6b6459;
+  --accent: #a8442a;
+  --accent-2: #2f5d50;
+  --accent-rgb: 168, 68, 42;
+  --accent-2-rgb: 47, 93, 80;
+  --gradient: linear-gradient(120deg, #a8442a, #2f5d50);
+  --panel: #fffdf8;
+  --nav-bg: rgba(246, 243, 236, 0.88);
+  --radius: 4px;
+  --glow-1: transparent;
+  --glow-2: transparent;
+  --acc-soft-bg: rgba(168, 68, 42, 0.08);
+  --acc-soft-bd: rgba(168, 68, 42, 0.22);
+  --acc-glow: rgba(168, 68, 42, 0.12);
+  --sb-thumb: #d8d0c2;
+  --chip-c: #2f5d50;
+  --chip-bg: rgba(47, 93, 80, 0.08);
+  --chip-bd: rgba(47, 93, 80, 0.2);
+  --shadow-1: 0 1px 0 rgba(27, 25, 22, 0.06), 0 14px 30px -20px rgba(27, 25, 22, 0.34);
+  --shadow-2: 0 2px 0 rgba(27, 25, 22, 0.05), 0 26px 50px -28px rgba(27, 25, 22, 0.4);
+  --serif: Georgia, "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+}
+
+/* ── 原 deepseek（默认深色） → 冷纸 ── */
+html[data-theme="deepseek"] {
+  --bg: #f2f3f7;
+  --bg-soft: #e9ebf1;
+  --card: #ffffff;
+  --border: rgba(24, 30, 44, 0.12);
+  --border-hover: rgba(61, 90, 138, 0.45);
+  --text: #1a1f2b;
+  --muted: #626b7d;
+  --accent: #3d5a8a;
+  --accent-2: #6b4f7a;
+  --accent-rgb: 61, 90, 138;
+  --accent-2-rgb: 107, 79, 122;
+  --gradient: linear-gradient(120deg, #3d5a8a, #6b4f7a);
+  --panel: #ffffff;
+  --nav-bg: rgba(242, 243, 247, 0.88);
+}
+
+/* ── 冷纸（原紫夜） ── */
+html[data-theme="violet"] {
+  --bg: #f2f3f7;
+  --bg-soft: #e9ebf1;
+  --card: #ffffff;
+  --border: rgba(24, 30, 44, 0.12);
+  --border-hover: rgba(61, 90, 138, 0.45);
+  --text: #1a1f2b;
+  --muted: #626b7d;
+  --accent: #3d5a8a;
+  --accent-2: #6b4f7a;
+  --accent-rgb: 61, 90, 138;
+  --accent-2-rgb: 107, 79, 122;
+  --gradient: linear-gradient(120deg, #3d5a8a, #6b4f7a);
+  --panel: #ffffff;
+  --nav-bg: rgba(242, 243, 247, 0.88);
+}
+
+/* ── 净白（原纸白） ── */
+html[data-theme="paper"] {
+  --bg: #fffdf8;
+  --bg-soft: #f4f0e7;
+  --card: #ffffff;
+  --border: rgba(27, 25, 22, 0.1);
+  --border-hover: rgba(47, 93, 80, 0.45);
+  --text: #1b1a17;
+  --muted: #6a655c;
+  --accent: #2f5d50;
+  --accent-2: #a8442a;
+  --accent-rgb: 47, 93, 80;
+  --accent-2-rgb: 168, 68, 42;
+  --gradient: linear-gradient(120deg, #2f5d50, #a8442a);
+  --panel: #ffffff;
+  --nav-bg: rgba(255, 253, 248, 0.9);
+}
+
+/* ── 米黄（原墨金） ── */
+html[data-theme="amber"] {
+  --bg: #f7f1e3;
+  --bg-soft: #ece3d0;
+  --card: #fffaf0;
+  --border: rgba(60, 44, 22, 0.14);
+  --border-hover: rgba(138, 90, 43, 0.45);
+  --text: #2a2118;
+  --muted: #75685a;
+  --accent: #8a5a2b;
+  --accent-2: #4a6152;
+  --accent-rgb: 138, 90, 43;
+  --accent-2-rgb: 74, 97, 82;
+  --gradient: linear-gradient(120deg, #8a5a2b, #4a6152);
+  --panel: #fffaf0;
+  --nav-bg: rgba(247, 241, 227, 0.9);
+}
+
+/* ── 底色与纸张颗粒 ── */
+html { background: var(--bg); }
+
+body {
+  background: var(--bg) !important;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC",
+               "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.075;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 关闭原来的暗色光晕与网格 */
+.bg-glow { display: none !important; }
+.bg-grid { opacity: 0.22 !important; }
+#fxParticles { opacity: 0.12 !important; }
+.bg-noise { display: none !important; }
+
+/* ── 字体：标题衬线 ── */
+h1, h2, h3,
+.hero-title, .section-title, .post-title, .contact-title, .feat-main strong {
+  font-family: var(--serif) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+}
+
+.hero-title {
+  line-height: 1.15;
+}
+
+/* 取消渐变文字，改成墨色 + 强调色 */
+.grad-text {
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  color: var(--accent) !important;
+  -webkit-text-fill-color: var(--accent) !important;
+}
+
+/* ── 导航 ── */
+.nav-inner {
+  background: var(--nav-bg) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-1) !important;
+  border-radius: 4px !important;
+}
+.dock-pill {
+  background: var(--acc-soft-bg) !important;
+  border-radius: 3px !important;
+}
+
+/* ── 按钮：实色 + 细边 ── */
+.btn-primary {
+  background: var(--text) !important;
+  color: var(--bg) !important;
+  box-shadow: none !important;
+  border-radius: 3px !important;
+}
+.btn-primary:hover {
+  background: var(--accent) !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+}
+.btn-ghost {
+  border: 1px solid var(--border) !important;
+  border-radius: 3px !important;
+  color: var(--text) !important;
+}
+.btn-ghost:hover { border-color: var(--text) !important; }
+
+/* ── 卡片：纸质感 ── */
+.page-card,
+.terminal,
+.code-card,
+.contact-box,
+.az-item,
+.chip,
+.mini-shop,
+.feat-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: var(--shadow-1) !important;
+}
+
+.page-card:hover,
+.feat-card:hover {
+  border-color: var(--border-hover) !important;
+  box-shadow: var(--shadow-2) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* 终端窗口：浅色纸面，标题栏去圆点 */
+.terminal-header { border-bottom: 1px solid var(--border) !important; }
+.terminal-body { color: var(--text) !important; }
+.dot-r, .dot-y, .dot-g { opacity: 0.35 !important; }
+
+/* 标签 */
+.chip {
+  box-shadow: none !important;
+  border-radius: 3px !important;
+}
+
+/* 浅色下代码块反色，保证可读 */
+pre, code {
+  color: inherit;
+}
+pre {
+  background: #1b1916 !important;
+  color: #f2ede3 !important;
+  border-radius: 4px !important;
+}
+pre code { color: inherit !important; }
+
+/* 图片统一纸边 */
+.gallery img, .photo img, .shot img {
+  border: 6px solid var(--card);
+  box-shadow: var(--shadow-1);
+  border-radius: 2px;
+}
+
+/* 进度条与滚动条 */
+.progress { background: var(--accent) !important; }
+::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: 2px; }
+
+/* 焦点 */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ── 页脚 ── */
+.footer, .site-footer {
+  background: var(--bg-soft) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* ── 深色区块在纸感下的处理（保留对比，少用） ── */
+.section-dark,
+[data-dark] {
+  background: #1b1916 !important;
+  color: #f2ede3 !important;
+}
