@@ -35,40 +35,8 @@
 }
 
 /* ── 原 deepseek（默认深色） → 冷纸 ── */
-html[data-theme="deepseek"] {
-  --bg: #f2f3f7;
-  --bg-soft: #e9ebf1;
-  --card: #ffffff;
-  --border: rgba(24, 30, 44, 0.12);
-  --border-hover: rgba(61, 90, 138, 0.45);
-  --text: #1a1f2b;
-  --muted: #626b7d;
-  --accent: #3d5a8a;
-  --accent-2: #6b4f7a;
-  --accent-rgb: 61, 90, 138;
-  --accent-2-rgb: 107, 79, 122;
-  --gradient: linear-gradient(120deg, #3d5a8a, #6b4f7a);
-  --panel: #ffffff;
-  --nav-bg: rgba(242, 243, 247, 0.88);
-}
 
 /* ── 冷纸（原紫夜） ── */
-html[data-theme="violet"] {
-  --bg: #f2f3f7;
-  --bg-soft: #e9ebf1;
-  --card: #ffffff;
-  --border: rgba(24, 30, 44, 0.12);
-  --border-hover: rgba(61, 90, 138, 0.45);
-  --text: #1a1f2b;
-  --muted: #626b7d;
-  --accent: #3d5a8a;
-  --accent-2: #6b4f7a;
-  --accent-rgb: 61, 90, 138;
-  --accent-2-rgb: 107, 79, 122;
-  --gradient: linear-gradient(120deg, #3d5a8a, #6b4f7a);
-  --panel: #ffffff;
-  --nav-bg: rgba(242, 243, 247, 0.88);
-}
 
 /* ── 净白（原纸白） ── */
 html[data-theme="paper"] {
@@ -89,22 +57,6 @@ html[data-theme="paper"] {
 }
 
 /* ── 米黄（原墨金） ── */
-html[data-theme="amber"] {
-  --bg: #f7f1e3;
-  --bg-soft: #ece3d0;
-  --card: #fffaf0;
-  --border: rgba(60, 44, 22, 0.14);
-  --border-hover: rgba(138, 90, 43, 0.45);
-  --text: #2a2118;
-  --muted: #75685a;
-  --accent: #8a5a2b;
-  --accent-2: #4a6152;
-  --accent-rgb: 138, 90, 43;
-  --accent-2-rgb: 74, 97, 82;
-  --gradient: linear-gradient(120deg, #8a5a2b, #4a6152);
-  --panel: #fffaf0;
-  --nav-bg: rgba(247, 241, 227, 0.9);
-}
 
 /* ── 底色与纸张颗粒 ── */
 html { background: var(--bg); }
@@ -949,68 +901,12 @@ html[data-theme=""] .page-card {
 }
 
 /* ───────── B. 冷纸 · 蓝图网格 ───────── */
-html[data-theme="violet"],
-html[data-theme="deepseek"] {
-  --grid-line: rgba(61, 90, 138, 0.06);
-}
-html[data-theme="violet"] body,
-html[data-theme="deepseek"] body {
-  background:
-    linear-gradient(rgba(61, 90, 138, 0.055) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(61, 90, 138, 0.055) 1px, transparent 1px) 0 0 / 40px 40px,
-    #f2f3f7 !important;
-}
-html[data-theme="violet"] body::after,
-html[data-theme="deepseek"] body::after { opacity: 0.02 !important; }
 
 /* 布局：单列居中 */
-html[data-theme="violet"] .hero-inner,
-html[data-theme="deepseek"] .hero-inner {
-  grid-template-columns: 1fr !important;
-  text-align: center;
-  max-width: 860px;
-  margin: 0 auto;
-  gap: 40px !important;
-}
-html[data-theme="violet"] .hero .cta,
-html[data-theme="deepseek"] .hero .cta { justify-content: center; }
-html[data-theme="violet"] .hero-role,
-html[data-theme="deepseek"] .hero-role { justify-content: center; }
-html[data-theme="violet"] .hero-hello,
-html[data-theme="deepseek"] .hero-hello { text-align: center; }
 
 /* 卡片：三等宽，hover 出内描边，不位移 */
-html[data-theme="violet"] .pages-grid:not(.hscroll),
-html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 1px !important;
-  background: rgba(61, 90, 138, 0.12) !important;
-  border: 1px solid rgba(61, 90, 138, 0.12) !important;
-}
-html[data-theme="violet"] .pages-grid > :first-child,
-html[data-theme="deepseek"] .pages-grid > :first-child {
-  grid-column: span 3 !important;
-  padding: 26px 24px !important;
-}
-html[data-theme="violet"] .page-card,
-html[data-theme="deepseek"] .page-card {
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: #ffffff !important;
-  transform: none !important;
-}
-html[data-theme="violet"] .page-card:hover,
-html[data-theme="deepseek"] .page-card:hover {
-  background: #eef2fa !important;
-  box-shadow: inset 0 0 0 1px rgba(61, 90, 138, 0.5) !important;
-  transform: none !important;
-}
 
 /* 交互：冷光 */
-html[data-theme="violet"] .cursor-glow,
-html[data-theme="deepseek"] .cursor-glow {
-  background: radial-gradient(circle, rgba(200, 220, 255, 0.45) 0%, rgba(200, 220, 255, 0) 58%) !important;
-}
 
 /* ───────── C. 净白 · 极简窄栏 ───────── */
 html[data-theme="paper"] body {
@@ -1058,71 +954,42 @@ html[data-theme="paper"] .page-card:hover h3 { color: #2f5d50 !important; }
 html[data-theme="paper"] .cursor-glow { opacity: 0.18 !important; }
 
 /* ───────── D. 米黄 · 复古印刷 ───────── */
-html[data-theme="amber"] body {
-  background:
-    repeating-linear-gradient(0deg, transparent 0 27px, rgba(60, 44, 22, 0.055) 27px 28px),
-    #f7f1e3 !important;
-}
-html[data-theme="amber"] body::after { opacity: 0.09 !important; }
 
 /* 布局：左右等分 + 正文双栏 */
-html[data-theme="amber"] .hero-inner {
-  grid-template-columns: 1fr 1fr !important;
-  gap: 48px !important;
-}
-html[data-theme="amber"] .pages-grid:not(.hscroll) {
-  grid-template-columns: repeat(2, 1fr) !important;
-}
-html[data-theme="amber"] .pages-grid > :first-child { grid-column: span 2 !important; }
 
 @media (min-width: 1025px) {
-  html[data-theme="amber"] .prose,
-  html[data-theme="amber"] .about-copy {
-    column-count: 2;
-    column-gap: 42px;
-    column-rule: 1px solid rgba(60, 44, 22, 0.1);
-  }
-  html[data-theme="amber"] .prose h3,
-  html[data-theme="amber"] .prose pre,
-  html[data-theme="amber"] .prose blockquote,
-  html[data-theme="amber"] .prose table { column-span: all; }
 }
 
 /* 交互：hover 反白（深底浅字） */
-html[data-theme="amber"] .page-card,
-html[data-theme="amber"] .feat-card {
-  border-radius: 0 !important;
-  border: 1px solid rgba(60, 44, 22, 0.16) !important;
-  background: #fffaf0 !important;
-  transform: none !important;
-  transition: background 200ms ease, border-color 200ms ease !important;
-}
-html[data-theme="amber"] .page-card:hover,
-html[data-theme="amber"] .feat-card:hover {
-  background: #2a2118 !important;
-  border-color: #2a2118 !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-html[data-theme="amber"] .page-card:hover h3,
-html[data-theme="amber"] .page-card:hover p,
-html[data-theme="amber"] .page-card:hover .page-go,
-html[data-theme="amber"] .feat-card:hover h3,
-html[data-theme="amber"] .feat-card:hover p { color: #f7f1e3 !important; }
 
 /* 交互：暖黄光 */
-html[data-theme="amber"] .cursor-glow {
-  background: radial-gradient(circle, rgba(255, 226, 150, 0.55) 0%, rgba(255, 226, 150, 0) 58%) !important;
-  opacity: 0.5 !important;
-}
 
 /* 米黄下按钮：方角反白 */
-html[data-theme="amber"] .btn-primary {
-  background: #2a2118 !important;
-  border-color: #2a2118 !important;
-  color: #f7f1e3 !important;
+
+html[data-theme="deepseek"] {
+  --bg: #14161a;
+  --bg-soft: #1b1e23;
+  --card: #1e2227;
+  --border: rgba(240, 235, 225, 0.12);
+  --border-hover: rgba(127, 212, 168, 0.45);
+  --text: #ece7de;
+  --muted: #9aa196;
+  --accent: #7fd4a8;
+  --accent-2: #c9a227;
+  --accent-rgb: 127, 212, 168;
+  --accent-2-rgb: 201, 162, 39;
+  --gradient: linear-gradient(120deg, #7fd4a8, #c9a227);
+  --panel: #1e2227;
+  --nav-bg: rgba(20, 22, 26, 0.88);
+  --sb-thumb: #3a4048;
 }
-html[data-theme="amber"] .btn-primary:hover {
-  background: #8a5a2b !important;
-  border-color: #8a5a2b !important;
+
+/* 深色墨纸下：噪点改叠加模式，避免变脏 */
+html[data-theme="deepseek"] body::after {
+  mix-blend-mode: screen;
+  opacity: 0.05 !important;
+}
+html[data-theme="deepseek"] .cursor-glow {
+  background: radial-gradient(circle, rgba(127, 212, 168, 0.16) 0%, rgba(127, 212, 168, 0) 60%) !important;
+  mix-blend-mode: screen;
 }

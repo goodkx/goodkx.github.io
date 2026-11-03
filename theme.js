@@ -25,18 +25,15 @@
     if (b) b.style.display = "flex";
   });
   const THEMES = [
-    { id: "",       name: "深空绿 · 终端" },
-    { id: "violet", name: "紫夜 · 霓虹" },
-    { id: "paper",  name: "暖纸 · 印刷" },
-    { id: "amber",  name: "墨金 · 鎏金" },
-    { id: "deepseek", name: "深海鲸 · DeepSeek" },
+    { id: "paper",    name: "暖纸 · 浅色" },
+    { id: "deepseek", name: "墨纸 · 深色" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）
   let saved = "";
   try { saved = localStorage.getItem(KEY); } catch (e) {}
   /* 默认主题 = 深海鲸 · DeepSeek（站长拍板）；老访客的已存选择不受影响 */
-  if (saved === null || saved === undefined || saved === "") saved = "deepseek";
+  if (saved !== "paper" && saved !== "deepseek") saved = "paper";
   document.documentElement.dataset.theme = saved;
   /* 默认固定使用「深空绿 · 终端」：不再跟随系统深浅色 / 时段自动换肤。
      想换风格的访客点右下角 🎨 手动选择，选择会被记住。 */

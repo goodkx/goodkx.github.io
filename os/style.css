@@ -357,39 +357,6 @@ html, body {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 /* ═══ 主题变量（桌面跟随整站四套配色） ═══ */
-html[data-theme="violet"] {
-  --paper: #f2f3f7;
-  --paper-2: #ffffff;
-  --paper-3: #e9ebf1;
-  --ink: #1a1f2b;
-  --muted: #626b7d;
-  --line: rgba(24, 30, 44, 0.12);
-  --line-soft: rgba(24, 30, 44, 0.06);
-  --accent: #3d5a8a;
-  --green: #6b4f7a;
-}
-html[data-theme="paper"] {
-  --paper: #fffdf8;
-  --paper-2: #ffffff;
-  --paper-3: #f4f0e7;
-  --ink: #1b1a17;
-  --muted: #6a655c;
-  --line: rgba(27, 25, 22, 0.1);
-  --line-soft: rgba(27, 25, 22, 0.05);
-  --accent: #2f5d50;
-  --green: #a8442a;
-}
-html[data-theme="amber"] {
-  --paper: #f7f1e3;
-  --paper-2: #fffaf0;
-  --paper-3: #ece3d0;
-  --ink: #2a2118;
-  --muted: #75685a;
-  --line: rgba(60, 44, 22, 0.14);
-  --line-soft: rgba(60, 44, 22, 0.07);
-  --accent: #8a5a2b;
-  --green: #4a6152;
-}
 
 /* 菜单栏 / 任务栏跟随主题 */
 .menubar {
@@ -397,4 +364,31 @@ html[data-theme="amber"] {
 }
 .dock {
   background: color-mix(in srgb, var(--paper-2) 86%, transparent);
+}
+
+/* 深色墨纸 */
+html[data-theme="deepseek"] {
+  --paper: #14161a;
+  --paper-2: #1e2227;
+  --paper-3: #262b31;
+  --ink: #ece7de;
+  --muted: #9aa196;
+  --line: rgba(240, 235, 225, 0.12);
+  --line-soft: rgba(240, 235, 225, 0.06);
+  --accent: #7fd4a8;
+  --green: #c9a227;
+}
+/* 桌面图标：线性 SVG 统一墨色 */
+.app-icon .glyph svg {
+  width: 26px;
+  height: 26px;
+  color: var(--accent);
+  display: block;
+}
+.theme-dot[data-t="deepseek"] { background: #14161a; }
+
+/* 深色墨纸下噪点换叠加 */
+html[data-theme="deepseek"] .desktop::after {
+  mix-blend-mode: screen;
+  opacity: 0.05;
 }
