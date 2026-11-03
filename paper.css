@@ -715,3 +715,143 @@ h1[data-word] {
   line-height: 1.4 !important;
   overflow-wrap: anywhere;
 }
+
+/* ═══════════════════════════════════════════════════════
+   去 AI 感：按钮 / 链接 / 卡片 / 导航
+   原则：实色、方角、细线、不下浮、不发光
+   ═══════════════════════════════════════════════════════ */
+
+/* 1) 全局材质：实底替代玻璃拟态 */
+.nav-inner,
+.terminal,
+.mini-shop,
+.code-card,
+.contact-box,
+.az-item,
+.hscroll-item,
+.search-box,
+.modal,
+.gb-item {
+  background: var(--paper-2) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+}
+
+/* 2) 导航：去掉悬浮胶囊，改成贴顶横条 */
+.nav { padding-top: 0 !important; }
+.nav-inner {
+  border-radius: 0 !important;
+  padding: 10px 16px !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+}
+.nav-links {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  gap: 18px !important;
+}
+.dock-pill { display: none !important; }   /* 滑动的胶囊指示器 */
+
+/* 3) 按钮：印刷按钮，方角实色 */
+.btn,
+.btn-primary,
+.btn-ghost,
+.az-go,
+.hscroll-toggle,
+.contact-actions .btn {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  font-weight: 500 !important;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease !important;
+}
+.btn-primary {
+  background: var(--ink) !important;
+  color: var(--paper-2) !important;
+  border: 1px solid var(--ink) !important;
+}
+.btn-primary:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  transform: none !important;
+}
+.btn-ghost {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 1px solid rgba(27, 25, 22, 0.28) !important;
+}
+.btn-ghost:hover {
+  border-color: var(--ink) !important;
+  color: var(--ink) !important;
+  transform: none !important;
+}
+
+/* 4) 正文链接：恢复下划线（编辑器风格） */
+.prose a,
+.about-copy a,
+.hero-desc a,
+.footer a,
+.page-card p a,
+.live-body a {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+  text-decoration-color: rgba(168, 68, 42, 0.32) !important;
+}
+.prose a:hover,
+.footer a:hover,
+.page-card p a:hover {
+  text-decoration-color: var(--accent) !important;
+}
+
+/* 5) 卡片：纸白实底 + 1px 线，hover 只换边框 */
+.page-card,
+.feat-card,
+.post,
+.hscroll-item,
+.project-card,
+.skill-card,
+.az-item {
+  background: var(--paper-2) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.page-card:hover,
+.feat-card:hover,
+.post:hover,
+.hscroll-item:hover,
+.project-card:hover,
+.skill-card:hover {
+  border-color: rgba(168, 68, 42, 0.35) !important;
+  box-shadow: 0 1px 0 rgba(27, 25, 22, 0.05) !important;
+  transform: none !important;
+}
+
+/* 6) 小元件：统一 2px 方角 */
+.chip,
+.tag,
+.badge,
+.feat-badge,
+.post-arrow,
+.feat-go,
+.filter-btn {
+  border-radius: 2px !important;
+}
+
+/* 7) 去掉卡片顶部的流光条（深色时代装饰） */
+.hscroll-item::before { display: none !important; }
+
+/* 8) 圆形元素保留圆形，其余全部方角 */
+.search-box input,
+input[type="text"],
+input[type="email"],
+textarea {
+  border-radius: 2px !important;
+}
