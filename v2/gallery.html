@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="CCCAD 的相册：用照片收藏生活里的瞬间。" />
+<meta name="color-scheme" content="light" />
+<title>相册 | CCCAD</title>
+<link rel="stylesheet" href="style.css?v=227" />
+</head>
+<body>
+
+<header class="gnav">
+  <div class="gnav-inner">
+    <a class="gnav-logo" href="index.html">CCCAD</a>
+    <a href="index.html#pages" class="hide-sm">页面</a>
+    <a href="blog.html" class="hide-sm">写作</a>
+    <a href="tools.html" class="hide-sm">工具</a>
+    <a href="gallery.html" class="hide-sm">相册</a>
+    <a href="arcade.html" class="hide-sm">街机厅</a>
+    <span class="gnav-right"><a href="../index.html">返回旧版</a></span>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <p class="eyebrow">相册</p>
+    <h1>用照片收藏生活。</h1>
+    <p>随手拍的一些瞬间。点开看原图。</p>
+  </section>
+  <div class="photo-grid wrap reveal" id="grid" style="padding-bottom:104px"></div>
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="查看原图">
+  <button class="lightbox-close" id="lbClose" aria-label="关闭">×</button>
+  <img id="lbImg" alt="" />
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="blog.html">写作</a>
+      <a href="tools.html">工具箱</a>
+      <a href="gallery.html">相册</a>
+      <a href="arcade.html">街机厅</a>
+      <a href="../index.html">旧版首页</a>
+    </div>
+    <div class="footer-meta">
+      <span>CCCAD · 苹果风预览版 v2</span>
+      <span>BUILD 221 · 静态 · 零依赖</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data/photos.js?v=227"></script>
+<script src="app.js?v=227"></script>
+<script>
+(function () {
+  var photos = window.PHOTOS || [];
+  var grid = document.getElementById("grid");
+  var lb = document.getElementById("lb");
+  var lbImg = document.getElementById("lbImg");
+
+  grid.innerHTML = photos.map(function (p) {
+    return '<figure class="photo-card" data-full="' + p.o + '" tabindex="0" role="button" aria-label="查看原图 ' + p.d + '">' +
+      '<img src="' + p.t + '" alt="相册照片 ' + p.d + '" loading="lazy" />' +
+      "<figcaption>" + p.d + "</figcaption>" +
+      "</figure>";
+  }).join("");
+
+  function open(fig) {
+    lbImg.src = fig.getAttribute("data-full");
+    lbImg.alt = fig.querySelector("img").alt;
+    lb.classList.add("open");
+  }
+  function close() {
+    lb.classList.remove("open");
+    lbImg.removeAttribute("src");
+  }
+
+  grid.addEventListener("click", function (e) {
+    var fig = e.target.closest("figure");
+    if (fig) open(fig);
+  });
+  grid.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var fig = e.target.closest("figure");
+    if (fig) { e.preventDefault(); open(fig); }
+  });
+
+  document.getElementById("lbClose").addEventListener("click", close);
+  lb.addEventListener("click", function (e) { if (e.target === lb) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+})();
+</script>
+  <script src="../interactions.js?v=227" defer></script>
+</body>
+</html>
