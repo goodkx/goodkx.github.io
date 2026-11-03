@@ -967,21 +967,28 @@ html[data-theme="paper"] .cursor-glow { opacity: 0.18 !important; }
 /* 米黄下按钮：方角反白 */
 
 html[data-theme="deepseek"] {
-  --bg: #14161a;
-  --bg-soft: #1b1e23;
-  --card: #1e2227;
-  --border: rgba(240, 235, 225, 0.12);
-  --border-hover: rgba(127, 212, 168, 0.45);
-  --text: #ece7de;
-  --muted: #9aa196;
-  --accent: #7fd4a8;
-  --accent-2: #c9a227;
-  --accent-rgb: 127, 212, 168;
-  --accent-2-rgb: 201, 162, 39;
-  --gradient: linear-gradient(120deg, #7fd4a8, #c9a227);
-  --panel: #1e2227;
-  --nav-bg: rgba(20, 22, 26, 0.88);
-  --sb-thumb: #3a4048;
+  --bg: #060b1a;
+  --bg-soft: #0a1226;
+  --card: rgba(16, 27, 58, 0.6);
+  --border: rgba(91, 140, 255, 0.18);
+  --border-hover: rgba(91, 140, 255, 0.6);
+  --text: #e9eeff;
+  --muted: #8b96c8;
+  --accent: #5b8cff;
+  --accent-2: #7dd3fc;
+  --accent-rgb: 91, 140, 255;
+  --accent-2-rgb: 125, 211, 252;
+  --gradient: linear-gradient(120deg, #4d6bfe 10%, #7dd3fc 90%);
+  --panel: rgba(10, 18, 38, 0.92);
+  --nav-bg: rgba(6, 11, 26, 0.8);
+  --sb-thumb: #243562;
+  --glow-1: rgba(77, 107, 254, 0.2);
+  --glow-2: rgba(125, 211, 252, 0.13);
+  --acc-soft-bg: rgba(91, 140, 255, 0.12);
+  --acc-soft-bd: rgba(91, 140, 255, 0.42);
+  --chip-c: #7dd3fc;
+  --chip-bg: rgba(125, 211, 252, 0.1);
+  --chip-bd: rgba(125, 211, 252, 0.24);
 }
 
 /* 深色墨纸下：噪点改叠加模式，避免变脏 */
