@@ -406,17 +406,32 @@ body.editing .edit-bar{transform:translate(-50%,0)}
   .anim{opacity:1 !important;transform:none !important}
 }
 
-/* === 竖屏小提示：不遮挡舞台，只提醒横屏 === */
-.rotate-hint{
-  display:none;position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
-  z-index:300;align-items:center;gap:8px;
-  background:rgba(255,252,243,.95);border:2px solid var(--ink);border-radius:999px;
-  padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink);
-  box-shadow:2px 3px 0 rgba(46,41,37,.7);white-space:nowrap;
+/* === 手机端「横屏看」悬浮按钮：固定在视口，不随舞台缩放 === */
+.rotate-btn{
+  display:none;position:fixed;right:14px;bottom:16px;z-index:320;
+  align-items:center;gap:6px;
+  padding:10px 16px;border:2.5px solid var(--ink);border-radius:999px;
+  background:var(--butter);color:var(--ink);
+  font-family:'Noto Sans SC Variable','Noto Sans SC',sans-serif;
+  font-size:14px;font-weight:900;letter-spacing:.5px;
+  box-shadow:3px 4px 0 rgba(46,41,37,.8);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .15s, background .3s;
 }
-@media (orientation:portrait) and (max-width:900px){
-  .rotate-hint{display:flex}
+.rotate-btn:active{transform:translateY(2px)}
+.rotate-btn.on{background:var(--mint)}
+@media (max-width:900px) and (orientation:portrait){
+  .rotate-btn{display:flex}
 }
+/* 轻提示 toast */
+#toast{
+  position:fixed;left:50%;bottom:82px;transform:translate(-50%,14px);
+  background:var(--ink);color:#fff;font-size:13.5px;line-height:1.55;font-weight:700;
+  padding:10px 18px;border-radius:12px;max-width:86vw;text-align:center;
+  opacity:0;visibility:hidden;transition:opacity .3s, transform .3s;z-index:400;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+#toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
 
 @media print{
   #viewport{position:static;overflow:visible;background:#fff}
@@ -2991,7 +3006,8 @@ body.editing .edit-bar{transform:translate(-50%,0)}
 </div>
 
 <div class="edit-bar">✎ 编辑模式已开启 · 点文字直接改 · <b>按 Esc 退出</b></div>
-<div class="rotate-hint">📱 横过来看，字更大更清楚</div>
+<button class="rotate-btn" id="rotateBtn" type="button">📱 横屏看</button>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* === 舞台等比缩放 === */
@@ -3171,6 +3187,55 @@ function toggleEdit(force){
   }
 }
 editBtn.addEventListener('click', () => toggleEdit());
+
+/* === 横屏观看按钮 === */
+const rotateBtn = document.getElementById('rotateBtn');
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+
+function showToast(msg, ms = 3800){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+}
+function isPortrait(){
+  return window.matchMedia('(orientation: portrait)').matches;
+}
+function resetRotateBtn(){
+  if (!rotateBtn) return;
+  rotateBtn.textContent = '📱 横屏看';
+  rotateBtn.classList.remove('on');
+}
+async function toggleLandscape(){
+  if (!rotateBtn) return;
+  // 已全屏：退出横屏
+  if (document.fullscreenElement) {
+    try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch(e) {}
+    try { await document.exitFullscreen(); } catch(e) {}
+    resetRotateBtn();
+    return;
+  }
+  try {
+    const supports = !!document.documentElement.requestFullscreen && !!(screen.orientation && screen.orientation.lock);
+    if (!supports) throw new Error('unsupported');
+    await document.documentElement.requestFullscreen();
+    await screen.orientation.lock('landscape');
+    rotateBtn.textContent = '✕ 退出横屏';
+    rotateBtn.classList.add('on');
+    if (isPortrait()) showToast('已进入横屏模式；如果画面仍是竖的，请把手机横过来 👉');
+  } catch (err) {
+    resetRotateBtn();
+    showToast('这个浏览器不支持自动锁定横屏 👉 请关闭手机的「方向锁定」，再把手机横过来');
+  }
+}
+if (rotateBtn) rotateBtn.addEventListener('click', toggleLandscape);
+window.addEventListener('orientationchange', () => {
+  if (!isPortrait()) resetRotateBtn();
+});
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) resetRotateBtn();
+});
 
 /* === 初始化目录 === */
 buildToc();
