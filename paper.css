@@ -993,3 +993,123 @@ html[data-theme="deepseek"] .cursor-glow {
   background: radial-gradient(circle, rgba(127, 212, 168, 0.16) 0%, rgba(127, 212, 168, 0) 60%) !important;
   mix-blend-mode: screen;
 }
+
+/* ═══════════════════════════════════════════════════════
+   浅色改版：现代浅色卡片风（替代旧报纸质感）
+   近白底 / 大圆角 / 柔和阴影 / 无衬线
+   ═══════════════════════════════════════════════════════ */
+
+:root,
+html[data-theme="paper"] {
+  --bg: #f7f8fa;
+  --bg-soft: #eef1f4;
+  --card: #ffffff;
+  --border: rgba(17, 24, 39, 0.08);
+  --border-hover: rgba(47, 143, 107, 0.4);
+  --text: #182230;
+  --muted: #64707d;
+  --accent: #2f8f6b;
+  --accent-2: #3b82c4;
+  --accent-rgb: 47, 143, 107;
+  --accent-2-rgb: 59, 130, 196;
+  --gradient: linear-gradient(120deg, #2f8f6b, #3b82c4);
+  --paper: #f7f8fa;
+  --paper-2: #ffffff;
+  --paper-3: #eef1f4;
+  --ink: #182230;
+  --ink-soft: #3c4653;
+  --line: rgba(17, 24, 39, 0.08);
+  --line-soft: rgba(17, 24, 39, 0.05);
+  --panel: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --radius: 12px;
+  --chip-c: #2f8f6b;
+  --chip-bg: rgba(47, 143, 107, 0.08);
+  --chip-bd: rgba(47, 143, 107, 0.18);
+  --sb-thumb: #c9d2dc;
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -12px rgba(16, 24, 40, 0.08);
+  --shadow-2: 0 2px 4px rgba(16, 24, 40, 0.05), 0 16px 36px -14px rgba(16, 24, 40, 0.12);
+}
+
+/* 标题：回到无衬线，收紧字距 */
+h1, h2, h3,
+.hero-title,
+.section-title,
+.post-title,
+.contact-title,
+.feat-main strong {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC",
+               "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* 卡片：大圆角 + 柔和阴影（不再用纸张硬边） */
+.page-card,
+.terminal,
+.code-card,
+.contact-box,
+.az-item,
+.mini-shop,
+.feat-card,
+.post,
+.hscroll-item,
+.project-card,
+.skill-card {
+  border-radius: 12px !important;
+  border: 1px solid rgba(17, 24, 39, 0.07) !important;
+  box-shadow: var(--shadow-1) !important;
+  background: var(--card) !important;
+}
+.page-card:hover,
+.feat-card:hover,
+.post:hover,
+.hscroll-item:hover {
+  box-shadow: var(--shadow-2) !important;
+  border-color: rgba(47, 143, 107, 0.28) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 按钮：圆角 8，主色柔绿 */
+.btn,
+.btn-primary,
+.btn-ghost,
+.az-go,
+.hscroll-toggle {
+  border-radius: 8px !important;
+}
+.btn-primary {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+.btn-primary:hover {
+  background: #257a5b !important;
+  border-color: #257a5b !important;
+}
+
+/* 导航：轻圆角 + 白底 */
+.nav-inner {
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: var(--shadow-1) !important;
+}
+
+/* 背景：近白，几乎无纹理 */
+body {
+  background:
+    radial-gradient(1000px 480px at 50% -10%, #ffffff 0%, rgba(255, 255, 255, 0) 62%),
+    #f7f8fa !important;
+}
+body::after { opacity: 0.02 !important; }
+
+/* 链接：柔绿 + 细下划线 */
+.prose a,
+.footer a,
+.page-card p a { color: var(--accent) !important; }
+
+/* 光标暖光改柔绿 */
+.cursor-glow {
+  background: radial-gradient(circle, rgba(190, 230, 210, 0.4) 0%, rgba(190, 230, 210, 0) 60%) !important;
+  opacity: 0.5 !important;
+}
