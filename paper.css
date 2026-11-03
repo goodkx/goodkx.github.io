@@ -682,3 +682,36 @@ body.offline,
   background: var(--paper) !important;
   color: var(--ink) !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   文字重叠修复（装饰性大字 / 固定不换行）
+   ═══════════════════════════════════════════════════════ */
+
+/* 子页面 h1 背后的 7rem 幽灵大字：浅色下会和正文抢视线，看起来像重叠 */
+h1[data-word]::before { display: none !important; }
+
+/* 子页 h1 左侧竖线：原来是渐变背景，改实色 */
+h1[data-word] {
+  background: none !important;
+  border-left: 4px solid var(--accent);
+  padding-left: 18px !important;
+}
+
+/* 卡片右下角 2.5rem 的幽灵编号 + 顶部流光带：都属于深色时代的装饰 */
+.hscroll-item::after { display: none !important; }
+.hscroll-item::before { display: none !important; }
+
+/* 章节标题不再强制单行，长标题允许换行，避免压到右侧分隔线 */
+.section-title { white-space: normal !important; }
+
+/* 首屏变矮后，「向下滚动」提示会压到内容上 */
+.scroll-hint { display: none !important; }
+
+/* 卡片标题兜底：允许两行，行高不塌 */
+.page-card h3,
+.feat-card h3,
+.post h2,
+.hscroll-item h3 {
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere;
+}
