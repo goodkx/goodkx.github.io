@@ -65,7 +65,11 @@
     ).join("") +
       '<div class="pop-h">背景氛围</div>' +
       '<button type="button" data-bg=""><span class="sw" data-c="bgdef"></span>🌌 默认氛围</button>' +
-      '<button type="button" data-bg="rain"><span class="sw" data-c="bgrain"></span>💻 01 数字雨</button>';
+      '<button type="button" data-bg="rain"><span class="sw" data-c="bgrain"></span>💻 01 数字雨</button>' +
+      '<div class="pop-h">版本切换</div>' +
+      '<a class="pop-link" href="/">经典首页</a>' +
+      '<a class="pop-link" href="/v2/">v2 · 纸感编辑版</a>' +
+      '<a class="pop-link" href="/os/">OS · 桌面窗口版</a>';
 
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
