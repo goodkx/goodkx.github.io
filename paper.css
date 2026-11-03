@@ -855,3 +855,60 @@ input[type="email"],
 textarea {
   border-radius: 2px !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   更新日志：3D 滚筒 → 静态时间线（消除重叠与重影）
+   ═══════════════════════════════════════════════════════ */
+.drum-wrap {
+  height: auto !important;
+  perspective: none !important;
+  overflow: visible !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  margin-top: 8px;
+}
+.drum-wrap::before { display: none !important; }
+
+.drum {
+  position: static !important;
+  transform: none !important;
+  transform-style: flat !important;
+  display: block !important;
+}
+
+.drum-item {
+  position: static !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  backface-visibility: visible !important;
+  will-change: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  padding: 18px 0 !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.drum-item .cl-date {
+  text-shadow: none !important;
+  color: var(--muted) !important;
+}
+
+.drum-hint { margin-top: 18px !important; }
+
+/* ═══════════════════════════════════════════════════════
+   首屏装饰层：HUD 角框 / 扫描光束 / 系统读数 → 隐藏
+   这些绝对定位元素在纸感下会压住标题与正文
+   ═══════════════════════════════════════════════════════ */
+.hud-c,
+.hud-scan,
+.hud-ro,
+.hud-ro-sys,
+.hud-ro-ver,
+.hud-ro-xy {
+  display: none !important;
+}
+
+/* 首屏背景粒子连线：纸面上像噪点，一并去掉 */
+#particleHero { display: none !important; }
