@@ -1,0 +1,400 @@
+/* ═══════════════════════════════════════════════════════════
+   CCCAD-OS · 桌面外壳
+   纸感壁纸 + 菜单栏 + 图标 + 可拖拽窗口 + 任务栏
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --paper: #f6f3ec;
+  --paper-2: #fffdf8;
+  --paper-3: #efeae0;
+  --ink: #1b1916;
+  --muted: #6b6459;
+  --line: rgba(27, 25, 22, 0.12);
+  --line-soft: rgba(27, 25, 22, 0.07);
+  --accent: #a8442a;
+  --green: #2f5d50;
+  --shadow-win: 0 2px 0 rgba(27, 25, 22, 0.06), 0 28px 60px -30px rgba(27, 25, 22, 0.5);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC",
+          "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bar-h: 34px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* 壁纸：暖白 + 顶部柔光 + 极轻噪点 */
+.desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(900px 520px at 50% -10%, #fffdf9 0%, rgba(255, 253, 249, 0) 64%),
+    var(--paper);
+}
+.desktop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══ 菜单栏 ═══ */
+.menubar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--bar-h);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: rgba(246, 243, 236, 0.82);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.78rem;
+}
+.menubar-left, .menubar-right { display: flex; align-items: center; gap: 18px; }
+.menubar-logo {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.menubar-logo span { color: var(--accent); }
+.menu-btn {
+  background: none;
+  border: 0;
+  font: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  transition: color 160ms, background 160ms;
+}
+.menu-btn:hover { color: var(--ink); background: rgba(27, 25, 22, 0.05); }
+.menubar-clock {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* 主题切换小点 */
+.theme-dots { display: flex; gap: 6px; }
+.theme-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 25, 22, 0.25);
+  cursor: pointer;
+  transition: transform 160ms var(--ease);
+}
+.theme-dot:hover { transform: scale(1.2); }
+.theme-dot[data-t=""] { background: #f6f3ec; }
+.theme-dot[data-t="violet"] { background: #f2f3f7; }
+.theme-dot[data-t="paper"] { background: #ffffff; }
+.theme-dot[data-t="amber"] { background: #f7f1e3; }
+
+/* ═══ 桌面图标 ═══ */
+.icons {
+  position: absolute;
+  top: calc(var(--bar-h) + 24px);
+  left: 24px;
+  width: 168px;
+  display: grid;
+  grid-template-columns: repeat(2, 76px);
+  gap: 18px 16px;
+  z-index: 1;
+}
+.app-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 4px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease);
+}
+.app-icon:hover {
+  background: rgba(255, 253, 248, 0.7);
+  border-color: var(--line);
+  transform: translateY(-2px);
+}
+.app-icon .glyph {
+  width: 46px; height: 46px;
+  display: grid;
+  place-items: center;
+  font-size: 1.32rem;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(27, 25, 22, 0.05);
+}
+.app-icon .name {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+/* ═══ 窗口 ═══ */
+.win {
+  position: absolute;
+  min-width: 320px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-2);
+  border: 1px solid rgba(27, 25, 22, 0.16);
+  border-radius: 6px;
+  box-shadow: var(--shadow-win);
+  overflow: hidden;
+  animation: win-in 220ms var(--ease);
+}
+@keyframes win-in {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.win.is-min { display: none; }
+
+.win-bar {
+  height: 36px;
+  flex: 0 0 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--paper-3);
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+  user-select: none;
+}
+.win-bar:active { cursor: grabbing; }
+.win-dots { display: flex; gap: 6px; }
+.win-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 25, 22, 0.2);
+  background: var(--paper-2);
+  cursor: pointer;
+}
+.win-dot.close:hover { background: #c0503a; border-color: #c0503a; }
+.win-dot.min:hover { background: #c9a227; border-color: #c9a227; }
+.win-dot.max:hover { background: #2f5d50; border-color: #2f5d50; }
+.win-title {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.win-body {
+  position: relative;
+  flex: 1;
+  background: var(--paper-2);
+  overflow: hidden;
+}
+.win-body iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: var(--paper-2);
+}
+.win-grip {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 16px; height: 16px;
+  cursor: nwse-resize;
+  z-index: 5;
+}
+.win-grip::after {
+  content: "";
+  position: absolute;
+  right: 3px; bottom: 3px;
+  width: 7px; height: 7px;
+  border-right: 1px solid rgba(27, 25, 22, 0.35);
+  border-bottom: 1px solid rgba(27, 25, 22, 0.35);
+}
+
+/* 窗口聚焦态 */
+.win.focused { box-shadow: 0 2px 0 rgba(27, 25, 22, 0.07), 0 34px 70px -30px rgba(27, 25, 22, 0.55); }
+.win.focused .win-bar { background: var(--paper-2); }
+.win:not(.focused) .win-bar { color: var(--muted); }
+
+/* ═══ 任务栏 ═══ */
+.dock {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: rgba(255, 253, 248, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 1px 0 rgba(27, 25, 22, 0.05), 0 18px 40px -26px rgba(27, 25, 22, 0.5);
+  max-width: min(760px, 92vw);
+  overflow-x: auto;
+}
+.dock.empty::after {
+  content: "双击桌面图标打开应用";
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+.dock-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.74rem;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms, border-color 160ms;
+}
+.dock-item:hover { background: var(--paper-3); border-color: var(--line); }
+.dock-item.active { background: var(--paper-3); border-color: rgba(168, 68, 42, 0.35); }
+.dock-item .glyph { font-size: 0.9rem; }
+
+/* ═══ 开始菜单 ═══ */
+.launcher {
+  position: absolute;
+  top: calc(var(--bar-h) + 6px);
+  left: 16px;
+  width: 280px;
+  max-height: 62vh;
+  overflow-y: auto;
+  z-index: 9600;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow-win);
+  padding: 8px;
+  display: none;
+}
+.launcher.open { display: block; }
+.launcher-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.launcher-item:hover { background: var(--paper-3); }
+.launcher-item .glyph { font-size: 1rem; }
+.launcher-sep {
+  height: 1px;
+  background: var(--line-soft);
+  margin: 6px 4px;
+}
+
+/* ═══ 顶栏右侧的小信息 ═══ */
+.sys-badge {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* ═══ 移动端降级：图标列表 ═══ */
+@media (max-width: 734px) {
+  .icons {
+    position: static;
+    width: auto;
+    margin: calc(var(--bar-h) + 16px) 16px 0;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .desktop { overflow-y: auto; }
+  .dock, .launcher { display: none !important; }
+  .app-icon { padding: 14px 6px; background: rgba(255, 253, 248, 0.6); border-color: var(--line); }
+  .menubar-right .theme-dots { display: none; }
+}
+
+/* 减弱动效 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+/* ═══ 主题变量（桌面跟随整站四套配色） ═══ */
+html[data-theme="violet"] {
+  --paper: #f2f3f7;
+  --paper-2: #ffffff;
+  --paper-3: #e9ebf1;
+  --ink: #1a1f2b;
+  --muted: #626b7d;
+  --line: rgba(24, 30, 44, 0.12);
+  --line-soft: rgba(24, 30, 44, 0.06);
+  --accent: #3d5a8a;
+  --green: #6b4f7a;
+}
+html[data-theme="paper"] {
+  --paper: #fffdf8;
+  --paper-2: #ffffff;
+  --paper-3: #f4f0e7;
+  --ink: #1b1a17;
+  --muted: #6a655c;
+  --line: rgba(27, 25, 22, 0.1);
+  --line-soft: rgba(27, 25, 22, 0.05);
+  --accent: #2f5d50;
+  --green: #a8442a;
+}
+html[data-theme="amber"] {
+  --paper: #f7f1e3;
+  --paper-2: #fffaf0;
+  --paper-3: #ece3d0;
+  --ink: #2a2118;
+  --muted: #75685a;
+  --line: rgba(60, 44, 22, 0.14);
+  --line-soft: rgba(60, 44, 22, 0.07);
+  --accent: #8a5a2b;
+  --green: #4a6152;
+}
+
+/* 菜单栏 / 任务栏跟随主题 */
+.menubar {
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+}
+.dock {
+  background: color-mix(in srgb, var(--paper-2) 86%, transparent);
+}
