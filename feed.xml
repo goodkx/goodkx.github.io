@@ -8,6 +8,27 @@
     <atom:link href="https://goodkx.github.io/feed.xml" rel="self" type="application/rss+xml" />
 
     <item>
+      <title>把整站从深色改成纸感：一次不换框架的视觉重做</title>
+      <link>https://goodkx.github.io/blog.html#/post/paper-redesign</link>
+      <guid>https://goodkx.github.io/blog.html#/post/paper-redesign</guid>
+      <pubDate>Mon, 02 Nov 2026 00:00:00 +0800</pubDate>
+      <description>一层覆盖样式换掉 23 个页面，以及一个把整站拉回深色的主题坑。</description>
+    </item>
+    <item>
+      <title>粒子分身：从一团噪点到能认出人形</title>
+      <link>https://goodkx.github.io/blog.html#/post/particle-clone</link>
+      <guid>https://goodkx.github.io/blog.html#/post/particle-clone</guid>
+      <pubDate>Sun, 01 Nov 2026 00:00:00 +0800</pubDate>
+      <description>alpha 包围盒、梯度边缘、以及 441KB 视频换成 28KB 帧的那次决定。</description>
+    </item>
+    <item>
+      <title>静态站的首屏：删掉三个阻塞脚本之后</title>
+      <link>https://goodkx.github.io/blog.html#/post/first-paint</link>
+      <guid>https://goodkx.github.io/blog.html#/post/first-paint</guid>
+      <pubDate>Sun, 01 Nov 2026 00:00:00 +0800</pubDate>
+      <description>theme.js 8KB、宠物视频 430KB、textdb 没预热——量完才知道该改哪里。</description>
+    </item>
+    <item>
       <title>打字测速上线记：词流、WPM 和一个按键冲突</title>
       <link>https://goodkx.github.io/blog.html#/post/typing-arcade</link>
       <guid>https://goodkx.github.io/blog.html#/post/typing-arcade</guid>
