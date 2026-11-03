@@ -526,3 +526,77 @@ img { height: auto; }
   .cursor-glow { display: none !important; }
   .ink-ripple { animation: none !important; opacity: 0 !important; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   旧站布局：从「深色卡片墙」改成编辑式排版
+   ═══════════════════════════════════════════════════════ */
+
+/* 首屏不再撑满 100vh，收掉大片空白 */
+.hero {
+  min-height: auto !important;
+  padding: 84px 0 52px !important;
+  align-items: flex-start !important;
+}
+.hero-inner {
+  grid-template-columns: 1.32fr 1fr !important;
+  gap: 60px !important;
+  align-items: start !important;
+}
+.hero-title {
+  font-size: clamp(2.2rem, 4.8vw, 3.4rem) !important;
+  line-height: 1.16 !important;
+  margin-bottom: 16px !important;
+}
+
+/* 章节节奏收紧，标题不再拉满屏宽 */
+.section { padding: 64px 0 !important; }
+.section-head { margin-bottom: 32px !important; gap: 14px !important; }
+.section-title { font-size: clamp(1.5rem, 2.4vw, 1.9rem) !important; }
+
+/* 去掉 3D 位移与双层聚光（旧站 --gx/--gy + 上次的 --mx/--my 会叠成两团光） */
+.pages-grid { perspective: none !important; }
+.page-card {
+  transform-style: flat !important;
+  will-change: auto !important;
+}
+.page-card::after { display: none !important; }
+.page-card .page-icon,
+.page-card h3,
+.page-card .page-go,
+.page-card p { transform: none !important; }
+
+/* 导航卡片：重点卡通栏，其余两列 —— 打破等宽卡片墙 */
+@media (min-width: 1025px) {
+  .pages-grid:not(.hscroll) {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  .pages-grid:not(.hscroll) > :first-child {
+    grid-column: span 2;
+    padding: 34px 30px !important;
+  }
+  .pages-grid:not(.hscroll) > :first-child h3 { font-size: 1.5rem; }
+}
+
+/* 卡片结构：图标缩小，文字为主 */
+.page-card { gap: 12px !important; }
+.page-card .page-icon { color: var(--accent) !important; }
+
+/* 重点推荐条：从发光渐变条改成纸面书签 */
+.feat-card {
+  background: var(--paper-2) !important;
+  border-left: 3px solid var(--accent) !important;
+  border-radius: 4px !important;
+}
+
+/* 技能 / 项目：去掉等宽三列，改两列，留白优先 */
+@media (min-width: 1025px) {
+  :is(.skills-grid, .projects-grid):not(.hscroll) {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* 时间线：细线 + 小圆点，不要发光 */
+.timeline::before { background: var(--line) !important; }
+.timeline-item::before { box-shadow: none !important; }
