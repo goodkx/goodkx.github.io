@@ -1116,3 +1116,19 @@ body::after { opacity: 0.02 !important; }
   background: radial-gradient(circle, rgba(190, 230, 210, 0.4) 0%, rgba(190, 230, 210, 0) 60%) !important;
   opacity: 0.5 !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   背景去线条：只留纯色 + 极轻噪点，不再有任何横线/网格
+   ═══════════════════════════════════════════════════════ */
+body,
+html[data-theme="amber"] body,
+html[data-theme="violet"] body,
+html[data-theme="deepseek"] body {
+  background-image: none !important;
+}
+body { background: var(--bg) !important; }
+
+.bg-grid { display: none !important; }
+
+/* 噪点保留，但更淡 */
+body::after { opacity: 0.03 !important; }
