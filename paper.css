@@ -896,3 +896,40 @@ textarea {
   font-family: var(--mono);
   font-size: 0.72rem;
 }
+
+/* ═══════════════════════════════════════════════════════
+   背景收敛：只留「暖白纸 + 极轻噪点」，其余装饰全部关闭
+   ═══════════════════════════════════════════════════════ */
+
+/* 1) 底色：单一暖白 + 顶部一层极淡柔光（不再有稿纸线和整体渐变） */
+body {
+  background:
+    radial-gradient(1200px 620px at 50% -12%, #fffdf9 0%, rgba(255, 253, 249, 0) 64%),
+    var(--paper) !important;
+}
+
+/* 2) 噪点降一档：只在近看时能感觉到纸张颗粒 */
+body::after {
+  opacity: 0.048 !important;
+}
+
+/* 3) 关掉所有背景装饰层：网格、粒子连线、光晕、二进制雨 */
+.bg-grid,
+#fxParticles,
+.bg-glow,
+.bg-noise,
+#particleHero {
+  display: none !important;
+}
+
+/* 4) 鼠标暖光收敛：纸面被照到的感觉，不抢注意力 */
+.cursor-glow {
+  opacity: 0.42 !important;
+  background: radial-gradient(circle, rgba(255, 238, 200, 0.5) 0%, rgba(255, 238, 200, 0) 58%) !important;
+}
+
+/* 5) 区块之间用细线，不用底色差 —— 背景干净后靠线条分节 */
+.section,
+section.section {
+  background: transparent !important;
+}
