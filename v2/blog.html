@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="CCCAD 的写作列表：踩坑记录、教程与一些想法。" />
+<meta name="color-scheme" content="light" />
+<title>写作 | CCCAD</title>
+<link rel="stylesheet" href="style.css?v=230" />
+</head>
+<body>
+
+<header class="gnav">
+  <div class="gnav-inner">
+    <a class="gnav-logo" href="index.html">CCCAD</a>
+    <a href="index.html#pages" class="hide-sm">页面</a>
+    <a href="blog.html" class="hide-sm">写作</a>
+    <a href="tools.html" class="hide-sm">工具</a>
+    <a href="gallery.html" class="hide-sm">相册</a>
+    <a href="arcade.html" class="hide-sm">街机厅</a>
+    <span class="gnav-right"><a href="../index.html">返回旧版</a></span>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero" id="listWrap">
+    <p class="eyebrow">写作</p>
+    <h1>踩过的坑，都记在这。</h1>
+    <p>从踩坑到教程，按时间倒序排列。</p>
+    <div class="filter-bar" id="filterBar" role="group" aria-label="按标签筛选"></div>
+  </section>
+  <div class="list" id="list"></div>
+
+  <article id="articleWrap" hidden>
+    <div class="article-hd">
+      <a class="back" href="#">‹ 返回列表</a>
+      <h1 id="aTitle"></h1>
+      <div class="meta" id="aMeta"></div>
+    </div>
+    <div class="prose" id="aBody"></div>
+    <nav class="art-nav" id="aNav" aria-label="上一篇下一篇"></nav>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="blog.html">写作</a>
+      <a href="tools.html">工具箱</a>
+      <a href="gallery.html">相册</a>
+      <a href="arcade.html">街机厅</a>
+      <a href="../index.html">旧版首页</a>
+    </div>
+    <div class="footer-meta">
+      <span>CCCAD · 纸感版 v2</span>
+      <span>BUILD 228 · 静态 · 零依赖</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data/posts.js?v=230"></script>
+<script src="app.js?v=230"></script>
+<script>
+(function () {
+  var POSTS = window.POSTS || {};
+  var listEl = document.getElementById("list");
+  var listWrap = document.getElementById("listWrap");
+  var articleWrap = document.getElementById("articleWrap");
+  var aTitle = document.getElementById("aTitle");
+  var aMeta = document.getElementById("aMeta");
+  var aBody = document.getElementById("aBody");
+  var aNav = document.getElementById("aNav");
+  var filterBar = document.getElementById("filterBar");
+  var baseTitle = document.title;
+  var activeTag = "";
+
+  var items = Object.keys(POSTS).map(function (k) {
+    var p = POSTS[k];
+    p.slug = k;
+    p.words = (p.html || "").replace(/<[^>]+>/g, "").length;
+    p.mins = Math.max(1, Math.round(p.words / 400));
+    return p;
+  }).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+
+  /* ── 标签筛选 ── */
+  var tags = [];
+  items.forEach(function (p) {
+    (p.tags || []).forEach(function (t) { if (tags.indexOf(t) < 0) tags.push(t); });
+  });
+
+  function renderFilter() {
+    var html = '<button class="filter-btn' + (activeTag === "" ? " on" : "") + '" data-tag="">全部 ' + items.length + "</button>";
+    tags.forEach(function (t) {
+      html += '<button class="filter-btn' + (activeTag === t ? " on" : "") + '" data-tag="' + t + '">' + t + "</button>";
+    });
+    filterBar.innerHTML = html;
+  }
+
+  /* ── 列表 ── */
+  function renderList() {
+    var list = items.filter(function (p) {
+      return !activeTag || (p.tags || []).indexOf(activeTag) >= 0;
+    });
+    listEl.innerHTML = list.map(function (p) {
+      return '<a class="row" href="#/' + p.slug + '">' +
+        '<span class="date">' + p.date + "</span>" +
+        "<h3>" + p.title + "</h3>" +
+        '<span class="cat">' + p.mins + " 分钟</span>" +
+        "</a>";
+    }).join("");
+  }
+
+  filterBar.addEventListener("click", function (e) {
+    var b = e.target.closest(".filter-btn");
+    if (!b) return;
+    activeTag = b.getAttribute("data-tag");
+    renderFilter();
+    renderList();
+  });
+
+  /* ── 目录 ── */
+  function buildToc(container) {
+    var hs = container.querySelectorAll("h3");
+    if (hs.length < 2) return null;
+    var html = '<nav class="toc" aria-label="本文目录"><p class="toc-title">本文目录</p><ol>';
+    for (var i = 0; i < hs.length; i++) {
+      var id = "sec-" + i;
+      hs[i].id = id;
+      html += '<li><a href="#' + id + '">' + hs[i].textContent + "</a></li>";
+    }
+    return html + "</ol></nav>";
+  }
+
+  /* ── 上下篇 ── */
+  function renderNav(slug) {
+    var i = 0;
+    for (var k = 0; k < items.length; k++) if (items[k].slug === slug) i = k;
+    var newer = items[i - 1];
+    var older = items[i + 1];
+    var html = "";
+    html += newer
+      ? '<a class="art-nav-item" href="#/' + newer.slug + '"><span class="k">更新的一篇</span><span class="t">' + newer.title + "</span></a>"
+      : '<span></span>';
+    html += older
+      ? '<a class="art-nav-item next" href="#/' + older.slug + '"><span class="k">更早的一篇</span><span class="t">' + older.title + "</span></a>"
+      : '<span></span>';
+    aNav.innerHTML = html;
+  }
+
+  function route() {
+    var m = location.hash.match(/^#\/([\w-]+)$/);
+    var p = m && POSTS[m[1]];
+    if (p) {
+      listWrap.hidden = true;
+      listEl.hidden = true;
+      articleWrap.hidden = false;
+      aTitle.textContent = p.title;
+      aMeta.textContent = p.date + " · 读约 " + (p.mins || 5) + " 分钟" +
+        (p.tags && p.tags.length ? " · " + p.tags.join(" / ") : "");
+      aBody.innerHTML = p.html;
+      var toc = buildToc(aBody);
+      if (toc) aBody.insertAdjacentHTML("afterbegin", toc);
+      renderNav(p.slug);
+      document.title = p.title + " | CCCAD";
+      window.scrollTo(0, 0);
+    } else {
+      listWrap.hidden = false;
+      listEl.hidden = false;
+      articleWrap.hidden = true;
+      document.title = baseTitle;
+    }
+  }
+
+  renderFilter();
+  renderList();
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
