@@ -2883,3 +2883,212 @@ html[data-theme="legacy"] .nav-links a::after {
   transition: right 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 html[data-theme="legacy"] .nav-links a.active::after { right: 0; }
+
+/* ═══════════════════════════════════════════════════════
+   导航 V3 · 悬浮胶囊
+   浅色：底部悬浮胶囊（图标 + 文字）
+   深色：顶部居中胶囊
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 通用的胶囊容器 ── */
+html[data-theme="paper"] .nav,
+html:not([data-theme]) .nav {
+  position: fixed !important;
+  top: auto !important;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px)) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: min(440px, calc(100% - 28px)) !important;
+  height: 62px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  box-shadow:
+    0 1px 2px rgba(17, 18, 20, 0.06),
+    0 14px 34px -12px rgba(17, 18, 20, 0.28) !important;
+  overflow: hidden;
+  z-index: 900;
+}
+html[data-theme="paper"] .nav.hide,
+html:not([data-theme]) .nav.hide {
+  transform: translateX(-50%) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html[data-theme="paper"] .nav-inner,
+html:not([data-theme]) .nav-inner {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 5px 6px !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  gap: 0 !important;
+}
+html[data-theme="paper"] .logo,
+html:not([data-theme]) .logo,
+html[data-theme="paper"] .nav-toggle,
+html:not([data-theme]) .nav-toggle { display: none !important; }
+
+/* ── 7 个 Tab：图标 + 小字 ── */
+html[data-theme="paper"] .nav-links,
+html:not([data-theme]) .nav-links {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  width: 100% !important;
+  gap: 2px !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+html[data-theme="paper"] .nav-links a,
+html:not([data-theme]) .nav-links a {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  min-height: 50px !important;
+  padding: 4px 0 !important;
+  border-radius: 999px !important;
+  font-size: 0.62rem !important;
+  line-height: 1.1 !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #7c828b !important;
+  background: transparent !important;
+  transition: color 180ms ease, background 180ms ease !important;
+}
+html[data-theme="paper"] .nav-links .nav-num,
+html:not([data-theme]) .nav-links .nav-num { display: none !important; }
+
+/* 图标：用 CSS 符号，按锚点区分 */
+html[data-theme="paper"] .nav-links a::before,
+html:not([data-theme]) .nav-links a::before {
+  font-size: 0.98rem;
+  line-height: 1;
+  opacity: 0.85;
+}
+html[data-theme="paper"] .nav-links a[href="#pages"]::before,
+html:not([data-theme]) .nav-links a[href="#pages"]::before { content: "▦"; }
+html[data-theme="paper"] .nav-links a[href="#about"]::before,
+html:not([data-theme]) .nav-links a[href="#about"]::before { content: "◍"; }
+html[data-theme="paper"] .nav-links a[href="#skills"]::before,
+html:not([data-theme]) .nav-links a[href="#skills"]::before { content: "◈"; }
+html[data-theme="paper"] .nav-links a[href="#projects"]::before,
+html:not([data-theme]) .nav-links a[href="#projects"]::before { content: "▤"; }
+html[data-theme="paper"] .nav-links a[href="#timeline"]::before,
+html:not([data-theme]) .nav-links a[href="#timeline"]::before { content: "≡"; }
+html[data-theme="paper"] .nav-links a[href="#log"]::before,
+html:not([data-theme]) .nav-links a[href="#log"]::before { content: "◷"; }
+html[data-theme="paper"] .nav-links a[href="#contact"]::before,
+html:not([data-theme]) .nav-links a[href="#contact"]::before { content: "✉"; }
+
+/* 选中：墨绿 + 浅底胶囊 */
+html[data-theme="paper"] .nav-links a.active,
+html:not([data-theme]) .nav-links a.active {
+  color: var(--accent) !important;
+  background: rgba(31, 111, 92, 0.08) !important;
+  font-weight: 600;
+}
+html[data-theme="paper"] .nav-links a.active::before,
+html:not([data-theme]) .nav-links a.active::before { opacity: 1; }
+html[data-theme="paper"] .nav-links a.active::after,
+html:not([data-theme]) .nav-links a.active::after { display: none !important; }
+html[data-theme="paper"] .nav-links a:active,
+html:not([data-theme]) .nav-links a:active { opacity: 0.7; }
+
+/* 底部留白，避开胶囊 */
+html[data-theme="paper"] body,
+html:not([data-theme]) body {
+  padding-bottom: 96px !important;
+}
+
+/* ── 深色：顶部居中胶囊 ── */
+html[data-theme="deepseek"] .nav,
+html[data-theme="legacy"] .nav {
+  position: fixed !important;
+  top: 14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(720px, calc(100% - 32px)) !important;
+  height: 52px !important;
+  padding: 4px 8px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 999px !important;
+  background: var(--nav-bg) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.6) !important;
+}
+html[data-theme="deepseek"] .nav.hide,
+html[data-theme="legacy"] .nav.hide {
+  transform: translateX(-50%) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html[data-theme="deepseek"] .nav-inner,
+html[data-theme="legacy"] .nav-inner {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+html[data-theme="deepseek"] .logo,
+html[data-theme="legacy"] .logo {
+  padding: 0 8px !important;
+  font-size: 0.86rem !important;
+}
+html[data-theme="deepseek"] .nav-links,
+html[data-theme="legacy"] .nav-links {
+  display: flex !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  flex-direction: row !important;
+}
+html[data-theme="deepseek"] .nav-links a,
+html[data-theme="legacy"] .nav-links a {
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.76rem !important;
+  color: var(--muted) !important;
+  background: transparent !important;
+  transition: color 180ms ease, background 180ms ease !important;
+}
+html[data-theme="deepseek"] .nav-links a:hover,
+html[data-theme="legacy"] .nav-links a:hover {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+html[data-theme="deepseek"] .nav-links a.active,
+html[data-theme="legacy"] .nav-links a.active {
+  color: var(--accent-ink) !important;
+  background: var(--accent) !important;
+  font-weight: 600;
+}
+html[data-theme="deepseek"] .nav-links a.active::after,
+html[data-theme="legacy"] .nav-links a.active::after { display: none !important; }
+html[data-theme="deepseek"] .nav-links .nav-num,
+html[data-theme="legacy"] .nav-links .nav-num { display: none !important; }
+
+/* 深色内容让出顶部胶囊高度 */
+html[data-theme="deepseek"] .hero,
+html[data-theme="legacy"] .hero {
+  padding-top: 96px !important;
+}
+
+/* 手机：深色胶囊变窄、可横向滚动 */
+@media (max-width: 734px) {
+  html[data-theme="deepseek"] .nav,
+  html[data-theme="legacy"] .nav { width: calc(100% - 24px) !important; }
+  html[data-theme="deepseek"] .nav-links,
+  html[data-theme="legacy"] .nav-links { gap: 0 !important; }
+  html[data-theme="deepseek"] .nav-links a,
+  html[data-theme="legacy"] .nav-links a { padding: 6px 7px !important; font-size: 0.68rem !important; }
+}
