@@ -1530,3 +1530,77 @@ html[data-theme="legacy"] .hscroll-item:hover {
   background: rgba(23, 32, 47, 0.78) !important;
   border-color: rgba(0, 229, 160, 0.3) !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色主题：16:9 舞台布局（桌面优先，手机回流）
+   ═══════════════════════════════════════════════════════ */
+
+/* 首屏：按 16:9 限定宽度，垂直居中，一屏内看完 */
+html[data-theme="deepseek"] .hero {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  padding: 48px 0;
+}
+html[data-theme="deepseek"] .hero-inner {
+  width: min(92vw, 1600px, 177.78vh); /* 16:9：宽度不超过高度的 16/9 */
+  margin-inline: auto;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+/* 内容区：同样按 16:9 的视觉比例收窄 */
+html[data-theme="deepseek"] .container {
+  width: min(92vw, 1280px, 177.78vh);
+}
+html[data-theme="deepseek"] .section {
+  padding-block: 72px;
+}
+
+/* 卡片网格在宽屏上更舒展 */
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+  grid-template-columns: repeat(3, 1fr);
+}
+html[data-theme="deepseek"] .pages-grid > :first-child {
+  grid-column: span 3;
+  padding: 28px 26px !important;
+}
+
+/* 手机端：取消比例锁定，回到纵向流式 */
+@media (max-width: 734px) {
+  html[data-theme="deepseek"] .hero {
+    min-height: auto;
+    display: block;
+    padding: 36px 16px 28px;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  html[data-theme="deepseek"] .container {
+    width: 92%;
+  }
+  html[data-theme="deepseek"] .section {
+    padding-block: 52px;
+  }
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+    grid-template-columns: 1fr;
+  }
+  html[data-theme="deepseek"] .pages-grid > :first-child {
+    grid-column: span 1;
+    padding: 22px 18px !important;
+  }
+}
+
+/* 横屏手机 / 矮窗口：压缩首屏高度，避免内容被切 */
+@media (max-height: 620px) and (min-width: 735px) {
+  html[data-theme="deepseek"] .hero {
+    min-height: auto;
+    padding: 32px 0;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    width: min(92vw, 1280px);
+  }
+}
