@@ -68,7 +68,7 @@
       '<div class="pop-h">版本切换</div>' +
       '<a class="pop-link" href="/">经典首页</a>' +
       '<a class="pop-link" href="/v2/">v2 · 纸感编辑版</a>' +
-      '<a class="pop-link" href="/os/">OS · 桌面窗口版</a>';
+      '<a class="pop-link" href="/os/">典藏版 · 编辑式布局</a>';
 
     btn.addEventListener("click", (e) => {
       e.stopPropagation();

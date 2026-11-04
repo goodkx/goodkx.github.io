@@ -1,50 +1,225 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-mode="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="CCCAD-OS：把一个静态站装进桌面里。双击图标打开窗口，可拖拽、可叠放。" />
-<meta name="color-scheme" content="light" />
-<title>CCCAD-OS</title>
-<link rel="stylesheet" href="style.css?v=267" />
+<meta name="description" content="CCCAD 典藏版：一册私人数字收藏。十四处入口，写作、影像、器物与闲趣，以编辑式版式重新编排。" />
+<meta name="theme-color" content="#0c0d0f" />
+<meta name="color-scheme" content="dark light" />
+<title>CCCAD · 典藏版 | A Private Collection</title>
+<script>document.documentElement.className += " js";</script>
+<link rel="stylesheet" href="luxe.css?v=270" />
 </head>
 <body>
 
-<div class="desktop" id="desktop">
+<div class="frame" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
-  <!-- 菜单栏 -->
-  <header class="menubar">
-    <div class="menubar-left">
-      <span class="menubar-logo"><span>~/</span>CCCAD-OS</span>
-      <button class="menu-btn" id="launchBtn" aria-expanded="false">开始</button>
-      <button class="menu-btn" id="closeAllBtn">关闭全部</button>
-    </div>
-    <div class="menubar-right">
-      <span class="sys-badge" id="winCount">0 个窗口</span>
-      <div class="theme-dots" role="group" aria-label="切换主题">
-        <button class="theme-dot" data-t="" title="暖纸" aria-label="暖纸"></button>
-        <button class="theme-dot" data-t="violet" title="冷纸" aria-label="冷纸"></button>
-        <button class="theme-dot" data-t="paper" title="净白" aria-label="净白"></button>
-        <button class="theme-dot" data-t="amber" title="米黄" aria-label="米黄"></button>
+<header class="topbar" id="topbar">
+  <a class="brand" href="#top" aria-label="CCCAD 典藏版，回到顶部">CCCAD<span>ÉDITION</span></a>
+  <nav class="topnav topbar-center" aria-label="章节导航">
+    <a href="#index">Index</a>
+    <a href="#selected">Selected</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="clock" id="clock" aria-label="本地时间">--:--</span>
+    <nav class="topnav" aria-label="主站导航">
+      <a class="nav-hide" href="#index">Index</a>
+      <a class="home-link" href="../index.html">经典首页 ↗</a>
+    </nav>
+    <button class="mode-btn" id="modeBtn" type="button" aria-label="切换明暗配色" title="切换明暗（快捷键 M）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- 01 ── 首屏 ─────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-grid">
+      <div>
+        <p class="hero-eyebrow reveal">A Private Collection &nbsp;·&nbsp; Vol. 01 &nbsp;·&nbsp; Since 2026</p>
+        <h1 id="hero-title" class="reveal" style="--d:120ms"><span>把生活</span><span>收进<em>一册</em></span></h1>
+        <p class="hero-sub reveal" style="--d:260ms">
+          这里不装桌面，也不弹窗口。<br />
+          十四处去处，按写作、影像、器物与闲趣重新装订 —— 像翻一本只印了一册的杂志。
+        </p>
       </div>
-      <span class="menubar-clock" id="clock">--:--</span>
-      <a class="menu-btn" href="../index.html" style="text-decoration:none">退出</a>
+      <aside class="hero-aside reveal" style="--d:380ms">
+        <p class="label">The Premise</p>
+        <p>没有框架，没有模板，没有投资人。<br />只有我和 AI 搭子，<br />一行一行敲出来的全部生活。</p>
+        <p class="en">Handcrafted · Static · Unhurried</p>
+      </aside>
     </div>
-  </header>
+    <div class="hero-foot">
+      <span>CCCAD &nbsp;/&nbsp; 独立个人站</span>
+      <span>14 Collections &nbsp;·&nbsp; 4 Editions</span>
+      <a class="scroll-cue" href="#index">Scroll to explore <i aria-hidden="true"></i></a>
+    </div>
+  </section>
 
-  <!-- 桌面图标 -->
-  <nav class="icons" id="icons" aria-label="桌面图标"></nav>
+  <!-- 走马细条 ───────────────────────────────────────────────────────── -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Independent <b>✦</b> Handcrafted <b>✦</b> No Framework <b>✦</b> No Template <b>✦</b> Written Line By Line <b>✦</b> Since 2026 <b>✦</b></span>
+      <span>Independent <b>✦</b> Handcrafted <b>✦</b> No Framework <b>✦</b> No Template <b>✦</b> Written Line By Line <b>✦</b> Since 2026 <b>✦</b></span>
+    </div>
+  </div>
 
-  <!-- 开始菜单 -->
-  <div class="launcher" id="launcher" role="menu" aria-label="开始菜单"></div>
+  <!-- 02 ── 目录 ─────────────────────────────────────────────────────── -->
+  <section id="index" aria-labelledby="index-title">
+    <div class="sec-head reveal">
+      <h2 class="sec-title" id="index-title">目录 <em>/ The Index</em></h2>
+      <span class="sec-note">Chapter 01 &nbsp;—&nbsp; Fourteen Destinations</span>
+    </div>
 
-  <!-- 窗口层 -->
-  <div id="winLayer"></div>
+    <div class="index-layout">
+      <div class="index-intro reveal">
+        <p class="kicker">Curated</p>
+        <p>原先这些页面散落在一张模拟桌面里，要双击图标、拖拽窗口才能抵达。现在它们被排成一份目录，一行一处，抬头就能看见。</p>
+        <span class="count">14<small>Places to go</small></span>
+      </div>
 
-  <!-- 任务栏 -->
-  <div class="dock empty" id="dock" aria-label="任务栏"></div>
-</div>
+      <div class="index-groups">
+        <div class="group reveal">
+          <div class="group-head"><h3>写作</h3><span>01 / Writing</span></div>
+          <a class="entry" href="../blog.html"><span class="n">01</span><span class="cn">博客</span><span class="meta"><b>Journal</b>长文、笔记与阶段性自言自语</span><span class="arrow">→</span></a>
+          <a class="entry" href="../kaoyan.html"><span class="n">02</span><span class="cn">考研大纲</span><span class="meta"><b>Syllabus</b>逐条拆解的复习地图</span><span class="arrow">→</span></a>
+          <a class="entry" href="../live.html"><span class="n">03</span><span class="cn">人生指南</span><span class="meta"><b>Field Guide</b>667 条循证建议全文收录</span><span class="arrow">→</span></a>
+        </div>
 
-<script src="app.js?v=267"></script>
+        <div class="group reveal">
+          <div class="group-head"><h3>影像</h3><span>02 / Image</span></div>
+          <a class="entry" href="../gallery.html"><span class="n">04</span><span class="cn">相册</span><span class="meta"><b>Gallery</b>云端驱动的纯照片墙</span><span class="arrow">→</span></a>
+          <a class="entry" href="../report.html"><span class="n">05</span><span class="cn">我的年报</span><span class="meta"><b>Annual Report</b>把一年摊开成一页数据</span><span class="arrow">→</span></a>
+        </div>
+
+        <div class="group reveal">
+          <div class="group-head"><h3>器物</h3><span>03 / Utility</span></div>
+          <a class="entry" href="../tools.html"><span class="n">06</span><span class="cn">工具箱</span><span class="meta"><b>Toolbox</b>随手要用的一堆小东西</span><span class="arrow">→</span></a>
+          <a class="entry" href="../ai.html"><span class="n">07</span><span class="cn">AI 军火库</span><span class="meta"><b>Arsenal</b>常用 AI 工具导航</span><span class="arrow">→</span></a>
+          <a class="entry" href="../shop.html"><span class="n">08</span><span class="cn">小卖部</span><span class="meta"><b>General Store</b>一间不认真做生意的铺子</span><span class="arrow">→</span></a>
+        </div>
+
+        <div class="group reveal">
+          <div class="group-head"><h3>闲趣</h3><span>04 / Leisure</span></div>
+          <a class="entry" href="../arcade.html"><span class="n">09</span><span class="cn">街机厅</span><span class="meta"><b>Arcade</b>几款自己写的小游戏</span><span class="arrow">→</span></a>
+          <a class="entry" href="../achievements.html"><span class="n">10</span><span class="cn">成就柜</span><span class="meta"><b>Trophies</b>访客也能攒一柜子徽章</span><span class="arrow">→</span></a>
+          <a class="entry" href="../guestbook.html"><span class="n">11</span><span class="cn">留言板</span><span class="meta"><b>Guestbook</b>留一句，字会飘在首页</span><span class="arrow">→</span></a>
+          <a class="entry" href="../pelican.html"><span class="n">12</span><span class="cn">鹈鹕彩蛋</span><span class="meta"><b>Easter Egg</b>一只骑车的 SVG 鹈鹕</span><span class="arrow">→</span></a>
+          <a class="entry" href="../links.html"><span class="n">13</span><span class="cn">友链</span><span class="meta"><b>Colleagues</b>隔壁那些有意思的站点</span><span class="arrow">→</span></a>
+        </div>
+
+        <div class="group reveal">
+          <div class="group-head"><h3>别处</h3><span>05 / Elsewhere</span></div>
+          <a class="entry" href="../index.html"><span class="n">14</span><span class="cn">经典首页</span><span class="meta"><b>Classic Edition</b>回到有打字机与鲸鲸的主页</span><span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 ── 精选 ─────────────────────────────────────────────────────── -->
+  <section id="selected" class="featured" aria-labelledby="selected-title">
+    <div class="sec-head reveal">
+      <h2 class="sec-title" id="selected-title">精选 <em>/ Selected</em></h2>
+      <span class="sec-note">Chapter 02 &nbsp;—&nbsp; Three to Begin With</span>
+    </div>
+    <div class="feat-grid">
+      <a class="feat reveal" href="../live.html">
+        <span class="ghost" aria-hidden="true">01</span>
+        <span class="fnum">Nº 01 &nbsp;/&nbsp; FIELD GUIDE</span>
+        <span class="hairline" aria-hidden="true"></span>
+        <span>
+          <h3>高性价比<br />人生指南</h3>
+          <p>防病急救、省钱理财、防骗与法律红线。667 条循证建议，一次收全，不为流量，只为少走弯路。</p>
+          <span class="flink">Enter</span>
+        </span>
+      </a>
+      <a class="feat reveal" style="--d:120ms" href="../gallery.html">
+        <span class="ghost" aria-hidden="true">02</span>
+        <span class="fnum">Nº 02 &nbsp;/&nbsp; GALLERY</span>
+        <span class="hairline" aria-hidden="true"></span>
+        <span>
+          <h3>相册</h3>
+          <p>只放照片，不加标题。云端驱动的一面墙，点开就是原图。</p>
+          <span class="flink">Enter</span>
+        </span>
+      </a>
+      <a class="feat reveal" style="--d:240ms" href="../arcade.html">
+        <span class="ghost" aria-hidden="true">03</span>
+        <span class="fnum">Nº 03 &nbsp;/&nbsp; ARCADE</span>
+        <span class="hairline" aria-hidden="true"></span>
+        <span>
+          <h3>街机厅</h3>
+          <p>2048、扫雷、俄罗斯方块、记忆翻牌。都是自己写的，也都不太难。</p>
+          <span class="flink">Enter</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 04 ── 关于 ─────────────────────────────────────────────────────── -->
+  <section id="about" aria-labelledby="about-title">
+    <div class="sec-head reveal">
+      <h2 class="sec-title" id="about-title">关于 <em>/ About</em></h2>
+      <span class="sec-note">Chapter 03 &nbsp;—&nbsp; Colophon</span>
+    </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p class="quote">「没有框架，没有模板，没有投资人。<br />只有我和 AI 搭子，一行一行敲出来的<em>全部生活</em>。」</p>
+        <p class="quote-foot">— CCCAD，建站手记</p>
+        <p class="hero-sub" style="margin-top:36px">典藏版是这套站点的第四种版式：同样十四处去处，换成一册安静的目录。墨黑与象牙白可随时切换，不写进主站的主题偏好里。</p>
+      </div>
+      <dl class="spec reveal" style="--d:140ms">
+        <div><dt>Keeper</dt><dd>CCCAD &nbsp;·&nbsp; GitHub @goodkx</dd></div>
+        <div><dt>Est.</dt><dd>2026 年 9 月</dd></div>
+        <div><dt>Built with</dt><dd>HTML · CSS · 少量原生 JS，无框架、无构建</dd></div>
+        <div><dt>Hosted on</dt><dd>GitHub Pages</dd></div>
+        <div><dt>Edition</dt><dd>Édition Noire / 象牙白 · v270</dd></div>
+        <div><dt>Elsewhere</dt><dd>X @chenkexi1391185</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 05 ── 数字 ─────────────────────────────────────────────────────── -->
+  <section aria-label="站点数字" style="padding-top:0">
+    <div class="figures reveal">
+      <div class="figure"><div class="v">14</div><div class="k">Curated entries</div></div>
+      <div class="figure"><div class="v">667</div><div class="k">Evidence-based notes</div></div>
+      <div class="figure"><div class="v">4</div><div class="k">Site editions</div></div>
+      <div class="figure"><div class="v">2026</div><div class="k">First published</div></div>
+    </div>
+  </section>
+
+  <!-- 06 ── 联系 ─────────────────────────────────────────────────────── -->
+  <section id="contact" class="contact" aria-labelledby="contact-title">
+    <div class="sec-head reveal">
+      <span class="sec-note">Chapter 04 &nbsp;—&nbsp; Correspondence</span>
+      <span class="sec-note">Open for letters</span>
+    </div>
+    <h2 id="contact-title" class="reveal">Say<em>Hello.</em></h2>
+    <a class="mailto reveal" style="--d:120ms" href="mailto:chenmidiy@163.com">chenmidiy@163.com</a>
+    <div class="contact-side reveal" style="--d:220ms">
+      <a href="https://github.com/goodkx" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="https://x.com/chenkexi1391185" target="_blank" rel="noopener">X / Twitter ↗</a>
+      <a href="../guestbook.html">留言板 ↗</a>
+      <a href="../index.html">返回经典首页 ↗</a>
+      <a href="#top">回到卷首 ↑</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-wordmark" aria-hidden="true">CCCAD</div>
+  <div class="footer-bottom">
+    <span>© 2026 CCCAD · A Private Collection</span>
+    <span>Set in serif · Printed on light</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script src="luxe.js?v=270"></script>
 </body>
 </html>
