@@ -19,8 +19,8 @@
   <meta property="og:site_name" content="CCCAD 的数字小站" />
   <title>CCCAD | 个人主页</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css?v=207" />
-  <link rel="stylesheet" href="theme.css?v=207" />
+  <link rel="stylesheet" href="style.css?v=248" />
+  <link rel="stylesheet" href="theme.css?v=248" />
   <meta property="og:title" content="CCCAD 的数字小站" />
   <meta property="og:description" content="博客 · 工具箱 · 考研大纲 · 一只会骑车的鹈鹕" />
   <meta property="og:type" content="website" />
@@ -29,10 +29,13 @@
   <link rel="preconnect" href="https://textdb.dev" />
   <link rel="alternate" type="application/rss+xml" title="CCCAD 的数字小站 RSS" href="feed.xml" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=207"></script>
-  <link rel="stylesheet" href="search.css?v=207" />
-  <script src="search.js?v=207"></script>
-  <script src="achievements.js?v=207"></script>
+  <script>try{var __t=localStorage.getItem("site-theme")||"";if(__t)document.documentElement.setAttribute("data-theme",__t)}catch(e){}</script>
+  <script src="theme.js?v=248" defer></script>
+  <link rel="stylesheet" href="search.css?v=248" />
+  <script src="search.js?v=248" defer></script>
+  <script src="achievements.js?v=248" defer></script>
+  <link rel="preload" href="pet/frames/idle.webp" as="image" type="image/webp" />
+  <link rel="stylesheet" href="paper.css?v=248" />
 </head>
 <body>
 
@@ -82,6 +85,8 @@
           <div class="hero-actions">
             <a href="#projects" class="btn btn-primary">看看我做了啥 →</a>
             <a href="#contact" class="btn btn-ghost">联系我</a>
+            <a href="v2/index.html" class="btn btn-ghost" style="border-color: var(--accent); color: var(--accent);">新设计预览 v2 →</a>
+            <a href="os/" class="btn btn-ghost" style="border-color: var(--accent); color: var(--accent);">桌面版 OS →</a>
           </div>
           <div class="socials">
             <a class="icon-btn" href="https://github.com/goodkx" target="_blank" rel="noopener" aria-label="GitHub">
@@ -131,9 +136,7 @@
 
     <!-- ══════════ 01 关于 ══════════ -->
     <!-- ══════════ 🎴 看板娘粒子分身展示带 ══════════ -->
-    <div class="pet-strip reveal" id="petStrip">
-      <div class="ps-head"><span class="ps-tag">PARTICLE CLONE</span><span class="ps-title">看板娘 · 粒子分身</span></div>
-    </div>
+    <div class="pet-strip reveal" id="petStrip"></div>
 
     <!-- ══════════ 01 页面导航 ══════════
          ✏️ 添加新页面很简单：复制下面任意一张 <a class="page-card hscroll-item" data-idx="01">…</a>，
@@ -623,9 +626,99 @@
           <span class="section-line"></span>
         </div>
 
-        <div class="drum-wrap" id="log-list" style="--n:13; --step:27.692deg; --rz:170px">
+        <div class="drum-wrap" id="log-list" style="--n:23; --step:15.6522deg; --rz:280px">
         <div class="drum">
           <div class="drum-item" style="--i:0">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-03</time>
+              <div class="cl-body">
+                <h3>🧹 全站去 AI 味 · 印刷质感</h3>
+                <p>胶囊圆角换方角、玻璃卡片换实底、渐变按钮换墨色，链接恢复下划线。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:1">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-03</time>
+              <div class="cl-body">
+                <h3>🐛 修文字重叠 · 清掉幽灵大字</h3>
+                <p>子页 h1 背后的 7rem 装饰字、卡片幽灵编号、强制单行标题全部处理。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:2">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-03</time>
+              <div class="cl-body">
+                <h3>🎨 旧站布局重排</h3>
+                <p>首屏不再撑满 100vh，导航卡片改「重点通栏 + 两列」，关掉 3D 位移与双层聚光。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:3">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-02</time>
+              <div class="cl-body">
+                <h3>🖱 鼠标交互上线</h3>
+                <p>光标暖光跟随、卡片聚光、点击赭红墨迹，触屏与减弱动效下自动关闭。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:4">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-02</time>
+              <div class="cl-body">
+                <h3>📄 三篇新文章</h3>
+                <p>纸感改版记录、粒子分身重构、首屏优化，共 15 篇。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:5">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-02</time>
+              <div class="cl-body">
+                <h3>🤍 纸感铺开全站</h3>
+                <p>23 个页面接入 paper.css 覆盖层：暖白纸 + 噪点 + 衬线标题。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:6">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-01</time>
+              <div class="cl-body">
+                <h3>✍️ v2 纸感编辑体</h3>
+                <p>噪点、衬线标题、错位照片、目录式排版，独立在 /v2。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:7">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-01</time>
+              <div class="cl-body">
+                <h3>⚡ 首屏零阻塞</h3>
+                <p>theme.js 拆内联、宠物视频延后、补 preconnect，关键路径 56KB → 48KB。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:8">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-01</time>
+              <div class="cl-body">
+                <h3>🎴 粒子分身 12 动作</h3>
+                <p>静态帧 WebP 每张 28KB，点击换动作，弱机自动降级。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:9">
+            <div class="cl-row">
+              <time class="cl-date">2026-11-01</time>
+              <div class="cl-body">
+                <h3>🐋 粒子分身重构</h3>
+                <p>按角色本体 alpha 轮廓采样，从一团噪点到能认出人形。</p>
+              </div>
+            </div>
+          </div>
+        <div class="drum-item" style="--i:10">
             <div class="cl-row">
               <time class="cl-date">2026-10-11</time>
               <div class="cl-body">
@@ -634,7 +727,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:1">
+          <div class="drum-item" style="--i:11">
             <div class="cl-row">
               <time class="cl-date">2026-10-06</time>
               <div class="cl-body">
@@ -643,7 +736,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:1">
+          <div class="drum-item" style="--i:12">
             <div class="cl-row">
               <time class="cl-date">2026-10-06</time>
               <div class="cl-body">
@@ -652,7 +745,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:2">
+          <div class="drum-item" style="--i:13">
             <div class="cl-row">
               <time class="cl-date">2026-10-06</time>
               <div class="cl-body">
@@ -661,7 +754,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:3">
+          <div class="drum-item" style="--i:14">
             <div class="cl-row">
               <time class="cl-date">2026-10-06</time>
               <div class="cl-body">
@@ -670,7 +763,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:4">
+          <div class="drum-item" style="--i:15">
             <div class="cl-row">
               <time class="cl-date">2026-09-28</time>
               <div class="cl-body">
@@ -679,7 +772,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:5">
+          <div class="drum-item" style="--i:16">
             <div class="cl-row">
               <time class="cl-date">2026-09-27</time>
               <div class="cl-body">
@@ -688,7 +781,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:6">
+          <div class="drum-item" style="--i:17">
             <div class="cl-row">
               <time class="cl-date">2026-09-27</time>
               <div class="cl-body">
@@ -697,7 +790,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:7">
+          <div class="drum-item" style="--i:18">
             <div class="cl-row">
               <time class="cl-date">2026-09-27</time>
               <div class="cl-body">
@@ -706,7 +799,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:8">
+          <div class="drum-item" style="--i:19">
             <div class="cl-row">
               <time class="cl-date">2026-09-27</time>
               <div class="cl-body">
@@ -715,7 +808,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:9">
+          <div class="drum-item" style="--i:20">
             <div class="cl-row">
               <time class="cl-date">2026-09-27</time>
               <div class="cl-body">
@@ -724,7 +817,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:10">
+          <div class="drum-item" style="--i:21">
             <div class="cl-row">
               <time class="cl-date">2026-09-26</time>
               <div class="cl-body">
@@ -733,7 +826,7 @@
               </div>
             </div>
           </div>
-          <div class="drum-item" style="--i:11">
+          <div class="drum-item" style="--i:22">
             <div class="cl-row">
               <time class="cl-date">2026-09-26</time>
               <div class="cl-body">
@@ -744,7 +837,7 @@
           </div>
         </div>
       </div>
-      <p class="drum-hint">≡ 建站史记持续滚动 · 悬停暂停考古 · 已收录 12 个里程碑</p>
+      <p class="drum-hint">≡ 建站史记持续滚动 · 悬停暂停考古 · 已收录 23 个里程碑</p>
     </section>
 
     <!-- ══════════ 07 联系 ══════════ -->
@@ -855,7 +948,8 @@
   <!-- 复制成功提示 -->
   <div class="toast" id="toast" role="status">已复制到剪贴板 ✓</div>
 
-  <script src="script.js?v=207"></script>
+  <script src="script.js?v=248"></script>
+  <script src="particle-clone.js?v=248" defer></script>
   <style>
     .visit-note { font-family: var(--mono); font-size: .74rem; color: var(--muted); opacity: .85; margin-bottom: 6px; }
     /* 粒子连线背景 */
@@ -1600,7 +1694,7 @@
           /* 实时站点数据条 */
           const stats = document.createElement("div");
           stats.className = "dm-stats";
-          stats.innerHTML = '📄 12 篇文章 · 🧰 14 个工具 · 🖼️ <span id="dmArt">…</span> 张照片 · 🛒 小卖部营业中 · 💬 <b>' +
+          stats.innerHTML = '📄 15 篇文章 · 🧰 14 个工具 · 🖼️ <span id="dmArt">…</span> 张照片 · 🛒 小卖部营业中 · 💬 <b>' +
             rows.length + '</b> 条留言飘在空中 · <a href="guestbook.html">去留言 →</a>';
           const ht = document.querySelector(".hero-text");
           if (ht) ht.appendChild(stats);
@@ -1994,7 +2088,7 @@
           let a = ((i * step - phi) % 360 + 360) % 360;
           if (a > 180) a = 360 - a;
           const f = Math.max(0, Math.cos(a * Math.PI / 180));
-          items[i].style.opacity = (0.1 + 0.9 * f).toFixed(3);
+          items[i].style.opacity = (0.38 + 0.62 * f).toFixed(3);
         }
         requestAnimationFrame(frame);
       }
@@ -2040,6 +2134,7 @@
         if (ey) ey.textContent = String(Math.max(0, Math.round(window.innerHeight - hy))).padStart(4, "0");
       }, 120);
     })();
-  </script>  <script src="pet.js?v=207" defer></script>
+  </script>  <script src="pet.js?v=248" defer></script>
+  <script src="interactions.js?v=248" defer></script>
 </body>
 </html>

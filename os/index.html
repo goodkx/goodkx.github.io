@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="CCCAD-OS：把一个静态站装进桌面里。双击图标打开窗口，可拖拽、可叠放。" />
+<meta name="color-scheme" content="light" />
+<title>CCCAD-OS</title>
+<link rel="stylesheet" href="style.css?v=248" />
+</head>
+<body>
+
+<div class="desktop" id="desktop">
+
+  <!-- 菜单栏 -->
+  <header class="menubar">
+    <div class="menubar-left">
+      <span class="menubar-logo"><span>~/</span>CCCAD-OS</span>
+      <button class="menu-btn" id="launchBtn" aria-expanded="false">开始</button>
+      <button class="menu-btn" id="closeAllBtn">关闭全部</button>
+    </div>
+    <div class="menubar-right">
+      <span class="sys-badge" id="winCount">0 个窗口</span>
+      <div class="theme-dots" role="group" aria-label="切换主题">
+        <button class="theme-dot" data-t="" title="暖纸" aria-label="暖纸"></button>
+        <button class="theme-dot" data-t="violet" title="冷纸" aria-label="冷纸"></button>
+        <button class="theme-dot" data-t="paper" title="净白" aria-label="净白"></button>
+        <button class="theme-dot" data-t="amber" title="米黄" aria-label="米黄"></button>
+      </div>
+      <span class="menubar-clock" id="clock">--:--</span>
+      <a class="menu-btn" href="../index.html" style="text-decoration:none">退出</a>
+    </div>
+  </header>
+
+  <!-- 桌面图标 -->
+  <nav class="icons" id="icons" aria-label="桌面图标"></nav>
+
+  <!-- 开始菜单 -->
+  <div class="launcher" id="launcher" role="menu" aria-label="开始菜单"></div>
+
+  <!-- 窗口层 -->
+  <div id="winLayer"></div>
+
+  <!-- 任务栏 -->
+  <div class="dock empty" id="dock" aria-label="任务栏"></div>
+</div>
+
+<script src="app.js?v=248"></script>
+</body>
+</html>

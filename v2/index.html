@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="CCCAD 的个人站：白天上课，晚上写代码。没有框架，没有模板。" />
+<meta name="color-scheme" content="light" />
+<title>CCCAD · 个人站</title>
+<link rel="stylesheet" href="style.css?v=248" />
+<link rel="preload" href="../pet/frames/idle.webp" as="image" type="image/webp" />
+</head>
+<body>
+
+<header class="gnav">
+  <div class="gnav-inner">
+    <a class="gnav-logo" href="index.html">CCCAD</a>
+    <a href="#pages" class="hide-sm">页面</a>
+    <a href="blog.html" class="hide-sm">写作</a>
+    <a href="tools.html" class="hide-sm">工具</a>
+    <a href="gallery.html" class="hide-sm">相册</a>
+    <a href="arcade.html" class="hide-sm">街机厅</a>
+    <span class="gnav-right"><a href="../index.html">返回旧版</a></span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">个人站 · 第 2 版</p>
+        <h1>白天上课，<br /><em>晚上写代码。</em><span class="hand">——就是我</span></h1>
+        <p class="lede">
+          这里放着做出来的东西：几篇踩坑记录、十四个小工具、五台能玩的机台，
+          还有一只会踩单车的鹈鹕。没有框架，没有模板，改完直接推。
+        </p>
+        <div class="cta">
+          <a class="btn btn-blue" href="#pages">翻翻看</a>
+          <a class="btn btn-text" href="blog.html">先读两篇 ›</a>
+        </div>
+        <div class="hero-meta">
+          <span>BUILD 224</span>
+          <span>24 个页面</span>
+          <span>纯静态 · 零依赖</span>
+        </div>
+      </div>
+
+      <aside class="hero-side" aria-hidden="true">
+        <figure class="stack-img t1">
+          <img src="data/thumbs/20261025-mvnwkvdoqh38-t.jpg" alt="" loading="lazy" />
+        </figure>
+        <figure class="stack-img t2">
+          <img src="data/thumbs/20261024-mvl7d3aeei8g-t.jpg" alt="" loading="lazy" />
+        </figure>
+        <div class="note">
+          <b>最近在改：</b>把整站从“深色科技风”换成现在的样子，
+          删掉了三套背景动画和一堆发光。
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section dark showcase">
+    <div class="wrap" style="text-align:center">
+      <p class="eyebrow" style="color:#c98b6d">看板娘</p>
+      <h2 class="section-title" style="color:#f2ede3;margin-top:10px">她变成了一万四千颗粒子</h2>
+      <p class="section-sub" style="margin-inline:auto">从一帧画面取样，按角色轮廓重新拼起来。点一下，会散开再聚回去。</p>
+    </div>
+    <div class="pet-strip" id="petStrip" data-frames="../pet/frames/" aria-label="看板娘粒子分身"></div>
+  </section>
+
+  <section class="section alt" id="pages">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="no">01</span>
+        <h2 class="section-title">都在这里</h2>
+        <span class="line"></span>
+      </div>
+      <p class="section-sub">从左到右：先看最上面那条，再往下随便点。</p>
+      <ul class="index-list">
+        <li><a href="../live.html"><span class="no">01</span><span class="name">人生指南</span><span class="desc">667 条循证建议，每条标了成本、收益和出处</span><span class="go">↗</span></a></li>
+        <li><a href="blog.html"><span class="no">02</span><span class="name">博客</span><span class="desc">12 篇踩坑记录和教程</span><span class="go">↗</span></a></li>
+        <li><a href="gallery.html"><span class="no">03</span><span class="name">相册</span><span class="desc">30 张随手拍的瞬间</span><span class="go">↗</span></a></li>
+        <li><a href="tools.html"><span class="no">04</span><span class="name">工具箱</span><span class="desc">14 个浏览器小工具，不上传数据</span><span class="go">↗</span></a></li>
+        <li><a href="arcade.html"><span class="no">05</span><span class="name">街机厅</span><span class="desc">五台机台，成绩全站互通</span><span class="go">↗</span></a></li>
+        <li><a href="../ai.html"><span class="no">06</span><span class="name">AI 军火库</span><span class="desc">25 个当红工具，按用途分好类</span><span class="go">↗</span></a></li>
+        <li><a href="../kaoyan.html"><span class="no">07</span><span class="name">考研大纲</span><span class="desc">27 科软件工程备考大纲</span><span class="go">↗</span></a></li>
+        <li><a href="../guestbook.html"><span class="no">08</span><span class="name">留言板</span><span class="desc">留个名字，或者说点什么</span><span class="go">↗</span></a></li>
+        <li><a href="../shop.html"><span class="no">09</span><span class="name">小卖部</span><span class="desc">手作的小东西，扫码付款</span><span class="go">↗</span></a></li>
+        <li><a href="../achievements.html"><span class="no">10</span><span class="name">成就柜</span><span class="desc">逛站能解锁的徽章</span><span class="go">↗</span></a></li>
+        <li><a href="../report.html"><span class="no">11</span><span class="name">我的年报</span><span class="desc">你来过几次、打了几天卡</span><span class="go">↗</span></a></li>
+        <li><a href="../links.html"><span class="no">12</span><span class="name">友链</span><span class="desc">朋友们的小站</span><span class="go">↗</span></a></li>
+        <li><a href="../pelican.html"><span class="no">13</span><span class="name">鹈鹕彩蛋</span><span class="desc">一只会踩单车的鹈鹕，纯 SVG</span><span class="go">↗</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="writing">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="no">02</span>
+        <h2 class="section-title">最近写的</h2>
+        <span class="line"></span>
+        <a class="btn-text" href="blog.html" style="font-size:.85rem">全部 12 篇 ›</a>
+      </div>
+      <div class="entry-list">
+        <a class="entry" href="blog.html#/typing-arcade">
+          <time>2026-10-11</time>
+          <h3>打字测速上线记：词流、WPM 和一个按键冲突</h3>
+          <p>做打字游戏最难的不是计时，是让光标别在中文输入法下面乱跳。这篇记录了我试过的三种方案和最后为什么选了最简单的那种。</p>
+          <span class="read">阅读 6 分钟 · 前端</span>
+        </a>
+        <a class="entry" href="blog.html#/tetris-lb">
+          <time>2026-10-06</time>
+          <h3>俄罗斯方块与全站排行榜：一个模块管所有游戏</h3>
+          <p>五个游戏本来各写各的分数逻辑，后来抽成一份公共模块，顺便解决了本地存储冲突和存档格式不一致。</p>
+          <span class="read">阅读 8 分钟 · 游戏</span>
+        </a>
+        <a class="entry" href="blog.html#/github-tutorial">
+          <time>2026-10-04</time>
+          <h3>GitHub 注册使用教程：从零开始玩转仓库</h3>
+          <p>写给刚接触 Git 的同学：从注册到第一次 push，包括 SSH 和 token 该怎么选，以及我踩过的几个坑。</p>
+          <span class="read">阅读 12 分钟 · 教程</span>
+        </a>
+        <a class="entry" href="blog.html#/fish-notes">
+          <time>2026-10-01</time>
+          <h3>摸鱼日历的开发笔记：一个倒计时的边界问题</h3>
+          <p>跨年、跨时区、节假日调休，倒计时看着简单，实际每个边界都能翻车。这篇是修 bug 的流水账。</p>
+          <span class="read">阅读 5 分钟 · 踩坑</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="tools">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="no">03</span>
+        <h2 class="section-title">十四个小工具</h2>
+        <span class="line"></span>
+        <a class="btn-text" href="tools.html" style="font-size:.85rem">全部 ›</a>
+      </div>
+      <p class="section-sub">都是自己用得上的，全部在浏览器里跑，不上传数据。</p>
+      <div class="tool-grid">
+        <a class="tool-card" href="tools.html"><span class="no">01</span><h3>字数统计</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">02</span><h3>时间戳转换</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">03</span><h3>颜色转换</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">04</span><h3>密码生成</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">05</span><h3>Base64</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">06</span><h3>JSON 格式化</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">07</span><h3>考研倒计时</h3></a>
+        <a class="tool-card" href="tools.html"><span class="no">08</span><h3>进制转换</h3></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="photos">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="no">04</span>
+        <h2 class="section-title">拍到的</h2>
+        <span class="line"></span>
+        <a class="btn-text" href="gallery.html" style="font-size:.85rem">全部 30 张 ›</a>
+      </div>
+      <div class="photo-grid">
+        <figure class="photo-card">
+          <img src="data/thumbs/20261025-mvnwkvdoqh38-t.jpg" alt="相册照片 2026-10-25" loading="lazy" />
+          <figcaption>2026-10-25</figcaption>
+        </figure>
+        <figure class="photo-card">
+          <img src="data/thumbs/20261024-mvl7i1ntb7ri-t.jpg" alt="相册照片 2026-10-24" loading="lazy" />
+          <figcaption>2026-10-24</figcaption>
+        </figure>
+        <figure class="photo-card">
+          <img src="data/thumbs/20261024-mvl7i1nu2htt-t.jpg" alt="相册照片 2026-10-24" loading="lazy" />
+          <figcaption>2026-10-24</figcaption>
+        </figure>
+        <figure class="photo-card">
+          <img src="data/thumbs/20261024-mvl7kn9qv9i0-t.jpg" alt="相册照片 2026-10-24" loading="lazy" />
+          <figcaption>2026-10-24</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="blog.html">写作</a>
+      <a href="tools.html">工具箱</a>
+      <a href="gallery.html">相册</a>
+      <a href="arcade.html">街机厅</a>
+      <a href="../index.html">旧版首页</a>
+      <a href="https://github.com/goodkx" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:chenmidiy@163.com">邮件</a>
+    </div>
+    <div class="footer-meta">
+      <span>CCCAD · 纸感版 v2</span>
+      <span>BUILD 224 · 静态 · 零依赖</span>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js?v=248"></script>
+<script src="../particle-clone.js?v=248" defer></script>
+  <script src="../interactions.js?v=248" defer></script>
+</body>
+</html>

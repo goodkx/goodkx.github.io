@@ -16,13 +16,14 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://goodkx.github.io/blog.html" />
   <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="subpage.css?v=207" />
-  <link rel="stylesheet" href="theme.css?v=207" />
-  <link rel="stylesheet" href="search.css?v=207" />  <link rel="manifest" href="manifest.json?v=133" />
+  <link rel="stylesheet" href="subpage.css?v=248" />
+  <link rel="stylesheet" href="theme.css?v=248" />
+  <link rel="stylesheet" href="search.css?v=248" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="theme.js?v=207"></script>
-  <script src="search.js?v=207"></script>
-  <script src="achievements.js?v=207"></script>
+  <script>try{var __t=localStorage.getItem("site-theme")||"";if(__t)document.documentElement.setAttribute("data-theme",__t)}catch(e){}</script>
+  <script src="theme.js?v=248" defer></script>
+  <script src="search.js?v=248" defer></script>
+  <script src="achievements.js?v=248" defer></script>
   <style>
     .posts { display: flex; flex-direction: column; gap: 18px; }
     .post {
@@ -291,6 +292,8 @@
       .art-body { padding: 22px 18px; }
     }
   </style>
+  <link rel="preconnect" href="https://textdb.dev" />
+  <link rel="stylesheet" href="paper.css?v=248" />
 </head>
 <body>
 
@@ -306,6 +309,36 @@
     <h1 data-word="BLOG">踩坑的 <span class="grad">考古现场</span></h1>
 
     <div class="wrap posts">
+      <a class="post reveal" href="#/post/paper-redesign">
+        <time class="post-time">2026-11-02</time>
+        <div class="post-body">
+          <h2>把整站从深色改成纸感：一次不换框架的视觉重做</h2>
+          <p>一层覆盖样式换掉 23 个页面，以及一个把整站拉回深色的主题坑。</p>
+          <div class="chips"><span class="chip green">前端</span><span class="chip">设计</span><span class="chip">重构</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" href="#/post/particle-clone">
+        <time class="post-time">2026-11-01</time>
+        <div class="post-body">
+          <h2>粒子分身：从一团噪点到能认出人形</h2>
+          <p>alpha 包围盒、梯度边缘、以及 441KB 视频换成 28KB 帧的那次决定。</p>
+          <div class="chips"><span class="chip green">前端</span><span class="chip">Canvas</span><span class="chip">性能</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
+      <a class="post reveal" href="#/post/first-paint">
+        <time class="post-time">2026-11-01</time>
+        <div class="post-body">
+          <h2>静态站的首屏：删掉三个阻塞脚本之后</h2>
+          <p>theme.js 8KB、宠物视频 430KB、textdb 没预热——量完才知道该改哪里。</p>
+          <div class="chips"><span class="chip green">性能</span><span class="chip">踩坑</span><span class="chip">前端</span></div>
+        </div>
+        <span class="post-arrow">阅读全文 →</span>
+      </a>
+
 
       <!-- ✏️ 写新文章：1) 在下面 JS 的 POSTS 里加一篇文章；2) 复制一个 <a class="post"> 块，
            href 填 #/post/你的id。未写的文章保持 href="#"，点击会提示 -->
@@ -500,6 +533,82 @@
 
     /* ══════════ 文章数据（想发新文章在这里加一条） ══════════ */
     const POSTS = {
+      "paper-redesign": {
+        title: "把整站从深色改成纸感：一次不换框架的视觉重做",
+        date: "2026-11-02",
+        tags: ["前端", "设计", "重构"],
+        html: `
+          <h3>起因：自己先看腻了</h3>
+          <p>这个站原本是标准的「深色科技风」：荧光绿主色、蓝紫渐变文字、玻璃卡片、三套背景动画叠在一起。刚做出来时觉得挺酷，用了两个月，每次打开都觉得像在看别人的模板——所有区块一样圆、一样亮、一样在发光。</p>
+          <p>问题不在于深色，而在于<strong>装饰在互相打架</strong>：网格、粒子连线、二进制雨、渐变、发光同时开着，视线没有落点。真正想让人读的文字，反而被压在最下面。</p>
+          <h3>决定：不动结构，只换材质</h3>
+          <p>23 个页面、上千行样式，推倒重写的风险太大。最后选的方案是加一层<strong>覆盖样式</strong> <code class="inline">paper.css</code>，放在所有样式之后加载，只改材质、配色和字体，一行布局和类名都不碰。</p>
+          <p>这样有两个好处：改动集中在一个文件里；出问题把这个文件删掉，整站立刻回到原来的样子。</p>
+          <h3>具体改了四件事</h3>
+          <ul>
+            <li><strong>配色</strong>：暖白纸底 <code class="inline">#f6f3ec</code>，文字墨黑，只留一个赭红 <code class="inline">#a8442a</code> 做强调。荧光绿和天蓝全部下线。</li>
+            <li><strong>材质</strong>：叠一层 7.5% 的纸张噪点（SVG <code class="inline">feTurbulence</code>，固定层、<code class="inline">pointer-events:none</code>），再加每 32px 一条极淡的稿纸线。</li>
+            <li><strong>字体</strong>：标题换衬线（Songti / Georgia），正文保持系统黑体。混排之后，“人做的”感觉一下就出来了。</li>
+            <li><strong>阴影</strong>：从一层大模糊改成两层——顶部 1px 内高光 + 底部 1px 硬线 + 远距离柔阴影，模拟纸的厚度。</li>
+          </ul>
+          <h3>踩到的坑：主题切换把整站拉回深色</h3>
+          <p>上线后截图一看，还是深蓝底。查了半天才发现：站点有 4 套主题，其中 <code class="inline">deepseek</code> 那套用 <code class="inline">html[data-theme="deepseek"]</code> 定义了一堆深色变量，权重比我的 <code class="inline">:root</code> 高，直接把纸感覆盖掉了。</p>
+          <p>解决办法是给四套主题<strong>各写一份纸感映射</strong>：深空变冷纸、紫夜变灰纸、纸白变净白、墨金变米黄。切换仍然有效，只是四种不同质感的纸，而不是切回深色。</p>
+          <h3>结果</h3>
+          <p>23 个页面一次性换完，没有改任何 HTML 结构。首屏多出来的成本只有一个 6.8KB 的 CSS 文件（gzip 后约 2KB），噪点是纯 CSS 背景图，不增加请求。</p>
+          <p>回头再看，真正让页面“不像模板”的不是纸色，而是<strong>不规整</strong>：卡片不一样大、照片带一点旋转、标题用衬线、留白不均匀。整齐到极致就是模板，稍微歪一点才像人做的。</p>
+        `
+      },
+      "particle-clone": {
+        title: "粒子分身：从一团噪点到能认出人形",
+        date: "2026-11-01",
+        tags: ["前端", "Canvas", "性能"],
+        html: `
+          <h3>第一版：一团会动的蓝色噪点</h3>
+          <p>最初的想法很简单：把看板娘的动画取一帧，按像素采样成粒子，再让粒子动起来。写完发现效果是一团蓝色噪点，完全认不出人。</p>
+          <p>排查下来根因很直接：算角色包围盒时用的是<strong>整帧半透明像素</strong>，而视频里还有背景装饰（落叶、光斑），包围盒被撑到接近全屏。角色本体只占中间一小块，粒子被均匀撒在整个区域，自然就散了。</p>
+          <h3>改成只框角色本体</h3>
+          <p>用 <code class="inline">alpha &gt; 200</code> 的核心像素重新算包围盒，背景装饰直接排除。再按显示高度等比缩放，角色立刻回到画面中央、占满 84% 高度。</p>
+          <h3>让五官能被看见</h3>
+          <p>包围盒对了只是第一步，脸还是糊的。原因是采样网格太粗：2px 的间距配 2.15px 的粒子，等于把脸涂成一块色块。后来分了三层：</p>
+          <ul>
+            <li><strong>头部</strong>按 2px 细采，粒子尺寸跟着间距走；</li>
+            <li><strong>脸部高亮区</strong>再加密一倍，让眼睛和嘴有足够的点可以落；</li>
+            <li><strong>边缘</strong>按亮度梯度排序，只补最陡的前 2400 个点，勾出轮廓。</li>
+          </ul>
+          <p>还有一个容易忽略的坑：透明视频的 RGB 常常是<strong>预乘过 alpha</strong> 的，直接取色会偏暗。采样时除以 alpha 还原本色，再用一条对比曲线代替整体提亮，暗部细节才没被糊掉。</p>
+          <h3>素材：441KB 的视频换成 28KB 的帧</h3>
+          <p>做完发现线上一直是空的。抓包看到 <code class="inline">pet/idle.webm</code> 有 441KB，那条链路下载要 24 秒，采样根本等不到；而且直接给 <code class="inline">video.src</code> 会卡在 Range 请求，<code class="inline">readyState</code> 一直停在 1。</p>
+          <p>最后的解法是把视频在 30% 处导出一帧，转成 WebP——每张只有 28KB，比视频小 15 倍，首屏几乎瞬间可用。顺带解决了“每次采到不同动作帧、五官时好时坏”的问题。</p>
+          <h3>结果</h3>
+          <p>现在是一万四千颗粒子，能认出蓝发、双马尾、白色发饰和女仆装轮廓，点击会散开再聚回来，六个动作随机轮换。整个引擎跑在 rAF 上，视口外自动暂停，弱机连续掉帧会分档削粒子。</p>
+        `
+      },
+      "first-paint": {
+        title: "静态站的首屏：删掉三个阻塞脚本之后",
+        date: "2026-11-01",
+        tags: ["性能", "踩坑", "前端"],
+        html: `
+          <h3>先量，再改</h3>
+          <p>静态站的性能优化很容易变成“感觉哪里慢就改哪里”。这次先做了一件事：把每个页面引用的 CSS/JS 列出来，再用 <code class="inline">curl --compressed</code> 量线上真实传输体积。</p>
+          <p>结果和直觉不太一样：CSS 一共 20.4KB（gzip 后），HTML 27.8KB，都不算大。真正压在首屏上的是<strong>阻塞脚本</strong>和一个没被注意的视频。</p>
+          <h3>三个问题</h3>
+          <ul>
+            <li><strong>theme.js 8KB 同步阻塞</strong>：它必须在 head 里同步执行，否则主题会闪一下。但它同时包含了主题切换器、PWA 注册、安装提示——只有“读 localStorage 写 data-theme”那几行是必须早跑的。</li>
+            <li><strong>宠物视频 430KB</strong>：网页宠物在 <code class="inline">DOMContentLoaded</code> 就加载 idle 动画，和首屏的关键资源抢带宽。</li>
+            <li><strong>textdb 没有 preconnect</strong>：9 个页面要连第三方接口，但只有 2 个做了连接预热。</li>
+          </ul>
+          <h3>改法</h3>
+          <p>把 theme.js 里“读主题”的 200 字节内联进 head，其余全部改 <code class="inline">defer</code>；宠物延后 1.6 秒启动；搜索、成就、排行榜三个脚本也全部 defer；给所有用到 textdb 的页面补 <code class="inline">preconnect</code>；首页 preload 粒子关键帧。</p>
+          <pre><code>&lt;script&gt;try{var t=localStorage.getItem("site-theme")||"";if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}&lt;/script&gt;
+&lt;script src="theme.js?v=248" defer&gt;&lt;/script&gt;</code></pre>
+          <h3>结果</h3>
+          <p>首屏关键路径从 56.2KB 加一个阻塞脚本，变成 48.1KB、<strong>head 里零阻塞</strong>。剩下的唯一同步脚本是 body 末尾的 <code class="inline">script.js</code>，它本来就在内容之后执行。</p>
+          <p>宠物晚 1.6 秒出现，用户几乎察觉不到；主题切换器延迟加载，也不影响防闪色。</p>
+          <h3>没做的部分</h3>
+          <p><code class="inline">live.html</code> 单文件 196KB（gzip），内联了 874KB 的数据，理论上可以拆成 JSON 加分页渲染。但那个页面是纯阅读型，拆分会引入新的加载状态和错误分支，暂时不动——<strong>优化要按实测收益排，不是按理论上限排</strong>。</p>
+        `
+      },
       "typing-arcade": {
         title: "打字测速上线记：词流、WPM 和一个按键冲突",
         date: "2026-10-11",
@@ -863,7 +972,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     };
 
     /* 文章顺序（新 → 旧），用于上下篇导航 */
-    const ORDER = ["typing-arcade", "tetris-lb", "github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
+    const ORDER = ["paper-redesign", "particle-clone", "first-paint", "typing-arcade", "tetris-lb", "github-tutorial", "fish-notes", "ai-learn", "toolbox-principles", "gb-cloud", "gh-pages", "theme-css", "ai-site", "kaoyan-plan", "frontend-road"];
 
     /* ── 简易 hash 路由：#/post/xxx 显示文章，其他显示列表 ── */
     let curPostId = null, lastSave = 0, routeTs = 0;
@@ -1084,6 +1193,7 @@ localStorage.setItem("site-theme", "paper");  // 记住选择</pre>
     });
   </script>
 
-  <script src="pet.js?v=207" defer></script>
+  <script src="pet.js?v=248" defer></script>
+  <script src="interactions.js?v=248" defer></script>
 </body>
 </html>
