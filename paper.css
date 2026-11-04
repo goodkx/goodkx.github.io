@@ -1659,3 +1659,55 @@ html[data-theme="deepseek"] .pages-grid > :first-child {
     padding: 22px 18px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色布局收敛：全宽 → 居中 1440 上限
+   ═══════════════════════════════════════════════════════ */
+html[data-theme="deepseek"] .hero-inner,
+html[data-theme="deepseek"] .container {
+  width: min(92vw, 1440px) !important;
+  max-width: 1440px !important;
+  padding-inline: 0 !important;
+  margin-inline: auto !important;
+  box-sizing: border-box;
+}
+html[data-theme="deepseek"] .hero-inner {
+  grid-template-columns: 1.28fr 1fr;
+  gap: clamp(32px, 3.2vw, 64px);
+  align-items: center;
+}
+html[data-theme="deepseek"] .hero {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  padding: 48px 0;
+}
+html[data-theme="deepseek"] .section { padding-block: 72px; }
+
+/* 超宽屏不再继续拉伸 */
+@media (min-width: 1600px) {
+  html[data-theme="deepseek"] .hero-inner,
+  html[data-theme="deepseek"] .container {
+    width: min(1440px, 86vw) !important;
+  }
+}
+
+/* 手机：全宽 + 单列 */
+@media (max-width: 734px) {
+  html[data-theme="deepseek"] .hero-inner,
+  html[data-theme="deepseek"] .container {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: 16px !important;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  html[data-theme="deepseek"] .hero {
+    min-height: auto;
+    display: block;
+    padding: 32px 0;
+  }
+  html[data-theme="deepseek"] .section { padding-block: 52px; }
+}
