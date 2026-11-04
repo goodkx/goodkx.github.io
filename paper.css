@@ -1711,3 +1711,64 @@ html[data-theme="deepseek"] .section { padding-block: 72px; }
   }
   html[data-theme="deepseek"] .section { padding-block: 52px; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色主题：卡片重排（两列错落，高度随内容）
+   ═══════════════════════════════════════════════════════ */
+
+/* 页面导航：网格 → 瀑布式两列 */
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+  display: block !important;
+  columns: 2;
+  column-gap: 18px;
+  margin-top: 34px;
+}
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) > * {
+  display: flex !important;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin: 0 0 18px !important;
+  min-height: auto !important;
+  padding: 26px 24px !important;
+}
+/* 首张重点卡横跨两列 */
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) > :first-child {
+  column-span: all;
+  padding: 30px 28px !important;
+}
+
+/* 技能 / 项目：同样两列错落 */
+html[data-theme="deepseek"] :is(.skills-grid, .projects-grid):not(.hscroll) {
+  display: block !important;
+  columns: 2;
+  column-gap: 18px;
+}
+html[data-theme="deepseek"] :is(.skills-grid, .projects-grid):not(.hscroll) > * {
+  break-inside: avoid;
+  margin: 0 0 18px !important;
+  min-height: auto !important;
+}
+
+/* 卡片内部：尺寸更松快 */
+html[data-theme="deepseek"] .page-card h3 {
+  font-size: 1.12rem;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+html[data-theme="deepseek"] .page-card p {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* 手机：单列 */
+@media (max-width: 734px) {
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll),
+  html[data-theme="deepseek"] :is(.skills-grid, .projects-grid):not(.hscroll) {
+    columns: 1;
+  }
+  html[data-theme="deepseek"] .pages-grid > :first-child { column-span: none; }
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) > * {
+    padding: 22px 18px !important;
+  }
+}
