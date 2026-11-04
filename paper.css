@@ -36,37 +36,35 @@
 
 /* ── 原 deepseek（默认深色） → 冷纸 ── */
 html[data-theme="deepseek"] {
-  --bg: #0a0e16;
-  --bg-soft: #0e1420;
-  --card: rgba(17, 25, 40, 0.6);
-  --border: rgba(148, 163, 184, 0.14);
-  --border-hover: rgba(0, 229, 160, 0.45);
-  --text: #e6edf3;
-  --muted: #8b98a9;
-  --dim: #5d6b7d;
-  --accent: #00e5a0;
-  --accent-2: #38bdf8;
-  --accent-rgb: 0, 229, 160;
-  --accent-2-rgb: 56, 189, 248;
-  --accent-ink: #06251a;
-  --gradient: linear-gradient(120deg, #00e5a0 10%, #38bdf8 90%);
-  --paper: #0a0e16;
-  --paper-2: #0e1420;
-  --paper-3: #121a28;
-  --ink: #e6edf3;
-  --ink-soft: #c9d6e2;
-  --line: rgba(148, 163, 184, 0.14);
-  --line-soft: rgba(148, 163, 184, 0.08);
-  --panel: rgba(13, 20, 32, 0.88);
-  --nav-bg: rgba(10, 14, 22, 0.72);
-  --sb-thumb: #223047;
-  --chip-c: #7dd3fc;
-  --chip-bg: rgba(56, 189, 248, 0.08);
-  --chip-bd: rgba(56, 189, 248, 0.18);
-  --glow-1: rgba(0, 229, 160, 0.13);
-  --glow-2: rgba(56, 189, 248, 0.11);
-  --shadow-1: 0 8px 32px rgba(0, 0, 0, 0.35);
-  --shadow-2: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --bg: #0b0c0e;
+  --bg-soft: #121317;
+  --card: #14161a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(110, 168, 254, 0.45);
+  --text: #e8e6e3;
+  --muted: #8b8f96;
+  --dim: #5f646c;
+  --accent: #6ea8fe;
+  --accent-2: #9b8cff;
+  --accent-rgb: 110, 168, 254;
+  --accent-2-rgb: 155, 140, 255;
+  --accent-ink: #07131f;
+  --gradient: linear-gradient(120deg, #6ea8fe, #9b8cff);
+  --paper: #0b0c0e;
+  --paper-2: #14161a;
+  --paper-3: #1a1d22;
+  --ink: #e8e6e3;
+  --ink-soft: #c7c9cd;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-soft: rgba(255, 255, 255, 0.05);
+  --panel: #14161a;
+  --nav-bg: rgba(11, 12, 14, 0.86);
+  --sb-thumb: #2b2f36;
+  --chip-c: #6ea8fe;
+  --chip-bg: rgba(110, 168, 254, 0.1);
+  --chip-bd: rgba(110, 168, 254, 0.24);
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+  --shadow-2: 0 2px 0 rgba(255, 255, 255, 0.05), 0 20px 44px -18px rgba(0, 0, 0, 0.8);
 }
 
 /* ── 冷纸（原紫夜） ── */
@@ -1195,27 +1193,61 @@ html[data-theme="deepseek"] h1,
 html[data-theme="deepseek"] h2,
 html[data-theme="deepseek"] h3 { font-weight: 600 !important; }
 
+html[data-theme="legacy"] {
+  --bg: #0a0e16;
+  --bg-soft: #0e1420;
+  --card: rgba(17, 25, 40, 0.6);
+  --border: rgba(148, 163, 184, 0.14);
+  --border-hover: rgba(0, 229, 160, 0.45);
+  --text: #e6edf3;
+  --muted: #8b98a9;
+  --dim: #5d6b7d;
+  --accent: #00e5a0;
+  --accent-2: #38bdf8;
+  --accent-rgb: 0, 229, 160;
+  --accent-2-rgb: 56, 189, 248;
+  --accent-ink: #06251a;
+  --gradient: linear-gradient(120deg, #00e5a0 10%, #38bdf8 90%);
+  --paper: #0a0e16;
+  --paper-2: #0e1420;
+  --paper-3: #121a28;
+  --ink: #e6edf3;
+  --ink-soft: #c9d6e2;
+  --line: rgba(148, 163, 184, 0.14);
+  --line-soft: rgba(148, 163, 184, 0.08);
+  --panel: rgba(13, 20, 32, 0.88);
+  --nav-bg: rgba(10, 14, 22, 0.72);
+  --sb-thumb: #223047;
+  --glow-1: rgba(0, 229, 160, 0.13);
+  --glow-2: rgba(56, 189, 248, 0.11);
+  --chip-c: #7dd3fc;
+  --chip-bg: rgba(56, 189, 248, 0.08);
+  --chip-bd: rgba(56, 189, 248, 0.18);
+  --shadow-1: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
 /* ═══ 深空绿 · 恢复玻璃拟态与渐变（还原终端风） ═══ */
-html[data-theme="deepseek"] body::after { display: none !important; }
+html[data-theme="legacy"] body::after { display: none !important; }
 
 /* 背景网格与光晕重新开启 */
-html[data-theme="deepseek"] .bg-grid {
+html[data-theme="legacy"] .bg-grid {
   display: block !important;
   opacity: 0.55 !important;
   background-image:
     linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px) !important;
 }
-html[data-theme="deepseek"] .bg-glow { display: block !important; }
+html[data-theme="legacy"] .bg-glow { display: block !important; }
 
 /* 卡片：玻璃 + 16px 圆角 + 弥散阴影 */
-html[data-theme="deepseek"] .page-card,
-html[data-theme="deepseek"] .terminal,
-html[data-theme="deepseek"] .mini-shop,
-html[data-theme="deepseek"] .code-card,
-html[data-theme="deepseek"] .feat-card,
-html[data-theme="deepseek"] .post,
-html[data-theme="deepseek"] .hscroll-item {
+html[data-theme="legacy"] .page-card,
+html[data-theme="legacy"] .terminal,
+html[data-theme="legacy"] .mini-shop,
+html[data-theme="legacy"] .code-card,
+html[data-theme="legacy"] .feat-card,
+html[data-theme="legacy"] .post,
+html[data-theme="legacy"] .hscroll-item {
   background: var(--card) !important;
   -webkit-backdrop-filter: blur(16px) saturate(1.2) !important;
   backdrop-filter: blur(16px) saturate(1.2) !important;
@@ -1225,15 +1257,15 @@ html[data-theme="deepseek"] .hscroll-item {
 }
 
 /* 标题：粗黑 + 渐变关键词 */
-html[data-theme="deepseek"] h1,
-html[data-theme="deepseek"] h2,
-html[data-theme="deepseek"] .hero-title,
-html[data-theme="deepseek"] .section-title {
+html[data-theme="legacy"] h1,
+html[data-theme="legacy"] h2,
+html[data-theme="legacy"] .hero-title,
+html[data-theme="legacy"] .section-title {
   font-weight: 800 !important;
   letter-spacing: -0.01em !important;
 }
-html[data-theme="deepseek"] .grad-text,
-html[data-theme="deepseek"] .grad {
+html[data-theme="legacy"] .grad-text,
+html[data-theme="legacy"] .grad {
   background: var(--gradient) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
@@ -1242,25 +1274,25 @@ html[data-theme="deepseek"] .grad {
 }
 
 /* 按钮：渐变胶囊 */
-html[data-theme="deepseek"] .btn-primary {
+html[data-theme="legacy"] .btn-primary {
   background: var(--gradient) !important;
   color: #06251a !important;
   border: 0 !important;
   border-radius: 999px !important;
   box-shadow: 0 4px 24px rgba(0, 229, 160, 0.25) !important;
 }
-html[data-theme="deepseek"] .btn-primary:hover {
+html[data-theme="legacy"] .btn-primary:hover {
   box-shadow: 0 8px 32px rgba(0, 229, 160, 0.4) !important;
   transform: translateY(-2px) !important;
 }
-html[data-theme="deepseek"] .btn-ghost {
+html[data-theme="legacy"] .btn-ghost {
   border-radius: 999px !important;
   border-color: rgba(148, 163, 184, 0.3) !important;
   color: var(--text) !important;
 }
 
 /* 导航：胶囊 */
-html[data-theme="deepseek"] .nav-inner {
+html[data-theme="legacy"] .nav-inner {
   background: var(--nav-bg) !important;
   border-radius: 999px !important;
   border-color: var(--border) !important;

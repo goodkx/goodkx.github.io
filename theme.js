@@ -26,14 +26,15 @@
   });
   const THEMES = [
     { id: "paper",    name: "暖纸 · 浅色" },
-    { id: "deepseek", name: "墨纸 · 深色" },
+    { id: "deepseek", name: "墨黑 · 深色" },
+    { id: "legacy",   name: "深空绿 · 终端" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）
   let saved = "";
   try { saved = localStorage.getItem(KEY); } catch (e) {}
   /* 默认主题 = 深海鲸 · DeepSeek（站长拍板）；老访客的已存选择不受影响 */
-  if (saved !== "paper" && saved !== "deepseek") saved = "paper";
+  if (saved !== "paper" && saved !== "deepseek" && saved !== "legacy") saved = "paper";
   document.documentElement.dataset.theme = saved;
   /* 默认固定使用「深空绿 · 终端」：不再跟随系统深浅色 / 时段自动换肤。
      想换风格的访客点右下角 🎨 手动选择，选择会被记住。 */
