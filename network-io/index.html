@@ -1,0 +1,3318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网络层 × 输入输出系统 · 画着看的学习手册</title>
+<!-- 字体走 jsDelivr（国内可达性更好）；如需换源，改这里即可 -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- 异步加载字体：先立刻显示内容，字体到位后自动切换 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile@5.3.0/index.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans-sc@5.2.5/index.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/fredoka@5.2.5/index.css" media="print" onload="this.media='all'">
+<noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile@5.3.0/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans-sc@5.2.5/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/fredoka@5.2.5/index.css">
+</noscript>
+<style>
+/* === 设计变量：奶油纸感 + 手绘描边 + 马卡龙撞色 === */
+:root{
+  --paper:#FFF6E4;
+  --paper-2:#FFFCF3;
+  --ink:#2E2925;
+  --ink-soft:#7A6E64;
+  --coral:#FF8B79;
+  --coral-deep:#E1584A;
+  --butter:#FFD66E;
+  --mint:#8FDCB9;
+  --mint-deep:#3FA982;
+  --sky:#8AC9EE;
+  --sky-deep:#2F86B4;
+  --lilac:#C7AEF2;
+  --pink:#FFB7CA;
+  --line:2.5px;
+  --shadow:5px 5px 0 rgba(46,41,37,.86);
+  --shadow-sm:3px 4px 0 rgba(46,41,37,.8);
+  --scale:1;
+}
+
+/* === 基础重置与舞台缩放 === */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Noto Sans SC Variable','Noto Sans SC',sans-serif;
+  background:#E9DFCD;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+#viewport{position:fixed;inset:0;overflow:hidden;background:
+  radial-gradient(circle at 12% 18%, #FFF1D6 0%, transparent 45%),
+  radial-gradient(circle at 88% 82%, #E7F5EE 0%, transparent 45%),
+  #E9DFCD;}
+#stage{
+  position:absolute;top:50%;left:50%;
+  width:1920px;height:1080px;
+  transform:translate(-50%,-50%) scale(var(--scale));
+  transform-origin:center center;
+  background:var(--paper);
+  border-radius:0;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(60,45,30,.22);
+}
+/* 纸张纹理：点阵 + 极淡横线，营造手账纸感 */
+#stage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(circle, rgba(46,41,37,.10) 1.3px, transparent 1.4px),
+    linear-gradient(rgba(46,41,37,.025) 1px, transparent 1px);
+  background-size:28px 28px, 100% 56px;
+  opacity:.55;
+}
+#stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at 50% 50%, transparent 62%, rgba(120,95,60,.10) 100%);
+}
+
+/* === 幻灯片容器与切换动画 === */
+.slide{
+  position:absolute;inset:0;z-index:2;
+  padding:62px 92px 74px;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateX(46px) scale(.985);
+  transition:opacity .5s ease, transform .55s cubic-bezier(.22,1,.36,1), visibility .55s;
+}
+.slide.active{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transform:translateX(0) scale(1);
+}
+.slide-inner{position:relative;width:100%;height:100%;display:flex;flex-direction:column;z-index:3}
+
+/* === 入场动画 === */
+.anim{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .62s cubic-bezier(.22,1,.36,1), transform .62s cubic-bezier(.22,1,.36,1);
+  will-change:opacity,transform;
+}
+.slide.active .anim{opacity:1;transform:none}
+.slide:not(.active) .anim{transition-duration:0s}
+
+/* === 字体层级 === */
+.f-display{font-family:'ZCOOL KuaiLe','Noto Sans SC Variable','Noto Sans SC',cursive}
+.f-num{font-family:'Fredoka Variable','Fredoka','Noto Sans SC Variable','Noto Sans SC',sans-serif;font-variant-numeric:tabular-nums}
+.s-title{
+  font-family:'ZCOOL KuaiLe','Noto Sans SC Variable','Noto Sans SC',cursive;
+  font-size:58px;line-height:1.18;letter-spacing:1px;
+}
+.s-sub{font-size:25px;line-height:1.55;color:var(--ink-soft);font-weight:500}
+.body{font-size:24px;line-height:1.62;font-weight:500}
+.small{font-size:19px;line-height:1.55;color:var(--ink-soft)}
+.tiny{font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.b-old{font-weight:700}
+.b-black{font-weight:900}
+
+/* === 顶部标题区 === */
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;margin-bottom:26px;flex:none}
+.head-left{display:flex;flex-direction:column;gap:10px;max-width:1300px}
+.head .s-title{position:relative;display:inline-block}
+.head .s-title .mark{position:relative;z-index:1}
+.mark::after{
+  content:"";position:absolute;left:-6px;right:-8px;bottom:6px;height:17px;z-index:-1;
+  background:var(--hl,var(--butter));border-radius:10px 14px 9px 15px;
+  transform:rotate(-.7deg);opacity:.85;
+}
+.page-badge{
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:600;font-size:20px;
+  padding:8px 18px;border:var(--line) solid var(--ink);border-radius:999px;
+  background:var(--paper-2);box-shadow:var(--shadow-sm);white-space:nowrap;
+  transform:rotate(2deg);
+}
+
+/* === 通用卡片 / 标签 / 高亮 === */
+.card{
+  background:var(--paper-2);
+  border:var(--line) solid var(--ink);
+  border-radius:22px;
+  padding:26px 30px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.card.flat{box-shadow:none}
+.card.tilt-l{transform:rotate(-.7deg)}
+.card.tilt-r{transform:rotate(.7deg)}
+.card-soft{background:#fff;border:2px solid rgba(46,41,37,.28);box-shadow:4px 5px 0 rgba(46,41,37,.14)}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:18px;font-weight:700;padding:6px 15px;
+  border:2.2px solid var(--ink);border-radius:999px;
+  background:var(--paper-2);box-shadow:2.5px 2.5px 0 rgba(46,41,37,.8);
+  white-space:nowrap;
+}
+.chip.c-coral{background:#FFE3DD}
+.chip.c-mint{background:#DEF7EC}
+.chip.c-sky{background:#DFF1FB}
+.chip.c-butter{background:#FFF0C9}
+.chip.c-lilac{background:#EFE5FD}
+.hl{background:linear-gradient(transparent 56%, var(--hl,var(--butter)) 56%);padding:0 3px;border-radius:4px}
+.hl-mint{--hl:#A9EBD2}
+.hl-sky{--hl:#BFE6FA}
+.hl-coral{--hl:#FFC2B7}
+.hl-lilac{--hl:#DCC7FA}
+.code{
+  font-family:'Fredoka Variable','Fredoka','Noto Sans SC Variable','Noto Sans SC',sans-serif;font-weight:600;
+  background:#F3EADA;border:2px solid rgba(46,41,37,.5);border-radius:10px;
+  padding:2px 10px;font-size:.94em;white-space:nowrap;
+}
+.kbd{
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:600;font-size:15px;
+  display:inline-flex;justify-content:center;align-items:center;min-width:30px;height:30px;padding:0 8px;
+  border:2px solid var(--ink);border-radius:8px;background:#fff;box-shadow:0 2.5px 0 rgba(46,41,37,.85);
+}
+
+/* === 布局工具 === */
+.grid2{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:start}
+.grid2.uneven{grid-template-columns:1.22fr .78fr}
+.grid2.rev{grid-template-columns:.8fr 1.2fr}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.row{display:flex;gap:20px;align-items:center}
+.row.top{align-items:flex-start}
+.stack{display:flex;flex-direction:column;gap:18px}
+.stack.sm{gap:12px}
+.fill{flex:1;min-height:0}
+.center{display:flex;align-items:center;justify-content:center}
+
+/* === 列表 === */
+.list{list-style:none;display:flex;flex-direction:column;gap:13px}
+.list li{position:relative;padding-left:38px;font-size:23px;line-height:1.55;font-weight:500}
+.list li::before{
+  content:"";position:absolute;left:6px;top:11px;width:16px;height:16px;
+  border:2.4px solid var(--ink);border-radius:50% 50% 48% 52%;
+  background:var(--dot,var(--butter));
+}
+.list.tight li{font-size:21px;padding-left:32px}
+.list.tight li::before{width:13px;height:13px;top:10px;left:7px}
+
+/* === 手绘表格 === */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;border:var(--line) solid var(--ink);border-radius:18px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.tbl th{
+  background:var(--th,var(--butter));font-size:21px;font-weight:900;padding:13px 16px;
+  border-bottom:2.5px solid var(--ink);border-right:2px solid rgba(46,41,37,.35);text-align:left;
+  white-space:nowrap;
+}
+.tbl td{font-size:20px;line-height:1.45;padding:11px 16px;border-bottom:1.8px solid rgba(46,41,37,.22);border-right:1.8px solid rgba(46,41,37,.15);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl th:last-child,.tbl td:last-child{border-right:none}
+.tbl tr:nth-child(even) td{background:#FFFBF0}
+.tbl .em{font-weight:900;color:var(--coral-deep)}
+.tbl .mono{font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:600}
+
+/* === 流程步骤 === */
+.flow{display:flex;align-items:stretch;gap:0}
+.step{
+  flex:1;background:var(--paper-2);border:var(--line) solid var(--ink);border-radius:18px;
+  padding:16px 18px;box-shadow:var(--shadow-sm);position:relative;
+}
+.step .n{
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:700;font-size:16px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);
+  background:var(--butter);margin-bottom:8px;
+}
+.step h4{font-size:21px;font-weight:900;margin-bottom:6px}
+.step p{font-size:17px;line-height:1.45;color:var(--ink-soft)}
+.arrow-v{
+  flex:none;width:34px;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:900;color:var(--ink);opacity:.7;
+}
+
+/* === 装饰涂鸦 === */
+.blob{position:absolute;border-radius:50%;filter:blur(0px);z-index:0;pointer-events:none}
+.blob.ring{border:3px dashed rgba(46,41,37,.25);background:transparent}
+.dots{position:absolute;width:150px;height:110px;z-index:0;
+  background-image:radial-gradient(circle, rgba(46,41,37,.28) 2px, transparent 2.4px);
+  background-size:18px 18px;pointer-events:none}
+.star{position:absolute;pointer-events:none;z-index:0}
+.hand-line{position:absolute;pointer-events:none;z-index:0}
+.sticker-tape{
+  position:absolute;width:120px;height:34px;background:rgba(255,214,110,.72);
+  border-top:2px dashed rgba(46,41,37,.25);border-bottom:2px dashed rgba(46,41,37,.25);
+  z-index:5;
+}
+
+/* === 封面 === */
+.cover-title{font-family:'ZCOOL KuaiLe',cursive;font-size:104px;line-height:1.08;letter-spacing:2px}
+.cover-title .line2{display:block;color:var(--coral-deep)}
+.cover-sub{font-size:27px;line-height:1.6;color:var(--ink-soft);font-weight:500;max-width:760px}
+.bookmark{
+  position:relative;border:var(--line) solid var(--ink);border-radius:16px;
+  padding:18px 22px 18px 64px;background:#fff;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:14px;font-weight:700;
+}
+.bookmark::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:38px;
+  background:var(--bm,var(--sky));border-right:2.5px solid var(--ink);
+  border-radius:13px 0 0 13px;
+}
+.bookmark .t{font-size:22px}
+.bookmark .s{font-size:15px;color:var(--ink-soft);font-weight:500;font-family:'Fredoka Variable','Fredoka',sans-serif}
+
+/* === 章节页 === */
+.chapter{
+  position:absolute;inset:0;z-index:2;display:flex;align-items:center;
+  padding:0 120px;opacity:0;visibility:hidden;pointer-events:none;
+}
+.chapter.active{opacity:1;visibility:visible;pointer-events:auto}
+.chapter .big-num{
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:700;font-size:400px;line-height:1;
+  color:rgba(255,255,255,.34);position:absolute;right:90px;bottom:10px;
+}
+.chapter .c-tag{
+  display:inline-block;font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:600;font-size:24px;
+  letter-spacing:2px;padding:8px 22px;border:2.5px solid var(--ink);border-radius:999px;
+  background:#fff;box-shadow:var(--shadow-sm);margin-bottom:26px;transform:rotate(-1.5deg);
+}
+.chapter h1{font-family:'ZCOOL KuaiLe',cursive;font-size:118px;line-height:1.05;margin-bottom:22px}
+.chapter .lead{font-size:30px;line-height:1.6;font-weight:500;max-width:980px;color:rgba(46,41,37,.82)}
+
+/* === 图示：IP 首部 === */
+.iphead{border:var(--line) solid var(--ink);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.iprow{display:grid;grid-template-columns:repeat(32,1fr);border-bottom:2px solid var(--ink)}
+.iprow:last-child{border-bottom:none}
+.ipcell{
+  border-right:1.6px solid rgba(46,41,37,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:9px 1px;min-height:64px;position:relative;
+}
+.ipcell:last-child{border-right:none}
+.ipcell .lbl{font-size:15px;font-weight:700;line-height:1.2;text-align:center}
+.ipcell .bit{font-family:'Fredoka Variable','Fredoka',sans-serif;font-size:13px;color:var(--ink-soft);margin-top:3px}
+.ipcell.f1{background:#FFF0C9}.ipcell.f2{background:#DFF1FB}.ipcell.f3{background:#DEF7EC}
+.ipcell.f4{background:#FFE3DD}.ipcell.f5{background:#EFE5FD}.ipcell.f6{background:#FFF7EA}
+
+/* === 图示：时间条（DMA） === */
+.timeline{position:relative;border:2.5px solid var(--ink);border-radius:14px;background:#fff;overflow:hidden}
+.tl-row{display:flex;align-items:center;border-bottom:1.6px solid rgba(46,41,37,.2);height:74px}
+.tl-row:last-child{border-bottom:none}
+.tl-label{width:130px;flex:none;font-weight:900;font-size:19px;padding-left:14px;border-right:2px solid var(--ink);height:100%;display:flex;align-items:center;background:#FFF6E4}
+.tl-track{flex:1;display:flex;height:100%;align-items:center;padding:0 6px;gap:3px}
+.seg{height:38px;border:2.2px solid var(--ink);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;white-space:nowrap}
+.seg.cpu{background:var(--butter)}
+.seg.dma{background:var(--mint)}
+.seg.idle{background:#EFE7D8;border-style:dashed;color:var(--ink-soft)}
+
+/* === 对比卡片 === */
+.vs{display:grid;grid-template-columns:1fr 76px 1fr;align-items:stretch;gap:0}
+.vs .side{border:var(--line) solid var(--ink);border-radius:22px;padding:24px 28px;background:#fff;box-shadow:var(--shadow-sm)}
+.vs .mid{display:flex;align-items:center;justify-content:center}
+.vs .badge{
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:700;font-size:22px;
+  width:62px;height:62px;border-radius:50%;border:2.5px solid var(--ink);
+  background:var(--butter);display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);transform:rotate(-6deg);
+}
+
+/* === 提示气泡 === */
+.tip{
+  display:flex;gap:14px;align-items:flex-start;border:2.5px solid var(--ink);
+  border-radius:18px 18px 18px 6px;background:#FFF2C9;padding:16px 20px;
+  box-shadow:3px 4px 0 rgba(46,41,37,.16);
+}
+.tip .ico{font-size:24px;line-height:1.2;flex:none}
+.tip p{font-size:19px;line-height:1.5;font-weight:500}
+
+/* === HUD 界面 === */
+.hud{position:absolute;inset:0;z-index:40;pointer-events:none}
+.hud-chip{
+  position:absolute;top:30px;right:38px;pointer-events:auto;
+  display:flex;align-items:center;gap:10px;
+  font-size:17px;font-weight:900;padding:8px 18px;border:2.5px solid var(--ink);
+  border-radius:999px;background:#fff;box-shadow:3px 4px 0 rgba(46,41,37,.85);
+  transition:background .4s ease;
+}
+.hud-chip .dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);background:var(--sky)}
+.hud-edit{
+  position:absolute;top:30px;left:38px;pointer-events:auto;
+  width:44px;height:44px;border-radius:50%;border:2.5px solid var(--ink);
+  background:#fff;box-shadow:3px 4px 0 rgba(46,41,37,.85);
+  display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;
+  opacity:.28;transition:opacity .3s, transform .3s;
+}
+.hud-edit:hover{opacity:1;transform:rotate(-8deg) scale(1.06)}
+body.editing .hud-edit{opacity:1;background:var(--butter)}
+.hud-toc{
+  position:absolute;top:30px;right:200px;pointer-events:auto;
+  font-size:16px;font-weight:900;padding:9px 16px;border:2.5px solid var(--ink);
+  border-radius:12px;background:#fff;box-shadow:3px 4px 0 rgba(46,41,37,.85);cursor:pointer;
+}
+.hud-bottom{position:absolute;left:0;right:0;bottom:0;height:56px;pointer-events:none}
+.progress{position:absolute;left:0;right:0;bottom:0;height:7px;background:rgba(46,41,37,.12)}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--mint),var(--butter),var(--coral));transition:width .5s cubic-bezier(.22,1,.36,1);border-right:2px solid var(--ink)}
+.page-num{
+  position:absolute;right:40px;bottom:20px;font-family:'Fredoka Variable','Fredoka',sans-serif;
+  font-weight:600;font-size:19px;color:var(--ink-soft);letter-spacing:1px;
+}
+.page-num b{color:var(--ink);font-size:22px}
+.hint{
+  position:absolute;left:42px;bottom:18px;font-size:15px;color:var(--ink-soft);
+  display:flex;align-items:center;gap:8px;
+}
+
+/* === 目录浮层 === */
+#toc{
+  position:fixed;inset:0;z-index:200;background:rgba(46,41,37,.42);
+  backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .35s, visibility .35s;
+  display:flex;align-items:center;justify-content:center;padding:40px;
+}
+#toc.open{opacity:1;visibility:visible}
+.toc-panel{
+  width:min(1180px,94vw);max-height:88vh;overflow:auto;
+  background:var(--paper);border:3px solid var(--ink);border-radius:28px;
+  box-shadow:10px 12px 0 rgba(46,41,37,.9);padding:36px 44px 44px;
+  transform:translateY(18px) scale(.98);transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+#toc.open .toc-panel{transform:none}
+.toc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.toc-head h2{font-family:'ZCOOL KuaiLe',cursive;font-size:40px}
+.toc-close{border:2.5px solid var(--ink);background:#fff;border-radius:12px;font-weight:900;font-size:16px;padding:8px 16px;cursor:pointer;box-shadow:3px 3px 0 rgba(46,41,37,.8)}
+.toc-group{margin-bottom:22px}
+.toc-group h3{font-size:20px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.toc-group h3 i{width:14px;height:14px;border-radius:4px;border:2px solid var(--ink);display:inline-block;font-style:normal}
+.toc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:760px){.toc-grid{grid-template-columns:repeat(2,1fr)}}
+.toc-item{
+  text-align:left;font-family:inherit;font-size:15px;line-height:1.35;font-weight:600;
+  padding:9px 12px;border:2px solid rgba(46,41,37,.35);border-radius:11px;background:#fff;
+  cursor:pointer;transition:.2s;color:var(--ink);
+}
+.toc-item:hover{background:var(--butter);border-color:var(--ink);transform:translateY(-2px)}
+.toc-item span{font-family:'Fredoka Variable','Fredoka',sans-serif;color:var(--ink-soft);margin-right:6px}
+
+/* === 编辑模式 === */
+body.editing .slide-inner{outline:3px dashed rgba(46,41,37,.25);outline-offset:14px;border-radius:8px}
+body.editing .slide-inner [data-e]{cursor:text}
+body.editing .slide-inner [data-e]:hover{background:rgba(255,214,110,.35);border-radius:6px}
+.edit-bar{
+  position:fixed;top:16px;left:50%;transform:translate(-50%,-80px);z-index:210;
+  background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;
+  font-size:14px;font-weight:700;transition:transform .35s;display:flex;gap:14px;align-items:center;
+}
+body.editing .edit-bar{transform:translate(-50%,0)}
+.edit-bar b{color:var(--butter)}
+
+/* === 减少动效 === */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  .anim{opacity:1 !important;transform:none !important}
+}
+
+/* === 手机端「横屏看」悬浮按钮：固定在视口，不随舞台缩放 === */
+.rotate-btn{
+  display:none;position:fixed;right:14px;bottom:16px;z-index:320;
+  align-items:center;gap:6px;
+  padding:10px 16px;border:2.5px solid var(--ink);border-radius:999px;
+  background:var(--butter);color:var(--ink);
+  font-family:'Noto Sans SC Variable','Noto Sans SC',sans-serif;
+  font-size:14px;font-weight:900;letter-spacing:.5px;
+  box-shadow:3px 4px 0 rgba(46,41,37,.8);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .15s, background .3s;
+}
+.rotate-btn:active{transform:translateY(2px)}
+.rotate-btn.on{background:var(--mint)}
+@media (max-width:900px) and (orientation:portrait){
+  .rotate-btn{display:flex}
+}
+/* === 强制横屏：整个舞台旋转 90°，模拟横屏观看 === */
+body.force-landscape #stage{
+  transform: translate(-50%,-50%) rotate(-90deg) scale(var(--scale));
+}
+body.force-landscape .rotate-btn{display:none}
+
+/* 旋转后跟随舞台的控制条（用户横看时是正的） */
+.landscape-ui{display:none;position:absolute;inset:0;z-index:60;pointer-events:none}
+body.force-landscape .landscape-ui{display:block}
+.landscape-ui .nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:128px;height:128px;border-radius:50%;
+  border:3px solid var(--ink);background:rgba(255,252,243,.92);
+  font-family:'Fredoka Variable','Fredoka',sans-serif;font-size:56px;font-weight:700;
+  color:var(--ink);display:flex;align-items:center;justify-content:center;
+  box-shadow:4px 5px 0 rgba(46,41,37,.8);pointer-events:auto;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.landscape-ui .nav:active{transform:translateY(-50%) scale(.96)}
+.landscape-ui .nav.prev{left:26px}
+.landscape-ui .nav.next{right:26px}
+.landscape-ui .exit{
+  position:absolute;right:26px;top:18px;
+  padding:14px 26px;border:3px solid var(--ink);border-radius:999px;
+  background:var(--butter);font-size:24px;font-weight:900;color:var(--ink);
+  box-shadow:4px 5px 0 rgba(46,41,37,.8);pointer-events:auto;cursor:pointer;
+}
+.landscape-ui .hint-bar{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+  font-size:20px;font-weight:700;color:var(--ink-soft);white-space:nowrap;
+}
+
+/* 轻提示 toast */
+#toast{
+  position:fixed;left:50%;bottom:82px;transform:translate(-50%,14px);
+  background:var(--ink);color:#fff;font-size:13.5px;line-height:1.55;font-weight:700;
+  padding:10px 18px;border-radius:12px;max-width:86vw;text-align:center;
+  opacity:0;visibility:hidden;transition:opacity .3s, transform .3s;z-index:400;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+#toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+
+@media print{
+  #viewport{position:static;overflow:visible;background:#fff}
+  #stage{position:static;transform:none;width:1920px;height:auto;box-shadow:none}
+  .slide,.chapter{position:relative;opacity:1;visibility:visible;transform:none;page-break-after:always;height:1080px}
+  .hud,#toc,.edit-bar{display:none}
+}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+
+    <!-- ============ 01 封面 ============ -->
+    <section class="slide cover active" data-chapter="cover" data-title="封面 · 网络层 × 输入输出系统">
+      <div class="slide-inner" style="justify-content:center">
+        <div class="blob" style="width:520px;height:520px;background:#FFE7B8;right:-110px;top:-150px;opacity:.75"></div>
+        <div class="blob ring" style="width:300px;height:300px;left:-90px;bottom:60px"></div>
+        <div class="dots" style="right:120px;bottom:110px"></div>
+
+        <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center">
+          <div>
+            <div class="anim chip c-butter" style="--i:0;margin-bottom:26px">
+              <span>📚</span> 期末复习 · 两章打通
+            </div>
+            <h1 class="anim cover-title" style="--i:1">
+              网络层<span style="color:var(--ink-soft);font-size:.55em"> × </span><br>
+              <span class="line2">输入输出系统</span>
+            </h1>
+            <p class="anim cover-sub" style="--i:2;margin-top:24px">
+              一本画着看的计算机课笔记。<br>
+              把「快递怎么送到你家」和「数据怎么进出内存」讲成人话。
+            </p>
+            <div class="anim row" style="--i:3;margin-top:38px;gap:14px">
+              <div class="bookmark" style="--bm:var(--sky)">
+                <div>
+                  <div class="t">第 4 章 · 网络层</div>
+                  <div class="s">计算机网络（第 9 版）</div>
+                </div>
+              </div>
+              <div class="bookmark" style="--bm:var(--coral)">
+                <div>
+                  <div class="t">第 5 章 · 输入输出系统</div>
+                  <div class="s">计算机组成原理（第 3 版）</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:2;position:relative">
+            <!-- 手绘小包裹角色 -->
+            <svg viewBox="0 0 420 460" width="100%" style="max-width:430px;margin:0 auto;display:block">
+              <ellipse cx="210" cy="430" rx="120" ry="18" fill="rgba(46,41,37,.14)"/>
+              <g stroke="#2E2925" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="92" y="168" width="236" height="212" rx="34" fill="#FFD66E"/>
+                <path d="M92 232 H328" fill="none"/>
+                <path d="M148 168 C148 116 272 116 272 168" fill="none"/>
+                <circle cx="163" cy="288" r="15" fill="#2E2925" stroke="none"/>
+                <circle cx="257" cy="288" r="15" fill="#2E2925" stroke="none"/>
+                <path d="M186 322 Q210 342 234 322" fill="none"/>
+                <circle cx="148" cy="318" r="12" fill="#FFB7CA" stroke="none" opacity=".9"/>
+                <circle cx="272" cy="318" r="12" fill="#FFB7CA" stroke="none" opacity=".9"/>
+                <path d="M128 340 L60 300" fill="none"/>
+                <path d="M60 300 L40 280 M60 300 L78 268" fill="none"/>
+                <path d="M292 340 L360 300" fill="none"/>
+                <path d="M360 300 L380 280 M360 300 L342 268" fill="none"/>
+                <path d="M210 116 V70" fill="none"/>
+                <circle cx="210" cy="56" r="14" fill="#FF8B79"/>
+                <path d="M46 150 l14 0 M53 143 l0 14" />
+                <path d="M372 130 l12 0 M378 124 l0 12" />
+              </g>
+              <text x="210" y="206" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="30" font-weight="700" fill="#2E2925" stroke="none">IP</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="anim row" style="--i:4;gap:12px;margin-top:26px">
+          <span class="kbd">→</span><span class="small">翻页</span>
+          <span class="kbd">空格</span><span class="small">下一张</span>
+          <span class="kbd">M</span><span class="small">总目录</span>
+          <span class="kbd">E</span><span class="small">改文字</span>
+          <span class="kbd">F</span><span class="small">全屏</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 使用说明 ============ -->
+    <section class="slide" data-chapter="cover">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">怎么用</div>
+            <h2 class="s-title"><span class="mark" style="--hl:var(--mint)">这不是 PPT，是你的移动小抄</span></h2>
+          </div>
+          <div class="page-badge">READ ME</div>
+        </div>
+
+        <div class="grid2" style="margin-top:6px">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <div class="row" style="gap:14px;margin-bottom:10px">
+                <div class="chip c-sky">01</div><h3 style="font-size:27px;font-weight:900">先看「比喻」，再看「定义」</h3>
+              </div>
+              <p class="body">每一页都先用生活场景开场，再把教材原话补上。考试写定义，脑子里想画面。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <div class="row" style="gap:14px;margin-bottom:10px">
+                <div class="chip c-coral">02</div><h3 style="font-size:27px;font-weight:900">数字和协议号，全部标黄</h3>
+              </div>
+              <p class="body"><span class="hl">黄色马克笔</span> = 选择题最爱考。看到就多读两遍，不用背全文。</p>
+            </div>
+            <div class="card anim" style="--i:2">
+              <div class="row" style="gap:14px;margin-bottom:10px">
+                <div class="chip c-lilac">03</div><h3 style="font-size:27px;font-weight:900">每章结尾有「速记卡」</h3>
+              </div>
+              <p class="body">考前一晚只看两章速记卡 + 对比表，能覆盖 80% 的客观题。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card tilt-r anim" style="--i:1;background:#EAF7FF">
+              <h3 style="font-size:25px;font-weight:900;margin-bottom:14px">🎮 操作方式</h3>
+              <div class="stack sm">
+                <div class="row" style="gap:12px"><span class="kbd">←</span><span class="kbd">→</span><span class="body" style="font-size:20px">上一页 / 下一页</span></div>
+                <div class="row" style="gap:12px"><span class="kbd">空格</span><span class="body" style="font-size:20px">下一张（讲课时最好用）</span></div>
+                <div class="row" style="gap:12px"><span class="kbd">M</span><span class="body" style="font-size:20px">打开总目录，直接跳章节</span></div>
+                <div class="row" style="gap:12px"><span class="kbd">E</span><span class="body" style="font-size:20px">编辑模式，把文字改成你自己的</span></div>
+                <div class="row" style="gap:12px"><span class="kbd">F</span><span class="body" style="font-size:20px">全屏演示 + 手机横屏也能看</span></div>
+              </div>
+            </div>
+            <div class="tip anim" style="--i:2">
+              <div class="ico">💡</div>
+              <p>手机端不会重排，只会等比缩小 —— 保证你在任何设备上看到的排版都一模一样。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 总目录 ============ -->
+    <section class="slide" data-chapter="cover">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-butter">Contents</div>
+            <h2 class="s-title"><span class="mark">今天要啃的两块硬骨头</span></h2>
+          </div>
+          <div class="page-badge">目录</div>
+        </div>
+
+        <div class="grid2" style="margin-top:8px;gap:40px">
+          <div class="card anim" style="--i:0;background:#EAF6FC;border-color:var(--ink)">
+            <div class="row" style="justify-content:space-between;margin-bottom:14px">
+              <div class="chip c-sky">PART 1</div>
+              <span class="f-num" style="font-size:44px;font-weight:700;color:var(--sky-deep)">04</span>
+            </div>
+            <h3 class="f-display" style="font-size:46px;margin-bottom:8px">网络层</h3>
+            <p class="small" style="margin-bottom:16px">计算机网络（第 9 版）· 第 4 章</p>
+            <div class="stack sm">
+              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">IP 地址</span><span class="chip c-sky" style="font-size:15px">子网 / CIDR</span><span class="chip c-sky" style="font-size:15px">ARP</span></div>
+              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">IP 数据报</span><span class="chip c-sky" style="font-size:15px">分片</span><span class="chip c-sky" style="font-size:15px">DHCP / ICMP</span></div>
+              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">RIP / OSPF / BGP</span><span class="chip c-sky" style="font-size:15px">NAT</span><span class="chip c-sky" style="font-size:15px">IPv6</span></div>
+            </div>
+            <div class="tip" style="margin-top:18px;background:#DFF1FB">
+              <div class="ico">🚚</div>
+              <p>核心一句话：网络层只负责「尽力把包裹送到」，不保证不丢、不保证按顺序。</p>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#FFF0EC">
+            <div class="row" style="justify-content:space-between;margin-bottom:14px">
+              <div class="chip c-coral">PART 2</div>
+              <span class="f-num" style="font-size:44px;font-weight:700;color:var(--coral-deep)">05</span>
+            </div>
+            <h3 class="f-display" style="font-size:46px;margin-bottom:8px">输入输出系统</h3>
+            <p class="small" style="margin-bottom:16px">计算机组成原理（第 3 版）· 第 5 章</p>
+            <div class="stack sm">
+              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">I/O 接口</span><span class="chip c-coral" style="font-size:15px">编址方式</span></div>
+              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">程序查询</span><span class="chip c-coral" style="font-size:15px">程序中断</span></div>
+              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">DMA</span><span class="chip c-coral" style="font-size:15px">通道</span><span class="chip c-coral" style="font-size:15px">磁盘</span></div>
+            </div>
+            <div class="tip" style="margin-top:18px;background:#FFE3DD">
+              <div class="ico">🍳</div>
+              <p>核心一句话：CPU 是主厨，I/O 系统是后厨团队 —— 怎么少让主厨亲自跑腿，就是本章主线。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:22px;display:flex;gap:10px;align-items:center">
+          <span class="chip c-butter">共 45 页</span>
+          <span class="small">按 <span class="code">M</span> 可以随时打开完整目录 ↓</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 网络层章首 ============ -->
+    <section class="chapter" data-chapter="net" data-title="PART 1 · 网络层" style="background:linear-gradient(135deg,#DFF3FF 0%,#BFE6FA 52%,#8AC9EE 100%)">
+      <div class="slide-inner" style="justify-content:center;padding:0 20px">
+        <div class="big-num">04</div>
+        <div style="position:relative;z-index:3">
+          <div class="c-tag anim" style="--i:0">PART 1 / 计算机网络 · 第 4 章</div>
+          <h1 class="anim" style="--i:1">网络层</h1>
+          <p class="lead anim" style="--i:2">它不关心你用什么网线、连哪个 Wi-Fi。<br>它只干一件事：<b>把 IP 数据报，从源主机一路送到目的主机。</b></p>
+          <div class="row anim" style="--i:3;margin-top:36px;gap:12px">
+            <span class="chip" style="background:#fff">逻辑通信</span>
+            <span class="chip" style="background:#fff">尽力而为</span>
+            <span class="chip" style="background:#fff">无连接</span>
+            <span class="chip" style="background:#fff">路由 + 转发</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 网络层在忙什么 ============ -->
+    <section class="slide" data-chapter="net" data-title="网络层到底在忙什么">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.1 概述</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">网络层：一家只承诺「尽力」的快递公司</span></h2>
+          </div>
+          <div class="page-badge">NET / 01</div>
+        </div>
+
+        <div class="grid2 uneven" style="margin-top:2px">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:26px;font-weight:900;margin-bottom:10px">📦 它只做两件事</h3>
+              <ul class="list">
+                <li><b>转发（Forwarding）</b>：路由器收到分组，查表、从哪个口出去 —— <span class="hl hl-sky">局部动作，纳秒级</span></li>
+                <li><b>路由选择（Routing）</b>：全网一起算，哪条路最合适 —— <span class="hl hl-sky">全局动作，秒级</span></li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:26px;font-weight:900;margin-bottom:10px">🪄 什么叫「逻辑通信」？</h3>
+              <p class="body">从传输层往下看，源主机和目的主机<b>好像一条直连的线</b>；<br>
+              实际上中间要穿过很多路由器、很多种链路（光纤、Wi-Fi、4G）。<br>
+              <span class="small">网络层把这堆复杂细节全部藏起来，只露出一个「IP 地址」。</span></p>
+            </div>
+            <div class="tip anim" style="--i:2">
+              <div class="ico">⚠️</div>
+              <p><b>「尽力而为」= 不保证。</b>不保证送到、不保证不重复、不保证按序。可靠性交给运输层 TCP 负责。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:1">
+            <div class="card flat" style="background:#fff;padding:22px">
+              <svg viewBox="0 0 620 470" width="100%" style="display:block">
+                <g stroke="#2E2925" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <!-- 主机 -->
+                  <rect x="40" y="24" width="150" height="86" rx="16" fill="#FFD66E"/>
+                  <rect x="430" y="24" width="150" height="86" rx="16" fill="#FFD66E"/>
+                  <text x="115" y="78" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="26" font-weight="700" fill="#2E2925" stroke="none">源主机</text>
+                  <text x="505" y="78" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="26" font-weight="700" fill="#2E2925" stroke="none">目的主机</text>
+                  <!-- 虚线逻辑连接 -->
+                  <path d="M195 48 C300 -6 400 -2 426 46" stroke-dasharray="10 12" stroke-width="4" stroke="#2F86B4"/>
+                  <text x="310" y="16" text-anchor="middle" font-family="Noto Sans SC Variable, Noto Sans SC" font-size="18" font-weight="700" fill="#2F86B4" stroke="none">逻辑上「直连」</text>
+                  <!-- 路由路径 -->
+                  <path d="M115 116 V168" stroke-width="5"/>
+                  <rect x="46" y="168" width="138" height="70" rx="14" fill="#DFF1FB"/>
+                  <text x="115" y="211" text-anchor="middle" font-size="19" font-weight="700" fill="#2E2925" stroke="none">路由器 A</text>
+                  <path d="M115 238 V302" stroke-width="5"/>
+                  <rect x="46" y="302" width="138" height="70" rx="14" fill="#DFF1FB"/>
+                  <text x="115" y="345" text-anchor="middle" font-size="19" font-weight="700" fill="#2E2925" stroke="none">路由器 B</text>
+                  <path d="M184 337 H430" stroke-width="5"/>
+                  <text x="300" y="322" text-anchor="middle" font-size="17" font-weight="700" fill="#7A6E64" stroke="none">很多条链路</text>
+                  <path d="M505 116 V168" stroke-width="5"/>
+                  <rect x="430" y="168" width="150" height="70" rx="14" fill="#DFF1FB"/>
+                  <text x="505" y="211" text-anchor="middle" font-size="19" font-weight="700" fill="#2E2925" stroke="none">路由器 C</text>
+                  <path d="M505 238 V302" stroke-width="5"/>
+                  <rect x="430" y="302" width="150" height="70" rx="14" fill="#DFF1FB"/>
+                  <text x="505" y="345" text-anchor="middle" font-size="19" font-weight="700" fill="#2E2925" stroke="none">路由器 D</text>
+                  <path d="M430 337 H300 V410 H115 V302" stroke-width="5"/>
+                  <path d="M505 372 V410 H300" stroke-width="0"/>
+                  <!-- 数字 -->
+                  <circle cx="310" cy="260" r="34" fill="#FFB7CA"/>
+                  <text x="310" y="270" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="26" font-weight="700" fill="#2E2925" stroke="none">IP</text>
+                  <text x="310" y="440" text-anchor="middle" font-size="18" font-weight="700" fill="#7A6E64" stroke="none">每个路由器只负责「下一跳」</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 数据报 vs 虚电路 ============ -->
+    <section class="slide" data-chapter="net" data-title="数据报 vs 虚电路">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.1 两种服务</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">寄快递：一次一单 vs 打专线电话</span></h2>
+          </div>
+          <div class="page-badge">NET / 02</div>
+        </div>
+
+        <div class="vs anim" style="--i:0;margin-top:4px">
+          <div class="side" style="background:#EAF7FF">
+            <div class="row" style="justify-content:space-between;margin-bottom:12px">
+              <h3 class="f-display" style="font-size:34px">数据报服务</h3>
+              <span class="chip c-sky">IP 采用</span>
+            </div>
+            <ul class="list tight">
+              <li>每个分组<b>独立选路</b>，各走各的</li>
+              <li>可能乱序、重复、丢失</li>
+              <li>网络不维护连接状态，<b>简单、便宜、能扛规模</b></li>
+              <li>可靠性交给端系统（TCP）</li>
+              <li>代表：<span class="code">IP</span></li>
+            </ul>
+          </div>
+          <div class="mid"><div class="badge">VS</div></div>
+          <div class="side" style="background:#FFF0EC">
+            <div class="row" style="justify-content:space-between;margin-bottom:12px">
+              <h3 class="f-display" style="font-size:34px">虚电路服务</h3>
+              <span class="chip c-coral">早期网络</span>
+            </div>
+            <ul class="list tight">
+              <li>通信前先<b>建立连接</b>，分配一条路径</li>
+              <li>所有分组走同一条路，<b>按序到达</b></li>
+              <li>网络负责可靠性，路由器要记连接状态</li>
+              <li>节点故障影响大，扩展性差</li>
+              <li>代表：<span class="code">X.25</span> <span class="code">帧中继</span> <span class="code">ATM</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:26px;grid-template-columns:1.1fr .9fr">
+          <div class="card">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🤔 为什么互联网最后选了数据报？</h3>
+            <p class="body">因为互联网要连接<b>无数异构网络</b>：有的可靠、有的不可靠。把可靠性统一压到端系统，网络层就能做得又简单又快，<span class="hl">出了故障也只影响局部</span>。</p>
+          </div>
+          <div class="card" style="background:#FFF2C9">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📝 一句话答题模板</h3>
+            <p class="body">「IP 层提供<b>无连接、不可靠</b>的数据报服务；可靠性由运输层保证。」<br><span class="small">考到「网络层提供什么服务」就写这句。</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 IP 地址是什么 ============ -->
+    <section class="slide" data-chapter="net" data-title="IP 地址：32 位门牌号">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2 IP 地址</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">IP 地址 = 32 位二进制门牌号</span></h2>
+          </div>
+          <div class="page-badge">NET / 03</div>
+        </div>
+
+        <div class="grid2" style="margin-top:6px;grid-template-columns:1.15fr .85fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <div class="row" style="justify-content:space-between;margin-bottom:8px">
+                <h3 style="font-size:24px;font-weight:900">写成「点分十进制」最好看</h3>
+                <span class="chip c-butter">4 组 × 8 位</span>
+              </div>
+              <div class="f-num anim" style="--i:0;font-size:60px;font-weight:700;letter-spacing:2px;line-height:1.2;text-align:center;margin:8px 0 4px">
+                <span style="color:var(--sky-deep)">192</span>.<span style="color:var(--coral-deep)">168</span>.<span style="color:var(--mint-deep)">1</span>.<span style="color:var(--lilac);-webkit-text-stroke:1px var(--ink)">10</span>
+              </div>
+              <div class="row" style="justify-content:center;gap:10px">
+                <span class="code">11000000</span>
+                <span class="code">10101000</span>
+                <span class="code">00000001</span>
+                <span class="code">00001010</span>
+              </div>
+              <p class="small" style="margin-top:10px;text-align:center">每个数字 0~255，四个数字拼起来就是 32 位</p>
+            </div>
+
+            <div class="card anim" style="--i:1;background:#FFF6E4">
+              <div class="row" style="gap:10px;margin-bottom:10px">
+                <span class="chip c-mint">结构</span>
+                <h3 style="font-size:24px;font-weight:900">网络号 + 主机号</h3>
+              </div>
+              <div style="display:flex;border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;height:72px">
+                <div style="flex:1;background:var(--sky);display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2.5px solid var(--ink)">
+                  <b style="font-size:21px">网络号 net-id</b><span style="font-size:15px">标志「在哪个网络」</span>
+                </div>
+                <div style="flex:1.1;background:var(--butter);display:flex;flex-direction:column;align-items:center;justify-content:center">
+                  <b style="font-size:21px">主机号 host-id</b><span style="font-size:15px">标志「网络里的哪台机」</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="tip anim" style="--i:1">
+              <div class="ico">🏠</div>
+              <p>IP 地址不是「哪台电脑」的永久名字，而是<b>这块网卡在这个网络里的位置</b> —— 换网络就得换地址。</p>
+            </div>
+            <div class="card anim" style="--i:2">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🔢 换算不用怕</h3>
+              <p class="body" style="font-size:21px">只要记住：<br>
+              <span class="code">11111111</span> = 255<br>
+              <span class="code">11000000</span> = 128 + 64 = 192<br>
+              <span class="code">10101000</span> = 128 + 32 + 8 = 168</p>
+            </div>
+            <div class="card anim" style="--i:3;background:#EFE5FD">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🧠 记忆钩子</h3>
+              <p class="body" style="font-size:21px">把 IP 想成<b>「小区名 + 门牌号」</b>：<br>网络号告诉你哪个小区，主机号告诉你几零几。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 08 A~E 类地址 ============ -->
+    <section class="slide" data-chapter="net" data-title="A~E 类地址全图">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2.2 分类编址</div>
+            <h2 class="s-title"><span class="mark">五类地址：看第一个数字就能认出来</span></h2>
+          </div>
+          <div class="page-badge">NET / 04</div>
+        </div>
+
+        <div class="anim" style="--i:0;margin-top:4px">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:110px">类别</th>
+                <th style="width:190px">首位特征</th>
+                <th style="width:240px">第一字节范围</th>
+                <th style="width:150px">默认掩码</th>
+                <th style="width:200px">网络号 / 主机号</th>
+                <th>用途与特点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:#EAF7FF">
+                <td><b class="f-num" style="font-size:26px">A</b></td>
+                <td class="mono">0xxxxxxx</td>
+                <td class="mono em">1 ~ 126</td>
+                <td class="mono">/8</td>
+                <td>8 位 / 24 位</td>
+                <td>超大型网络，可容纳 1677 万台主机</td>
+              </tr>
+              <tr style="background:#FFF9E8">
+                <td><b class="f-num" style="font-size:26px">B</b></td>
+                <td class="mono">10xxxxxx</td>
+                <td class="mono em">128 ~ 191</td>
+                <td class="mono">/16</td>
+                <td>16 位 / 16 位</td>
+                <td>中型网络，约 6.5 万台主机</td>
+              </tr>
+              <tr style="background:#EFFAF3">
+                <td><b class="f-num" style="font-size:26px">C</b></td>
+                <td class="mono">110xxxxx</td>
+                <td class="mono em">192 ~ 223</td>
+                <td class="mono">/24</td>
+                <td>24 位 / 8 位</td>
+                <td>小型网络，最多 254 台主机</td>
+              </tr>
+              <tr style="background:#F6F0FE">
+                <td><b class="f-num" style="font-size:26px">D</b></td>
+                <td class="mono">1110xxxx</td>
+                <td class="mono em">224 ~ 239</td>
+                <td class="mono">—</td>
+                <td>—</td>
+                <td><b>多播（组播）地址</b>，一对多发送</td>
+              </tr>
+              <tr style="background:#FFF1F4">
+                <td><b class="f-num" style="font-size:26px">E</b></td>
+                <td class="mono">1111xxxx</td>
+                <td class="mono em">240 ~ 255</td>
+                <td class="mono">—</td>
+                <td>—</td>
+                <td>保留，科研实验用</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:22px;grid-template-columns:1fr 1fr">
+          <div class="card" style="background:#FFF2C9">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🎯 秒判口诀</h3>
+            <p class="body" style="font-size:22px">看第一段数字：<br>
+            <b>1~126 → A</b>，<b>128~191 → B</b>，<b>192~223 → C</b>，<b>224~239 → D</b>。<br>
+            <span class="small">注意 0 和 127 是特殊地址，不分配给主机。</span></p>
+          </div>
+          <div class="card" style="background:#EAF7FF">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📐 主机数怎么算</h3>
+            <p class="body" style="font-size:22px">主机号有 n 位 → 可分配 <b>2ⁿ − 2</b> 个。<br>
+            <span class="small">减 2：主机号全 0 是「网络地址」，全 1 是「广播地址」，都不能给主机用。</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 特殊地址与私有地址 ============ -->
+    <section class="slide" data-chapter="net" data-title="特殊地址 & 私有地址">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2.3 特殊地址</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">这些地址，考试最爱挖坑</span></h2>
+          </div>
+          <div class="page-badge">NET / 05</div>
+        </div>
+
+        <div class="grid3 anim" style="--i:0;margin-top:4px">
+          <div class="card" style="background:#FFF0EC">
+            <div class="chip c-coral">全 0</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">0.0.0.0</h3>
+            <p class="body" style="font-size:20px">本网络、本主机。DHCP 请求时源地址就填它：“我还没地址，谁来给我一个？”</p>
+          </div>
+          <div class="card" style="background:#EAF7FF">
+            <div class="chip c-sky">环回</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">127.0.0.1</h3>
+            <p class="body" style="font-size:20px">本机环回地址，数据不出网卡。ping 它通，说明本机 TCP/IP 协议栈正常。</p>
+          </div>
+          <div class="card" style="background:#FFF9E8">
+            <div class="chip c-butter">广播</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">255.255.255.255</h3>
+            <p class="body" style="font-size:20px">受限广播地址，只在本局域网内发，路由器不转发。</p>
+          </div>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:24px;grid-template-columns:1.05fr .95fr;align-items:start">
+          <div class="card">
+            <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🔒 私有地址：家里、公司里随便用</h3>
+            <table class="tbl" style="box-shadow:none">
+              <thead><tr><th>地址块</th><th>范围</th><th>数量</th></tr></thead>
+              <tbody>
+                <tr><td class="mono em">10.0.0.0/8</td><td class="mono">10.0.0.0 ~ 10.255.255.255</td><td>1 个 A 类</td></tr>
+                <tr><td class="mono em">172.16.0.0/12</td><td class="mono">172.16.0.0 ~ 172.31.255.255</td><td>16 个 B 类</td></tr>
+                <tr><td class="mono em">192.168.0.0/16</td><td class="mono">192.168.0.0 ~ 192.168.255.255</td><td>256 个 C 类</td></tr>
+              </tbody>
+            </table>
+            <p class="small" style="margin-top:10px">私有地址<b>不能在公网上路由</b>，要上网必须经过 NAT 转换。</p>
+          </div>
+
+          <div class="stack">
+            <div class="card" style="background:#EFFAF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🎭 网络地址 vs 广播地址</h3>
+              <p class="body" style="font-size:21px">以 <span class="code">192.168.1.0/24</span> 为例：<br>
+              <b>192.168.1.0</b> → 网络地址（主机号全 0）<br>
+              <b>192.168.1.255</b> → 广播地址（主机号全 1）<br>
+              <span class="hl hl-mint">可用主机：192.168.1.1 ~ 192.168.1.254，共 254 个</span></p>
+            </div>
+            <div class="tip">
+              <div class="ico">🧠</div>
+              <p>记忆：<b>全 0 是「这个班」，全 1 是「全班喊话」</b>，中间的才是具体某个人。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 子网划分 ============ -->
+    <section class="slide" data-chapter="net" data-title="子网划分与子网掩码">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2.4 子网划分</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">把一个大班级，隔成几个小班</span></h2>
+          </div>
+          <div class="page-badge">NET / 06</div>
+        </div>
+
+        <div class="grid2" style="margin-top:6px;grid-template-columns:1.1fr .9fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:12px">✂️ 三级结构：网络号 → 子网号 → 主机号</h3>
+              <div style="display:flex;border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;height:86px">
+                <div style="flex:1;background:var(--sky);display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2.5px solid var(--ink)">
+                  <b style="font-size:19px">网络号</b><span style="font-size:14px">原封不动</span>
+                </div>
+                <div style="flex:.7;background:var(--coral);display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:2.5px solid var(--ink)">
+                  <b style="font-size:19px">子网号</b><span style="font-size:14px">从主机号借来的</span>
+                </div>
+                <div style="flex:1.3;background:var(--butter);display:flex;flex-direction:column;align-items:center;justify-content:center">
+                  <b style="font-size:19px">主机号</b><span style="font-size:14px">剩下的位数</span>
+                </div>
+              </div>
+              <p class="body" style="margin-top:12px">借 <b>n</b> 位做子网号 → 能分 <b class="hl">2ⁿ</b> 个子网；<br>
+              剩下 <b>m</b> 位做主机号 → 每个子网 <b class="hl">2ᵐ − 2</b> 台主机。</p>
+            </div>
+
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">🎭 子网掩码怎么用</h3>
+              <p class="body">规则：<b>网络号 + 子网号 = 1，主机号 = 0</b>。<br>
+              IP 与掩码做<b>按位与</b>，得到的就是网络地址。</p>
+              <div class="row" style="gap:10px;margin-top:10px">
+                <span class="code">192.168.10.130</span><span style="font-size:22px">AND</span><span class="code">255.255.255.192</span><span style="font-size:22px">=</span><span class="code em" style="background:#FFE3DD">192.168.10.128</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📏 常见掩码速查</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>前缀</th><th>掩码</th><th>每子网主机</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">/25</td><td class="mono">.128</td><td>126</td></tr>
+                  <tr><td class="mono">/26</td><td class="mono">.192</td><td>62</td></tr>
+                  <tr><td class="mono">/27</td><td class="mono">.224</td><td>30</td></tr>
+                  <tr><td class="mono">/28</td><td class="mono">.240</td><td>14</td></tr>
+                  <tr><td class="mono">/30</td><td class="mono">.252</td><td>2（点对点链路）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tip anim" style="--i:2">
+              <div class="ico">💡</div>
+              <p>看到 <span class="code">255.255.255.224</span>，立刻反应：<b>/27、块大小 32</b>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 子网划分例题 ============ -->
+    <section class="slide" data-chapter="net" data-title="例题：192.168.10.0/26 怎么分">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">手把手例题</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">把 192.168.10.0/24 切成 4 个 /26</span></h2>
+          </div>
+          <div class="page-badge">NET / 07</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:.9fr 1.1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">Step 1 · 借几位？</h3>
+              <p class="body" style="font-size:21px">要 4 个子网 → 2ⁿ ≥ 4 → <b class="hl">n = 2</b><br>
+              原来 /24，借 2 位 → 新前缀 <b class="hl">/26</b>，掩码 <span class="code">255.255.255.192</span>。</p>
+            </div>
+            <div class="card anim" style="--i:1;background:#EFFAF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">Step 2 · 块多大？</h3>
+              <p class="body" style="font-size:21px">主机位剩 6 位 → 每块 <b>2⁶ = 64</b> 个地址。<br>
+              起点：<b>0、64、128、192</b>。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">Step 3 · 可用范围</h3>
+              <p class="body" style="font-size:21px">每块去掉头（网络地址）和尾（广播地址），中间 62 个可用。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:1">
+            <table class="tbl">
+              <thead>
+                <tr><th>子网</th><th>网络地址</th><th>可用主机范围</th><th>广播地址</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><b>子网 0</b></td><td class="mono">192.168.10.0</td><td class="mono">.1 ~ .62</td><td class="mono">.63</td></tr>
+                <tr><td><b>子网 1</b></td><td class="mono">192.168.10.64</td><td class="mono">.65 ~ .126</td><td class="mono">.127</td></tr>
+                <tr><td><b>子网 2</b></td><td class="mono">192.168.10.128</td><td class="mono">.129 ~ .190</td><td class="mono">.191</td></tr>
+                <tr><td><b>子网 3</b></td><td class="mono">192.168.10.192</td><td class="mono">.193 ~ .254</td><td class="mono">.255</td></tr>
+              </tbody>
+            </table>
+            <div class="tip" style="margin-top:18px;background:#EAF7FF">
+              <div class="ico">✍️</div>
+              <p>答题时先写「借 2 位、块大小 64」，再列表。改卷老师最喜欢这种有过程的答案。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12 CIDR ============ -->
+    <section class="slide" data-chapter="net" data-title="CIDR 与路由聚合">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.3 无分类编址</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">CIDR：地址后面加个「/n」就完事</span></h2>
+          </div>
+          <div class="page-badge">NET / 08</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🎯 核心思想：不再分 A/B/C</h3>
+              <p class="body">写成 <span class="code">a.b.c.d/n</span>，<b>n 就是网络前缀长度</b>。<br>
+              例如 <span class="code">200.100.1.0/24</span> 表示前 24 位是网络前缀，剩 8 位给主机。<br>
+              <span class="hl hl-sky">地址块大小 = 2^(32−n)</span></p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🧩 路由聚合（超网）</h3>
+              <p class="body" style="font-size:22px">把多条前缀相同的路由合成一条，减小路由表。</p>
+              <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">
+                <span class="code">200.100.0.0/24</span>
+                <span class="code">200.100.1.0/24</span>
+                <span class="code">200.100.2.0/24</span>
+                <span class="code">200.100.3.0/24</span>
+              </div>
+              <p class="body" style="margin-top:10px;font-size:22px">前 22 位相同 → 聚合成 <b class="hl">200.100.0.0/22</b></p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🏆 最长前缀匹配</h3>
+              <p class="body" style="font-size:21px">路由表里有多条都能匹配时，<b>选前缀最长（最具体）的那条</b>。</p>
+              <div style="border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;margin-top:12px;font-size:19px">
+                <div style="display:flex;padding:9px 14px;background:#fff;border-bottom:1.8px solid rgba(46,41,37,.2)"><span class="mono" style="flex:1">200.100.0.0/22</span><span>→ 出口 A</span></div>
+                <div style="display:flex;padding:9px 14px;background:#FFE3DD;border-bottom:1.8px solid rgba(46,41,37,.2)"><span class="mono" style="flex:1">200.100.1.0/24</span><span><b>→ 出口 B（胜出）</b></span></div>
+                <div style="display:flex;padding:9px 14px;background:#fff"><span class="mono" style="flex:1">0.0.0.0/0</span><span>→ 默认路由</span></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">🧮 块大小速算</h3>
+              <p class="body" style="font-size:19px">块大小 = 2<sup>(32−n)</sup>。/24 → 256；/26 → 64；/28 → 16；/30 → 4。子网起点一定是块大小的整数倍。</p>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">🏃</div>
+              <p>「最长前缀匹配」就是<b>最具体的优先</b>。目标地址 200.100.1.77 同时匹配 /22 和 /24，选 /24。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 13 ARP ============ -->
+    <section class="slide" data-chapter="net" data-title="ARP：IP 到 MAC 的翻译官">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2.4 ARP</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">ARP：拿着门牌号，问出身份证号</span></h2>
+          </div>
+          <div class="page-badge">NET / 09</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🆔 先分清两种地址</h3>
+              <div class="row" style="gap:14px;align-items:flex-start">
+                <div style="flex:1;background:#fff;border:2px solid rgba(46,41,37,.35);border-radius:14px;padding:12px 14px">
+                  <b style="font-size:20px">IP 地址</b>
+                  <p class="small" style="margin-top:4px">逻辑地址，32 位，可变。<br>相当于「收货地址」。</p>
+                </div>
+                <div style="flex:1;background:#fff;border:2px solid rgba(46,41,37,.35);border-radius:14px;padding:12px 14px">
+                  <b style="font-size:20px">MAC 地址</b>
+                  <p class="small" style="margin-top:4px">物理地址，48 位，烧在网卡里。<br>相当于「身份证号」。</p>
+                </div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">📢 ARP 的工作方式</h3>
+              <ul class="list tight">
+                <li>先查 <b>ARP 高速缓存</b>，有就直接用</li>
+                <li>没有 → 在本局域网<b>广播</b> ARP 请求</li>
+                <li>目标主机<b>单播</b>回复自己的 MAC</li>
+                <li>结果写入缓存，下次不用再问</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🔀 跨网段时，MAC 会变、IP 不变</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>链路</th><th>源 MAC</th><th>目的 MAC</th></tr></thead>
+                <tbody>
+                  <tr><td>主机 → 路由器</td><td>主机网卡</td><td>路由器接口</td></tr>
+                  <tr><td>路由器 → 主机</td><td>路由器接口</td><td>目标主机</td></tr>
+                </tbody>
+              </table>
+              <p class="body" style="margin-top:10px;font-size:21px">IP 数据报的<b>源/目的 IP 始终不变</b>；MAC 帧每过一跳就换一次「信封」。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">📮</div>
+              <p>IP 是<b>最终收件人</b>，MAC 是<b>这一站送快递的小哥</b>。包裹一路转手，收件人名字不会改。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 14 IP 数据报首部 ============ -->
+    <section class="slide" data-chapter="net" data-title="IP 数据报首部：20 字节说明书">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.2.5 数据报格式</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">IP 数据报首部：一张 20 字节的快递单</span></h2>
+          </div>
+          <div class="page-badge">NET / 10</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1.3fr .7fr;gap:34px">
+          <div class="anim" style="--i:0">
+            <div class="iphead">
+              <div class="iprow">
+                <div class="ipcell f1" style="grid-column:span 4"><span class="lbl">版本</span><span class="bit">4 位</span></div>
+                <div class="ipcell f1" style="grid-column:span 4"><span class="lbl">首部长度</span><span class="bit">4 位</span></div>
+                <div class="ipcell f2" style="grid-column:span 8"><span class="lbl">区分服务</span><span class="bit">8 位</span></div>
+                <div class="ipcell f3" style="grid-column:span 16"><span class="lbl">总长度</span><span class="bit">16 位</span></div>
+              </div>
+              <div class="iprow">
+                <div class="ipcell f4" style="grid-column:span 16"><span class="lbl">标识 Identification</span><span class="bit">16 位</span></div>
+                <div class="ipcell f4" style="grid-column:span 3"><span class="lbl">标志</span><span class="bit">3 位</span></div>
+                <div class="ipcell f4" style="grid-column:span 13"><span class="lbl">片偏移</span><span class="bit">13 位</span></div>
+              </div>
+              <div class="iprow">
+                <div class="ipcell f5" style="grid-column:span 8"><span class="lbl">生存时间 TTL</span><span class="bit">8 位</span></div>
+                <div class="ipcell f5" style="grid-column:span 8"><span class="lbl">协议</span><span class="bit">8 位</span></div>
+                <div class="ipcell f5" style="grid-column:span 16"><span class="lbl">首部检验和</span><span class="bit">16 位</span></div>
+              </div>
+              <div class="iprow">
+                <div class="ipcell f6" style="grid-column:span 32"><span class="lbl">源 IP 地址</span><span class="bit">32 位</span></div>
+              </div>
+              <div class="iprow">
+                <div class="ipcell f6" style="grid-column:span 32"><span class="lbl">目的 IP 地址</span><span class="bit">32 位</span></div>
+              </div>
+            </div>
+            <p class="tiny" style="margin-top:8px">固定部分 20 字节；可选字段最多 40 字节，总首部最长 60 字节。</p>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;padding:18px 20px">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">首部长度</h3>
+              <p class="small" style="font-size:17px">单位是 <b>4 字节</b>。最小值 5（20 字节），最大值 15（60 字节）。</p>
+            </div>
+            <div class="card anim" style="--i:2;padding:18px 20px;background:#FFF2C9">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">总长度</h3>
+              <p class="small" style="font-size:17px">单位是 <b>字节</b>，最大 65535。= 首部 + 数据。</p>
+            </div>
+            <div class="card anim" style="--i:3;padding:18px 20px;background:#EAF7FF">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">TTL 生存时间</h3>
+              <p class="small" style="font-size:17px">每过一个路由器减 1，减到 0 就丢弃并回 ICMP 超时。<b>防止分组在环里打转。</b></p>
+            </div>
+            <div class="card anim" style="--i:4;padding:18px 20px;background:#EFFAF3">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">协议字段</h3>
+              <p class="small" style="font-size:17px"><b>TCP=6，UDP=17，ICMP=1，OSPF=89</b> —— 告诉目的主机「数据交给谁」。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:14px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#EAF7FF"><div class="ico">🔍</div><p>首部检验和<b>只校验首部</b>，不校验数据；每经过一个路由器都要重新计算（因为 TTL 变了）。</p></div>
+          <div class="tip" style="flex:1"><div class="ico">🚩</div><p>标志位：<b>DF</b>=1 禁止分片；<b>MF</b>=1 表示后面还有片；MF=0 表示这是最后一片。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 15 分片 ============ -->
+    <section class="slide" data-chapter="net" data-title="IP 分片：大件行李拆箱">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">重点计算</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">分片：过不了 MTU，就把包裹拆开</span></h2>
+          </div>
+          <div class="page-badge">NET / 11</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📦 为什么要分片</h3>
+              <p class="body" style="font-size:21px">每种链路有最大帧长，能携带的 IP 数据报上限叫 <b>MTU</b>（以太网通常 1500 字节）。超了就得拆。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🧩 三个字段配合</h3>
+              <ul class="list tight">
+                <li><b>标识</b>：同一原始数据报的片，标识相同</li>
+                <li><b>MF</b>：还有后续片 = 1，最后一片 = 0</li>
+                <li><b>片偏移</b>：本片数据在原始数据中的位置 ÷ 8</li>
+              </ul>
+              <p class="small" style="margin-top:8px">注意：<b>片偏移的单位是 8 字节</b>，所以每片数据长度必须是 8 的倍数（最后一片除外）。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">⚠️</div>
+              <p>分片可以发生在<b>源主机或中间路由器</b>；但重组<b>只在目的主机</b>做。</p>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#FFFCF3">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">✍️ 例题：4000 字节数据报过 1500 MTU</h3>
+            <p class="body" style="font-size:20px;margin-bottom:10px">首部 20 字节 → 每片最多携带 <b class="hl">1500 − 20 = 1480</b> 字节数据。</p>
+            <table class="tbl" style="box-shadow:none">
+              <thead><tr><th>片</th><th>数据长度</th><th>片偏移</th><th>MF</th></tr></thead>
+              <tbody>
+                <tr><td>第 1 片</td><td class="mono">1480</td><td class="mono em">0</td><td class="mono">1</td></tr>
+                <tr><td>第 2 片</td><td class="mono">1480</td><td class="mono em">185</td><td class="mono">1</td></tr>
+                <tr><td>第 3 片</td><td class="mono">1020</td><td class="mono em">370</td><td class="mono">0</td></tr>
+              </tbody>
+            </table>
+            <p class="small" style="margin-top:10px">偏移算法：1480 ÷ 8 = 185；第二片起点 1480 → 1480 ÷ 8 = 185；第三片起点 2960 → 370。</p>
+            <div class="tip" style="margin-top:12px;background:#EFFAF3">
+              <div class="ico">🧮</div>
+              <p>原始数据报总长 4000（含首部 20），数据部分 3980 = 1480 + 1480 + 1020。最后一片不必是 8 的倍数。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 16 DHCP ============ -->
+    <section class="slide" data-chapter="net" data-title="DHCP：自动领一个 IP">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.4.4 DHCP</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">DHCP：开机自动领一张「临时身份证」</span></h2>
+          </div>
+          <div class="page-badge">NET / 12</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🔄 四步走：DISCOVER → OFFER → REQUEST → ACK</h3>
+              <div class="flow" style="gap:0">
+                <div class="step" style="background:#EAF7FF"><div class="n">1</div><h4>发现</h4><p>客户机广播 "谁是 DHCP 服务器？"</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#FFF9E8"><div class="n">2</div><h4>提供</h4><p>服务器回一个可用地址</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#EFFAF3"><div class="n">3</div><h4>请求</h4><p>客户机广播 "我就要这个"</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#FFF0F3"><div class="n">4</div><h4>确认</h4><p>服务器正式分配，开始租期</p></div>
+              </div>
+            </div>
+            <div class="grid2" style="--i:1;grid-template-columns:1fr 1fr;gap:18px">
+              <div class="card" style="background:#FFF2C9">
+                <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">📮 端口</h3>
+                <p class="body" style="font-size:20px">服务器 <b>67</b>，客户端 <b>68</b><br><span class="small">基于 UDP，全程广播</span></p>
+              </div>
+              <div class="card" style="background:#EFE5FD">
+                <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">⏳ 租期</h3>
+                <p class="body" style="font-size:20px">地址不是永久的，到期要续租<br><span class="small">一般 24 小时 / 8 天</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#EAF7FF">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📋 服务器还能塞给你这些</h3>
+            <ul class="list tight">
+              <li>IP 地址 + 子网掩码</li>
+              <li>默认网关（路由器地址）</li>
+              <li>DNS 服务器地址</li>
+              <li>地址租期</li>
+            </ul>
+            <div class="tip" style="margin-top:14px;background:#fff">
+              <div class="ico">🏨</div>
+              <p>DHCP 像酒店前台：入住给你房卡（IP），退房收回；住久了可以续住（续租）。</p>
+            </div>
+            <p class="small" style="margin-top:12px">为什么用广播？因为此时客户机<b>还没有 IP</b>，源地址只能填 0.0.0.0。</p>
+            <div style="margin-top:12px;background:#fff;border:2px solid rgba(46,41,37,.35);border-radius:12px;padding:12px 14px">
+              <b style="font-size:18px">🛰️ 跨网段：DHCP 中继代理</b>
+              <p class="small" style="margin-top:4px">广播不能过路由器。别的网段要有「中继代理」帮忙转发请求，DHCP 才能跨网段工作。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 17 ICMP ============ -->
+    <section class="slide" data-chapter="net" data-title="ICMP：网络界的报错小助手">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.4.3 ICMP</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">ICMP：包裹送不到，至少给你个说法</span></h2>
+          </div>
+          <div class="page-badge">NET / 13</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">😖 差错报告报文（5 种）</h3>
+              <ul class="list tight">
+                <li><b>终点不可达</b>：目的地找不到</li>
+                <li><b>源点抑制</b>：我太忙了，你慢点发（已很少用）</li>
+                <li><b>时间超过</b>：TTL 减到 0，分组被丢</li>
+                <li><b>参数问题</b>：首部字段有错</li>
+                <li><b>改变路由（重定向）</b>：下次走另一个网关</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🙅 不发送差错报文的几种情况</h3>
+              <p class="body" style="font-size:20px">对 ICMP 差错报文不再发差错报文；<br>对非第一个分片不发；对多播地址不发；对特殊地址（127、0.0.0.0）不发。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🏓 ping 的原理</h3>
+              <p class="body" style="font-size:21px">发送 <b>回送请求（Echo Request）</b>，对方回 <b>回送应答（Echo Reply）</b>。测的是<b>往返时间 RTT</b> 和连通性。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🛰️ traceroute 的原理</h3>
+              <p class="body" style="font-size:21px">从 TTL=1 开始逐次加 1。每经过一个路由器 TTL 减到 0，路由器回一个<b>「时间超过」</b>报文 —— 这样就把沿途每一跳的 IP 都套出来了。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFE3DD">
+              <div class="ico">📦</div>
+              <p>ICMP 报文装在 IP 数据报里发送，<b>不是独立协议</b>，协议号 = 1。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 18 路由器 ============ -->
+    <section class="slide" data-chapter="net" data-title="路由器内部与转发流程">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.5 路由器</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">路由器：一个高速分拣中心</span></h2>
+          </div>
+          <div class="page-badge">NET / 14</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1.1fr .9fr;gap:36px">
+          <div class="anim" style="--i:0">
+            <div class="card flat" style="background:#fff;padding:16px">
+              <svg viewBox="0 0 660 420" width="100%" style="display:block">
+                <g stroke="#2E2925" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <rect x="225" y="150" width="210" height="120" rx="16" fill="#FFD66E"/>
+                  <text x="330" y="205" text-anchor="middle" font-size="22" font-weight="700" fill="#2E2925" stroke="none">交换结构</text>
+                  <text x="330" y="235" text-anchor="middle" font-size="15" fill="#7A6E64" stroke="none">内存 / 总线 / 交换矩阵</text>
+                  <text x="330" y="258" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">转发引擎</text>
+
+                  <rect x="30" y="40" width="150" height="92" rx="14" fill="#DFF1FB"/>
+                  <text x="105" y="78" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">输入端口</text>
+                  <text x="105" y="104" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">查表 + 排队</text>
+                  <path d="M180 86 H225 V175 H225" stroke-width="4.5"/>
+
+                  <rect x="480" y="40" width="150" height="92" rx="14" fill="#DFF1FB"/>
+                  <text x="555" y="78" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">输出端口</text>
+                  <text x="555" y="104" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">缓存 + 发送</text>
+                  <path d="M435 175 H480 V132" stroke-width="4.5"/>
+
+                  <rect x="30" y="290" width="150" height="92" rx="14" fill="#EFFAF3"/>
+                  <text x="105" y="328" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">路由处理器</text>
+                  <text x="105" y="354" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">跑路由协议</text>
+                  <path d="M180 336 H225 V270" stroke-width="4.5"/>
+
+                  <rect x="480" y="290" width="150" height="92" rx="14" fill="#EFFAF3"/>
+                  <text x="555" y="328" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">转发表</text>
+                  <text x="555" y="354" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">目的前缀 → 出口</text>
+                  <path d="M435 270 V336 H480" stroke-width="4.5"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">⚙️ 收到分组后发生什么</h3>
+              <ul class="list tight">
+                <li>物理层收比特 → 链路层拆帧</li>
+                <li>检查目的 IP，查<b>转发表</b></li>
+                <li>TTL 减 1，重算首部检验和</li>
+                <li>重新封装成新帧，从对应端口发出去</li>
+              </ul>
+            </div>
+            <div class="grid2" style="--i:2;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="card" style="background:#EAF7FF;padding:16px 18px">
+                <h3 style="font-size:19px;font-weight:900;margin-bottom:4px">转发</h3>
+                <p class="small" style="font-size:16px">查表、搬数据，快</p>
+              </div>
+              <div class="card" style="background:#FFF2C9;padding:16px 18px">
+                <h3 style="font-size:19px;font-weight:900;margin-bottom:4px">路由选择</h3>
+                <p class="small" style="font-size:16px">跑协议、算路径，慢</p>
+              </div>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">🚦</div>
+              <p>输入端口如果来不及处理，会在<b>缓存里排队</b>；排满了就丢包 —— 这就是拥塞丢包。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 19 路由选择总览 ============ -->
+    <section class="slide" data-chapter="net" data-title="路由选择：静态、动态与 AS">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.6 路由选择</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">路由协议：全网路由器一起「对答案」</span></h2>
+          </div>
+          <div class="page-badge">NET / 15</div>
+        </div>
+
+        <div class="grid3 anim" style="--i:0;margin-top:4px">
+          <div class="card" style="background:#FFF9E8">
+            <div class="chip c-butter">静态</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">手工配路由</h3>
+            <p class="body" style="font-size:20px">管理员一条条写。简单、不耗 CPU，但网络一变就得重配。</p>
+            <p class="small" style="margin-top:8px">适合：小网络、边缘路由器、默认路由</p>
+          </div>
+          <div class="card" style="background:#EAF7FF">
+            <div class="chip c-sky">动态</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">协议自动算</h3>
+            <p class="body" style="font-size:20px">路由器互相交换信息，自动算出转发表。能适应故障和拓扑变化。</p>
+            <p class="small" style="margin-top:8px">适合：中大型网络、互联网主干</p>
+          </div>
+          <div class="card" style="background:#EFFAF3">
+            <div class="chip c-mint">分层</div>
+            <h3 style="font-size:24px;font-weight:900;margin:10px 0 6px">AS 自治系统</h3>
+            <p class="body" style="font-size:20px">把互联网切成很多个「自治区」，每个 AS 内部自己管，外部只交换可达性。</p>
+            <p class="small" style="margin-top:8px">IGP 管内，EGP 管外</p>
+          </div>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:24px;grid-template-columns:1fr 1fr">
+          <div class="card">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🗺️ 两大类路由协议</h3>
+            <div class="stack sm">
+              <div class="row" style="gap:12px;align-items:flex-start">
+                <span class="chip c-mint" style="flex:none">IGP</span>
+                <p class="body" style="font-size:20px"><b>内部网关协议</b>：在一个 AS 内部用，如 RIP、OSPF。目标是找<b>最短/最快</b>路径。</p>
+              </div>
+              <div class="row" style="gap:12px;align-items:flex-start">
+                <span class="chip c-coral" style="flex:none">EGP</span>
+                <p class="body" style="font-size:20px"><b>外部网关协议</b>：AS 之间用，目前基本只有 BGP。目标是<b>可达 + 策略</b>，不是最短。</p>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="background:#FFF2C9">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🎯 路由算法的两条路线</h3>
+            <p class="body" style="font-size:20px"><b>距离向量</b>：只跟邻居聊天，交换「我到各处的距离」。代表 RIP。<br>
+            <b>链路状态</b>：全网洪泛拓扑，自己算最短路。代表 OSPF。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 20 RIP ============ -->
+    <section class="slide" data-chapter="net" data-title="RIP：距离向量，跳数说话">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.6.2 RIP</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">RIP：只数「跳几次」，16 跳算迷路</span></h2>
+          </div>
+          <div class="page-badge">NET / 16</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">📣 工作方式：和邻居唠嗑</h3>
+              <ul class="list tight">
+                <li>每个路由器只和<b>相邻路由器</b>交换信息</li>
+                <li>交换的内容是整张<b>距离向量表</b>（到每个网络的距离）</li>
+                <li>距离用<b>跳数</b>衡量，直连 = 1</li>
+                <li>每 <b class="hl">30 秒</b> 广播一次，走 <b>UDP 520</b> 端口</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">📏 距离规则</h3>
+              <p class="body" style="font-size:21px">最大跳数 <b class="hl">15</b>，<b>16 表示不可达</b>。<br>
+              所以 RIP 只适合<b>小型网络</b>，直径不能超过 15 跳。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFE3DD">
+              <div class="ico">🐢</div>
+              <p>经典缺陷：<b>「好消息传得快，坏消息传得慢」</b>。一条链路断了，要很久才能传播到全网（计数到无穷问题）。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFFCF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🔄 距离向量更新口诀</h3>
+              <div class="stack sm">
+                <div class="row" style="gap:10px"><span class="chip c-butter" style="flex:none">①</span><p class="body" style="font-size:20px">先把邻居表里所有距离 <b>+1</b></p></div>
+                <div class="row" style="gap:10px"><span class="chip c-butter" style="flex:none">②</span><p class="body" style="font-size:20px">下一跳改成那个邻居</p></div>
+                <div class="row" style="gap:10px"><span class="chip c-butter" style="flex:none">③</span><p class="body" style="font-size:20px">和本表逐项比，<b>更小就替换</b></p></div>
+                <div class="row" style="gap:10px"><span class="chip c-butter" style="flex:none">④</span><p class="body" style="font-size:20px">30 秒没收到邻居更新 → 标记 <b>16</b></p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🧠 一句话记住</h3>
+              <p class="body" style="font-size:21px">RIP = <b>道听途说</b>：我相信邻居说的距离，再加 1 传给别人。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 21 OSPF ============ -->
+    <section class="slide" data-chapter="net" data-title="OSPF：链路状态，自己算最短路">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.6.3 OSPF</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">OSPF：先画全图，再跑 Dijkstra</span></h2>
+          </div>
+          <div class="page-badge">NET / 17</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🗺️ 三步走</h3>
+              <div class="flow">
+                <div class="step"><div class="n">1</div><h4>洪泛</h4><p>每个路由器把链路状态（我和谁连、代价多少）发给全网</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#FFF9E8"><div class="n">2</div><h4>建图</h4><p>所有路由器都拥有同一张全网拓扑图</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#EFFAF3"><div class="n">3</div><h4>算路</h4><p>各自跑 Dijkstra，算最短路径树</p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">✉️ 五种分组（背名字即可）</h3>
+              <div class="row" style="flex-wrap:wrap;gap:8px">
+                <span class="chip c-sky" style="font-size:16px">问候 Hello</span>
+                <span class="chip c-sky" style="font-size:16px">数据库描述</span>
+                <span class="chip c-sky" style="font-size:16px">链路状态请求</span>
+                <span class="chip c-sky" style="font-size:16px">链路状态更新</span>
+                <span class="chip c-sky" style="font-size:16px">链路状态确认</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">⚡ 比 RIP 强在哪</h3>
+              <ul class="list tight">
+                <li>收敛快，坏消息不会传半天</li>
+                <li>支持<b>负载均衡</b>（多条等代价路径）</li>
+                <li>支持<b>区域划分</b>，主干区域 0.0.0.0</li>
+                <li>直接封装在 IP 里，<b>协议号 89</b>（不是 UDP）</li>
+                <li>用<b>代价</b>（带宽、延迟）而不是跳数</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3;padding:18px 22px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">🗺️ 为什么要分区域</h3>
+              <p class="body" style="font-size:19px">网络太大，洪泛会压垮路由器。OSPF 把 AS 划成多个<b>区域（Area）</b>，区域间只传汇总信息，主干区域固定为 <b>0.0.0.0</b>。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#EAF7FF">
+              <div class="ico">🧠</div>
+              <p>RIP 是<b>「问邻居」</b>，OSPF 是<b>「自己拿地图导航」</b>。一个靠传言，一个靠全局信息。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 22 BGP ============ -->
+    <section class="slide" data-chapter="net" data-title="BGP：AS 之间的外交官">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.6.4 BGP</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">BGP：自治区之间的「外交谈判」</span></h2>
+          </div>
+          <div class="page-badge">NET / 18</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:10px">🌍 它解决什么问题</h3>
+              <p class="body">互联网有几十万个 AS。每个 AS 有自己的「政策」：<b>谁能过、谁不能过、走哪便宜</b>。<br>
+              BGP 交换的不是「最短距离」，而是<b>可达性 + 路径属性</b>。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📌 关键点</h3>
+              <ul class="list tight">
+                <li>基于 <b>TCP 179</b> 端口，可靠传输</li>
+                <li>交换的是<b>路径向量</b>：到某网络要经过哪些 AS</li>
+                <li>用 AS 路径防环：看到自己的 AS 号就丢弃</li>
+                <li>每个 AS 选一个 <b>BGP 发言人</b></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🆚 和内网协议的区别</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>维度</th><th>RIP / OSPF</th><th>BGP</th></tr></thead>
+                <tbody>
+                  <tr><td>范围</td><td>AS 内部</td><td>AS 之间</td></tr>
+                  <tr><td>目标</td><td>最短路径</td><td>可达 + 策略</td></tr>
+                  <tr><td>承载</td><td>UDP / IP</td><td>TCP 179</td></tr>
+                  <tr><td>规模</td><td>小 / 中</td><td>全网</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFE3DD">
+              <div class="ico">🤝</div>
+              <p>BGP 更像<b>商务合作</b>：不是「哪条路最近」，而是「跟谁合作更划算、更安全」。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 23 三大路由协议对比 ============ -->
+    <section class="slide" data-chapter="net" data-title="RIP / OSPF / BGP 终极对比">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">必考对比</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">RIP / OSPF / BGP：一张表全记住</span></h2>
+          </div>
+          <div class="page-badge">NET / 19</div>
+        </div>
+
+        <div class="anim" style="--i:0;margin-top:4px">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:180px">对比项</th>
+                <th style="width:250px">RIP</th>
+                <th style="width:300px">OSPF</th>
+                <th>BGP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><b>类型</b></td><td>距离向量</td><td>链路状态</td><td>路径向量</td></tr>
+              <tr><td><b>作用范围</b></td><td>AS 内部（IGP）</td><td>AS 内部（IGP）</td><td>AS 之间（EGP）</td></tr>
+              <tr><td><b>度量</b></td><td class="em">跳数，最大 15，16 不可达</td><td>代价（带宽/延迟），可负载均衡</td><td>路径属性 + 策略</td></tr>
+              <tr><td><b>交换对象</b></td><td>相邻路由器</td><td>全网洪泛链路状态</td><td>相邻 AS 的 BGP 发言人</td></tr>
+              <tr><td><b>算法</b></td><td>Bellman-Ford 思想</td><td>Dijkstra 最短路</td><td>路径选择 + 防环</td></tr>
+              <tr><td><b>承载</b></td><td class="em">UDP 520</td><td class="em">直接封装在 IP，协议号 89</td><td class="em">TCP 179</td></tr>
+              <tr><td><b>收敛速度</b></td><td>慢（坏消息传得慢）</td><td>快</td><td>慢但稳定</td></tr>
+              <tr><td><b>适用规模</b></td><td>小型网络</td><td>中大型 AS</td><td>整个互联网</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid3" style="--i:1;margin-top:20px">
+          <div class="tip" style="background:#EAF7FF"><div class="ico">🗣️</div><p><b>RIP</b>：问邻居，听消息，加一跳。</p></div>
+          <div class="tip" style="background:#EFFAF3"><div class="ico">🗺️</div><p><b>OSPF</b>：人人有地图，自己算最短路。</p></div>
+          <div class="tip" style="background:#FFE3DD"><div class="ico">🤝</div><p><b>BGP</b>：国家之间谈判，讲政策不讲距离。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 24 NAT ============ -->
+    <section class="slide" data-chapter="net" data-title="NAT：一个公网 IP 全家共用">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.8 NAT</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">NAT：全家共享一个门牌号</span></h2>
+          </div>
+          <div class="page-badge">NET / 20</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🏠 问题：IPv4 地址不够用</h3>
+              <p class="body" style="font-size:21px">家里 5 台设备，只有 1 个公网 IP。怎么办？<br>
+              <b>NAT 让私有地址在出口路由器被换成公网地址</b>，回来时再换回去。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🔁 NAPT：靠端口号区分</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>内网地址:端口</th><th>→</th><th>公网地址:端口</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">192.168.1.2:5000</td><td>→</td><td class="mono em">203.0.113.5:61001</td></tr>
+                  <tr><td class="mono">192.168.1.3:5000</td><td>→</td><td class="mono em">203.0.113.5:61002</td></tr>
+                </tbody>
+              </table>
+              <p class="small" style="margin-top:8px">同一个公网 IP，用<b>不同端口</b>区分不同内网主机 —— 这就是 NAPT（端口多路复用）。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:1">
+            <div class="card flat" style="background:#fff;padding:18px">
+              <svg viewBox="0 0 560 400" width="100%" style="display:block">
+                <g stroke="#2E2925" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <rect x="20" y="30" width="200" height="330" rx="20" fill="#FFF2C9"/>
+                  <text x="120" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">家庭内网</text>
+                  <rect x="42" y="88" width="156" height="52" rx="10" fill="#fff"/>
+                  <text x="120" y="121" text-anchor="middle" font-size="16" fill="#2E2925" stroke="none">💻 192.168.1.2</text>
+                  <rect x="42" y="154" width="156" height="52" rx="10" fill="#fff"/>
+                  <text x="120" y="187" text-anchor="middle" font-size="16" fill="#2E2925" stroke="none">📱 192.168.1.3</text>
+                  <rect x="42" y="220" width="156" height="52" rx="10" fill="#fff"/>
+                  <text x="120" y="253" text-anchor="middle" font-size="16" fill="#2E2925" stroke="none">📺 192.168.1.4</text>
+                  <rect x="55" y="300" width="130" height="44" rx="10" fill="#8EDCBB"/>
+                  <text x="120" y="329" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">NAT 路由器</text>
+                  <path d="M220 195 H300" stroke-width="5"/>
+                  <circle cx="300" cy="195" r="30" fill="#FF8B79"/>
+                  <text x="300" y="204" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="19" font-weight="700" fill="#2E2925" stroke="none">NAT</text>
+                  <path d="M330 195 H400" stroke-width="5"/>
+                  <rect x="400" y="120" width="140" height="150" rx="18" fill="#DFF1FB"/>
+                  <text x="470" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#2E2925" stroke="none">公网</text>
+                  <text x="470" y="192" text-anchor="middle" font-family="Fredoka Variable, Fredoka" font-size="17" fill="#2E2925" stroke="none">203.0.113.5</text>
+                  <text x="470" y="222" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">:61001~61003</text>
+                  <text x="280" y="372" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">出去换源地址，回来查表还原</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:12px;display:flex;gap:12px">
+          <div class="tip" style="flex:1"><div class="ico">✅</div><p>NAT 缓解了 IPv4 地址枯竭，也隐藏了内网结构，<b>但破坏了端到端透明性</b>（外网不能主动连内网）。</p></div>
+          <div class="tip" style="flex:1;background:#FFE3DD"><div class="ico">🧠</div><p>考试常问：<b>NAT 转换发生在哪一层？</b> —— 网络层（NAPT 还要看运输层端口）。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 25 IPv6 ============ -->
+    <section class="slide" data-chapter="net" data-title="IPv6：128 位的新地址">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.9 IPv6</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">IPv6：地址多到「给每粒沙子编号」</span></h2>
+          </div>
+          <div class="page-badge">NET / 21</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📏 128 位有多大</h3>
+              <p class="body" style="font-size:21px">2¹²⁸ ≈ 3.4 × 10³⁸ 个地址。<br>
+              <span class="hl hl-sky">IPv4 是 32 位，IPv6 是 128 位</span>，多了 96 位。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">✍️ 写法：冒号十六进制</h3>
+              <p class="f-num" style="font-size:21px;line-height:1.6;font-weight:600;word-break:break-all">
+                2001:0db8:0000:0000:0000:ff00:0042:8329
+              </p>
+              <p class="body" style="font-size:20px;margin-top:8px">零压缩后：<br>
+              <b class="hl">2001:db8::ff00:42:8329</b><br>
+              <span class="small">连续的全 0 段可以用「::」代替，但只能出现一次。</span></p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📦 首部更简单</h3>
+              <p class="body" style="font-size:20px">基本首部固定 <b>40 字节</b>；<br>取消首部检验和、取消分片字段（由源端做路径 MTU 发现）。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFFCF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🆚 IPv4 vs IPv6</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>项目</th><th>IPv4</th><th>IPv6</th></tr></thead>
+                <tbody>
+                  <tr><td>地址长度</td><td class="mono">32 位</td><td class="mono em">128 位</td></tr>
+                  <tr><td>首部</td><td>20~60 字节</td><td class="em">固定 40 字节</td></tr>
+                  <tr><td>检验和</td><td>有</td><td class="em">无</td></tr>
+                  <tr><td>分片</td><td>路由器可分片</td><td class="em">源端做</td></tr>
+                  <tr><td>地址配置</td><td>DHCP / 手工</td><td>支持无状态自动配置</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🌉 怎么从 v4 过渡到 v6</h3>
+              <ul class="list tight">
+                <li><b>双协议栈</b>：一台机器同时跑两套</li>
+                <li><b>隧道技术</b>：v6 包塞进 v4 包里穿过老网络</li>
+                <li><b>翻译</b>：NAT64 之类</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 26 VPN 与 MPLS ============ -->
+    <section class="slide" data-chapter="net" data-title="VPN 与 MPLS">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.7 / 4.8 拓展</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">VPN 与 MPLS：给数据报开条专用道</span></h2>
+          </div>
+          <div class="page-badge">NET / 22</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="card anim" style="--i:0;background:#EAF7FF">
+            <div class="chip c-sky">VPN</div>
+            <h3 style="font-size:27px;font-weight:900;margin:10px 0 8px">虚拟专用网</h3>
+            <p class="body" style="font-size:21px">公司两个分部隔着公网，想安全通信。做法：<b>把私有数据报加密后，塞进公网 IP 数据报里</b>，走一条「隧道」。</p>
+            <ul class="list tight" style="margin-top:10px">
+              <li><b>内层</b>：私有地址，真正的收件人</li>
+              <li><b>外层</b>：公网地址，隧道两端</li>
+              <li>常用技术：IPsec、GRE、L2TP</li>
+            </ul>
+            <div class="tip" style="margin-top:12px;background:#fff">
+              <div class="ico">🚇</div>
+              <p>VPN 就像在公开马路上修了一条<b>专属地下隧道</b>。</p>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#FFF2C9">
+            <div class="chip c-butter">MPLS</div>
+            <h3 style="font-size:27px;font-weight:900;margin:10px 0 8px">多协议标签交换</h3>
+            <p class="body" style="font-size:21px">在 IP 首部前面加一个 <b>标签</b>，路由器只看标签转发，不用逐位查最长前缀。</p>
+            <div style="display:flex;align-items:stretch;margin-top:12px;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;font-size:17px;text-align:center">
+              <div style="flex:1;background:var(--mint);padding:10px 6px;border-right:2px solid var(--ink)"><b>标签</b><br><span style="font-size:14px">20 位</span></div>
+              <div style="flex:1;background:var(--butter);padding:10px 6px;border-right:2px solid var(--ink)"><b>实验</b><br><span style="font-size:14px">3 位</span></div>
+              <div style="flex:1;background:var(--pink);padding:10px 6px;border-right:2px solid var(--ink)"><b>栈底</b><br><span style="font-size:14px">1 位</span></div>
+              <div style="flex:1;background:var(--sky);padding:10px 6px"><b>TTL</b><br><span style="font-size:14px">8 位</span></div>
+            </div>
+            <ul class="list tight" style="margin-top:12px">
+              <li><b>面向连接</b>，先建标签交换路径 LSP</li>
+              <li>转发快，能做好流量工程</li>
+              <li>标签在入口压入、出口弹出</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:18px">
+          <div class="tip" style="background:#EFFAF3">
+            <div class="ico">📝</div>
+            <p><b>两者常一起考：</b>VPN 解决「安全 + 私有地址穿越公网」，MPLS 解决「快速转发 + 流量工程」。都属于网络层的拓展技术，不是基础必考大题。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 27 IP 多播 ============ -->
+    <section class="slide" data-chapter="net" data-title="IP 多播与 IGMP">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-sky">4.10 多播</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">多播：一份数据，发给一组人</span></h2>
+          </div>
+          <div class="page-badge">NET / 23</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📺 为什么需要多播</h3>
+              <p class="body" style="font-size:21px">视频直播、网络会议：如果给 100 个人各发一份，服务器要复制 100 份。<br>
+              <b>多播只在分叉处复制</b>，一条链路只传一份，省带宽。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🎯 多播地址</h3>
+              <p class="body" style="font-size:21px"><b>D 类地址 224.0.0.0 ~ 239.255.255.255</b><br>
+              <span class="hl">只用作目的地址，不能作源地址</span>。它代表一个「组」，不是一个具体主机。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📡 IGMP</h3>
+              <p class="body" style="font-size:20px">主机用它告诉本地多播路由器：「我要加入 / 退出这个组」。<br>IGMP 只在<b>主机与本地路由器之间</b>工作，不负责全网路由。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:1">
+            <div class="card flat" style="background:#fff;padding:18px">
+              <svg viewBox="0 0 560 400" width="100%" style="display:block">
+                <g stroke="#2E2925" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <rect x="30" y="150" width="110" height="80" rx="14" fill="#FFD66E"/>
+                  <text x="85" y="196" text-anchor="middle" font-size="17" font-weight="700" fill="#2E2925" stroke="none">源</text>
+                  <path d="M140 190 H230" stroke-width="5"/>
+                  <circle cx="262" cy="190" r="34" fill="#8AC9EE"/>
+                  <text x="262" y="188" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">多播</text>
+                  <text x="262" y="206" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">路由器</text>
+                  <path d="M296 190 H350 V96 H420" stroke-width="5"/>
+                  <path d="M296 190 H350 V190 H420" stroke-width="5"/>
+                  <path d="M296 190 H350 V286 H420" stroke-width="5"/>
+                  <rect x="420" y="60" width="110" height="72" rx="12" fill="#EFFAF3"/>
+                  <rect x="420" y="154" width="110" height="72" rx="12" fill="#EFFAF3"/>
+                  <rect x="420" y="250" width="110" height="72" rx="12" fill="#EFFAF3"/>
+                  <text x="475" y="103" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">组员 A</text>
+                  <text x="475" y="197" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">组员 B</text>
+                  <text x="475" y="293" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">组员 C</text>
+                  <text x="350" y="352" text-anchor="middle" font-size="15" fill="#7A6E64" stroke="none">分叉处才复制，主干只传一份</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 28 网络层速记卡 ============ -->
+    <section class="slide" data-chapter="net" data-title="网络层速记卡">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">考前一晚看这页</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">网络层 · 20 条速记</span></h2>
+          </div>
+          <div class="page-badge">NET / 24</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:40px">
+          <div class="card anim" style="--i:0;padding:22px 26px">
+            <div class="chip c-sky" style="margin-bottom:12px">地址与协议</div>
+            <ul class="list tight" style="gap:9px">
+              <li>IPv4 <b>32 位</b>，IPv6 <b>128 位</b></li>
+              <li>A 类首字节 <b>1~126</b>，B 类 <b>128~191</b>，C 类 <b>192~223</b></li>
+              <li>私有地址：<b>10/8、172.16/12、192.168/16</b></li>
+              <li>主机数 = <b>2<sup>主机位</sup> − 2</b></li>
+              <li>子网掩码：网络位全 1，主机位全 0</li>
+              <li>CIDR 聚合看<b>相同前缀</b>，转发用<b>最长前缀匹配</b></li>
+              <li>ARP 管 <b>IP→MAC</b>，同一局域网广播请求、单播应答</li>
+              <li>DHCP 四步：<b>发现、提供、请求、确认</b>；UDP 67/68</li>
+              <li>ICMP 协议号 <b>1</b>；ping 用回送请求，traceroute 用 TTL</li>
+              <li>NAT 私有↔公网，NAPT 用<b>端口</b>区分主机</li>
+            </ul>
+          </div>
+
+          <div class="card anim" style="--i:1;padding:22px 26px;background:#FFF9E8">
+            <div class="chip c-butter" style="margin-bottom:12px">首部与路由</div>
+            <ul class="list tight" style="gap:9px">
+              <li>首部固定 <b>20 字节</b>，最长 60 字节</li>
+              <li>首部长度单位 <b>4 字节</b>；总长度单位 <b>1 字节</b></li>
+              <li>片偏移单位 <b>8 字节</b>；TTL 每跳减 1</li>
+              <li>协议号：<b>TCP 6、UDP 17、ICMP 1、OSPF 89</b></li>
+              <li>RIP：跳数、最大 <b>15</b>、<b>16 不可达</b>、UDP <b>520</b>、30 秒</li>
+              <li>OSPF：链路状态、<b>Dijkstra</b>、五种分组、协议号 89</li>
+              <li>BGP：路径向量、<b>TCP 179</b>、AS 之间、防环靠 AS 路径</li>
+              <li>IP 多播用 <b>D 类</b>地址，IGMP 管加入/退出</li>
+              <li>MPLS 靠<b>标签</b>转发，VPN 靠<b>隧道</b></li>
+              <li>路由器 = 输入端口 + 交换结构 + 输出端口 + 路由处理器</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#EAF7FF"><div class="ico">✍️</div><p><b>大题高频：</b>子网划分 + 分片计算 + 路由表更新，三选一必出。动手算三遍比看十遍强。</p></div>
+          <div class="tip" style="flex:1;background:#EFFAF3"><div class="ico">✅</div><p><b>选择题高频：</b>协议端口号、TTL 作用、ARP 跨网段变化、RIP 最大跳数。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 29 I/O 章首 ============ -->
+    <section class="chapter" data-chapter="io" data-title="PART 2 · 输入输出系统" style="background:linear-gradient(135deg,#FFE9E3 0%,#FFC9BC 52%,#FF8B79 100%)">
+      <div class="slide-inner" style="justify-content:center;padding:0 20px">
+        <div class="big-num">05</div>
+        <div style="position:relative;z-index:3">
+          <div class="c-tag anim" style="--i:0">PART 2 / 计算机组成原理 · 第 5 章</div>
+          <h1 class="anim" style="--i:1">输入输出系统</h1>
+          <p class="lead anim" style="--i:2">CPU 是主厨，I/O 系统是后厨团队。<br>本章只研究一件事：<b>怎么让主厨少跑腿，还不耽误上菜。</b></p>
+          <div class="row anim" style="--i:3;margin-top:36px;gap:12px">
+            <span class="chip" style="background:#fff">接口</span>
+            <span class="chip" style="background:#fff">程序查询</span>
+            <span class="chip" style="background:#fff">中断</span>
+            <span class="chip" style="background:#fff">DMA</span>
+            <span class="chip" style="background:#fff">通道</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 30 I/O 系统全景 ============ -->
+    <section class="slide" data-chapter="io" data-title="I/O 系统全景：后厨团队怎么排班">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.1 概述</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">I/O 系统：CPU 之外的整支后厨团队</span></h2>
+          </div>
+          <div class="page-badge">IO / 01</div>
+        </div>
+
+        <div class="card anim" style="--i:0;background:#EAF7FF;margin-top:4px;padding:22px 28px">
+          <h3 style="font-size:24px;font-weight:900;margin-bottom:12px">🧱 一条完整的数据通路</h3>
+          <div class="flow">
+            <div class="step" style="background:#fff"><div class="n">1</div><h4>CPU / 主存</h4><p>发出读写命令，给出地址</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#FFF9E8"><div class="n">2</div><h4>I/O 接口</h4><p>地址译码、缓冲、格式转换</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#EFFAF3"><div class="n">3</div><h4>设备控制器</h4><p>驱动电机、读写磁头</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#FFF0F3"><div class="n">4</div><h4>外设</h4><p>键盘、磁盘、打印机…</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#F0E9FF"><div class="n">5</div><h4>I/O 软件</h4><p>驱动 + 中断处理 + 文件系统</p></div>
+          </div>
+        </div>
+
+        <div class="grid3" style="--i:1;margin-top:24px">
+          <div class="card">
+            <div class="chip c-coral">硬件</div>
+            <h3 style="font-size:23px;font-weight:900;margin:9px 0 6px">设备 + 接口 + 总线</h3>
+            <p class="body" style="font-size:19px">看得见摸得着的部分：外设、I/O 接口、连接总线。</p>
+          </div>
+          <div class="card" style="background:#FFF9E8">
+            <div class="chip c-butter">软件</div>
+            <h3 style="font-size:23px;font-weight:900;margin:9px 0 6px">驱动 + 管理程序</h3>
+            <p class="body" style="font-size:19px">设备驱动程序、中断服务程序、操作系统 I/O 管理。</p>
+          </div>
+          <div class="card" style="background:#EFFAF3">
+            <div class="chip c-mint">目标</div>
+            <h3 style="font-size:23px;font-weight:900;margin:9px 0 6px">CPU 少等、数据多跑</h3>
+            <p class="body" style="font-size:19px">让 CPU 和外设<b>并行工作</b>，是本章所有技术的主线。</p>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:20px">
+          <div class="tip" style="background:#FFE3DD">
+            <div class="ico">🍳</div>
+            <p><b>比喻：</b>CPU 是主厨，I/O 接口是传菜窗口，DMA 是专人跑腿，通道是外包的整个后厨团队。主厨只负责「下指令」和「收成品」。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 31 设备与接口功能 ============ -->
+    <section class="slide" data-chapter="io" data-title="I/O 设备分类与接口功能">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.2 / 5.3</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">I/O 接口：CPU 和外设之间的「翻译官」</span></h2>
+          </div>
+          <div class="page-badge">IO / 02</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:.95fr 1.05fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🗂️ 外设怎么分类</h3>
+              <div class="stack sm">
+                <div class="row" style="gap:10px;align-items:flex-start">
+                  <span class="chip c-sky" style="flex:none">人机交互</span>
+                  <p class="body" style="font-size:19px">键盘、鼠标、显示器、打印机 —— 慢，但讲究体验</p>
+                </div>
+                <div class="row" style="gap:10px;align-items:flex-start">
+                  <span class="chip c-mint" style="flex:none">存储</span>
+                  <p class="body" style="font-size:19px">磁盘、磁带、SSD、U 盘 —— 快，讲究容量和可靠性</p>
+                </div>
+                <div class="row" style="gap:10px;align-items:flex-start">
+                  <span class="chip c-lilac" style="flex:none">网络通信</span>
+                  <p class="body" style="font-size:19px">网卡、调制解调器 —— 讲究协议和速率</p>
+                </div>
+              </div>
+              <p class="small" style="margin-top:10px">按信息流向分：输入设备 / 输出设备 / 输入输出兼用设备。</p>
+            </div>
+            <div class="tip anim" style="--i:1;background:#EFFAF3">
+              <div class="ico">🧠</div>
+              <p>答题时先分类再举例，比单纯罗列设备名更像「懂结构」。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF9E8;padding:18px 22px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔌 接口还能怎么分</h3>
+              <ul class="list tight" style="gap:6px">
+                <li>按传输方式：<b>并行 / 串行</b></li>
+                <li>按时序：<b>同步 / 异步</b></li>
+                <li>按功能：<b>通用 / 专用</b></li>
+                <li>按控制方式：<b>查询 / 中断 / DMA 接口</b></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#fff">
+            <h3 style="font-size:23px;font-weight:900;margin-bottom:12px">🛠️ 接口的六大功能（背 5 个就够）</h3>
+            <div class="grid2" style="grid-template-columns:1fr 1fr;gap:12px">
+              <div style="background:#FFF2C9;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">① 数据缓冲</b>
+                <p class="small" style="margin-top:4px;font-size:16px">速度不匹配时先存一下</p>
+              </div>
+              <div style="background:#EAF7FF;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">② 错误检测</b>
+                <p class="small" style="margin-top:4px;font-size:16px">奇偶校验、CRC</p>
+              </div>
+              <div style="background:#EFFAF3;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">③ 控制与定时</b>
+                <p class="small" style="margin-top:4px;font-size:16px">发命令、给时序信号</p>
+              </div>
+              <div style="background:#FFF0F3;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">④ 地址译码</b>
+                <p class="small" style="margin-top:4px;font-size:16px">选中要操作的那台设备</p>
+              </div>
+              <div style="background:#F0E9FF;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">⑤ 格式转换</b>
+                <p class="small" style="margin-top:4px;font-size:16px">串行↔并行、电平转换</p>
+              </div>
+              <div style="background:#FFF9E8;border:2px solid rgba(46,41,37,.4);border-radius:12px;padding:12px 14px">
+                <b style="font-size:19px">⑥ 中断/DMA 控制</b>
+                <p class="small" style="margin-top:4px;font-size:16px">状态上报、直接访存</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 32 接口结构与编址 ============ -->
+    <section class="slide" data-chapter="io" data-title="接口结构与两种编址方式">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.3 接口</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">接口里到底藏了什么？</span></h2>
+          </div>
+          <div class="page-badge">IO / 03</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="anim" style="--i:0">
+            <div class="card flat" style="background:#fff;padding:18px">
+              <svg viewBox="0 0 620 400" width="100%" style="display:block">
+                <g stroke="#2E2925" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <rect x="20" y="150" width="90" height="100" rx="14" fill="#FFD66E"/>
+                  <text x="65" y="195" text-anchor="middle" font-size="16" font-weight="700" fill="#2E2925" stroke="none">CPU</text>
+                  <text x="65" y="218" text-anchor="middle" font-size="13" fill="#7A6E64" stroke="none">总线</text>
+                  <path d="M110 185 H155" stroke-width="5"/>
+                  <path d="M110 215 H155" stroke-width="5"/>
+                  <rect x="155" y="50" width="240" height="300" rx="18" fill="#FFF9E8"/>
+                  <text x="275" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#2E2925" stroke="none">I/O 接口</text>
+                  <rect x="175" y="98" width="200" height="52" rx="9" fill="#8AC9EE"/>
+                  <text x="275" y="130" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">数据缓冲寄存器 DBDR</text>
+                  <rect x="175" y="162" width="200" height="52" rx="9" fill="#8EDCBB"/>
+                  <text x="275" y="194" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">状态 / 控制寄存器</text>
+                  <rect x="175" y="226" width="200" height="52" rx="9" fill="#FFB7CA"/>
+                  <text x="275" y="258" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">地址译码 + 设备选择</text>
+                  <rect x="175" y="290" width="200" height="44" rx="9" fill="#C7AEF2"/>
+                  <text x="275" y="318" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">中断 / DMA 控制逻辑</text>
+                  <path d="M395 200 H455" stroke-width="5"/>
+                  <rect x="455" y="140" width="130" height="120" rx="14" fill="#EFFAF3"/>
+                  <text x="520" y="190" text-anchor="middle" font-size="16" font-weight="700" fill="#2E2925" stroke="none">外设</text>
+                  <text x="520" y="216" text-anchor="middle" font-size="13" fill="#7A6E64" stroke="none">键盘 / 磁盘</text>
+                  <text x="275" y="378" text-anchor="middle" font-size="13" fill="#7A6E64" stroke="none">CPU 只跟接口打交道，不直接碰设备</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📍 两种编址方式</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th></th><th>统一编址</th><th>独立编址</th></tr></thead>
+                <tbody>
+                  <tr><td><b>别名</b></td><td>存储器映射</td><td>I/O 映射</td></tr>
+                  <tr><td><b>指令</b></td><td>用访存指令</td><td>专用 I/O 指令</td></tr>
+                  <tr><td><b>地址空间</b></td><td>和内存共用</td><td>单独一套</td></tr>
+                  <tr><td><b>优点</b></td><td>指令丰富、编程简单</td><td>不占内存空间、易区分</td></tr>
+                  <tr><td><b>缺点</b></td><td>占内存地址、译码复杂</td><td>指令少、需要专门信号</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">🚪</div>
+              <p>统一编址 = <b>把设备当成内存的一个格子</b>；独立编址 = <b>另开一栋楼，用专门的钥匙</b>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 33 四种 I/O 方式总览 ============ -->
+    <section class="slide" data-chapter="io" data-title="四种 I/O 方式总览">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">主线</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">四种 I/O 方式：CPU 是怎么一步步「解放」的</span></h2>
+          </div>
+          <div class="page-badge">IO / 04</div>
+        </div>
+
+        <div class="grid2" style="--i:0;margin-top:8px;grid-template-columns:repeat(4,1fr);gap:16px">
+          <div class="card" style="background:#FFF0F3;padding:20px 18px">
+            <div class="f-num" style="font-size:34px;font-weight:700;color:var(--coral-deep)">01</div>
+            <h3 style="font-size:23px;font-weight:900;margin:6px 0">程序查询</h3>
+            <p class="body" style="font-size:18px">CPU 原地踏步，反复问「好了没」</p>
+            <div class="chip c-coral" style="margin-top:10px;font-size:14px">CPU 参与 100%</div>
+          </div>
+          <div class="card" style="background:#FFF9E8;padding:20px 18px">
+            <div class="f-num" style="font-size:34px;font-weight:700;color:#C99A2E">02</div>
+            <h3 style="font-size:23px;font-weight:900;margin:6px 0">程序中断</h3>
+            <p class="body" style="font-size:18px">设备好了主动「喊」CPU 一声</p>
+            <div class="chip c-butter" style="margin-top:10px;font-size:14px">按字节/字中断</div>
+          </div>
+          <div class="card" style="background:#EFFAF3;padding:20px 18px">
+            <div class="f-num" style="font-size:34px;font-weight:700;color:var(--mint-deep)">03</div>
+            <h3 style="font-size:23px;font-weight:900;margin:6px 0">DMA</h3>
+            <p class="body" style="font-size:18px">DMA 控制器直接搬数据，只最后通知 CPU</p>
+            <div class="chip c-mint" style="margin-top:10px;font-size:14px">按数据块</div>
+          </div>
+          <div class="card" style="background:#F0E9FF;padding:20px 18px">
+            <div class="f-num" style="font-size:34px;font-weight:700;color:#7B5FB0">04</div>
+            <h3 style="font-size:23px;font-weight:900;margin:6px 0">通道</h3>
+            <p class="body" style="font-size:18px">专门的小处理器管一堆设备</p>
+            <div class="chip c-lilac" style="margin-top:10px;font-size:14px">CPU 只发命令</div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:1;margin-top:22px">
+          <div class="card" style="background:#fff">
+            <h3 style="font-size:22px;font-weight:900;margin-bottom:10px">📉 CPU 参与度变化</h3>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:18px;font-weight:700;width:120px">查询</span>
+              <div style="flex:1;height:26px;border:2.5px solid var(--ink);border-radius:13px;overflow:hidden;background:#F3EADA"><div style="width:100%;height:100%;background:var(--coral)"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <span style="font-size:18px;font-weight:700;width:120px">中断</span>
+              <div style="flex:1;height:26px;border:2.5px solid var(--ink);border-radius:13px;overflow:hidden;background:#F3EADA"><div style="width:55%;height:100%;background:var(--butter)"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <span style="font-size:18px;font-weight:700;width:120px">DMA</span>
+              <div style="flex:1;height:26px;border:2.5px solid var(--ink);border-radius:13px;overflow:hidden;background:#F3EADA"><div style="width:22%;height:100%;background:var(--mint)"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <span style="font-size:18px;font-weight:700;width:120px">通道</span>
+              <div style="flex:1;height:26px;border:2.5px solid var(--ink);border-radius:13px;overflow:hidden;background:#F3EADA"><div style="width:8%;height:100%;background:var(--lilac)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px">
+          <div class="tip" style="background:#EAF7FF"><div class="ico">🎯</div><p>本章所有对比题都围绕一个问题：<b>「数据传送过程中，CPU 要不要参与？」</b> 参与越少，方式越高级。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 34 程序查询 ============ -->
+    <section class="slide" data-chapter="io" data-title="程序查询方式：CPU 原地踏步">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.4 程序查询</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">程序查询：反复问「好了没？」</span></h2>
+          </div>
+          <div class="page-badge">IO / 05</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🔁 流程</h3>
+              <div class="flow">
+                <div class="step"><div class="n">1</div><h4>启动设备</h4><p>CPU 发命令</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#FFF9E8"><div class="n">2</div><h4>读状态</h4><p>查「完成」标志</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#FFF0F3"><div class="n">3</div><h4>没完成？</h4><p>回到 2，继续等</p></div>
+                <div class="arrow-v">→</div>
+                <div class="step" style="background:#EFFAF3"><div class="n">4</div><h4>传送</h4><p>读/写数据寄存器</p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">⏳ 时间都花在哪</h3>
+              <p class="body" style="font-size:20px">CPU 和 I/O 设备<b>串行工作</b>。设备慢（毫秒级），CPU 快（纳秒级），等待期间 CPU <b>完全空转</b>，什么也干不了。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">✅ 优点</h3>
+              <ul class="list tight">
+                <li>硬件最简单，不需要中断控制器</li>
+                <li>程序流程清晰、好调试</li>
+                <li>适合<b>极低速设备</b>（如温度传感器）</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFE3DD">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">❌ 缺点</h3>
+              <ul class="list tight">
+                <li>CPU 利用率极低，一直在「踏步」</li>
+                <li>无法同时管理多台设备</li>
+                <li>实时性差，紧急事件响应慢</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">🍜</div>
+              <p>像点了外卖一直站在门口盯着骑手到没到 —— 你什么也做不了，只能等。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 35 程序中断全流程 ============ -->
+    <section class="slide" data-chapter="io" data-title="程序中断：设备主动喊 CPU">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.5 程序中断</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">中断：设备好了，主动敲 CPU 的门</span></h2>
+          </div>
+          <div class="page-badge">IO / 06</div>
+        </div>
+
+        <div class="card anim" style="--i:0;background:#EAF7FF;margin-top:4px;padding:22px 26px">
+          <h3 style="font-size:23px;font-weight:900;margin-bottom:12px">🔄 一次完整的中断处理</h3>
+          <div class="flow">
+            <div class="step" style="background:#fff"><div class="n">1</div><h4>中断请求</h4><p>设备置 INTR=1</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#FFF9E8"><div class="n">2</div><h4>中断判优</h4><p>多个请求，选最高优先级</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#FFF0F3"><div class="n">3</div><h4>中断响应</h4><p>关中断、保存断点</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#EFFAF3"><div class="n">4</div><h4>中断服务</h4><p>保护现场、传数据</p></div>
+            <div class="arrow-v">→</div>
+            <div class="step" style="background:#F0E9FF"><div class="n">5</div><h4>中断返回</h4><p>恢复现场、开中断、IRET</p></div>
+          </div>
+        </div>
+
+        <div class="grid3" style="--i:1;margin-top:22px">
+          <div class="card">
+            <div class="chip c-coral">响应条件</div>
+            <h3 style="font-size:21px;font-weight:900;margin:9px 0 8px">三个条件缺一不可</h3>
+            <ul class="list tight" style="--dot:var(--coral)">
+              <li>有中断请求</li>
+              <li>CPU 允许中断（IF=1）</li>
+              <li><b>当前指令执行完</b></li>
+            </ul>
+          </div>
+          <div class="card" style="background:#FFF9E8">
+            <div class="chip c-butter">保存什么</div>
+            <h3 style="font-size:21px;font-weight:900;margin:9px 0 8px">断点 + 现场</h3>
+            <ul class="list tight" style="--dot:var(--butter)">
+              <li><b>断点</b>：PC 的值（下条指令地址）</li>
+              <li><b>现场</b>：通用寄存器、PSW</li>
+              <li>断点进栈，现场进栈/保存区</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#EFFAF3">
+            <div class="chip c-mint">关键区别</div>
+            <h3 style="font-size:21px;font-weight:900;margin:9px 0 8px">中断 vs 子程序</h3>
+            <p class="body" style="font-size:18px">中断是<b>随机发生</b>的，子程序调用是<b>程序安排</b>的；中断服务程序结束后返回的是<b>断点</b>。</p>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px">
+          <div class="tip" style="background:#FFE3DD"><div class="ico">🚪</div><p><b>比喻：</b>CPU 正在炒菜（执行程序），门铃响（中断请求）。他要先把锅放下、记住炒到哪一步（保存断点），去开门（中断服务），回来接着炒（中断返回）。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 36 中断判优与嵌套 ============ -->
+    <section class="slide" data-chapter="io" data-title="中断判优、屏蔽与多重中断">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.5 深入</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">中断判优、屏蔽与嵌套：谁能打断谁</span></h2>
+          </div>
+          <div class="page-badge">IO / 07</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:.95fr 1.05fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🥇 判优：两个做法</h3>
+              <ul class="list tight">
+                <li><b>硬件排队器</b>：电路固定优先级，快</li>
+                <li><b>软件查询</b>：按顺序查标志位，灵活但慢</li>
+              </ul>
+              <p class="small" style="margin-top:8px">优先级一般：<b>故障 &gt; DMA &gt; 外设</b>；高速设备优先于低速设备。</p>
+            </div>
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🙈 中断屏蔽字</h3>
+              <p class="body" style="font-size:20px">每个中断源有一个<b>屏蔽字</b>：某位为 1，表示「我可以屏蔽掉它」。<br>
+              修改屏蔽字，就能<b>动态调整优先级</b>。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#EAF7FF;padding:18px 22px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">📍 中断向量</h3>
+              <p class="body" style="font-size:19px">每个中断源对应一个<b>向量地址</b>，里面存着中断服务程序的入口地址。CPU 识别中断源后，靠它跳过去。</p>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">🎚️</div>
+              <p>屏蔽不是「关掉设备」，而是「先别来打扰我」。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EAF7FF">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🪆 多重中断（中断嵌套）</h3>
+              <p class="body" style="font-size:20px">高优先级中断可以打断低优先级的中断服务程序，形成嵌套。</p>
+              <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">
+                <span class="chip c-sky" style="font-size:15px">主程序</span>
+                <span style="font-size:18px">→</span>
+                <span class="chip c-butter" style="font-size:15px">中断 A</span>
+                <span style="font-size:18px">→</span>
+                <span class="chip c-coral" style="font-size:15px">中断 B（更急）</span>
+                <span style="font-size:18px">→</span>
+                <span class="chip c-mint" style="font-size:15px">返回 A → 返回主程序</span>
+              </div>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🔑 实现嵌套的关键</h3>
+              <p class="body" style="font-size:20px">进入中断服务程序后要<b>提前开中断</b>（STI），否则新中断进不来，就没法嵌套。</p>
+              <p class="small" style="margin-top:6px">注意：保存现场必须在开中断之前完成，否则会被覆盖。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 37 DMA 原理 ============ -->
+    <section class="slide" data-chapter="io" data-title="DMA：让数据自己飞进内存">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.6 DMA</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">DMA：数据自己搬，CPU 只签字</span></h2>
+          </div>
+          <div class="page-badge">IO / 08</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">💡 核心思想</h3>
+              <p class="body" style="font-size:21px">在<b>主存和外设之间开一条直接数据通路</b>，由 DMA 控制器负责搬运，<b>CPU 不介入</b>每个字节的传送。</p>
+              <p class="body" style="font-size:20px;margin-top:8px">CPU 只在开始前「下命令」，结束后「收通知」。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">🧰 DMA 控制器里有什么</h3>
+              <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:#FFF2C9;border:2px solid rgba(46,41,37,.4);border-radius:10px;padding:10px"><b style="font-size:17px">地址寄存器</b><p class="small" style="font-size:15px;margin-top:2px">存主存地址</p></div>
+                <div style="background:#EFFAF3;border:2px solid rgba(46,41,37,.4);border-radius:10px;padding:10px"><b style="font-size:17px">字计数器</b><p class="small" style="font-size:15px;margin-top:2px">还要传多少个字</p></div>
+                <div style="background:#EAF7FF;border:2px solid rgba(46,41,37,.4);border-radius:10px;padding:10px"><b style="font-size:17px">数据缓冲</b><p class="small" style="font-size:15px;margin-top:2px">暂存一个字</p></div>
+                <div style="background:#FFF0F3;border:2px solid rgba(46,41,37,.4);border-radius:10px;padding:10px"><b style="font-size:17px">命令/状态</b><p class="small" style="font-size:15px;margin-top:2px">方向、中断标志</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFFCF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">📋 三步走</h3>
+              <div class="flow">
+                <div class="step" style="padding:12px 14px"><div class="n">1</div><h4 style="font-size:18px">预处理</h4><p style="font-size:15px">CPU 填地址、计数、方向，启动 DMA</p></div>
+                <div class="arrow-v" style="width:26px;font-size:24px">→</div>
+                <div class="step" style="padding:12px 14px;background:#EFFAF3"><div class="n">2</div><h4 style="font-size:18px">数据传送</h4><p style="font-size:15px">DMA 直接在主存↔外设间搬，CPU 干自己的</p></div>
+                <div class="arrow-v" style="width:26px;font-size:24px">→</div>
+                <div class="step" style="padding:12px 14px;background:#FFF0F3"><div class="n">3</div><h4 style="font-size:18px">后处理</h4><p style="font-size:15px">传完发中断，CPU 校验、继续</p></div>
+              </div>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFE3DD">
+              <div class="ico">🚚</div>
+              <p>DMA 像<b>专门的搬运工</b>：主厨说「把这车菜搬进冷库」，搬运工自己搬完再来汇报，主厨全程不用动手。</p>
+            </div>
+            <div class="card anim" style="--i:3;background:#FFF2C9">
+              <p class="body" style="font-size:19px"><b>常考：</b>DMA 传送的是<b>数据块</b>，中断传送的是<b>字节/字</b>；DMA 请求的是<b>总线使用权</b>，中断请求的是 <b>CPU 处理时间</b>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 38 DMA 三种方式 ============ -->
+    <section class="slide" data-chapter="io" data-title="DMA 的三种工作方式">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">必考图</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">DMA 三种方式：谁先让路？</span></h2>
+          </div>
+          <div class="page-badge">IO / 09</div>
+        </div>
+
+        <div class="stack anim" style="--i:0;margin-top:2px;gap:14px">
+          <div>
+            <div class="row" style="gap:10px;margin-bottom:6px"><span class="chip c-coral">① 停止 CPU 访存</span><span class="small">DMA 传送时，CPU 不能访问主存</span></div>
+            <div class="timeline">
+              <div class="tl-row">
+                <div class="tl-label">CPU</div>
+                <div class="tl-track">
+                  <div class="seg cpu" style="flex:6">执行程序</div>
+                  <div class="seg idle" style="flex:5">暂停访存</div>
+                  <div class="seg cpu" style="flex:5">执行程序</div>
+                </div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-label">DMA</div>
+                <div class="tl-track">
+                  <div class="seg idle" style="flex:6">空闲</div>
+                  <div class="seg dma" style="flex:5">传送一批数据</div>
+                  <div class="seg idle" style="flex:5">空闲</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row" style="gap:10px;margin-bottom:6px"><span class="chip c-mint">② 周期挪用（周期窃取）</span><span class="small">DMA 趁 CPU 不访存的空档插队</span></div>
+            <div class="timeline">
+              <div class="tl-row" style="height:64px">
+                <div class="tl-label" style="height:64px">CPU</div>
+                <div class="tl-track" style="gap:2px">
+                  <div class="seg cpu" style="flex:2">取指</div><div class="seg cpu" style="flex:2">执行</div>
+                  <div class="seg idle" style="flex:1">—</div><div class="seg cpu" style="flex:2">执行</div>
+                  <div class="seg idle" style="flex:1">—</div><div class="seg cpu" style="flex:2">取指</div>
+                </div>
+              </div>
+              <div class="tl-row" style="height:64px">
+                <div class="tl-label" style="height:64px">DMA</div>
+                <div class="tl-track" style="gap:2px">
+                  <div class="seg idle" style="flex:2">—</div><div class="seg idle" style="flex:2">—</div>
+                  <div class="seg dma" style="flex:1">搬</div><div class="seg idle" style="flex:2">—</div>
+                  <div class="seg dma" style="flex:1">搬</div><div class="seg idle" style="flex:2">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row" style="gap:10px;margin-bottom:6px"><span class="chip c-lilac">③ 交替访问</span><span class="small">时间片分给两边，各用各的</span></div>
+            <div class="timeline">
+              <div class="tl-row" style="height:64px">
+                <div class="tl-label" style="height:64px">CPU</div>
+                <div class="tl-track" style="gap:2px">
+                  <div class="seg cpu" style="flex:1">C</div><div class="seg idle" style="flex:1">—</div>
+                  <div class="seg cpu" style="flex:1">C</div><div class="seg idle" style="flex:1">—</div>
+                  <div class="seg cpu" style="flex:1">C</div><div class="seg idle" style="flex:1">—</div>
+                </div>
+              </div>
+              <div class="tl-row" style="height:64px">
+                <div class="tl-label" style="height:64px">DMA</div>
+                <div class="tl-track" style="gap:2px">
+                  <div class="seg idle" style="flex:1">—</div><div class="seg dma" style="flex:1">D</div>
+                  <div class="seg idle" style="flex:1">—</div><div class="seg dma" style="flex:1">D</div>
+                  <div class="seg idle" style="flex:1">—</div><div class="seg dma" style="flex:1">D</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:1;margin-top:16px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#EFFAF3"><div class="ico">⚡</div><p><b>周期挪用最常用：</b>CPU 几乎不受影响，DMA 每次只偷一个存取周期。</p></div>
+          <div class="tip" style="flex:1;background:#FFF2C9"><div class="ico">🧠</div><p><b>谁效率最高？</b>交替访问 &gt; 周期挪用 &gt; 停止 CPU；硬件复杂度也是这个顺序。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 39 DMA vs 中断 ============ -->
+    <section class="slide" data-chapter="io" data-title="DMA 与中断的区别">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">高频对比</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">DMA vs 中断：别再傻傻分不清</span></h2>
+          </div>
+          <div class="page-badge">IO / 10</div>
+        </div>
+
+        <div class="anim" style="--i:0;margin-top:4px">
+          <table class="tbl">
+            <thead>
+              <tr><th style="width:220px">对比项</th><th style="width:360px">程序中断方式</th><th>DMA 方式</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>数据传送</b></td><td>由 CPU 执行程序完成，经 CPU 寄存器</td><td class="em">由 DMA 控制器直接完成，不经 CPU</td></tr>
+              <tr><td><b>传送单位</b></td><td>字节 / 字</td><td class="em">数据块</td></tr>
+              <tr><td><b>请求的是什么</b></td><td>CPU 的处理时间</td><td class="em">总线的使用权</td></tr>
+              <tr><td><b>响应时机</b></td><td>一条指令执行结束后</td><td class="em">一个存取周期结束后即可</td></tr>
+              <tr><td><b>CPU 开销</b></td><td>每次传送都要进中断服务程序</td><td class="em">只在开始和结束时介入</td></tr>
+              <tr><td><b>优先级</b></td><td>低于 DMA</td><td class="em">高于中断（数据不能丢）</td></tr>
+              <tr><td><b>适用场景</b></td><td>低速设备、随机事件、实时控制</td><td class="em">高速设备、大批量数据（磁盘、网卡）</td></tr>
+              <tr><td><b>是否保存断点</b></td><td>要保存现场和断点</td><td class="em">不破坏 CPU 现场</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid3" style="--i:1;margin-top:20px">
+          <div class="tip" style="background:#FFF0F3"><div class="ico">🔔</div><p><b>中断 = 敲门</b>：每送一个字节，CPU 都要起身处理。</p></div>
+          <div class="tip" style="background:#EFFAF3"><div class="ico">🚚</div><p><b>DMA = 搬家</b>：整批搬完再汇报，CPU 只在头尾出现。</p></div>
+          <div class="tip" style="background:#FFF2C9"><div class="ico">⚠️</div><p>DMA 传送结束后<b>仍然会发中断</b>通知 CPU，别以为 DMA 完全不用中断。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 40 通道 ============ -->
+    <section class="slide" data-chapter="io" data-title="通道：I/O 的专职管家">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.6 通道</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">通道：一台专门管 I/O 的小处理器</span></h2>
+          </div>
+          <div class="page-badge">IO / 11</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🧠 通道 vs DMA</h3>
+              <p class="body" style="font-size:21px">DMA 一次只能管<b>一台（或少数几台）设备</b>的一次数据块传送；<br>
+              通道能执行<b>通道指令</b>，一次控制<b>多台设备</b>，是「弱化的处理器」。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🗂️ 三种通道类型</h3>
+              <ul class="list tight">
+                <li><b>字节多路通道</b>：多个低速设备，按<b>字节</b>交叉服务</li>
+                <li><b>数组多路通道</b>：多个高速设备，按<b>数据块</b>交叉服务</li>
+                <li><b>选择通道</b>：一次只服务<b>一台高速设备</b>，独占通道</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF9E8;padding:18px 22px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">📜 通道靠什么工作</h3>
+              <p class="body" style="font-size:19px">执行<b>通道指令</b>（通道程序），指令放在主存里。CPU 只需在 FCB / CAW 中写清「从哪读、写到哪、多少字节」。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFFCF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:10px">⚖️ 三种通道对比</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th>类型</th><th>服务对象</th><th>方式</th><th>典型</th></tr></thead>
+                <tbody>
+                  <tr><td><b>字节多路</b></td><td>多台低速</td><td>字节交叉</td><td>键盘、终端</td></tr>
+                  <tr><td><b>数组多路</b></td><td>多台高速</td><td>块交叉</td><td>磁盘</td></tr>
+                  <tr><td><b>选择</b></td><td>单台高速</td><td>独占</td><td>磁带</td></tr>
+                </tbody>
+              </table>
+              <p class="small" style="margin-top:8px">记忆：<b>字节多路管「多而慢」，数组多路管「多而快」，选择通道管「一台快的」。</b></p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#EFFAF3">
+              <div class="ico">👔</div>
+              <p>通道像<b>外包的后厨团队</b>：主厨只说「准备 100 份套餐」，剩下怎么分工、谁先做，全由团队长安排。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 41 磁盘结构 ============ -->
+    <section class="slide" data-chapter="io" data-title="磁盘：容量与存取时间">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">5.2 外存</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">磁盘：算容量、算时间，都是送分题</span></h2>
+          </div>
+          <div class="page-badge">IO / 12</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">💿 先认识几个词</h3>
+              <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:#EAF7FF;border:2px solid rgba(46,41,37,.35);border-radius:10px;padding:10px"><b style="font-size:18px">盘面</b><p class="small" style="font-size:15px">每个盘片两个面</p></div>
+                <div style="background:#FFF2C9;border:2px solid rgba(46,41,37,.35);border-radius:10px;padding:10px"><b style="font-size:18px">磁道</b><p class="small" style="font-size:15px">一圈同心圆</p></div>
+                <div style="background:#EFFAF3;border:2px solid rgba(46,41,37,.35);border-radius:10px;padding:10px"><b style="font-size:18px">柱面</b><p class="small" style="font-size:15px">各盘面同号磁道组成</p></div>
+                <div style="background:#FFF0F3;border:2px solid rgba(46,41,37,.35);border-radius:10px;padding:10px"><b style="font-size:18px">扇区</b><p class="small" style="font-size:15px">磁道再切成的弧段</p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:1;background:#FFF9E8">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">📐 容量公式</h3>
+              <p class="body" style="font-size:21px">容量 = <b>记录面数 × 磁道数/面 × 扇区数/道 × 扇区容量</b></p>
+              <p class="small" style="margin-top:8px">磁盘地址 = <b>柱面号 + 磁头号 + 扇区号</b>。寻道找柱面，选头定盘面，旋转等扇区。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF0F3;padding:18px 22px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">🐢 为什么磁盘「慢」</h3>
+              <p class="body" style="font-size:19px"><b>寻道时间占大头</b>，通常几毫秒；机械动作决定了它和内存差好几个数量级。这也是 SSD 存在的理由。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EAF7FF">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:10px">⏱️ 存取时间 = 三段时间之和</h3>
+              <div class="stack sm">
+                <div class="row" style="gap:10px"><span class="chip c-lilac" style="flex:none">寻道</span><p class="body" style="font-size:19px">磁头移到目标磁道，<b>最慢</b></p></div>
+                <div class="row" style="gap:10px"><span class="chip c-coral" style="flex:none">旋转</span><p class="body" style="font-size:19px">等目标扇区转到磁头下，平均 <b>半圈</b></p></div>
+                <div class="row" style="gap:10px"><span class="chip c-mint" style="flex:none">传输</span><p class="body" style="font-size:19px">读出/写入数据本身</p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:6px">🔁 转速换算</h3>
+              <p class="body" style="font-size:20px">7200 r/min = <b>120 r/s</b><br>
+              平均旋转延迟 = 60 / (2 × 7200) ≈ <b>4.17 ms</b><br>
+              转一圈 = 60 / 7200 ≈ <b>8.33 ms</b></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 42 磁盘计算例题 ============ -->
+    <section class="slide" data-chapter="io" data-title="例题：磁盘传输率怎么算">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">手把手例题</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">转速 7200 转/分，传输率是多少？</span></h2>
+          </div>
+          <div class="page-badge">IO / 13</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:.95fr 1.05fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF7FF">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">题目</h3>
+              <p class="body" style="font-size:20px">磁盘转速 <b>7200 r/min</b>，每个磁道 <b>500 个扇区</b>，每扇区 <b>512 B</b>。求：<br>
+              ① 平均旋转延迟　② 读一个扇区的时间　③ 数据传输率</p>
+            </div>
+            <div class="card anim" style="--i:1;background:#FFF9E8">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">① 平均旋转延迟</h3>
+              <p class="body" style="font-size:20px">转一圈时间 = 60 ÷ 7200 = <b>8.33 ms</b><br>
+              平均等半圈 = 8.33 ÷ 2 ≈ <b class="hl">4.17 ms</b></p>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">② 读一个扇区</h3>
+              <p class="body" style="font-size:20px">8.33 ms ÷ 500 ≈ <b class="hl">0.0167 ms</b></p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFFCF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">③ 数据传输率</h3>
+              <p class="body" style="font-size:20px">每秒转 120 圈，每圈 500 × 512 B：<br>
+              <b>120 × 500 × 512 B = 30 720 000 B/s</b><br>
+              ≈ <b class="hl">30.7 MB/s</b></p>
+              <p class="small" style="margin-top:8px">也可以：512 B ÷ 0.0167 ms ≈ 30.7 MB/s，两种算法互相验证。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFE3DD">
+              <div class="ico">📝</div>
+              <p><b>答题模板：</b>先写公式 → 代数字 → 带单位。平均旋转延迟一定用「半圈」，不是一整圈。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#EAF7FF">
+              <div class="ico">🧮</div>
+              <p>若题目给的是「平均寻道时间」，总存取时间 = 寻道 + 旋转 + 传输，<b>三项相加</b>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 43 四种方式终极对比 ============ -->
+    <section class="slide" data-chapter="io" data-title="四种 I/O 方式终极对比">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">大题必背</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#BFE6FA">查询 / 中断 / DMA / 通道：终极对比</span></h2>
+          </div>
+          <div class="page-badge">IO / 14</div>
+        </div>
+
+        <div class="anim" style="--i:0;margin-top:4px">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:160px">对比项</th>
+                <th>程序查询</th>
+                <th>程序中断</th>
+                <th>DMA</th>
+                <th>通道</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><b>CPU 参与</b></td><td class="em">全程等待</td><td>每次传送都介入</td><td>头尾介入</td><td class="em">只发命令</td></tr>
+              <tr><td><b>传送单位</b></td><td>字节/字</td><td>字节/字</td><td>数据块</td><td>一组数据块</td></tr>
+              <tr><td><b>并行性</b></td><td>CPU 与设备串行</td><td>CPU 与设备并行</td><td>并行度更高</td><td class="em">最高</td></tr>
+              <tr><td><b>硬件</b></td><td>最简单</td><td>需中断控制器</td><td>需 DMA 控制器</td><td class="em">需通道处理器</td></tr>
+              <tr><td><b>数据通路</b></td><td>经 CPU</td><td>经 CPU</td><td class="em">直接访存</td><td>直接访存</td></tr>
+              <tr><td><b>适用设备</b></td><td>极低速</td><td>低速、随机事件</td><td>高速块设备</td><td class="em">多台高速设备</td></tr>
+              <tr><td><b>成本</b></td><td>最低</td><td>中</td><td>较高</td><td>最高</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:18px;grid-template-columns:1fr 1fr">
+          <div class="tip" style="background:#EFFAF3"><div class="ico">📈</div><p><b>演进主线：</b>CPU 参与越来越少，数据传送单位越来越大，硬件越来越复杂。</p></div>
+          <div class="tip" style="background:#FFF2C9"><div class="ico">🎯</div><p><b>一句话选择：</b>慢设备用查询，随机事件用中断，大块高速用 DMA，多设备托管用通道。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 44 I/O 速记卡 ============ -->
+    <section class="slide" data-chapter="io" data-title="I/O 系统速记卡">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-coral">考前一晚看这页</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#FFC2B7">输入输出系统 · 18 条速记</span></h2>
+          </div>
+          <div class="page-badge">IO / 15</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:40px">
+          <div class="card anim" style="--i:0;padding:22px 26px">
+            <div class="chip c-coral" style="margin-bottom:12px">接口与中断</div>
+            <ul class="list tight" style="gap:9px">
+              <li>接口功能：缓冲、检错、控制、译码、转换、中断</li>
+              <li>统一编址用<b>访存指令</b>，独立编址用<b>I/O 指令</b></li>
+              <li>中断响应条件：<b>有请求 + 开中断 + 指令结束</b></li>
+              <li>响应过程：<b>关中断、保存断点、识别中断源</b></li>
+              <li>断点 = <b>PC</b>；现场 = 寄存器 + PSW</li>
+              <li>中断服务最后：恢复现场、开中断、<b>IRET</b></li>
+              <li>多重中断要<b>提前开中断</b></li>
+              <li>屏蔽字可<b>动态调整优先级</b></li>
+            </ul>
+          </div>
+
+          <div class="card anim" style="--i:1;padding:22px 26px;background:#FFF9E8">
+            <div class="chip c-butter" style="margin-bottom:12px">DMA、通道与磁盘</div>
+            <ul class="list tight" style="gap:9px">
+              <li>DMA 请求的是<b>总线使用权</b>，不破坏 CPU 现场</li>
+              <li>DMA 传送<b>数据块</b>，中断传送<b>字节/字</b></li>
+              <li>DMA 优先级<b>高于</b>中断</li>
+              <li>DMA 三步：<b>预处理 → 传送 → 后处理</b></li>
+              <li>三种方式：<b>停止 CPU、周期挪用、交替访问</b></li>
+              <li>通道分：<b>字节多路、数组多路、选择</b></li>
+              <li>磁盘存取 = <b>寻道 + 旋转 + 传输</b></li>
+              <li>平均旋转延迟 = <b>60 / (2 × 转速)</b></li>
+              <li>容量 = 面数 × 道数 × 扇区数 × 扇区容量</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#EFFAF3"><div class="ico">✍️</div><p><b>大题高频：</b>中断响应过程、DMA 与中断对比、磁盘存取时间计算。</p></div>
+          <div class="tip" style="flex:1;background:#EAF7FF"><div class="ico">✅</div><p><b>选择题高频：</b>三种通道区别、DMA 三种方式、中断屏蔽与嵌套。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 45 串讲与结尾 ============ -->
+    <section class="chapter" data-chapter="end" data-title="两章串讲与复习路线" style="background:linear-gradient(135deg,#FFF6E4 0%,#FFF0C6 50%,#FFE39A 100%)">
+      <div class="slide-inner" style="justify-content:center;padding:0 20px">
+        <div class="blob" style="width:420px;height:420px;background:#8FDCB9;right:-100px;top:-120px;opacity:.45"></div>
+        <div class="blob ring" style="width:260px;height:260px;left:-70px;bottom:40px"></div>
+        <div style="position:relative;z-index:3;max-width:1600px">
+          <div class="chip c-butter anim" style="--i:0;margin-bottom:22px">🎓 收尾 · 把两章连起来</div>
+          <h1 class="anim" style="--i:1;font-family:'ZCOOL KuaiLe',cursive;font-size:74px;line-height:1.1;margin-bottom:18px">
+            一个在「外面送快递」，一个在「里面开后厨」
+          </h1>
+          <p class="anim body" style="--i:2;font-size:26px;max-width:1300px;color:var(--ink-soft)">
+            看起来八竿子打不着，其实解决的是同一个问题：<b style="color:var(--ink)">把「搬数据」这件事，从核心处理器手里剥离出去。</b>
+          </p>
+
+          <div class="grid2 anim" style="--i:3;margin-top:30px;grid-template-columns:1fr 1fr;gap:26px">
+            <div class="card" style="background:#EAF7FF">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">🌐 网络层：分层 + 转发 + 路由</h3>
+              <p class="body" style="font-size:19px">每台路由器只查表转发，全局靠路由协议算路；可靠性交给端系统。</p>
+            </div>
+            <div class="card" style="background:#FFF0EC">
+              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">🍳 I/O 系统：接口 + 中断 + DMA</h3>
+              <p class="body" style="font-size:19px">CPU 只下命令，接口做翻译，DMA/通道做搬运；并行度越高，CPU 越自由。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:4;margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+            <span class="chip c-sky">① 先看速记卡</span>
+            <span class="chip c-coral">② 动手算三道题</span>
+            <span class="chip c-mint">③ 合上书讲一遍比喻</span>
+            <span class="chip c-butter">④ 再回来看对比表</span>
+          </div>
+          <p class="anim" style="--i:5;margin-top:26px;font-size:22px;font-weight:700;color:var(--ink-soft)">
+            学习愉快 · 考试顺利 · 按 <span class="code">M</span> 回目录，按 <span class="code">Home</span> 回封面
+          </p>
+          <p class="anim" style="--i:5;margin-top:10px;font-size:17px;color:var(--ink-soft)">
+            需要纸质版？浏览器里按 <span class="code">Ctrl / Cmd + P</span> 可直接导出 PDF（每页一张）。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==== SLIDES_INSERT ==== -->
+
+    <!-- ============ 模拟横屏控制条 ============ -->
+    <div class="landscape-ui">
+      <button class="nav prev" id="lsPrev" type="button" aria-label="上一页">‹</button>
+      <button class="nav next" id="lsNext" type="button" aria-label="下一页">›</button>
+      <button class="exit" id="lsExit" type="button">退出横屏</button>
+      <div class="hint-bar">把手机横过来看 · 左右按钮翻页</div>
+    </div>
+
+    <!-- ============ HUD ============ -->
+    <div class="hud">
+      <div class="hud-edit" id="editBtn" title="编辑文字 (E)">✎</div>
+      <div class="hud-toc" id="tocBtn" title="总目录 (M)">☰ 目录</div>
+      <div class="hud-chip" id="chapterChip"><span class="dot"></span><span id="chapterText">封面</span></div>
+      <div class="hud-bottom">
+        <div class="hint"><span class="kbd">←</span><span class="kbd">→</span><span>翻页</span><span class="kbd">M</span><span>目录</span></div>
+        <div class="page-num"><b id="pNow">01</b> / <span id="pAll">45</span></div>
+        <div class="progress"><div class="progress-bar" id="pBar"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ 目录浮层 ============ -->
+<div id="toc">
+  <div class="toc-panel">
+    <div class="toc-head">
+      <h2>整本小抄 · 45 页</h2>
+      <button class="toc-close" id="tocClose">关闭 ✕</button>
+    </div>
+    <div id="tocBody"></div>
+  </div>
+</div>
+
+<div class="edit-bar">✎ 编辑模式已开启 · 点文字直接改 · <b>按 Esc 退出</b></div>
+<button class="rotate-btn" id="rotateBtn" type="button">📱 横屏看</button>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* === 舞台等比缩放 === */
+const stage = document.getElementById('stage');
+function fitStage(){
+  // 模拟横屏时，舞台宽高与视口宽高互换，保证内容旋转后完整铺满
+  const rotated = document.body.classList.contains('force-landscape');
+  const s = rotated
+    ? Math.min(window.innerHeight / 1920, window.innerWidth / 1080)
+    : Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  document.documentElement.style.setProperty('--scale', s);
+}
+fitStage();
+window.addEventListener('resize', () => {
+  // 用户真的把手机横过来（系统自动旋转）时，自动退出模拟横屏
+  if (window.innerWidth > window.innerHeight && document.body.classList.contains('force-landscape')) {
+    document.body.classList.remove('force-landscape');
+    resetRotateBtn();
+    fitStage();
+  }
+});
+
+/* === 幻灯片调度 === */
+const slides = Array.from(document.querySelectorAll('.slide, .chapter'));
+const total = slides.length;
+let cur = 0;
+
+const chapterMap = {
+  cover:{text:'封面 · 使用说明',color:'#FFD66E'},
+  net:{text:'PART 1 · 网络层',color:'#8AC9EE'},
+  io:{text:'PART 2 · 输入输出系统',color:'#FF8B79'},
+  end:{text:'复习收尾',color:'#8FDCB9'}
+};
+
+const pNow = document.getElementById('pNow');
+const pAll = document.getElementById('pAll');
+const pBar = document.getElementById('pBar');
+const chapterChip = document.getElementById('chapterChip');
+const chapterText = document.getElementById('chapterText');
+
+pAll.textContent = String(total).padStart(2,'0');
+
+function animateIn(slide){
+  const items = slide.querySelectorAll('.anim');
+  items.forEach(el => { el.style.transitionDelay = '0ms'; });
+  // 强制回流后按顺序延迟
+  void slide.offsetWidth;
+  items.forEach((el, i) => {
+    el.style.transitionDelay = (110 + i * 65) + 'ms';
+  });
+}
+
+function go(n){
+  n = Math.max(0, Math.min(total - 1, n));
+  if (n === cur && slides[cur].classList.contains('active')) return;
+  slides.forEach((s, i) => s.classList.toggle('active', i === n));
+  cur = n;
+
+  const s = slides[n];
+  animateIn(s);
+
+  pNow.textContent = String(n + 1).padStart(2,'0');
+  pBar.style.width = ((n + 1) / total * 100) + '%';
+
+  const ch = s.dataset.chapter || 'cover';
+  const meta = chapterMap[ch] || chapterMap.cover;
+  chapterText.textContent = meta.text;
+  chapterChip.style.background = meta.color;
+  chapterChip.querySelector('.dot').style.background = meta.color;
+
+  history.replaceState(null, '', '#' + (n + 1));
+}
+
+/* 初始化：直接落到指定页或第一页 */
+const hashPage = parseInt(location.hash.replace('#',''), 10);
+const start = (hashPage && hashPage >= 1 && hashPage <= total) ? hashPage - 1 : 0;
+slides[start].classList.add('active');
+cur = -1;
+go(start);
+
+/* === 键盘 === */
+document.addEventListener('keydown', (e) => {
+  if (document.body.classList.contains('editing')) {
+    if (e.key === 'Escape') { e.preventDefault(); toggleEdit(false); }
+    return;
+  }
+  switch(e.key){
+    case 'ArrowRight': case 'PageDown': case ' ': e.preventDefault(); go(cur + 1); break;
+    case 'ArrowLeft': case 'PageUp': e.preventDefault(); go(cur - 1); break;
+    case 'Home': e.preventDefault(); go(0); break;
+    case 'End': e.preventDefault(); go(total - 1); break;
+    case 'm': case 'M': e.preventDefault(); toggleToc(); break;
+    case 'e': case 'E': e.preventDefault(); toggleEdit(true); break;
+    case 'f': case 'F': e.preventDefault(); toggleFullscreen(); break;
+    case 'Escape': if (tocEl.classList.contains('open')) toggleToc(); break;
+  }
+});
+
+/* === 触屏滑动 === */
+let tx = 0, ty = 0, tracking = false;
+document.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) return;
+  tx = e.touches[0].clientX; ty = e.touches[0].clientY; tracking = true;
+}, {passive:true});
+document.addEventListener('touchend', e => {
+  if (!tracking || document.body.classList.contains('editing')) return;
+  if (document.body.classList.contains('force-landscape')) return;
+  tracking = false;
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    go(cur + (dx < 0 ? 1 : -1));
+  }
+}, {passive:true});
+
+/* === 滚轮翻页（节流，避免触控板过灵敏）=== */
+let wheelLock = false;
+document.addEventListener('wheel', e => {
+  if (document.body.classList.contains('editing')) return;
+  if (tocEl.classList.contains('open')) return;
+  if (Math.abs(e.deltaY) < 26 || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  if (wheelLock) return;
+  wheelLock = true;
+  go(cur + (e.deltaY > 0 ? 1 : -1));
+  setTimeout(() => wheelLock = false, 620);
+}, {passive:true});
+
+/* === 全屏 === */
+function toggleFullscreen(){
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+}
+
+/* === 目录 === */
+const tocEl = document.getElementById('toc');
+const tocBody = document.getElementById('tocBody');
+const tocBtn = document.getElementById('tocBtn');
+const tocClose = document.getElementById('tocClose');
+
+function buildToc(){
+  const groups = {cover:'起点', net:'PART 1 · 网络层', io:'PART 2 · 输入输出系统', end:'收尾'};
+  const colors = {cover:'#FFD66E', net:'#8AC9EE', io:'#FF8B79', end:'#8FDCB9'};
+  const html = Object.keys(groups).map(key => {
+    const entries = slides.map((s,i) => ({s,i}))
+      .filter(x => (x.s.dataset.chapter === key));
+    if (!entries.length) return '';
+    return `<div class="toc-group">
+      <h3><i style="background:${colors[key]}"></i>${groups[key]}</h3>
+      <div class="toc-grid">
+        ${entries.map(({s,i}) => {
+          const title = s.dataset.title || s.querySelector('h1,h2,h3,.s-title')?.textContent.trim() || ('第 '+(i+1)+' 页');
+          return `<button class="toc-item" data-go="${i}"><span>${String(i+1).padStart(2,'0')}</span>${title}</button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  tocBody.innerHTML = html;
+  tocBody.querySelectorAll('[data-go]').forEach(b => {
+    b.addEventListener('click', () => {
+      go(parseInt(b.dataset.go, 10));
+      toggleToc(false);
+    });
+  });
+}
+function toggleToc(force){
+  const open = force === undefined ? !tocEl.classList.contains('open') : force;
+  tocEl.classList.toggle('open', open);
+}
+tocBtn.addEventListener('click', () => toggleToc());
+tocClose.addEventListener('click', () => toggleToc(false));
+tocEl.addEventListener('click', e => { if (e.target === tocEl) toggleToc(false); });
+
+/* === 编辑模式 === */
+const editBtn = document.getElementById('editBtn');
+function toggleEdit(force){
+  const on = force === undefined ? !document.body.classList.contains('editing') : force;
+  document.body.classList.toggle('editing', on);
+  const inner = slides[cur].querySelector('.slide-inner, .chapter > .slide-inner') || slides[cur];
+  if (on) {
+    slides.forEach(s => {
+      const target = s.querySelector('.slide-inner');
+      if (target) target.setAttribute('contenteditable','true');
+    });
+  } else {
+    slides.forEach(s => {
+      const target = s.querySelector('.slide-inner');
+      if (target) target.removeAttribute('contenteditable');
+    });
+  }
+}
+editBtn.addEventListener('click', () => toggleEdit());
+
+/* === 横屏观看：优先真实锁定，失败则整体旋转模拟 === */
+const rotateBtn = document.getElementById('rotateBtn');
+const toastEl = document.getElementById('toast');
+const lsPrev = document.getElementById('lsPrev');
+const lsNext = document.getElementById('lsNext');
+const lsExit = document.getElementById('lsExit');
+let toastTimer = null;
+
+function showToast(msg, ms = 3600){
+  if (!toastEl) return;
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+}
+function resetRotateBtn(){
+  if (!rotateBtn) return;
+  rotateBtn.textContent = '📱 横屏看';
+  rotateBtn.classList.remove('on');
+}
+function exitLandscape(){
+  document.body.classList.remove('force-landscape');
+  try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e) {}
+  if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
+  fitStage();
+  resetRotateBtn();
+}
+async function enterLandscape(){
+  let locked = false;
+  try {
+    const canFs = !!document.documentElement.requestFullscreen;
+    const canLock = !!(screen.orientation && screen.orientation.lock);
+    if (canFs && canLock) {
+      await document.documentElement.requestFullscreen();
+      await screen.orientation.lock('landscape');
+      locked = window.innerWidth > window.innerHeight;
+    }
+  } catch (err) { locked = false; }
+
+  if (!locked) {
+    // 兜底：把整个舞台旋转 90°，任何手机都能「看横屏」
+    document.body.classList.add('force-landscape');
+    fitStage();
+    showToast('已切换横屏，把手机横过来看 👉');
+  }
+  rotateBtn.classList.add('on');
+  rotateBtn.textContent = '✕ 退出横屏';
+}
+function toggleLandscape(){
+  const on = document.body.classList.contains('force-landscape') || !!document.fullscreenElement;
+  if (on) exitLandscape(); else enterLandscape();
+}
+if (rotateBtn) rotateBtn.addEventListener('click', toggleLandscape);
+if (lsPrev) lsPrev.addEventListener('click', () => go(cur - 1));
+if (lsNext) lsNext.addEventListener('click', () => go(cur + 1));
+if (lsExit) lsExit.addEventListener('click', exitLandscape);
+
+window.addEventListener('orientationchange', () => {
+  if (window.innerWidth > window.innerHeight) {
+    document.body.classList.remove('force-landscape');
+    fitStage();
+    resetRotateBtn();
+  }
+});
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && !document.body.classList.contains('force-landscape')) resetRotateBtn();
+});
+
+/* === 初始化目录 === */
+buildToc();
+
+/* === 暴露给调试 === */
+window.__deck = {go, total, slides};
+</script>
+</body>
+</html>
