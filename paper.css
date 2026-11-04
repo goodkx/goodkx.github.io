@@ -2289,3 +2289,238 @@ html[data-theme="deepseek"] .bg-glow { display: block !important; opacity: 0.6 !
   html[data-theme="deepseek"] .pages-grid > :first-child { grid-column: span 1 !important; padding: 24px 20px !important; }
   html[data-theme="deepseek"] .section { padding-block: 56px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHT REDESIGN · 纯白 + 墨绿 + 衬线标题
+   与深色（近黑+琥珀）成对，布局同为顶部导航 + 1280
+   ═══════════════════════════════════════════════════════════ */
+
+:root,
+html[data-theme="paper"] {
+  --bg: #fbfbfa;
+  --bg-soft: #f4f4f2;
+  --card: #ffffff;
+  --elevated: #fefefe;
+  --border: rgba(17, 18, 20, 0.08);
+  --border-strong: rgba(17, 18, 20, 0.16);
+  --text: #111214;
+  --text-inv: #fbfbfa;
+  --muted: #6b7078;
+  --dim: #9aa0a8;
+  --accent: #1f6f5c;
+  --accent-2: #a8442a;
+  --accent-rgb: 31, 111, 92;
+  --accent-2-rgb: 168, 68, 42;
+  --accent-ink: #ffffff;
+  --gradient: linear-gradient(120deg, #1f6f5c, #a8442a);
+  --paper: #fbfbfa;
+  --paper-2: #ffffff;
+  --paper-3: #f4f4f2;
+  --ink: #111214;
+  --ink-soft: #3a3d42;
+  --line: rgba(17, 18, 20, 0.08);
+  --line-soft: rgba(17, 18, 20, 0.05);
+  --panel: #ffffff;
+  --nav-bg: rgba(251, 251, 250, 0.86);
+  --radius: 10px;
+  --serif: Georgia, "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  --shadow-1: 0 1px 2px rgba(17, 18, 20, 0.04), 0 12px 28px -18px rgba(17, 18, 20, 0.18);
+  --shadow-2: 0 2px 4px rgba(17, 18, 20, 0.05), 0 20px 44px -20px rgba(17, 18, 20, 0.24);
+  --chip-c: #1f6f5c;
+  --chip-bg: rgba(31, 111, 92, 0.07);
+  --chip-bd: rgba(31, 111, 92, 0.18);
+}
+
+/* 背景：纯白 + 顶部一点柔光 */
+html[data-theme="paper"] body,
+html:not([data-theme]) body {
+  background:
+    radial-gradient(1100px 520px at 50% -10%, #ffffff 0%, rgba(255, 255, 255, 0) 60%),
+    #fbfbfa !important;
+}
+html[data-theme="paper"] body::after,
+html:not([data-theme]) body::after { opacity: 0.018 !important; }
+
+/* 标题：衬线 */
+html[data-theme="paper"] h1,
+html[data-theme="paper"] h2,
+html[data-theme="paper"] h3,
+html:not([data-theme]) h1,
+html:not([data-theme]) h2,
+html:not([data-theme]) h3,
+html[data-theme="paper"] .hero-title,
+html[data-theme="paper"] .section-title,
+html:not([data-theme]) .hero-title,
+html:not([data-theme]) .section-title {
+  font-family: Georgia, "Songti SC", "Noto Serif CJK SC", serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text) !important;
+}
+
+/* 导航：与深色同一结构，白底细线 */
+html[data-theme="paper"] .nav,
+html:not([data-theme]) .nav {
+  position: sticky !important;
+  top: 0 !important;
+  height: 64px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: var(--nav-bg) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+html[data-theme="paper"] .nav-inner,
+html:not([data-theme]) .nav-inner {
+  width: min(1280px, 92%) !important;
+  height: 64px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-theme="paper"] .nav.hide,
+html:not([data-theme]) .nav.hide {
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* 内容宽度：1280 居中 */
+html[data-theme="paper"] .container,
+html[data-theme="paper"] .hero-inner,
+html:not([data-theme]) .container,
+html:not([data-theme]) .hero-inner {
+  width: min(1280px, 92%) !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+}
+html[data-theme="paper"] .hero-inner,
+html:not([data-theme]) .hero-inner {
+  grid-template-columns: 1.22fr 1fr !important;
+  gap: clamp(40px, 5vw, 80px) !important;
+  align-items: center !important;
+}
+html[data-theme="paper"] .hero,
+html:not([data-theme]) .hero {
+  min-height: calc(100vh - 64px) !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 64px 0 !important;
+}
+html[data-theme="paper"] .section,
+html:not([data-theme]) .section { padding-block: 88px !important; }
+
+/* 卡片：白底 + 1px 边 + 柔和阴影 */
+html[data-theme="paper"] .page-card,
+html[data-theme="paper"] .feat-card,
+html[data-theme="paper"] .post,
+html[data-theme="paper"] .hscroll-item,
+html[data-theme="paper"] .tool-card,
+html[data-theme="paper"] .project-card,
+html[data-theme="paper"] .skill-card,
+html[data-theme="paper"] .az-item,
+html[data-theme="paper"] .terminal,
+html[data-theme="paper"] .mini-shop,
+html[data-theme="paper"] .code-card,
+html[data-theme="paper"] .contact-box,
+html:not([data-theme]) .page-card,
+html:not([data-theme]) .feat-card,
+html:not([data-theme]) .post,
+html:not([data-theme]) .hscroll-item,
+html:not([data-theme]) .terminal,
+html:not([data-theme]) .mini-shop {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-1) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-theme="paper"] .page-card:hover,
+html[data-theme="paper"] .feat-card:hover,
+html[data-theme="paper"] .post:hover,
+html:not([data-theme]) .page-card:hover,
+html:not([data-theme]) .feat-card:hover {
+  background: #ffffff !important;
+  border-color: rgba(31, 111, 92, 0.3) !important;
+  box-shadow: var(--shadow-2) !important;
+  transform: none !important;
+}
+
+/* 卡片网格 */
+html[data-theme="paper"] .pages-grid:not(.hscroll),
+html:not([data-theme]) .pages-grid:not(.hscroll) {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+  columns: auto !important;
+  margin-top: 36px !important;
+}
+html[data-theme="paper"] .pages-grid:not(.hscroll) > *,
+html:not([data-theme]) .pages-grid:not(.hscroll) > * {
+  margin: 0 !important;
+  min-height: 0 !important;
+  padding: 26px 24px !important;
+}
+html[data-theme="paper"] .pages-grid > :first-child,
+html:not([data-theme]) .pages-grid > :first-child {
+  grid-column: span 3 !important;
+  column-span: none !important;
+  padding: 32px 30px !important;
+}
+
+/* 按钮 */
+html[data-theme="paper"] .btn-primary,
+html:not([data-theme]) .btn-primary {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+html[data-theme="paper"] .btn-primary:hover,
+html:not([data-theme]) .btn-primary:hover {
+  background: #175c4c !important;
+  transform: none !important;
+}
+html[data-theme="paper"] .btn-ghost,
+html:not([data-theme]) .btn-ghost {
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+}
+html[data-theme="paper"] .btn-ghost:hover,
+html:not([data-theme]) .btn-ghost:hover {
+  border-color: var(--accent) !important;
+  transform: none !important;
+}
+
+/* 背景装饰：极淡网格 */
+html[data-theme="paper"] .bg-grid,
+html:not([data-theme]) .bg-grid {
+  display: block !important;
+  opacity: 0.5 !important;
+  background-image:
+    linear-gradient(rgba(17, 18, 20, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 18, 20, 0.02) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+}
+html[data-theme="paper"] .bg-glow,
+html:not([data-theme]) .bg-glow { display: none !important; }
+
+/* 移动端 */
+@media (max-width: 1024px) {
+  html[data-theme="paper"] .nav-inner,
+  html:not([data-theme]) .nav-inner { width: 92% !important; height: 56px !important; }
+  html[data-theme="paper"] .hero-inner,
+  html:not([data-theme]) .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+  html[data-theme="paper"] .hero,
+  html:not([data-theme]) .hero { min-height: auto !important; padding: 48px 0 !important; display: block !important; }
+  html[data-theme="paper"] .pages-grid:not(.hscroll),
+  html:not([data-theme]) .pages-grid:not(.hscroll) { grid-template-columns: 1fr !important; }
+  html[data-theme="paper"] .pages-grid > :first-child,
+  html:not([data-theme]) .pages-grid > :first-child { grid-column: span 1 !important; }
+}
