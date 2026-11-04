@@ -1455,3 +1455,69 @@ html[data-theme="legacy"] ::-webkit-scrollbar-thumb {
 
 /* 8) 选中文字：低饱和主色底 */
 ::selection { background: rgba(var(--accent-rgb), 0.16); }
+
+/* ═══════════════════════════════════════════════════════
+   交互收敛：去掉所有"跟手"的装饰，只留克制的状态变化
+   ═══════════════════════════════════════════════════════ */
+
+/* 1) 关闭跟随光标的大光斑 */
+.cursor-glow { display: none !important; }
+
+/* 2) 关闭点击墨迹 */
+.ink-ripple { display: none !important; animation: none !important; }
+
+/* 3) 关闭卡片跟随聚光 */
+.page-card,
+.feat-card,
+.post,
+.tool-card,
+.bento-card,
+.hscroll-item,
+.project-card,
+.skill-card,
+.az-item,
+.contact-box,
+.mini-shop {
+  background-image: none !important;
+}
+
+/* 4) 关闭卡片左侧竖条（hover 时突然长出来的那条） */
+.page-card::before { display: none !important; }
+
+/* 5) hover：不位移、不发光，只微调边框与阴影 */
+.page-card,
+.feat-card,
+.post,
+.tool-card,
+.bento-card,
+.hscroll-item,
+.project-card,
+.skill-card {
+  transition: border-color 200ms ease, box-shadow 200ms ease !important;
+}
+.page-card:hover,
+.feat-card:hover,
+.post:hover,
+.tool-card:hover,
+.bento-card:hover,
+.hscroll-item:hover,
+.project-card:hover,
+.skill-card:hover {
+  transform: none !important;
+  border-color: rgba(var(--accent-rgb), 0.24) !important;
+}
+
+/* 6) 按钮：只换底色，不位移 */
+.btn:hover { transform: none !important; }
+button:active,
+.page-card:active,
+.btn:active { filter: none !important; }
+
+/* 7) 图片：hover 不旋转不缩放 */
+.gallery img:hover,
+.photo img:hover,
+.shot img:hover,
+.photo-card:hover img,
+.shot:hover img {
+  transform: none !important;
+}
