@@ -86,7 +86,7 @@ html[data-theme="violet"] {
 }
 
 /* ── 净白（原纸白） ── */
-html[data-theme="paper"] {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) {
   --bg: #fffdf8;
   --bg-soft: #f4f0e7;
   --card: #ffffff;
@@ -1016,31 +1016,31 @@ html[data-theme="deepseek"] .cursor-glow {
 }
 
 /* ───────── C. 净白 · 极简窄栏 ───────── */
-html[data-theme="paper"] body {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body {
   background: #fffdf8 !important;
 }
-html[data-theme="paper"] body::after { opacity: 0.014 !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body::after { opacity: 0.014 !important; }
 
 /* 布局：窄栏、大留白、全部单列 */
-html[data-theme="paper"] .container { width: min(760px, 88%) !important; }
-html[data-theme="paper"] .section { padding-block: 112px !important; }
-html[data-theme="paper"] .hero-inner {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .container { width: min(760px, 88%) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .section { padding-block: 112px !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner {
   grid-template-columns: 1fr !important;
   max-width: 760px;
   margin: 0 auto;
   gap: 36px !important;
 }
-html[data-theme="paper"] .pages-grid:not(.hscroll),
-html[data-theme="paper"] .skills-grid:not(.hscroll),
-html[data-theme="paper"] .projects-grid:not(.hscroll) {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll),
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .skills-grid:not(.hscroll),
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .projects-grid:not(.hscroll) {
   grid-template-columns: 1fr !important;
   gap: 0 !important;
 }
-html[data-theme="paper"] .pages-grid > :first-child { grid-column: span 1 !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid > :first-child { grid-column: span 1 !important; }
 
 /* 交互：完全静止，只有文字变墨绿 */
-html[data-theme="paper"] .page-card,
-html[data-theme="paper"] .feat-card {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .feat-card {
   background: transparent !important;
   border: 0 !important;
   border-bottom: 1px solid rgba(27, 25, 22, 0.09) !important;
@@ -1049,16 +1049,16 @@ html[data-theme="paper"] .feat-card {
   transform: none !important;
   padding-inline: 0 !important;
 }
-html[data-theme="paper"] .page-card:hover {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card:hover {
   background: transparent !important;
   border-bottom-color: rgba(47, 93, 80, 0.5) !important;
   box-shadow: none !important;
   transform: none !important;
 }
-html[data-theme="paper"] .page-card:hover h3 { color: #2f5d50 !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card:hover h3 { color: #2f5d50 !important; }
 
 /* 交互：暖光关闭，只留极淡冷白 */
-html[data-theme="paper"] .cursor-glow { opacity: 0.18 !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .cursor-glow { opacity: 0.18 !important; }
 
 /* ───────── D. 米黄 · 复古印刷 ───────── */
 html[data-theme="amber"] body {
@@ -2296,7 +2296,7 @@ html[data-theme="deepseek"] .bg-glow { display: block !important; opacity: 0.6 !
    ═══════════════════════════════════════════════════════════ */
 
 :root,
-html[data-theme="paper"] {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) {
   --bg: #fbfbfa;
   --bg-soft: #f4f4f2;
   --card: #ffffff;
@@ -2327,29 +2327,29 @@ html[data-theme="paper"] {
   --shadow-1: 0 1px 2px rgba(17, 18, 20, 0.04), 0 12px 28px -18px rgba(17, 18, 20, 0.18);
   --shadow-2: 0 2px 4px rgba(17, 18, 20, 0.05), 0 20px 44px -20px rgba(17, 18, 20, 0.24);
   --chip-c: #1f6f5c;
-  --chip-bg: rgba(31, 111, 92, 0.07);
-  --chip-bd: rgba(31, 111, 92, 0.18);
+  --chip-bg: rgba(var(--accent-rgb), 0.07);
+  --chip-bd: rgba(var(--accent-rgb), 0.18);
 }
 
 /* 背景：纯白 + 顶部一点柔光 */
-html[data-theme="paper"] body,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body,
 html:not([data-theme]) body {
   background:
     radial-gradient(1100px 520px at 50% -10%, #ffffff 0%, rgba(255, 255, 255, 0) 60%),
     #fbfbfa !important;
 }
-html[data-theme="paper"] body::after,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body::after,
 html:not([data-theme]) body::after { opacity: 0.018 !important; }
 
 /* 标题：衬线 */
-html[data-theme="paper"] h1,
-html[data-theme="paper"] h2,
-html[data-theme="paper"] h3,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) h1,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) h2,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) h3,
 html:not([data-theme]) h1,
 html:not([data-theme]) h2,
 html:not([data-theme]) h3,
-html[data-theme="paper"] .hero-title,
-html[data-theme="paper"] .section-title,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-title,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .section-title,
 html:not([data-theme]) .hero-title,
 html:not([data-theme]) .section-title {
   font-family: Georgia, "Songti SC", "Noto Serif CJK SC", serif !important;
@@ -2359,7 +2359,7 @@ html:not([data-theme]) .section-title {
 }
 
 /* 导航：与深色同一结构，白底细线 */
-html[data-theme="paper"] .nav,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav,
 html:not([data-theme]) .nav {
   position: sticky !important;
   top: 0 !important;
@@ -2369,7 +2369,7 @@ html:not([data-theme]) .nav {
   -webkit-backdrop-filter: blur(14px) !important;
   backdrop-filter: blur(14px) !important;
 }
-html[data-theme="paper"] .nav-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-inner,
 html:not([data-theme]) .nav-inner {
   width: min(1280px, 92%) !important;
   height: 64px !important;
@@ -2380,7 +2380,7 @@ html:not([data-theme]) .nav-inner {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-html[data-theme="paper"] .nav.hide,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav.hide,
 html:not([data-theme]) .nav.hide {
   transform: none !important;
   opacity: 1 !important;
@@ -2388,8 +2388,8 @@ html:not([data-theme]) .nav.hide {
 }
 
 /* 内容宽度：1280 居中 */
-html[data-theme="paper"] .container,
-html[data-theme="paper"] .hero-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .container,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner,
 html:not([data-theme]) .container,
 html:not([data-theme]) .hero-inner {
   width: min(1280px, 92%) !important;
@@ -2397,35 +2397,35 @@ html:not([data-theme]) .hero-inner {
   margin-inline: auto !important;
   padding-inline: 0 !important;
 }
-html[data-theme="paper"] .hero-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner,
 html:not([data-theme]) .hero-inner {
   grid-template-columns: 1.22fr 1fr !important;
   gap: clamp(40px, 5vw, 80px) !important;
   align-items: center !important;
 }
-html[data-theme="paper"] .hero,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero,
 html:not([data-theme]) .hero {
   min-height: calc(100vh - 64px) !important;
   display: flex !important;
   align-items: center !important;
   padding: 64px 0 !important;
 }
-html[data-theme="paper"] .section,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .section,
 html:not([data-theme]) .section { padding-block: 88px !important; }
 
 /* 卡片：白底 + 1px 边 + 柔和阴影 */
-html[data-theme="paper"] .page-card,
-html[data-theme="paper"] .feat-card,
-html[data-theme="paper"] .post,
-html[data-theme="paper"] .hscroll-item,
-html[data-theme="paper"] .tool-card,
-html[data-theme="paper"] .project-card,
-html[data-theme="paper"] .skill-card,
-html[data-theme="paper"] .az-item,
-html[data-theme="paper"] .terminal,
-html[data-theme="paper"] .mini-shop,
-html[data-theme="paper"] .code-card,
-html[data-theme="paper"] .contact-box,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .feat-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .post,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hscroll-item,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .tool-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .project-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .skill-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .az-item,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .terminal,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .mini-shop,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .code-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .contact-box,
 html:not([data-theme]) .page-card,
 html:not([data-theme]) .feat-card,
 html:not([data-theme]) .post,
@@ -2439,19 +2439,19 @@ html:not([data-theme]) .mini-shop {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
-html[data-theme="paper"] .page-card:hover,
-html[data-theme="paper"] .feat-card:hover,
-html[data-theme="paper"] .post:hover,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card:hover,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .feat-card:hover,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .post:hover,
 html:not([data-theme]) .page-card:hover,
 html:not([data-theme]) .feat-card:hover {
   background: #ffffff !important;
-  border-color: rgba(31, 111, 92, 0.3) !important;
+  border-color: rgba(var(--accent-rgb), 0.3) !important;
   box-shadow: var(--shadow-2) !important;
   transform: none !important;
 }
 
 /* 卡片网格 */
-html[data-theme="paper"] .pages-grid:not(.hscroll),
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll),
 html:not([data-theme]) .pages-grid:not(.hscroll) {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr) !important;
@@ -2459,13 +2459,13 @@ html:not([data-theme]) .pages-grid:not(.hscroll) {
   columns: auto !important;
   margin-top: 36px !important;
 }
-html[data-theme="paper"] .pages-grid:not(.hscroll) > *,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll) > *,
 html:not([data-theme]) .pages-grid:not(.hscroll) > * {
   margin: 0 !important;
   min-height: 0 !important;
   padding: 26px 24px !important;
 }
-html[data-theme="paper"] .pages-grid > :first-child,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid > :first-child,
 html:not([data-theme]) .pages-grid > :first-child {
   grid-column: span 3 !important;
   column-span: none !important;
@@ -2473,7 +2473,7 @@ html:not([data-theme]) .pages-grid > :first-child {
 }
 
 /* 按钮 */
-html[data-theme="paper"] .btn-primary,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-primary,
 html:not([data-theme]) .btn-primary {
   background: var(--accent) !important;
   color: #ffffff !important;
@@ -2481,25 +2481,25 @@ html:not([data-theme]) .btn-primary {
   border-radius: 8px !important;
   box-shadow: none !important;
 }
-html[data-theme="paper"] .btn-primary:hover,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-primary:hover,
 html:not([data-theme]) .btn-primary:hover {
   background: #175c4c !important;
   transform: none !important;
 }
-html[data-theme="paper"] .btn-ghost,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-ghost,
 html:not([data-theme]) .btn-ghost {
   border: 1px solid var(--border-strong) !important;
   color: var(--text) !important;
   border-radius: 8px !important;
 }
-html[data-theme="paper"] .btn-ghost:hover,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-ghost:hover,
 html:not([data-theme]) .btn-ghost:hover {
   border-color: var(--accent) !important;
   transform: none !important;
 }
 
 /* 背景装饰：极淡网格 */
-html[data-theme="paper"] .bg-grid,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .bg-grid,
 html:not([data-theme]) .bg-grid {
   display: block !important;
   opacity: 0.5 !important;
@@ -2508,20 +2508,20 @@ html:not([data-theme]) .bg-grid {
     linear-gradient(90deg, rgba(17, 18, 20, 0.02) 1px, transparent 1px) !important;
   background-size: 56px 56px !important;
 }
-html[data-theme="paper"] .bg-glow,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .bg-glow,
 html:not([data-theme]) .bg-glow { display: none !important; }
 
 /* 移动端 */
 @media (max-width: 1024px) {
-  html[data-theme="paper"] .nav-inner,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-inner,
   html:not([data-theme]) .nav-inner { width: 92% !important; height: 56px !important; }
-  html[data-theme="paper"] .hero-inner,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner,
   html:not([data-theme]) .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
-  html[data-theme="paper"] .hero,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero,
   html:not([data-theme]) .hero { min-height: auto !important; padding: 48px 0 !important; display: block !important; }
-  html[data-theme="paper"] .pages-grid:not(.hscroll),
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll),
   html:not([data-theme]) .pages-grid:not(.hscroll) { grid-template-columns: 1fr !important; }
-  html[data-theme="paper"] .pages-grid > :first-child,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid > :first-child,
   html:not([data-theme]) .pages-grid > :first-child { grid-column: span 1 !important; }
 }
 
@@ -2530,14 +2530,14 @@ html:not([data-theme]) .bg-glow { display: none !important; }
    480px 单列 + 底部 Tab Bar + 全宽按钮 + 44px 触控目标
    ═══════════════════════════════════════════════════════════ */
 
-html[data-theme="paper"],
+:is(html[data-theme="paper"], html[data-theme="tricolor"]),
 html:not([data-theme]) {
   --mobile-w: 480px;
   --tab-h: 64px;
 }
 
 /* 1) 桌面也按手机宽度居中显示 */
-html[data-theme="paper"] body,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body,
 html:not([data-theme]) body {
   max-width: var(--mobile-w);
   margin-inline: auto;
@@ -2547,12 +2547,12 @@ html:not([data-theme]) body {
   min-height: 100vh;
   background: #fbfbfa !important;
 }
-html[data-theme="paper"] html,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) html,
 html:not([data-theme]) html { background: #ececeb; }
 
 /* 2) 容器全部手机宽度 */
-html[data-theme="paper"] .container,
-html[data-theme="paper"] .hero-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .container,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner,
 html:not([data-theme]) .container,
 html:not([data-theme]) .hero-inner {
   width: 100% !important;
@@ -2563,7 +2563,7 @@ html:not([data-theme]) .hero-inner {
 }
 
 /* 3) 导航变底部 Tab Bar */
-html[data-theme="paper"] .nav,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav,
 html:not([data-theme]) .nav {
   position: fixed !important;
   top: auto !important;
@@ -2580,7 +2580,7 @@ html:not([data-theme]) .nav {
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 900;
 }
-html[data-theme="paper"] .nav-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-inner,
 html:not([data-theme]) .nav-inner {
   width: 100% !important;
   height: var(--tab-h) !important;
@@ -2589,18 +2589,18 @@ html:not([data-theme]) .nav-inner {
   justify-content: space-between !important;
   padding: 0 6px !important;
 }
-html[data-theme="paper"] .logo,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .logo,
 html:not([data-theme]) .logo {
   display: none !important;
 }
-html[data-theme="paper"] .nav-links,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links,
 html:not([data-theme]) .nav-links {
   width: 100%;
   display: grid !important;
   grid-template-columns: repeat(7, 1fr);
   gap: 0 !important;
 }
-html[data-theme="paper"] .nav-links a,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a,
 html:not([data-theme]) .nav-links a {
   display: flex !important;
   flex-direction: column;
@@ -2614,12 +2614,12 @@ html:not([data-theme]) .nav-links a {
   border-radius: 6px;
   white-space: nowrap;
 }
-html[data-theme="paper"] .nav-links a.active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active,
 html:not([data-theme]) .nav-links a.active {
   color: var(--accent) !important;
-  background: rgba(31, 111, 92, 0.07) !important;
+  background: rgba(var(--accent-rgb), 0.07) !important;
 }
-html[data-theme="paper"] .nav-links .nav-num,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links .nav-num,
 html:not([data-theme]) .nav-links .nav-num {
   display: block;
   font-size: 0.56rem;
@@ -2628,34 +2628,34 @@ html:not([data-theme]) .nav-links .nav-num {
 }
 
 /* 4) 首屏：手机单列，垂直留白小 */
-html[data-theme="paper"] .hero,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero,
 html:not([data-theme]) .hero {
   min-height: auto !important;
   display: block !important;
   padding: 28px 0 24px !important;
 }
-html[data-theme="paper"] .hero-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner,
 html:not([data-theme]) .hero-inner {
   grid-template-columns: 1fr !important;
   gap: 22px !important;
 }
-html[data-theme="paper"] .hero-title,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-title,
 html:not([data-theme]) .hero-title {
   font-size: clamp(2rem, 9vw, 2.6rem) !important;
   line-height: 1.15 !important;
 }
-html[data-theme="paper"] .hero-desc,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-desc,
 html:not([data-theme]) .hero-desc { font-size: 0.94rem; }
-html[data-theme="paper"] .section,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .section,
 html:not([data-theme]) .section { padding-block: 40px !important; }
 
 /* 5) 按钮全宽 + 48 高，触控友好 */
-html[data-theme="paper"] .hero-actions,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-actions,
 html:not([data-theme]) .hero-actions {
   flex-direction: column;
   gap: 10px;
 }
-html[data-theme="paper"] .btn,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn,
 html:not([data-theme]) .btn {
   width: 100%;
   min-height: 48px;
@@ -2664,16 +2664,16 @@ html:not([data-theme]) .btn {
 }
 
 /* 6) 卡片单列 */
-html[data-theme="paper"] .pages-grid:not(.hscroll),
-html[data-theme="paper"] :is(.skills-grid, .projects-grid):not(.hscroll),
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll),
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.skills-grid, .projects-grid):not(.hscroll),
 html:not([data-theme]) .pages-grid:not(.hscroll),
 html:not([data-theme]) :is(.skills-grid, .projects-grid):not(.hscroll) {
   display: block !important;
   columns: auto !important;
   margin-top: 22px !important;
 }
-html[data-theme="paper"] .pages-grid:not(.hscroll) > *,
-html[data-theme="paper"] :is(.skills-grid, .projects-grid):not(.hscroll) > *,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid:not(.hscroll) > *,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.skills-grid, .projects-grid):not(.hscroll) > *,
 html:not([data-theme]) .pages-grid:not(.hscroll) > * {
   display: block !important;
   width: 100%;
@@ -2682,15 +2682,15 @@ html:not([data-theme]) .pages-grid:not(.hscroll) > * {
   min-height: 0 !important;
   grid-column: auto !important;
 }
-html[data-theme="paper"] .pages-grid > :first-child,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid > :first-child,
 html:not([data-theme]) .pages-grid > :first-child {
   grid-column: auto !important;
   padding: 20px 16px !important;
 }
 
 /* 7) 图片与相册单列 */
-html[data-theme="paper"] .gallery-grid,
-html[data-theme="paper"] .photo-grid,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .gallery-grid,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .photo-grid,
 html:not([data-theme]) .gallery-grid,
 html:not([data-theme]) .photo-grid {
   grid-template-columns: 1fr !important;
@@ -2699,9 +2699,9 @@ html:not([data-theme]) .photo-grid {
 
 /* 8) 触控：去掉 hover 位移，按压反馈 */
 @media (hover: none) {
-  html[data-theme="paper"] .page-card:hover,
-  html[data-theme="paper"] .post:hover,
-  html[data-theme="paper"] .btn:hover,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .page-card:hover,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .post:hover,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn:hover,
   html:not([data-theme]) .page-card:hover,
   html:not([data-theme]) .post:hover,
   html:not([data-theme]) .btn:hover {
@@ -2709,8 +2709,8 @@ html:not([data-theme]) .photo-grid {
     box-shadow: var(--shadow-1) !important;
   }
 }
-html[data-theme="paper"] a:active,
-html[data-theme="paper"] button:active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) a:active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) button:active,
 html:not([data-theme]) a:active,
 html:not([data-theme]) button:active {
   opacity: 0.72;
@@ -2718,11 +2718,11 @@ html:not([data-theme]) button:active {
 
 /* 9) 移动端细节 */
 @media (max-width: 480px) {
-  html[data-theme="paper"] body,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body,
   html:not([data-theme]) body { box-shadow: none; }
-  html[data-theme="paper"] .container,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .container,
   html:not([data-theme]) .container { padding-inline: 16px !important; }
-  html[data-theme="paper"] .nav-links a,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a,
   html:not([data-theme]) .nav-links a { font-size: 0.58rem !important; }
 }
 
@@ -2731,7 +2731,7 @@ html:not([data-theme]) button:active {
    ═══════════════════════════════════════════════════════ */
 
 /* 1) 定位与点击：清掉旧站 right:0 / pointer-events:none */
-html[data-theme="paper"] .nav,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav,
 html:not([data-theme]) .nav {
   right: auto !important;
   left: 50% !important;
@@ -2740,7 +2740,7 @@ html:not([data-theme]) .nav {
 }
 
 /* 2) 滚动下滑时仍保持居中（否则会偏到右边） */
-html[data-theme="paper"] .nav.hide,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav.hide,
 html:not([data-theme]) .nav.hide {
   transform: translateX(-50%) !important;
   opacity: 1 !important;
@@ -2749,25 +2749,25 @@ html:not([data-theme]) .nav.hide {
 
 /* 3) 移动端媒体查询把 nav-links 藏了，这里强制显示 */
 @media (max-width: 768px) {
-  html[data-theme="paper"] .nav-links,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links,
   html:not([data-theme]) .nav-links {
     display: grid !important;
     grid-template-columns: repeat(7, 1fr) !important;
     width: 100% !important;
     gap: 0 !important;
   }
-  html[data-theme="paper"] .nav-toggle,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-toggle,
   html:not([data-theme]) .nav-toggle {
     display: none !important;
   }
 }
 
 /* 4) 底部 Tab 不需要滑动胶囊与编号前缀 */
-html[data-theme="paper"] .dock-pill,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .dock-pill,
 html:not([data-theme]) .dock-pill { display: none !important; }
 
 /* 5) 保证每个 Tab 至少 44px 可点 */
-html[data-theme="paper"] .nav-links a,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a,
 html:not([data-theme]) .nav-links a {
   min-height: 46px;
   height: 100%;
@@ -2775,9 +2775,9 @@ html:not([data-theme]) .nav-links a {
 }
 
 /* 6) 表单/输入框在手机宽度下不溢出 */
-html[data-theme="paper"] input,
-html[data-theme="paper"] textarea,
-html[data-theme="paper"] select,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) input,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) textarea,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) select,
 html:not([data-theme]) input,
 html:not([data-theme]) textarea,
 html:not([data-theme]) select {
@@ -2790,7 +2790,7 @@ html:not([data-theme]) select {
    ═══════════════════════════════════════════════════════ */
 
 /* ── 浅色：底部 Tab Bar 精修 ── */
-html[data-theme="paper"] .nav,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav,
 html:not([data-theme]) .nav {
   height: 62px !important;
   background: #ffffff !important;
@@ -2800,7 +2800,7 @@ html:not([data-theme]) .nav {
   backdrop-filter: none !important;
 }
 
-html[data-theme="paper"] .nav-links a,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a,
 html:not([data-theme]) .nav-links a {
   position: relative;
   flex-direction: column !important;
@@ -2817,19 +2817,19 @@ html:not([data-theme]) .nav-links a {
 }
 
 /* 隐藏 01. 前缀，只留文字 */
-html[data-theme="paper"] .nav-links .nav-num,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links .nav-num,
 html:not([data-theme]) .nav-links .nav-num {
   display: none !important;
 }
 
 /* 选中：墨绿 + 顶部指示条 */
-html[data-theme="paper"] .nav-links a.active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active,
 html:not([data-theme]) .nav-links a.active {
   color: var(--accent) !important;
   background: transparent !important;
   font-weight: 600;
 }
-html[data-theme="paper"] .nav-links a.active::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active::before,
 html:not([data-theme]) .nav-links a.active::before {
   content: "";
   position: absolute;
@@ -2841,7 +2841,7 @@ html:not([data-theme]) .nav-links a.active::before {
   border-radius: 0 0 2px 2px;
   background: var(--accent);
 }
-html[data-theme="paper"] .nav-links a:active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a:active,
 html:not([data-theme]) .nav-links a:active {
   opacity: 0.6;
 }
@@ -2891,7 +2891,7 @@ html[data-theme="legacy"] .nav-links a.active::after { right: 0; }
    ═══════════════════════════════════════════════════════ */
 
 /* ── 通用的胶囊容器 ── */
-html[data-theme="paper"] .nav,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav,
 html:not([data-theme]) .nav {
   position: fixed !important;
   top: auto !important;
@@ -2913,13 +2913,13 @@ html:not([data-theme]) .nav {
   overflow: hidden;
   z-index: 900;
 }
-html[data-theme="paper"] .nav.hide,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav.hide,
 html:not([data-theme]) .nav.hide {
   transform: translateX(-50%) !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
-html[data-theme="paper"] .nav-inner,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-inner,
 html:not([data-theme]) .nav-inner {
   width: 100% !important;
   height: 100% !important;
@@ -2929,13 +2929,13 @@ html:not([data-theme]) .nav-inner {
   justify-content: stretch !important;
   gap: 0 !important;
 }
-html[data-theme="paper"] .logo,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .logo,
 html:not([data-theme]) .logo,
-html[data-theme="paper"] .nav-toggle,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-toggle,
 html:not([data-theme]) .nav-toggle { display: none !important; }
 
 /* ── 7 个 Tab：图标 + 小字 ── */
-html[data-theme="paper"] .nav-links,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links,
 html:not([data-theme]) .nav-links {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
@@ -2944,7 +2944,7 @@ html:not([data-theme]) .nav-links {
   padding: 0 !important;
   background: transparent !important;
 }
-html[data-theme="paper"] .nav-links a,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a,
 html:not([data-theme]) .nav-links a {
   display: flex !important;
   flex-direction: column !important;
@@ -2962,47 +2962,47 @@ html:not([data-theme]) .nav-links a {
   background: transparent !important;
   transition: color 180ms ease, background 180ms ease !important;
 }
-html[data-theme="paper"] .nav-links .nav-num,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links .nav-num,
 html:not([data-theme]) .nav-links .nav-num { display: none !important; }
 
 /* 图标：用 CSS 符号，按锚点区分 */
-html[data-theme="paper"] .nav-links a::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a::before,
 html:not([data-theme]) .nav-links a::before {
   font-size: 0.98rem;
   line-height: 1;
   opacity: 0.85;
 }
-html[data-theme="paper"] .nav-links a[href="#pages"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#pages"]::before,
 html:not([data-theme]) .nav-links a[href="#pages"]::before { content: "▦"; }
-html[data-theme="paper"] .nav-links a[href="#about"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#about"]::before,
 html:not([data-theme]) .nav-links a[href="#about"]::before { content: "◍"; }
-html[data-theme="paper"] .nav-links a[href="#skills"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#skills"]::before,
 html:not([data-theme]) .nav-links a[href="#skills"]::before { content: "◈"; }
-html[data-theme="paper"] .nav-links a[href="#projects"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#projects"]::before,
 html:not([data-theme]) .nav-links a[href="#projects"]::before { content: "▤"; }
-html[data-theme="paper"] .nav-links a[href="#timeline"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#timeline"]::before,
 html:not([data-theme]) .nav-links a[href="#timeline"]::before { content: "≡"; }
-html[data-theme="paper"] .nav-links a[href="#log"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#log"]::before,
 html:not([data-theme]) .nav-links a[href="#log"]::before { content: "◷"; }
-html[data-theme="paper"] .nav-links a[href="#contact"]::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a[href="#contact"]::before,
 html:not([data-theme]) .nav-links a[href="#contact"]::before { content: "✉"; }
 
 /* 选中：墨绿 + 浅底胶囊 */
-html[data-theme="paper"] .nav-links a.active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active,
 html:not([data-theme]) .nav-links a.active {
   color: var(--accent) !important;
-  background: rgba(31, 111, 92, 0.08) !important;
+  background: rgba(var(--accent-rgb), 0.08) !important;
   font-weight: 600;
 }
-html[data-theme="paper"] .nav-links a.active::before,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active::before,
 html:not([data-theme]) .nav-links a.active::before { opacity: 1; }
-html[data-theme="paper"] .nav-links a.active::after,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a.active::after,
 html:not([data-theme]) .nav-links a.active::after { display: none !important; }
-html[data-theme="paper"] .nav-links a:active,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .nav-links a:active,
 html:not([data-theme]) .nav-links a:active { opacity: 0.7; }
 
 /* 底部留白，避开胶囊 */
-html[data-theme="paper"] body,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body,
 html:not([data-theme]) body {
   padding-bottom: 96px !important;
 }
@@ -3111,7 +3111,7 @@ html[data-theme="legacy"] .hero {
    ─────────────────────────────────────────────────────────────────────────────
    背景：v263 的 LIGHT = MOBILE-FIRST 一段是「全局规则」，没有包媒体查询，
    于是 1280px 桌面也被压成 480px 单列 + 底部 Tab Bar，两侧大片空白。
-   本层放在文件最末（优先级最高），只作用于 html[data-theme="paper"]：
+   本层放在文件最末（优先级最高），只作用于 :is(html[data-theme="paper"], html[data-theme="tricolor"])：
      1) 重做配色 / 卡片质感，去掉手机模拟框的灰底；
      2) ≥900px 恢复宽版双栏首屏、顶部胶囊导航、多列卡片网格；
      3) ≤899px 保留单列 + 底部 Tab Bar，并兜住 375px 零横向溢出。
@@ -3119,13 +3119,13 @@ html[data-theme="legacy"] .hero {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. 设计令牌：暖白纸 + 松墨绿 + 一点陶土橙 ── */
-html[data-theme="paper"] {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) {
   color-scheme: light;
   --bg: #f7f9f6;
   --bg-soft: #edf1ec;
   --card: #ffffff;
   --border: rgba(20, 48, 38, 0.10);
-  --border-hover: rgba(20, 122, 91, 0.44);
+  --border-hover: rgba(var(--accent-rgb), 0.44);
   --text: #16251e;
   --muted: #66776e;
   --dim: #8b9991;
@@ -3137,14 +3137,14 @@ html[data-theme="paper"] {
   --panel: #ffffff;
   --nav-bg: rgba(247, 249, 246, 0.82);
   --sb-thumb: #cbd8d0;
-  --glow-1: rgba(22, 122, 91, 0.10);
+  --glow-1: rgba(var(--accent-rgb), 0.10);
   --glow-2: rgba(194, 104, 60, 0.07);
-  --acc-soft-bg: rgba(22, 122, 91, 0.07);
-  --acc-soft-bd: rgba(22, 122, 91, 0.20);
-  --acc-glow: rgba(22, 122, 91, 0.14);
+  --acc-soft-bg: rgba(var(--accent-rgb), 0.07);
+  --acc-soft-bd: rgba(var(--accent-rgb), 0.20);
+  --acc-glow: rgba(var(--accent-rgb), 0.14);
   --chip-c: #167a5b;
-  --chip-bg: rgba(22, 122, 91, 0.07);
-  --chip-bd: rgba(22, 122, 91, 0.18);
+  --chip-bg: rgba(var(--accent-rgb), 0.07);
+  --chip-bd: rgba(var(--accent-rgb), 0.18);
   --shadow-1: 0 1px 2px rgba(16, 40, 30, .04), 0 12px 30px -20px rgba(16, 40, 30, .30);
   --shadow-2: 0 2px 6px rgba(16, 40, 30, .05), 0 30px 60px -30px rgba(16, 40, 30, .36);
   --radius: 14px;
@@ -3153,22 +3153,22 @@ html[data-theme="paper"] {
 }
 
 /* ── 2. 基础材质 ── */
-html[data-theme="paper"] { background: var(--bg) !important; }
-html[data-theme="paper"] body {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) { background: var(--bg) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) body {
   color: var(--text) !important;
   background: var(--bg) !important;
   -webkit-font-smoothing: antialiased;
 }
-html[data-theme="paper"] .bg-glow-1 { background: var(--glow-1) !important; }
-html[data-theme="paper"] .bg-glow-2 { background: var(--glow-2) !important; }
-html[data-theme="paper"] .bg-grid { opacity: .65 !important; }
-html[data-theme="paper"] ::selection {
-  background: rgba(22, 122, 91, .16) !important;
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .bg-glow-1 { background: var(--glow-1) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .bg-glow-2 { background: var(--glow-2) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .bg-grid { opacity: .65 !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) ::selection {
+  background: rgba(var(--accent-rgb), .16) !important;
   color: var(--text) !important;
 }
 
 /* ── 3. 卡片 / 按钮 / 标题：实白底、柔阴影、克制圆角 ── */
-html[data-theme="paper"] :is(.page-card, .feat-card, .post, .hscroll-item, .tool-card,
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.page-card, .feat-card, .post, .hscroll-item, .tool-card,
     .project-card, .skill-card, .az-item, .terminal, .mini-shop, .code-card,
     .contact-box, .prod, .gmsg, .topic, .score-box, .yr-card, .fcard, .ai-card, .photo) {
   background: var(--card) !important;
@@ -3177,27 +3177,27 @@ html[data-theme="paper"] :is(.page-card, .feat-card, .post, .hscroll-item, .tool
   box-shadow: var(--shadow-1) !important;
 }
 @media (hover: hover) {
-  html[data-theme="paper"] :is(.page-card, .feat-card, .post, .hscroll-item,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.page-card, .feat-card, .post, .hscroll-item,
       .project-card, .skill-card, .tool-card, .ai-card, .photo):hover {
     transform: translateY(-3px) !important;
     border-color: var(--border-hover) !important;
     box-shadow: var(--shadow-2) !important;
   }
 }
-html[data-theme="paper"] :is(h1, h2, h3, .section-title, .hero-title, .contact-title) {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(h1, h2, h3, .section-title, .hero-title, .contact-title) {
   font-family: var(--serif) !important;
   letter-spacing: -.025em !important;
 }
-html[data-theme="paper"] .section-title .num { color: var(--accent) !important; }
-html[data-theme="paper"] .btn { border-radius: 10px !important; }
-html[data-theme="paper"] .btn-primary {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .section-title .num { color: var(--accent) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn { border-radius: 10px !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-primary {
   background: var(--accent) !important;
   color: #fff !important;
   border-color: var(--accent) !important;
-  box-shadow: 0 10px 24px -12px rgba(22, 122, 91, .65) !important;
+  box-shadow: 0 10px 24px -12px rgba(var(--accent-rgb), .65) !important;
 }
-html[data-theme="paper"] .btn-ghost { color: var(--text) !important; }
-html[data-theme="paper"] .grad-text {
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .btn-ghost { color: var(--text) !important; }
+:is(html[data-theme="paper"], html[data-theme="tricolor"]) .grad-text {
   background: var(--gradient) !important;
   -webkit-background-clip: text !important;
           background-clip: text !important;
@@ -3208,7 +3208,7 @@ html[data-theme="paper"] .grad-text {
 /* ── 4. 桌面 ≥900px：恢复宽版布局 + 顶部胶囊导航 ── */
 @media (min-width: 900px) {
   /* 4.1 拆掉「桌面显示成一条手机」的模拟框 */
-  html[data-theme="paper"] body {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body {
     max-width: none !important;
     margin-inline: 0 !important;
     padding-bottom: 0 !important;
@@ -3217,8 +3217,8 @@ html[data-theme="paper"] .grad-text {
   }
 
   /* 4.2 容器：1160 居中，不再 480 单列 */
-  html[data-theme="paper"] .container,
-  html[data-theme="paper"] .hero-inner {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .container,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner {
     width: min(1160px, 90%) !important;
     max-width: 1160px !important;
     margin-inline: auto !important;
@@ -3226,8 +3226,8 @@ html[data-theme="paper"] .grad-text {
   }
 
   /* 4.3 导航回顶部：贴顶横条 + 悬浮胶囊链接 */
-  html[data-theme="paper"] body .nav,
-  html[data-theme="paper"] body .nav.hide {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav.hide {
     position: sticky !important;
     top: 0 !important;
     bottom: auto !important;
@@ -3250,7 +3250,7 @@ html[data-theme="paper"] .grad-text {
     pointer-events: auto !important;
     z-index: 900 !important;
   }
-  html[data-theme="paper"] body .nav-inner {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-inner {
     width: min(1160px, 90%) !important;
     max-width: 1160px !important;
     height: 66px !important;
@@ -3265,7 +3265,7 @@ html[data-theme="paper"] .grad-text {
     background: transparent !important;
     box-shadow: none !important;
   }
-  html[data-theme="paper"] body .logo {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .logo {
     display: inline-flex !important;
     align-items: center;
     font-size: 1.05rem !important;
@@ -3273,8 +3273,8 @@ html[data-theme="paper"] .grad-text {
     letter-spacing: -.02em;
     color: var(--text) !important;
   }
-  html[data-theme="paper"] body .logo-path { color: var(--accent) !important; }
-  html[data-theme="paper"] body .nav-links {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .logo-path { color: var(--accent) !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links {
     display: flex !important;
     width: auto !important;
     grid-template-columns: none !important;
@@ -3284,7 +3284,7 @@ html[data-theme="paper"] .grad-text {
     border: 0 !important;
     background: transparent !important;
   }
-  html[data-theme="paper"] body .nav-links a {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links a {
     display: inline-flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -3302,59 +3302,59 @@ html[data-theme="paper"] .grad-text {
     white-space: nowrap !important;
     box-shadow: none !important;
   }
-  html[data-theme="paper"] body .nav-links a:hover {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links a:hover {
     color: var(--text) !important;
     background: var(--acc-soft-bg) !important;
   }
-  html[data-theme="paper"] body .nav-links a.active {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links a.active {
     color: var(--accent) !important;
     background: var(--acc-soft-bg) !important;
   }
-  html[data-theme="paper"] body .nav-links .nav-num,
-  html[data-theme="paper"] body .nav-toggle,
-  html[data-theme="paper"] body .dock-pill { display: none !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links .nav-num,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-toggle,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .dock-pill { display: none !important; }
 
   /* 4.4 首屏：左右双栏，按钮横排 */
-  html[data-theme="paper"] .hero {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero {
     min-height: min(86vh, 780px) !important;
     display: flex !important;
     align-items: center !important;
     padding: 72px 0 56px !important;
   }
-  html[data-theme="paper"] .hero-inner {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-inner {
     display: grid !important;
     grid-template-columns: 1.05fr .95fr !important;
     gap: clamp(40px, 5vw, 76px) !important;
     align-items: center !important;
   }
-  html[data-theme="paper"] .hero-hello { font-size: .88rem !important; color: var(--muted) !important; }
-  html[data-theme="paper"] .hero-title {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-hello { font-size: .88rem !important; color: var(--muted) !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-title {
     font-size: clamp(2.9rem, 4.6vw, 4.1rem) !important;
     line-height: 1.1 !important;
   }
-  html[data-theme="paper"] .hero-actions {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-actions {
     flex-direction: row !important;
     flex-wrap: wrap !important;
     gap: 10px !important;
   }
-  html[data-theme="paper"] .hero-actions .btn {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .hero-actions .btn {
     width: auto !important;
     min-height: 46px !important;
     padding: 0 20px !important;
     font-size: .92rem !important;
   }
-  html[data-theme="paper"] .section { padding-block: 84px !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .section { padding-block: 84px !important; }
 
   /* 4.5 卡片网格回多列 */
-  html[data-theme="paper"] :is(.pages-grid, .skills-grid, .projects-grid):not(.hscroll) {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.pages-grid, .skills-grid, .projects-grid):not(.hscroll) {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)) !important;
     columns: auto !important;
     gap: 16px !important;
     margin-top: 28px !important;
   }
-  html[data-theme="paper"] :is(.pages-grid, .skills-grid, .projects-grid):not(.hscroll) > *,
-  html[data-theme="paper"] .pages-grid > :first-child {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.pages-grid, .skills-grid, .projects-grid):not(.hscroll) > *,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .pages-grid > :first-child {
     display: flex !important;
     flex-direction: column;
     width: auto !important;
@@ -3363,38 +3363,38 @@ html[data-theme="paper"] .grad-text {
     min-height: 0 !important;
     grid-column: auto !important;
   }
-  html[data-theme="paper"] :is(.gallery-grid, .photo-grid) {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.gallery-grid, .photo-grid) {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
     gap: 16px !important;
   }
 
   /* 4.6 清掉给底部 Tab Bar 预留的留白 */
-  html[data-theme="paper"] main,
-  html[data-theme="paper"] .footer { padding-bottom: 0 !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) main,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) .footer { padding-bottom: 0 !important; }
 }
 
 /* ── 5. 移动端 ≤899px：保留单列 + Tab Bar，兜住横向溢出 ── */
 @media (max-width: 899px) {
-  html[data-theme="paper"],
-  html[data-theme="paper"] body {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]),
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body {
     max-width: 100vw !important;
     overflow-x: clip !important;
   }
-  html[data-theme="paper"] body {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body {
     box-shadow: none !important;
     background: var(--bg) !important;
   }
-  html[data-theme="paper"] :is(.hero-hello, .hero-desc, .section-title, .cl-row, .gmsg, .topic) {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.hero-hello, .hero-desc, .section-title, .cl-row, .gmsg, .topic) {
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     white-space: normal !important;
   }
-  html[data-theme="paper"] :is(img, svg, video, canvas, table, pre, code,
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(img, svg, video, canvas, table, pre, code,
       input, textarea, select) { max-width: 100% !important; }
-  html[data-theme="paper"] :is(.socials, .hero-actions, .section-head) { flex-wrap: wrap !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) :is(.socials, .hero-actions, .section-head) { flex-wrap: wrap !important; }
   /* 底部 Tab Bar：style.css 的移动端规则把 nav-links 设成 visibility:hidden / opacity:0
      （原本给汉堡菜单用），paper.css 只补了 display:grid，导致浅色主题下整条 Tab 隐身。 */
-  html[data-theme="paper"] body .nav-links {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links {
     position: static !important;
     display: grid !important;
     grid-template-columns: repeat(7, 1fr) !important;
@@ -3404,7 +3404,7 @@ html[data-theme="paper"] .grad-text {
     transform: none !important;
     pointer-events: auto !important;
   }
-  html[data-theme="paper"] body .nav-links a {
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links a {
     visibility: visible !important;
     opacity: 1 !important;
     font-size: .68rem !important;
@@ -3412,8 +3412,8 @@ html[data-theme="paper"] .grad-text {
     letter-spacing: 0 !important;
     color: var(--muted) !important;
   }
-  html[data-theme="paper"] body .nav-links a.active { color: var(--accent) !important; }
-  html[data-theme="paper"] body .nav-links .nav-num { display: none !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links a.active { color: var(--accent) !important; }
+  :is(html[data-theme="paper"], html[data-theme="tricolor"]) body .nav-links .nav-num { display: none !important; }
 
   /* 成就 toast 不再顶出右侧屏幕 */
   #achToast {
@@ -3424,3 +3424,93 @@ html[data-theme="paper"] .grad-text {
   }
 }
 
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🔵🔴⚪ 蓝红白 · 浅色主题（tricolor） · v269
+   复用 paper 主题的全部布局 / 卡片 / 响应式规则（选择器已在上方批量扩成
+   :is(paper, tricolor)），本段只换配色：冷白底 + 藏蓝主色 + 正红点缀。
+   回滚 = 删除本段，并把 :is(...) 还原成 html[data-theme="paper"]。
+   ═══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="tricolor"] {
+  color-scheme: light;
+  --bg: #f5f7fc;
+  --bg-soft: #e9edf7;
+  --card: #ffffff;
+  --border: rgba(21, 42, 84, 0.11);
+  --border-hover: rgba(29, 78, 216, 0.46);
+  --text: #101c33;
+  --muted: #5d6b84;
+  --dim: #8a97ad;
+  --accent: #1d4ed8;
+  --accent-2: #dc2626;
+  --accent-rgb: 29, 78, 216;
+  --accent-2-rgb: 220, 38, 38;
+  --gradient: linear-gradient(120deg, #1d4ed8 8%, #dc2626 96%);
+  --panel: #ffffff;
+  --nav-bg: rgba(245, 247, 252, 0.86);
+  --sb-thumb: #c6d0e4;
+  --glow-1: rgba(29, 78, 216, 0.10);
+  --glow-2: rgba(220, 38, 38, 0.07);
+  --acc-soft-bg: rgba(29, 78, 216, 0.07);
+  --acc-soft-bd: rgba(29, 78, 216, 0.22);
+  --acc-glow: rgba(29, 78, 216, 0.16);
+  --chip-c: #1d4ed8;
+  --chip-bg: rgba(29, 78, 216, 0.07);
+  --chip-bd: rgba(29, 78, 216, 0.18);
+  --shadow-1: 0 1px 2px rgba(16, 32, 66, .04), 0 12px 30px -20px rgba(16, 32, 66, .32);
+  --shadow-2: 0 2px 6px rgba(16, 32, 66, .05), 0 30px 60px -30px rgba(16, 32, 66, .38);
+  --radius: 14px;
+  --card-radius: 14px;
+}
+
+/* 三色辨识度：蓝给按钮与链接，红给编号 / 徽章 / 进度 / 强调 */
+html[data-theme="tricolor"] :is(h1, h2, h3, .section-title, .hero-title, .contact-title) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif !important;
+  letter-spacing: -.03em !important;
+}
+html[data-theme="tricolor"] :is(.section-title .num, .cl-date, .logo-path, .page-go, .feat-go) {
+  color: var(--accent-2) !important;
+}
+html[data-theme="tricolor"] .btn-primary {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 10px 24px -12px rgba(var(--accent-rgb), .65) !important;
+}
+html[data-theme="tricolor"] .btn-ghost {
+  color: var(--accent) !important;
+  border-color: rgba(var(--accent-rgb), .30) !important;
+}
+html[data-theme="tricolor"] :is(.feat-badge, .chip, .tag) {
+  background: var(--accent-2) !important;
+  color: #fff !important;
+  border-color: var(--accent-2) !important;
+}
+html[data-theme="tricolor"] .progress {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)) !important;
+}
+html[data-theme="tricolor"] :is(.nav-links a.active, .nav-links a:hover) {
+  color: var(--accent) !important;
+  background: rgba(var(--accent-rgb), .08) !important;
+}
+html[data-theme="tricolor"] ::selection {
+  background: rgba(var(--accent-rgb), .16) !important;
+  color: var(--text) !important;
+}
+html[data-theme="tricolor"] .grad-text {
+  background: linear-gradient(105deg, #1d4ed8 12%, #6d5ce7 55%, #dc2626 96%) !important;
+  -webkit-background-clip: text !important;
+          background-clip: text !important;
+  color: transparent !important;
+  filter: none !important;
+}
+/* theme.css 的 CRT 扫描线排除列表原本不认识 tricolor，会在白底上画出密集黑横线；
+   已在 theme.css 补排除，这里再把纸纹换成干净的蓝红光晕，避免继承晨光的暖黄纸纹。 */
+html[data-theme="tricolor"] body::before {
+  background-image:
+    radial-gradient(1200px 700px at 82% -8%, rgba(29, 78, 216, .07), transparent 62%),
+    radial-gradient(900px 620px at -8% 108%, rgba(220, 38, 38, .05), transparent 60%) !important;
+  background-size: auto !important;
+  opacity: 1 !important;
+}

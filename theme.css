@@ -397,7 +397,7 @@ html body::before {
 }
 
 /* ── 深空绿 · 终端：CRT 扫描线 + 冷灰网格 ── */
-html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]) body::before {
+html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]):not([data-theme="tricolor"]) body::before {
   background-image:
     linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px),
@@ -893,8 +893,11 @@ html .skill-card > * { transform: translateZ(16px); }
 @media (prefers-reduced-motion: reduce) {
   html .skill-card:hover, html .page-card:hover { animation: none; }
 }
-html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]) { --accent-rgb: 0, 229, 160; --accent-2-rgb: 56, 189, 248; }
+html:not([data-theme="violet"]):not([data-theme="paper"]):not([data-theme="amber"]):not([data-theme="deepseek"]):not([data-theme="tricolor"]) { --accent-rgb: 0, 229, 160; --accent-2-rgb: 56, 189, 248; }
 
 
 /* 主题弹层色块：深空绿终端 */
 #themePop .sw[data-c="legacy"] { background: linear-gradient(120deg, #00e5a0, #38bdf8); }
+
+/* v269 蓝红白主题色块 */
+#themePop .sw[data-c="tricolor"] { background: linear-gradient(120deg, #1d4ed8 0 50%, #dc2626 50% 100%); }
