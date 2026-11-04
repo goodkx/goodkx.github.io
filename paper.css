@@ -2524,3 +2524,204 @@ html:not([data-theme]) .bg-glow { display: none !important; }
   html[data-theme="paper"] .pages-grid > :first-child,
   html:not([data-theme]) .pages-grid > :first-child { grid-column: span 1 !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHT = MOBILE-FIRST
+   480px 单列 + 底部 Tab Bar + 全宽按钮 + 44px 触控目标
+   ═══════════════════════════════════════════════════════════ */
+
+html[data-theme="paper"],
+html:not([data-theme]) {
+  --mobile-w: 480px;
+  --tab-h: 64px;
+}
+
+/* 1) 桌面也按手机宽度居中显示 */
+html[data-theme="paper"] body,
+html:not([data-theme]) body {
+  max-width: var(--mobile-w);
+  margin-inline: auto;
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 16px) !important;
+  box-shadow: 0 0 80px rgba(17, 18, 20, 0.06);
+  position: relative;
+  min-height: 100vh;
+  background: #fbfbfa !important;
+}
+html[data-theme="paper"] html,
+html:not([data-theme]) html { background: #ececeb; }
+
+/* 2) 容器全部手机宽度 */
+html[data-theme="paper"] .container,
+html[data-theme="paper"] .hero-inner,
+html:not([data-theme]) .container,
+html:not([data-theme]) .hero-inner {
+  width: 100% !important;
+  max-width: var(--mobile-w) !important;
+  padding-inline: 18px !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box;
+}
+
+/* 3) 导航变底部 Tab Bar */
+html[data-theme="paper"] .nav,
+html:not([data-theme]) .nav {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(var(--mobile-w), 100%) !important;
+  height: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px)) !important;
+  border-top: 1px solid var(--border) !important;
+  border-bottom: 0 !important;
+  background: rgba(251, 251, 250, 0.94) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  backdrop-filter: blur(18px) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 900;
+}
+html[data-theme="paper"] .nav-inner,
+html:not([data-theme]) .nav-inner {
+  width: 100% !important;
+  height: var(--tab-h) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 6px !important;
+}
+html[data-theme="paper"] .logo,
+html:not([data-theme]) .logo {
+  display: none !important;
+}
+html[data-theme="paper"] .nav-links,
+html:not([data-theme]) .nav-links {
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0 !important;
+}
+html[data-theme="paper"] .nav-links a,
+html:not([data-theme]) .nav-links a {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 6px 0 !important;
+  font-size: 0.62rem !important;
+  line-height: 1.2;
+  color: var(--muted) !important;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+html[data-theme="paper"] .nav-links a.active,
+html:not([data-theme]) .nav-links a.active {
+  color: var(--accent) !important;
+  background: rgba(31, 111, 92, 0.07) !important;
+}
+html[data-theme="paper"] .nav-links .nav-num,
+html:not([data-theme]) .nav-links .nav-num {
+  display: block;
+  font-size: 0.56rem;
+  opacity: 0.6;
+  margin-right: 0;
+}
+
+/* 4) 首屏：手机单列，垂直留白小 */
+html[data-theme="paper"] .hero,
+html:not([data-theme]) .hero {
+  min-height: auto !important;
+  display: block !important;
+  padding: 28px 0 24px !important;
+}
+html[data-theme="paper"] .hero-inner,
+html:not([data-theme]) .hero-inner {
+  grid-template-columns: 1fr !important;
+  gap: 22px !important;
+}
+html[data-theme="paper"] .hero-title,
+html:not([data-theme]) .hero-title {
+  font-size: clamp(2rem, 9vw, 2.6rem) !important;
+  line-height: 1.15 !important;
+}
+html[data-theme="paper"] .hero-desc,
+html:not([data-theme]) .hero-desc { font-size: 0.94rem; }
+html[data-theme="paper"] .section,
+html:not([data-theme]) .section { padding-block: 40px !important; }
+
+/* 5) 按钮全宽 + 48 高，触控友好 */
+html[data-theme="paper"] .hero-actions,
+html:not([data-theme]) .hero-actions {
+  flex-direction: column;
+  gap: 10px;
+}
+html[data-theme="paper"] .btn,
+html:not([data-theme]) .btn {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* 6) 卡片单列 */
+html[data-theme="paper"] .pages-grid:not(.hscroll),
+html[data-theme="paper"] :is(.skills-grid, .projects-grid):not(.hscroll),
+html:not([data-theme]) .pages-grid:not(.hscroll),
+html:not([data-theme]) :is(.skills-grid, .projects-grid):not(.hscroll) {
+  display: block !important;
+  columns: auto !important;
+  margin-top: 22px !important;
+}
+html[data-theme="paper"] .pages-grid:not(.hscroll) > *,
+html[data-theme="paper"] :is(.skills-grid, .projects-grid):not(.hscroll) > *,
+html:not([data-theme]) .pages-grid:not(.hscroll) > * {
+  display: block !important;
+  width: 100%;
+  margin: 0 0 12px !important;
+  padding: 18px 16px !important;
+  min-height: 0 !important;
+  grid-column: auto !important;
+}
+html[data-theme="paper"] .pages-grid > :first-child,
+html:not([data-theme]) .pages-grid > :first-child {
+  grid-column: auto !important;
+  padding: 20px 16px !important;
+}
+
+/* 7) 图片与相册单列 */
+html[data-theme="paper"] .gallery-grid,
+html[data-theme="paper"] .photo-grid,
+html:not([data-theme]) .gallery-grid,
+html:not([data-theme]) .photo-grid {
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+/* 8) 触控：去掉 hover 位移，按压反馈 */
+@media (hover: none) {
+  html[data-theme="paper"] .page-card:hover,
+  html[data-theme="paper"] .post:hover,
+  html[data-theme="paper"] .btn:hover,
+  html:not([data-theme]) .page-card:hover,
+  html:not([data-theme]) .post:hover,
+  html:not([data-theme]) .btn:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-1) !important;
+  }
+}
+html[data-theme="paper"] a:active,
+html[data-theme="paper"] button:active,
+html:not([data-theme]) a:active,
+html:not([data-theme]) button:active {
+  opacity: 0.72;
+}
+
+/* 9) 移动端细节 */
+@media (max-width: 480px) {
+  html[data-theme="paper"] body,
+  html:not([data-theme]) body { box-shadow: none; }
+  html[data-theme="paper"] .container,
+  html:not([data-theme]) .container { padding-inline: 16px !important; }
+  html[data-theme="paper"] .nav-links a,
+  html:not([data-theme]) .nav-links a { font-size: 0.58rem !important; }
+}
