@@ -1772,3 +1772,123 @@ html[data-theme="deepseek"] .page-card p {
     padding: 22px 18px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色主题 · 全新全屏布局
+   桌面：左侧 240px 竖导航 + 主内容铺满剩余
+   手机：恢复顶部导航 + 单列
+   ═══════════════════════════════════════════════════════ */
+
+@media (min-width: 1025px) {
+  /* 1) 导航变左侧竖栏 */
+  html[data-theme="deepseek"] .nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 240px;
+    height: 100vh;
+    display: block;
+    padding: 28px 0;
+    border-right: 1px solid var(--border);
+    border-bottom: 0;
+    background: var(--bg-soft);
+    pointer-events: auto;
+    overflow-y: auto;
+  }
+  html[data-theme="deepseek"] .nav-inner {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  html[data-theme="deepseek"] .logo {
+    padding: 0 12px 22px;
+    font-size: 1.05rem;
+  }
+  html[data-theme="deepseek"] .nav-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  html[data-theme="deepseek"] .nav-links a {
+    display: block;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+  html[data-theme="deepseek"] .nav-links a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+  }
+  html[data-theme="deepseek"] .nav-toggle { display: none; }
+
+  /* 2) 主内容铺满剩余宽度 */
+  html[data-theme="deepseek"] main {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+  }
+  html[data-theme="deepseek"] .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 56px 0;
+  }
+  html[data-theme="deepseek"] .container,
+  html[data-theme="deepseek"] .hero-inner {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: clamp(32px, 3.4vw, 64px);
+    margin-inline: 0;
+    box-sizing: border-box;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    grid-template-columns: 1.25fr 1fr;
+    gap: clamp(32px, 3.2vw, 72px);
+    align-items: center;
+  }
+  html[data-theme="deepseek"] .section { padding-block: 80px; }
+
+  /* 3) 卡片铺满：3 列，首张通栏 */
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+    columns: auto !important;
+  }
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) > * {
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+  html[data-theme="deepseek"] .pages-grid > :first-child {
+    grid-column: span 3 !important;
+    column-span: none !important;
+    padding: 32px 30px !important;
+  }
+}
+
+/* 手机 / 小屏：恢复顶部导航的常规流式 */
+@media (max-width: 1024px) {
+  html[data-theme="deepseek"] main { margin-left: 0; width: 100%; }
+  html[data-theme="deepseek"] .nav {
+    position: sticky;
+    width: auto;
+    height: 56px;
+    display: flex;
+    padding: 0;
+  }
+}
