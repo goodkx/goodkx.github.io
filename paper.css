@@ -2725,3 +2725,62 @@ html:not([data-theme]) button:active {
   html[data-theme="paper"] .nav-links a,
   html:not([data-theme]) .nav-links a { font-size: 0.58rem !important; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   浅色底部 Tab Bar 适配修复
+   ═══════════════════════════════════════════════════════ */
+
+/* 1) 定位与点击：清掉旧站 right:0 / pointer-events:none */
+html[data-theme="paper"] .nav,
+html:not([data-theme]) .nav {
+  right: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  pointer-events: auto !important;
+}
+
+/* 2) 滚动下滑时仍保持居中（否则会偏到右边） */
+html[data-theme="paper"] .nav.hide,
+html:not([data-theme]) .nav.hide {
+  transform: translateX(-50%) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* 3) 移动端媒体查询把 nav-links 藏了，这里强制显示 */
+@media (max-width: 768px) {
+  html[data-theme="paper"] .nav-links,
+  html:not([data-theme]) .nav-links {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
+  html[data-theme="paper"] .nav-toggle,
+  html:not([data-theme]) .nav-toggle {
+    display: none !important;
+  }
+}
+
+/* 4) 底部 Tab 不需要滑动胶囊与编号前缀 */
+html[data-theme="paper"] .dock-pill,
+html:not([data-theme]) .dock-pill { display: none !important; }
+
+/* 5) 保证每个 Tab 至少 44px 可点 */
+html[data-theme="paper"] .nav-links a,
+html:not([data-theme]) .nav-links a {
+  min-height: 46px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* 6) 表单/输入框在手机宽度下不溢出 */
+html[data-theme="paper"] input,
+html[data-theme="paper"] textarea,
+html[data-theme="paper"] select,
+html:not([data-theme]) input,
+html:not([data-theme]) textarea,
+html:not([data-theme]) select {
+  max-width: 100%;
+  font-size: 16px; /* iOS 焦点缩放 */
+}
