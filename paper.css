@@ -2017,3 +2017,275 @@ html[data-theme="deepseek"] .page-card p {
   html[data-theme="deepseek"] .container,
   html[data-theme="deepseek"] .hero-inner { max-width: 1240px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DARK REDESIGN · 近黑 + 暖白 + 琥珀
+   推翻之前的侧栏/16:9/全宽补丁，重建一套完整深色主题
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 令牌 ── */
+html[data-theme="deepseek"] {
+  --bg: #0a0a0b;
+  --bg-soft: #101012;
+  --card: #131316;
+  --elevated: #17171b;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #f0efed;
+  --text-inv: #0a0a0b;
+  --muted: #8f8f96;
+  --dim: #61616a;
+  --accent: #e0a458;
+  --accent-2: #d7d3cc;
+  --accent-rgb: 224, 164, 88;
+  --accent-2-rgb: 215, 211, 204;
+  --accent-ink: #1a1206;
+  --gradient: linear-gradient(120deg, #e0a458, #d7d3cc);
+  --paper: #0a0a0b;
+  --paper-2: #131316;
+  --paper-3: #17171b;
+  --ink: #f0efed;
+  --ink-soft: #c9c8c5;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-soft: rgba(255, 255, 255, 0.045);
+  --panel: #121215;
+  --nav-bg: rgba(10, 10, 11, 0.82);
+  --sb-thumb: #2a2a30;
+  --chip-c: #e0a458;
+  --chip-bg: rgba(224, 164, 88, 0.08);
+  --chip-bd: rgba(224, 164, 88, 0.2);
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 28px -18px rgba(0, 0, 0, 0.8);
+  --shadow-2: 0 2px 0 rgba(255, 255, 255, 0.05), 0 22px 46px -22px rgba(0, 0, 0, 0.9);
+}
+
+/* ── 布局：顶部导航 + 居中 1280 ── */
+html[data-theme="deepseek"] body {
+  background: #0a0a0b !important;
+}
+html[data-theme="deepseek"] body::after { display: none !important; }
+
+html[data-theme="deepseek"] .nav {
+  position: sticky !important;
+  left: auto !important;
+  top: 0 !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: var(--nav-bg) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  overflow: visible !important;
+}
+html[data-theme="deepseek"] .nav-inner {
+  width: min(1280px, 92%) !important;
+  height: 64px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-theme="deepseek"] .logo {
+  padding: 0 !important;
+  font-size: 1rem !important;
+  font-family: var(--mono);
+}
+html[data-theme="deepseek"] .nav-links {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 22px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+html[data-theme="deepseek"] .nav-links a {
+  display: inline-block !important;
+  padding: 4px 0 !important;
+  font-size: 0.8rem !important;
+  color: var(--muted) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+html[data-theme="deepseek"] .nav-links a:hover { color: var(--text) !important; }
+html[data-theme="deepseek"] .nav-links a.active {
+  padding-left: 0 !important;
+  background: transparent !important;
+  color: var(--accent) !important;
+}
+html[data-theme="deepseek"] .nav-links a.active::before { display: none !important; }
+html[data-theme="deepseek"] .nav.hide {
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+html[data-theme="deepseek"] main {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+/* ── 内容宽度 ── */
+html[data-theme="deepseek"] .container,
+html[data-theme="deepseek"] .hero-inner {
+  width: min(1280px, 92%) !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  padding-inline: 0 !important;
+}
+html[data-theme="deepseek"] .hero {
+  min-height: calc(100vh - 64px) !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 64px 0 !important;
+}
+html[data-theme="deepseek"] .hero-inner {
+  grid-template-columns: 1.22fr 1fr !important;
+  gap: clamp(40px, 5vw, 80px) !important;
+  align-items: center !important;
+}
+html[data-theme="deepseek"] .section { padding-block: 88px !important; }
+
+/* ── 排版 ── */
+html[data-theme="deepseek"] .hero-title,
+html[data-theme="deepseek"] h1,
+html[data-theme="deepseek"] h2 {
+  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--text) !important;
+}
+html[data-theme="deepseek"] .hero-title {
+  font-size: clamp(2.6rem, 5vw, 4rem) !important;
+  line-height: 1.08 !important;
+}
+html[data-theme="deepseek"] .section-title {
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem) !important;
+  letter-spacing: -0.025em !important;
+}
+html[data-theme="deepseek"] .hero-desc,
+html[data-theme="deepseek"] .section-sub,
+html[data-theme="deepseek"] .about-copy p {
+  color: var(--muted) !important;
+  max-width: 56ch;
+}
+html[data-theme="deepseek"] .hero-hello,
+html[data-theme="deepseek"] .section-title .num {
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  letter-spacing: 0.12em !important;
+}
+html[data-theme="deepseek"] .grad-text {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--accent) !important;
+}
+
+/* ── 卡片 ── */
+html[data-theme="deepseek"] .page-card,
+html[data-theme="deepseek"] .feat-card,
+html[data-theme="deepseek"] .post,
+html[data-theme="deepseek"] .hscroll-item,
+html[data-theme="deepseek"] .tool-card,
+html[data-theme="deepseek"] .project-card,
+html[data-theme="deepseek"] .skill-card,
+html[data-theme="deepseek"] .az-item,
+html[data-theme="deepseek"] .terminal,
+html[data-theme="deepseek"] .mini-shop,
+html[data-theme="deepseek"] .code-card,
+html[data-theme="deepseek"] .contact-box {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-1) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-theme="deepseek"] .page-card:hover,
+html[data-theme="deepseek"] .feat-card:hover,
+html[data-theme="deepseek"] .post:hover,
+html[data-theme="deepseek"] .hscroll-item:hover {
+  background: var(--elevated) !important;
+  border-color: rgba(224, 164, 88, 0.3) !important;
+  box-shadow: var(--shadow-2) !important;
+  transform: none !important;
+}
+html[data-theme="deepseek"] .page-card h3,
+html[data-theme="deepseek"] .feat-card h3 { color: var(--text) !important; }
+html[data-theme="deepseek"] .page-card p,
+html[data-theme="deepseek"] .feat-card p { color: var(--muted) !important; }
+html[data-theme="deepseek"] .page-card .page-go { color: var(--accent) !important; }
+
+/* 卡片网格：3 列，首张通栏 */
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+  columns: auto !important;
+  margin-top: 36px !important;
+}
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) > * {
+  margin: 0 !important;
+  min-height: 0 !important;
+  padding: 26px 24px !important;
+}
+html[data-theme="deepseek"] .pages-grid > :first-child {
+  grid-column: span 3 !important;
+  column-span: none !important;
+  padding: 32px 30px !important;
+}
+
+/* ── 按钮 ── */
+html[data-theme="deepseek"] .btn-primary {
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+html[data-theme="deepseek"] .btn-primary:hover {
+  background: #eab878 !important;
+  transform: none !important;
+}
+html[data-theme="deepseek"] .btn-ghost {
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+}
+html[data-theme="deepseek"] .btn-ghost:hover {
+  border-color: var(--accent) !important;
+  transform: none !important;
+}
+
+/* ── 背景装饰：只留极淡网格 ── */
+html[data-theme="deepseek"] .bg-grid {
+  display: block !important;
+  opacity: 0.35 !important;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+  background-size: 56px 56px !important;
+}
+html[data-theme="deepseek"] .bg-glow { display: block !important; opacity: 0.6 !important; }
+
+/* ── 移动端 ── */
+@media (max-width: 1024px) {
+  html[data-theme="deepseek"] .nav { position: sticky !important; width: 100% !important; height: 56px !important; }
+  html[data-theme="deepseek"] .nav-inner { width: 92% !important; height: 56px !important; }
+  html[data-theme="deepseek"] .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+  html[data-theme="deepseek"] .hero { min-height: auto !important; padding: 48px 0 !important; display: block !important; }
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) { grid-template-columns: 1fr !important; }
+  html[data-theme="deepseek"] .pages-grid > :first-child { grid-column: span 1 !important; padding: 24px 20px !important; }
+  html[data-theme="deepseek"] .section { padding-block: 56px !important; }
+}
