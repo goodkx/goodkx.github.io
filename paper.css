@@ -1961,3 +1961,59 @@ html[data-theme="deepseek"] .page-card p {
     max-width: 46ch;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色侧栏收敛：导航收窄、内容限宽、不再拉长
+   ═══════════════════════════════════════════════════════ */
+@media (min-width: 1025px) {
+  html[data-theme="deepseek"] .nav { width: 200px; }
+  html[data-theme="deepseek"] .nav-inner { padding: 0 10px; }
+  html[data-theme="deepseek"] .logo {
+    padding: 0 10px 18px;
+    font-size: 0.98rem;
+  }
+  html[data-theme="deepseek"] .nav-links a {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+  html[data-theme="deepseek"] .nav-links a.active { padding-left: 16px !important; }
+  html[data-theme="deepseek"] .nav-links a.active::before { left: 7px; height: 12px; }
+
+  html[data-theme="deepseek"] main {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+  }
+
+  /* 内容限宽并左对齐：贴着侧栏，右侧自然留白，不再拉长 */
+  html[data-theme="deepseek"] .container,
+  html[data-theme="deepseek"] .hero-inner {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-inline: 0 !important;
+    padding-inline: clamp(24px, 3vw, 44px) !important;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(28px, 2.8vw, 56px);
+  }
+
+  /* 正文字段限宽，避免单行过长 */
+  html[data-theme="deepseek"] .hero-desc,
+  html[data-theme="deepseek"] .about-copy p,
+  html[data-theme="deepseek"] .section-sub {
+    max-width: 58ch;
+  }
+
+  /* 卡片 3 列在 1200 内更紧凑 */
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+  html[data-theme="deepseek"] .section { padding-block: 72px; }
+}
+
+/* 超宽屏：内容继续左对齐，不跟着变宽 */
+@media (min-width: 1800px) {
+  html[data-theme="deepseek"] .container,
+  html[data-theme="deepseek"] .hero-inner { max-width: 1240px !important; }
+}
