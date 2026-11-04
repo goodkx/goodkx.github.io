@@ -3092,3 +3092,15 @@ html[data-theme="legacy"] .hero {
   html[data-theme="deepseek"] .nav-links a,
   html[data-theme="legacy"] .nav-links a { padding: 6px 7px !important; font-size: 0.68rem !important; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   去掉旧导航的伪元素背景层（双层胶囊的根源）
+   ═══════════════════════════════════════════════════════ */
+.nav-inner::before,
+.nav-inner::after,
+.nav::before,
+.nav::after {
+  display: none !important;
+  content: none !important;
+}
+.nav.scrolled .nav-inner::before { display: none !important; }
