@@ -25,7 +25,7 @@
     if (b) b.style.display = "flex";
   });
   const THEMES = [
-    { id: "paper",    name: "暖纸 · 浅色" },
+    { id: "paper",    name: "晨光 · 浅色" },
     { id: "deepseek", name: "墨黑 · 深色" },
     { id: "legacy",   name: "深空绿 · 终端" },
   ];
