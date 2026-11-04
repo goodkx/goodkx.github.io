@@ -9,7 +9,7 @@
   --bg-soft: #efeae0;
   --card: #fffdf8;
   --border: rgba(27, 25, 22, 0.12);
-  --border-hover: rgba(168, 68, 42, 0.45);
+  --border-hover: rgba(var(--accent-rgb), 0.45);
   --text: #1b1916;
   --muted: #6b6459;
   --accent: #a8442a;
@@ -22,9 +22,9 @@
   --radius: 4px;
   --glow-1: transparent;
   --glow-2: transparent;
-  --acc-soft-bg: rgba(168, 68, 42, 0.08);
-  --acc-soft-bd: rgba(168, 68, 42, 0.22);
-  --acc-glow: rgba(168, 68, 42, 0.12);
+  --acc-soft-bg: rgba(var(--accent-rgb), 0.08);
+  --acc-soft-bd: rgba(var(--accent-rgb), 0.22);
+  --acc-glow: rgba(var(--accent-rgb), 0.12);
   --sb-thumb: #d8d0c2;
   --chip-c: #2f5d50;
   --chip-bg: rgba(47, 93, 80, 0.08);
@@ -310,7 +310,7 @@ body {
 .feat-card:hover,
 .post-item:hover {
   transform: translateY(-3px) !important;
-  border-color: rgba(168, 68, 42, 0.38) !important;
+  border-color: rgba(var(--accent-rgb), 0.38) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     0 2px 0 rgba(27, 25, 22, 0.04),
@@ -338,7 +338,7 @@ p { line-height: 1.78; }
 .footer a,
 .page-card p a {
   text-decoration: none;
-  border-bottom: 1px solid rgba(168, 68, 42, 0.26);
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.26);
   transition: border-color 180ms ease, color 180ms ease;
 }
 .prose a:hover,
@@ -435,7 +435,7 @@ pre {
 }
 
 /* 选中与滚动条 */
-::selection { background: rgba(168, 68, 42, 0.16); color: #1b1916; }
+::selection { background: rgba(var(--accent-rgb), 0.16); color: #1b1916; }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -478,7 +478,7 @@ pre {
 .tool-card {
   background-image: radial-gradient(
     240px circle at var(--mx, 50%) var(--my, 50%),
-    rgba(168, 68, 42, 0.055),
+    rgba(var(--accent-rgb), 0.055),
     transparent 72%
   );
 }
@@ -489,7 +489,7 @@ pre {
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
-  background: radial-gradient(circle, rgba(168, 68, 42, 0.22) 0%, rgba(168, 68, 42, 0.04) 68%);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22) 0%, rgba(var(--accent-rgb), 0.04) 68%);
   transform: scale(0);
   opacity: 0.95;
   animation: ink-spread 600ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -816,7 +816,7 @@ h1[data-word] {
   text-decoration: underline !important;
   text-decoration-thickness: 1px !important;
   text-underline-offset: 3px !important;
-  text-decoration-color: rgba(168, 68, 42, 0.32) !important;
+  text-decoration-color: rgba(var(--accent-rgb), 0.32) !important;
 }
 .prose a:hover,
 .footer a:hover,
@@ -844,7 +844,7 @@ h1[data-word] {
 .hscroll-item:hover,
 .project-card:hover,
 .skill-card:hover {
-  border-color: rgba(168, 68, 42, 0.35) !important;
+  border-color: rgba(var(--accent-rgb), 0.35) !important;
   box-shadow: 0 1px 0 rgba(27, 25, 22, 0.05) !important;
   transform: none !important;
 }
@@ -899,13 +899,13 @@ textarea {
   overflow: hidden !important;
 }
 .drum-wrap::before {
-  background: radial-gradient(62% 46% at 50% 50%, rgba(168, 68, 42, 0.045), transparent 72%) !important;
+  background: radial-gradient(62% 46% at 50% 50%, rgba(var(--accent-rgb), 0.045), transparent 72%) !important;
 }
 .drum-item .cl-date {
   text-shadow: none !important;
   color: var(--muted) !important;
 }
-.drum-item .cl-row:hover { background: rgba(168, 68, 42, 0.04) !important; }
+.drum-item .cl-row:hover { background: rgba(var(--accent-rgb), 0.04) !important; }
 .drum-hint {
   color: var(--muted) !important;
   font-family: var(--mono);
@@ -1296,4 +1296,47 @@ html[data-theme="legacy"] .nav-inner {
   background: var(--nav-bg) !important;
   border-radius: 999px !important;
   border-color: var(--border) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   深色主题交互修正
+   1) 点击不再突然下沉 2) 玻璃卡片 hover 不位移 3) 光标光跟随主色
+   ═══════════════════════════════════════════════════════ */
+
+/* 点击只做轻微压暗，不做位移（原来 hover -2px / active +1px 会抖） */
+a:active,
+button:active,
+.page-card:active,
+.btn:active {
+  transform: none !important;
+}
+button:active,
+.page-card:active,
+.btn:active {
+  filter: brightness(0.96);
+}
+
+/* 深色主题：hover 只换边框和阴影，不位移（避免玻璃层重绘闪烁） */
+html[data-theme="deepseek"] .page-card:hover,
+html[data-theme="deepseek"] .feat-card:hover,
+html[data-theme="deepseek"] .post:hover,
+html[data-theme="deepseek"] .hscroll-item:hover,
+html[data-theme="legacy"] .page-card:hover,
+html[data-theme="legacy"] .feat-card:hover,
+html[data-theme="legacy"] .post:hover,
+html[data-theme="legacy"] .hscroll-item:hover {
+  transform: none !important;
+}
+
+/* 深空绿光标光：绿色，screen 叠加 */
+html[data-theme="legacy"] .cursor-glow {
+  background: radial-gradient(circle, rgba(0, 229, 160, 0.16) 0%, rgba(0, 229, 160, 0) 60%) !important;
+  mix-blend-mode: screen;
+  opacity: 0.55 !important;
+}
+
+/* 深色下链接下划线用主色 */
+html[data-theme="deepseek"] .prose a,
+html[data-theme="legacy"] .prose a {
+  text-decoration-color: rgba(var(--accent-rgb), 0.42) !important;
 }
