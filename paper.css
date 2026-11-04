@@ -1604,3 +1604,58 @@ html[data-theme="deepseek"] .pages-grid > :first-child {
     width: min(92vw, 1280px);
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   深色主题：全宽铺满（不是居中的 16:9 框）
+   ═══════════════════════════════════════════════════════ */
+html[data-theme="deepseek"] .hero-inner,
+html[data-theme="deepseek"] .container {
+  width: 100% !important;
+  max-width: none !important;
+  padding-inline: clamp(24px, 4vw, 64px);
+  box-sizing: border-box;
+}
+html[data-theme="deepseek"] .hero-inner {
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+}
+html[data-theme="deepseek"] .hero {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  padding: 48px 0;
+}
+html[data-theme="deepseek"] .section {
+  padding-block: 72px;
+}
+html[data-theme="deepseek"] .pages-grid:not(.hscroll) {
+  grid-template-columns: repeat(3, 1fr);
+}
+html[data-theme="deepseek"] .pages-grid > :first-child {
+  grid-column: span 3;
+  padding: 28px 26px !important;
+}
+
+/* 手机：全宽 + 单列 */
+@media (max-width: 734px) {
+  html[data-theme="deepseek"] .hero-inner,
+  html[data-theme="deepseek"] .container {
+    padding-inline: 16px;
+  }
+  html[data-theme="deepseek"] .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  html[data-theme="deepseek"] .hero {
+    min-height: auto;
+    display: block;
+    padding: 32px 0;
+  }
+  html[data-theme="deepseek"] .section { padding-block: 52px; }
+  html[data-theme="deepseek"] .pages-grid:not(.hscroll) { grid-template-columns: 1fr; }
+  html[data-theme="deepseek"] .pages-grid > :first-child {
+    grid-column: span 1;
+    padding: 22px 18px !important;
+  }
+}
