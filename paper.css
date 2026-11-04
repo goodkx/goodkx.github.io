@@ -2784,3 +2784,102 @@ html:not([data-theme]) select {
   max-width: 100%;
   font-size: 16px; /* iOS 焦点缩放 */
 }
+
+/* ═══════════════════════════════════════════════════════
+   导航栏重设计
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 浅色：底部 Tab Bar 精修 ── */
+html[data-theme="paper"] .nav,
+html:not([data-theme]) .nav {
+  height: 62px !important;
+  background: #ffffff !important;
+  border-top: 1px solid rgba(17, 18, 20, 0.08) !important;
+  box-shadow: 0 -2px 12px rgba(17, 18, 20, 0.04) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-theme="paper"] .nav-links a,
+html:not([data-theme]) .nav-links a {
+  position: relative;
+  flex-direction: column !important;
+  gap: 4px;
+  font-size: 0.72rem !important;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #8b9099 !important;
+  padding: 10px 0 8px !important;
+  min-height: 46px;
+  background: transparent !important;
+  border-radius: 0 !important;
+  transition: color 180ms ease;
+}
+
+/* 隐藏 01. 前缀，只留文字 */
+html[data-theme="paper"] .nav-links .nav-num,
+html:not([data-theme]) .nav-links .nav-num {
+  display: none !important;
+}
+
+/* 选中：墨绿 + 顶部指示条 */
+html[data-theme="paper"] .nav-links a.active,
+html:not([data-theme]) .nav-links a.active {
+  color: var(--accent) !important;
+  background: transparent !important;
+  font-weight: 600;
+}
+html[data-theme="paper"] .nav-links a.active::before,
+html:not([data-theme]) .nav-links a.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--accent);
+}
+html[data-theme="paper"] .nav-links a:active,
+html:not([data-theme]) .nav-links a:active {
+  opacity: 0.6;
+}
+
+/* ── 深色：顶部导航加当前项下划线 ── */
+html[data-theme="deepseek"] .nav-links a {
+  position: relative;
+  transition: color 180ms ease;
+}
+html[data-theme="deepseek"] .nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -5px;
+  height: 1px;
+  background: var(--accent);
+  transition: right 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+html[data-theme="deepseek"] .nav-links a:hover::after { right: 0; }
+html[data-theme="deepseek"] .nav-links a.active::after {
+  right: 0;
+  background: var(--accent);
+}
+
+/* 深空绿：同结构，绿色下划线 */
+html[data-theme="legacy"] .nav-links a {
+  position: relative;
+  transition: color 180ms ease;
+}
+html[data-theme="legacy"] .nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -5px;
+  height: 1px;
+  background: var(--accent);
+  transition: right 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+html[data-theme="legacy"] .nav-links a.active::after { right: 0; }
