@@ -63,9 +63,6 @@
       (t) =>
         `<button type="button" data-t="${t.id}"><span class="sw" data-c="${t.id}"></span>${t.name}</button>`
     ).join("") +
-      '<div class="pop-h">背景氛围</div>' +
-      '<button type="button" data-bg=""><span class="sw" data-c="bgdef"></span>🌌 默认氛围</button>' +
-      '<button type="button" data-bg="rain"><span class="sw" data-c="bgrain"></span>💻 01 数字雨</button>' +
       '<div class="pop-h">版本切换</div>' +
       '<a class="pop-link" href="/">经典首页</a>' +
       '<a class="pop-link" href="/v2/">v2 · 纸感编辑版</a>' +
@@ -235,9 +232,9 @@
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
     });
-    let bgCur = "rain";
+    let bgCur = "";
     try { bgCur = localStorage.getItem("site-bg"); } catch (e) {}
-    if (bgCur === null || bgCur === undefined) bgCur = "rain";
+    if (bgCur === null || bgCur === undefined) bgCur = "";
     pop.querySelectorAll("button[data-bg]").forEach((b) => {
       b.classList.toggle("on", (b.dataset.bg || "") === bgCur);
     });
@@ -461,11 +458,11 @@
     else stopRain();
   };
   /* 默认背景 = 数字雨（站长拍板）；「🌌 默认氛围」= 显式关闭（存空串） */
-  var saved = "rain";
+  var saved = "";
   try { var raw = localStorage.getItem("site-bg"); if (raw !== null) saved = raw; } catch (e) {}
   function boot() {
     injectCss();
-    if (saved === "rain") startRain();
+    stopRain(); /* 数字雨已下线 */
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
