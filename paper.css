@@ -36,20 +36,36 @@
 
 /* ── 原 deepseek（默认深色） → 冷纸 ── */
 html[data-theme="deepseek"] {
-  --bg: #f2f3f7;
-  --bg-soft: #e9ebf1;
-  --card: #ffffff;
-  --border: rgba(24, 30, 44, 0.12);
-  --border-hover: rgba(61, 90, 138, 0.45);
-  --text: #1a1f2b;
-  --muted: #626b7d;
-  --accent: #3d5a8a;
-  --accent-2: #6b4f7a;
-  --accent-rgb: 61, 90, 138;
-  --accent-2-rgb: 107, 79, 122;
-  --gradient: linear-gradient(120deg, #3d5a8a, #6b4f7a);
-  --panel: #ffffff;
-  --nav-bg: rgba(242, 243, 247, 0.88);
+  --bg: #0b0c0e;
+  --bg-soft: #121317;
+  --card: #14161a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(110, 168, 254, 0.45);
+  --text: #e8e6e3;
+  --text-inv: #0b0c0e;
+  --muted: #8b8f96;
+  --dim: #5f646c;
+  --accent: #6ea8fe;
+  --accent-2: #9b8cff;
+  --accent-rgb: 110, 168, 254;
+  --accent-2-rgb: 155, 140, 255;
+  --accent-ink: #07131f;
+  --gradient: linear-gradient(120deg, #6ea8fe, #9b8cff);
+  --paper: #0b0c0e;
+  --paper-2: #14161a;
+  --paper-3: #1a1d22;
+  --ink: #e8e6e3;
+  --ink-soft: #c7c9cd;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-soft: rgba(255, 255, 255, 0.05);
+  --panel: #14161a;
+  --nav-bg: rgba(11, 12, 14, 0.86);
+  --sb-thumb: #2b2f36;
+  --chip-c: #6ea8fe;
+  --chip-bg: rgba(110, 168, 254, 0.1);
+  --chip-bd: rgba(110, 168, 254, 0.24);
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+  --shadow-2: 0 2px 0 rgba(255, 255, 255, 0.05), 0 20px 44px -18px rgba(0, 0, 0, 0.8);
 }
 
 /* ── 冷纸（原紫夜） ── */
@@ -1126,3 +1142,54 @@ html[data-theme="amber"] .btn-primary:hover {
   background: #8a5a2b !important;
   border-color: #8a5a2b !important;
 }
+
+/* ═══ 深色材质补全（近黑 + 蓝） ═══ */
+html[data-theme="deepseek"] body { background: var(--bg) !important; }
+html[data-theme="deepseek"] body::after {
+  mix-blend-mode: screen;
+  opacity: 0.035 !important;
+}
+html[data-theme="deepseek"] .page-card,
+html[data-theme="deepseek"] .terminal,
+html[data-theme="deepseek"] .feat-card,
+html[data-theme="deepseek"] .post,
+html[data-theme="deepseek"] .bento-card,
+html[data-theme="deepseek"] .tool-card,
+html[data-theme="deepseek"] .code-card,
+html[data-theme="deepseek"] .hscroll-item {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-1) !important;
+}
+html[data-theme="deepseek"] .page-card:hover,
+html[data-theme="deepseek"] .feat-card:hover,
+html[data-theme="deepseek"] .post:hover {
+  border-color: rgba(110, 168, 254, 0.35) !important;
+  box-shadow: var(--shadow-2) !important;
+}
+html[data-theme="deepseek"] .btn-primary {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-ink) !important;
+}
+html[data-theme="deepseek"] .btn-ghost {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: var(--text) !important;
+}
+html[data-theme="deepseek"] .gallery img,
+html[data-theme="deepseek"] .photo img,
+html[data-theme="deepseek"] .shot img {
+  border-color: var(--paper-2) !important;
+}
+html[data-theme="deepseek"] .nav-inner {
+  background: var(--nav-bg) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="deepseek"] .cursor-glow {
+  background: radial-gradient(circle, rgba(110, 168, 254, 0.14) 0%, rgba(110, 168, 254, 0) 60%) !important;
+  mix-blend-mode: screen;
+  opacity: 0.6 !important;
+}
+html[data-theme="deepseek"] h1,
+html[data-theme="deepseek"] h2,
+html[data-theme="deepseek"] h3 { font-weight: 600 !important; }
