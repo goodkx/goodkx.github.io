@@ -275,6 +275,38 @@ body{
 .chapter h1{font-family:'ZCOOL KuaiLe',cursive;font-size:118px;line-height:1.05;margin-bottom:22px}
 .chapter .lead{font-size:30px;line-height:1.6;font-weight:500;max-width:980px;color:rgba(46,41,37,.82)}
 
+/* === SQL 代码块 === */
+.sqlbox{
+  background:#2E2925;color:#F8F0DE;border-radius:14px;padding:15px 18px;
+  font-family:'Fredoka Variable','Fredoka','Noto Sans SC Variable','Noto Sans SC',sans-serif;
+  font-size:17px;line-height:1.62;white-space:pre-wrap;word-break:break-word;
+  border:2.5px solid var(--ink);box-shadow:4px 5px 0 rgba(46,41,37,.18);
+}
+.sqlbox .kw{color:#FFD66E}
+.sqlbox .fn{color:#8FDCB9}
+.sqlbox .str{color:#FFB7CA}
+.sqlbox .cm{color:#A2988C}
+
+/* === 文氏图 === */
+.venn{position:relative;height:150px;margin:6px auto 0;width:260px}
+.venn .c{position:absolute;top:8px;width:120px;height:120px;border-radius:50%;border:3px solid var(--ink);opacity:.9}
+.venn .c1{left:8px;background:rgba(138,201,238,.55)}
+.venn .c2{right:8px;background:rgba(143,220,185,.55)}
+.venn .lbl{position:absolute;top:58px;font-size:15px;font-weight:900;color:var(--ink)}
+
+/* === UML 类框 === */
+.uml-class{border:2.5px solid var(--ink);border-radius:10px;background:#fff;overflow:hidden;box-shadow:3px 4px 0 rgba(46,41,37,.14);font-size:16px}
+.uml-class .cn{background:var(--butter);padding:7px 12px;font-weight:900;text-align:center;border-bottom:2px solid var(--ink);font-size:17px}
+.uml-class .attrs,.uml-class .ops{padding:7px 12px;line-height:1.55;border-bottom:1.6px solid rgba(46,41,37,.3)}
+.uml-class .ops{border-bottom:none;background:#FFFAF0}
+
+/* === 关系示意 === */
+.rel-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1.6px dashed rgba(46,41,37,.25)}
+.rel-row:last-child{border-bottom:none}
+.rel-row .sym{width:92px;flex:none;text-align:center;font-size:20px;font-weight:900}
+.rel-row .nm{width:90px;flex:none;font-weight:900;font-size:18px}
+.rel-row p{font-size:16px;line-height:1.45;color:var(--ink-soft)}
+
 /* === 图示：IP 首部 === */
 .iphead{border:var(--line) solid var(--ink);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
 .iprow{display:grid;grid-template-columns:repeat(32,1fr);border-bottom:2px solid var(--ink)}
@@ -490,25 +522,25 @@ body.force-landscape .landscape-ui{display:block}
               <span>📚</span> 期末复习 · 两章打通
             </div>
             <h1 class="anim cover-title" style="--i:1">
-              网络层<span style="color:var(--ink-soft);font-size:.55em"> × </span><br>
-              <span class="line2">输入输出系统</span>
+              网络层 × 输入输出<br>
+              <span class="line2">多表查询 × 面向对象</span>
             </h1>
-            <p class="anim cover-sub" style="--i:2;margin-top:24px">
-              一本画着看的计算机课笔记。<br>
-              把「快递怎么送到你家」和「数据怎么进出内存」讲成人话。
+            <p class="anim cover-sub" style="--i:2;margin-top:22px">
+              四章打通的计算机课笔记。<br>
+              把「快递怎么送到你家」「数据怎么进出内存」「表怎么连起来」「需求怎么变成类」讲成人话。
             </p>
-            <div class="anim row" style="--i:3;margin-top:38px;gap:14px">
+            <div class="anim" style="--i:3;margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:820px">
               <div class="bookmark" style="--bm:var(--sky)">
-                <div>
-                  <div class="t">第 4 章 · 网络层</div>
-                  <div class="s">计算机网络（第 9 版）</div>
-                </div>
+                <div><div class="t" style="font-size:19px">网络层</div><div class="s">计算机网络 · 第 4 章</div></div>
               </div>
               <div class="bookmark" style="--bm:var(--coral)">
-                <div>
-                  <div class="t">第 5 章 · 输入输出系统</div>
-                  <div class="s">计算机组成原理（第 3 版）</div>
-                </div>
+                <div><div class="t" style="font-size:19px">输入输出系统</div><div class="s">计算机组成原理 · 第 5 章</div></div>
+              </div>
+              <div class="bookmark" style="--bm:var(--mint)">
+                <div><div class="t" style="font-size:19px">MySQL 多表查询</div><div class="s">数据库应用 · 核心专题</div></div>
+              </div>
+              <div class="bookmark" style="--bm:var(--lilac)">
+                <div><div class="t" style="font-size:19px">面向对象分析与设计</div><div class="s">软件工程 · 核心章节</div></div>
               </div>
             </div>
           </div>
@@ -604,57 +636,89 @@ body.force-landscape .landscape-ui{display:block}
     </section>
 
     <!-- ============ 03 总目录 ============ -->
-    <section class="slide" data-chapter="cover">
+    <section class="slide" data-chapter="cover" data-title="四章总目录">
       <div class="slide-inner">
         <div class="head">
           <div class="head-left">
             <div class="chip c-butter">Contents</div>
-            <h2 class="s-title"><span class="mark">今天要啃的两块硬骨头</span></h2>
+            <h2 class="s-title"><span class="mark">今天要啃的四块硬骨头</span></h2>
           </div>
           <div class="page-badge">目录</div>
         </div>
 
-        <div class="grid2" style="margin-top:8px;gap:40px">
-          <div class="card anim" style="--i:0;background:#EAF6FC;border-color:var(--ink)">
-            <div class="row" style="justify-content:space-between;margin-bottom:14px">
+        <div class="anim" style="--i:0;margin-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card" style="background:#EAF6FC;padding:20px 24px">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
               <div class="chip c-sky">PART 1</div>
-              <span class="f-num" style="font-size:44px;font-weight:700;color:var(--sky-deep)">04</span>
+              <span class="f-num" style="font-size:30px;font-weight:700;color:var(--sky-deep)">NET</span>
             </div>
-            <h3 class="f-display" style="font-size:46px;margin-bottom:8px">网络层</h3>
-            <p class="small" style="margin-bottom:16px">计算机网络（第 9 版）· 第 4 章</p>
-            <div class="stack sm">
-              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">IP 地址</span><span class="chip c-sky" style="font-size:15px">子网 / CIDR</span><span class="chip c-sky" style="font-size:15px">ARP</span></div>
-              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">IP 数据报</span><span class="chip c-sky" style="font-size:15px">分片</span><span class="chip c-sky" style="font-size:15px">DHCP / ICMP</span></div>
-              <div class="row" style="gap:10px"><span class="chip c-sky" style="font-size:15px">RIP / OSPF / BGP</span><span class="chip c-sky" style="font-size:15px">NAT</span><span class="chip c-sky" style="font-size:15px">IPv6</span></div>
+            <h3 class="f-display" style="font-size:34px;margin-bottom:4px">网络层</h3>
+            <p class="small" style="font-size:16px;margin-bottom:8px">计算机网络（第 9 版）· 第 4 章</p>
+            <div class="row" style="gap:7px;flex-wrap:wrap">
+              <span class="chip c-sky" style="font-size:13px;padding:4px 10px">IP 地址</span>
+              <span class="chip c-sky" style="font-size:13px;padding:4px 10px">子网 / CIDR</span>
+              <span class="chip c-sky" style="font-size:13px;padding:4px 10px">ARP</span>
+              <span class="chip c-sky" style="font-size:13px;padding:4px 10px">分片</span>
+              <span class="chip c-sky" style="font-size:13px;padding:4px 10px">RIP/OSPF/BGP</span>
             </div>
-            <div class="tip" style="margin-top:18px;background:#DFF1FB">
-              <div class="ico">🚚</div>
-              <p>核心一句话：网络层只负责「尽力把包裹送到」，不保证不丢、不保证按顺序。</p>
-            </div>
+            <p class="small" style="margin-top:9px;font-size:15px">🚚 只负责「尽力送到」，不保证不丢、不保证按序</p>
           </div>
 
-          <div class="card anim" style="--i:1;background:#FFF0EC">
-            <div class="row" style="justify-content:space-between;margin-bottom:14px">
+          <div class="card" style="background:#FFF0EC;padding:20px 24px">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
               <div class="chip c-coral">PART 2</div>
-              <span class="f-num" style="font-size:44px;font-weight:700;color:var(--coral-deep)">05</span>
+              <span class="f-num" style="font-size:30px;font-weight:700;color:var(--coral-deep)">I/O</span>
             </div>
-            <h3 class="f-display" style="font-size:46px;margin-bottom:8px">输入输出系统</h3>
-            <p class="small" style="margin-bottom:16px">计算机组成原理（第 3 版）· 第 5 章</p>
-            <div class="stack sm">
-              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">I/O 接口</span><span class="chip c-coral" style="font-size:15px">编址方式</span></div>
-              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">程序查询</span><span class="chip c-coral" style="font-size:15px">程序中断</span></div>
-              <div class="row" style="gap:10px"><span class="chip c-coral" style="font-size:15px">DMA</span><span class="chip c-coral" style="font-size:15px">通道</span><span class="chip c-coral" style="font-size:15px">磁盘</span></div>
+            <h3 class="f-display" style="font-size:34px;margin-bottom:4px">输入输出系统</h3>
+            <p class="small" style="font-size:16px;margin-bottom:8px">计算机组成原理（第 3 版）· 第 5 章</p>
+            <div class="row" style="gap:7px;flex-wrap:wrap">
+              <span class="chip c-coral" style="font-size:13px;padding:4px 10px">接口</span>
+              <span class="chip c-coral" style="font-size:13px;padding:4px 10px">程序查询</span>
+              <span class="chip c-coral" style="font-size:13px;padding:4px 10px">中断</span>
+              <span class="chip c-coral" style="font-size:13px;padding:4px 10px">DMA</span>
+              <span class="chip c-coral" style="font-size:13px;padding:4px 10px">通道</span>
             </div>
-            <div class="tip" style="margin-top:18px;background:#FFE3DD">
-              <div class="ico">🍳</div>
-              <p>核心一句话：CPU 是主厨，I/O 系统是后厨团队 —— 怎么少让主厨亲自跑腿，就是本章主线。</p>
+            <p class="small" style="margin-top:9px;font-size:15px">🍳 让 CPU 少跑腿，后厨团队多干活</p>
+          </div>
+
+          <div class="card" style="background:#EFFAF3;padding:20px 24px">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <div class="chip c-mint">PART 3</div>
+              <span class="f-num" style="font-size:30px;font-weight:700;color:var(--mint-deep)">SQL</span>
             </div>
+            <h3 class="f-display" style="font-size:34px;margin-bottom:4px">MySQL 多表查询</h3>
+            <p class="small" style="font-size:16px;margin-bottom:8px">数据库应用 · 核心专题</p>
+            <div class="row" style="gap:7px;flex-wrap:wrap">
+              <span class="chip c-mint" style="font-size:13px;padding:4px 10px">INNER JOIN</span>
+              <span class="chip c-mint" style="font-size:13px;padding:4px 10px">外连接</span>
+              <span class="chip c-mint" style="font-size:13px;padding:4px 10px">子查询</span>
+              <span class="chip c-mint" style="font-size:13px;padding:4px 10px">CTE</span>
+              <span class="chip c-mint" style="font-size:13px;padding:4px 10px">GROUP BY</span>
+            </div>
+            <p class="small" style="margin-top:9px;font-size:15px">🔗 把散落的表，按关系重新拼成一张答案</p>
+          </div>
+
+          <div class="card" style="background:#F4EEFD;padding:20px 24px">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <div class="chip c-lilac">PART 4</div>
+              <span class="f-num" style="font-size:30px;font-weight:700;color:#7B5FB0">UML</span>
+            </div>
+            <h3 class="f-display" style="font-size:34px;margin-bottom:4px">面向对象分析与设计</h3>
+            <p class="small" style="font-size:16px;margin-bottom:8px">软件工程 · 核心章节</p>
+            <div class="row" style="gap:7px;flex-wrap:wrap">
+              <span class="chip c-lilac" style="font-size:13px;padding:4px 10px">用例图</span>
+              <span class="chip c-lilac" style="font-size:13px;padding:4px 10px">类图</span>
+              <span class="chip c-lilac" style="font-size:13px;padding:4px 10px">顺序图</span>
+              <span class="chip c-lilac" style="font-size:13px;padding:4px 10px">GRASP</span>
+              <span class="chip c-lilac" style="font-size:13px;padding:4px 10px">SOLID</span>
+            </div>
+            <p class="small" style="margin-top:9px;font-size:15px">🧩 把需求翻译成一张能落地的类关系图</p>
           </div>
         </div>
 
-        <div class="anim" style="--i:2;margin-top:22px;display:flex;gap:10px;align-items:center">
-          <span class="chip c-butter">共 45 页</span>
-          <span class="small">按 <span class="code">M</span> 可以随时打开完整目录 ↓</span>
+        <div class="anim" style="--i:1;margin-top:16px;display:flex;gap:10px;align-items:center">
+          <span class="chip c-butter">共 77 页</span>
+          <span class="small">按 <span class="code">M</span> 打开完整目录，按 <span class="code">→</span> 开始</span>
         </div>
       </div>
     </section>
@@ -2968,41 +3032,1773 @@ body.force-landscape .landscape-ui{display:block}
       </div>
     </section>
 
-    <!-- ============ 45 串讲与结尾 ============ -->
-    <section class="chapter" data-chapter="end" data-title="两章串讲与复习路线" style="background:linear-gradient(135deg,#FFF6E4 0%,#FFF0C6 50%,#FFE39A 100%)">
+    <!-- ============ 45 MySQL 章首 ============ -->
+    <section class="chapter" data-chapter="mysql" data-title="PART 3 · MySQL 多表查询" style="background:linear-gradient(135deg,#E9FBF4 0%,#BDEEDB 52%,#8FDCB9 100%)">
       <div class="slide-inner" style="justify-content:center;padding:0 20px">
-        <div class="blob" style="width:420px;height:420px;background:#8FDCB9;right:-100px;top:-120px;opacity:.45"></div>
-        <div class="blob ring" style="width:260px;height:260px;left:-70px;bottom:40px"></div>
-        <div style="position:relative;z-index:3;max-width:1600px">
-          <div class="chip c-butter anim" style="--i:0;margin-bottom:22px">🎓 收尾 · 把两章连起来</div>
-          <h1 class="anim" style="--i:1;font-family:'ZCOOL KuaiLe',cursive;font-size:74px;line-height:1.1;margin-bottom:18px">
-            一个在「外面送快递」，一个在「里面开后厨」
-          </h1>
-          <p class="anim body" style="--i:2;font-size:26px;max-width:1300px;color:var(--ink-soft)">
-            看起来八竿子打不着，其实解决的是同一个问题：<b style="color:var(--ink)">把「搬数据」这件事，从核心处理器手里剥离出去。</b>
-          </p>
+        <div class="big-num">03</div>
+        <div style="position:relative;z-index:3">
+          <div class="c-tag anim" style="--i:0">PART 3 / 数据库应用 · 核心专题</div>
+          <h1 class="anim" style="--i:1">多表查询</h1>
+          <p class="lead anim" style="--i:2">一张表只讲一件事，真实问题却总横跨好几张表。<br>多表查询就是：<b>按关系把表拼起来，拼出你要的答案。</b></p>
+          <div class="row anim" style="--i:3;margin-top:36px;gap:12px">
+            <span class="chip" style="background:#fff">连接</span>
+            <span class="chip" style="background:#fff">子查询</span>
+            <span class="chip" style="background:#fff">聚合</span>
+            <span class="chip" style="background:#fff">CTE</span>
+            <span class="chip" style="background:#fff">性能</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="grid2 anim" style="--i:3;margin-top:30px;grid-template-columns:1fr 1fr;gap:26px">
-            <div class="card" style="background:#EAF7FF">
-              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">🌐 网络层：分层 + 转发 + 路由</h3>
-              <p class="body" style="font-size:19px">每台路由器只查表转发，全局靠路由协议算路；可靠性交给端系统。</p>
+    <!-- ============ 46 为什么需要多表 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="为什么一定要多表：外键与关系">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">先想清楚</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">为什么数据要拆成好几张表？</span></h2>
+          </div>
+          <div class="page-badge">SQL / 01</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EFFAF3">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🧹 拆表 = 少写重复、少出错</h3>
+              <p class="body" style="font-size:20px">如果把班级名写进每条学生记录，改一次班级名要改几百行，还容易改漏。<br>
+              <b>把班级单独存一张表，学生表只存 class_id</b> —— 改一处，全对。</p>
             </div>
-            <div class="card" style="background:#FFF0EC">
-              <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">🍳 I/O 系统：接口 + 中断 + DMA</h3>
-              <p class="body" style="font-size:19px">CPU 只下命令，接口做翻译，DMA/通道做搬运；并行度越高，CPU 越自由。</p>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:23px;font-weight:900;margin-bottom:8px">🔗 靠什么把表连起来</h3>
+              <ul class="list tight">
+                <li><b>主键</b>：唯一标识一行，如 student.sid</li>
+                <li><b>外键</b>：引用另一张表的主键，如 class_id</li>
+                <li><b>关系</b>：一对一、一对多、多对多</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">🧠</div>
+              <p>多表查询的前提不是 SQL 写得多花，而是你先看懂<b>表与表之间的那条线</b>。</p>
             </div>
           </div>
 
-          <div class="anim" style="--i:4;margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
-            <span class="chip c-sky">① 先看速记卡</span>
+          <div class="card anim" style="--i:1;background:#fff;padding:18px">
+            <svg viewBox="0 0 620 460" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <rect x="30" y="30" width="250" height="180" rx="14" fill="#EFFAF3"/>
+                <text x="155" y="60" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">class 班级表</text>
+                <line x1="46" y1="74" x2="264" y2="74"/>
+                <text x="46" y="100" font-size="15" fill="#2E2925" stroke="none">class_id  (PK)</text>
+                <text x="46" y="128" font-size="15" fill="#2E2925" stroke="none">cname      班级名</text>
+                <text x="46" y="156" font-size="15" fill="#2E2925" stroke="none">teacher    班主任</text>
+
+                <rect x="340" y="30" width="250" height="230" rx="14" fill="#EAF6FC"/>
+                <text x="465" y="60" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">student 学生表</text>
+                <line x1="356" y1="74" x2="574" y2="74"/>
+                <text x="356" y="100" font-size="15" fill="#2E2925" stroke="none">sid      (PK)</text>
+                <text x="356" y="128" font-size="15" fill="#2E2925" stroke="none">sname    姓名</text>
+                <text x="356" y="156" font-size="15" fill="#2E2925" stroke="none">age      年龄</text>
+                <text x="356" y="184" font-size="15" fill="#2E2925" stroke="none">class_id (FK)  → 班级</text>
+
+                <path d="M280 120 H340" stroke-width="4"/>
+                <path d="M280 120 L340 120" stroke-dasharray="8 8" stroke="#3FA982"/>
+                <text x="310" y="108" text-anchor="middle" font-size="13" fill="#3FA982" stroke="none">1 : N</text>
+
+                <rect x="30" y="270" width="250" height="160" rx="14" fill="#FFF2C9"/>
+                <text x="155" y="300" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">course 课程表</text>
+                <line x1="46" y1="314" x2="264" y2="314"/>
+                <text x="46" y="340" font-size="15" fill="#2E2925" stroke="none">course_id (PK)</text>
+                <text x="46" y="368" font-size="15" fill="#2E2925" stroke="none">cname  课程名</text>
+                <text x="46" y="396" font-size="15" fill="#2E2925" stroke="none">credit 学分</text>
+
+                <rect x="340" y="270" width="250" height="160" rx="14" fill="#F4EEFD"/>
+                <text x="465" y="300" text-anchor="middle" font-size="18" font-weight="700" fill="#2E2925" stroke="none">sc 选课表（中间表）</text>
+                <line x1="356" y1="314" x2="574" y2="314"/>
+                <text x="356" y="340" font-size="15" fill="#2E2925" stroke="none">sid      (FK)</text>
+                <text x="356" y="368" font-size="15" fill="#2E2925" stroke="none">course_id(FK)</text>
+                <text x="356" y="396" font-size="15" fill="#2E2925" stroke="none">grade   成绩</text>
+
+                <path d="M280 350 H340" stroke-width="4"/>
+                <text x="310" y="338" text-anchor="middle" font-size="13" fill="#7B5FB0" stroke="none">1 : N</text>
+                <text x="310" y="440" text-anchor="middle" font-size="14" fill="#7A6E64" stroke="none">多对多 = 两张表 + 一张中间表</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 47 笛卡尔积 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="连接的本质：笛卡尔积再筛选">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">连接的本质</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">所有连接，都是「先配对，再筛选」</span></h2>
+          </div>
+          <div class="page-badge">SQL / 02</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🛒 笛卡尔积 = 每行都去配一遍</h3>
+              <p class="body" style="font-size:20px">左表 3 行、右表 2 行，不加条件直接连，就会得到 <b class="hl">3 × 2 = 6 行</b>。绝大多数是没意义的组合。</p>
+            </div>
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">✂️ 加上 ON 条件才有意义</h3>
+              <p class="body" style="font-size:20px"><span class="code">ON s.class_id = c.class_id</span><br>
+              只保留「学生班级号 = 班级号」的组合，6 行筛成 3 行。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">⚠️</div>
+              <p>三张表连接却只写了 1 个条件，结果会爆炸性增长。记住：<b>N 张表至少 N−1 个连接条件</b>。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:1">
+            <div class="card flat" style="background:#fff;padding:16px">
+              <div class="row" style="gap:10px;justify-content:center;align-items:flex-start">
+                <table class="tbl" style="width:46%;box-shadow:none;font-size:14px">
+                  <thead><tr><th style="font-size:15px;padding:8px">student</th></tr></thead>
+                  <tbody>
+                    <tr><td>小美 · 1 班</td></tr>
+                    <tr><td>小刚 · 1 班</td></tr>
+                    <tr><td>小飞 · 2 班</td></tr>
+                  </tbody>
+                </table>
+                <div style="font-size:26px;font-weight:900;padding-top:40px">×</div>
+                <table class="tbl" style="width:46%;box-shadow:none;font-size:14px">
+                  <thead><tr><th style="font-size:15px;padding:8px">class</th></tr></thead>
+                  <tbody>
+                    <tr><td>1 班 · 王老师</td></tr>
+                    <tr><td>2 班 · 李老师</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="text-align:center;font-size:22px;font-weight:900;margin:10px 0 6px">↓ 笛卡尔积 6 行</div>
+              <table class="tbl" style="box-shadow:none;font-size:14px">
+                <thead><tr><th style="padding:7px">学生</th><th style="padding:7px">班级</th><th style="padding:7px">是否合理</th></tr></thead>
+                <tbody>
+                  <tr><td>小美 · 1 班</td><td>1 班</td><td style="color:#3FA982;font-weight:900">✓</td></tr>
+                  <tr><td>小美 · 1 班</td><td>2 班</td><td style="color:#E1584A;font-weight:900">✗</td></tr>
+                  <tr><td>小刚 · 1 班</td><td>1 班</td><td style="color:#3FA982;font-weight:900">✓</td></tr>
+                  <tr><td>小刚 · 1 班</td><td>2 班</td><td style="color:#E1584A;font-weight:900">✗</td></tr>
+                  <tr><td>小飞 · 2 班</td><td>1 班</td><td style="color:#E1584A;font-weight:900">✗</td></tr>
+                  <tr><td>小飞 · 2 班</td><td>2 班</td><td style="color:#3FA982;font-weight:900">✓</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 48 内连接 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="INNER JOIN 内连接">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">最常用</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">INNER JOIN：只保留两边都有的</span></h2>
+          </div>
+          <div class="page-badge">SQL / 03</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;padding:18px 20px">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">写法一 · ON（最推荐）</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> s.sname, c.cname
+<span class="kw">FROM</span> student s
+<span class="kw">INNER JOIN</span> class c
+  <span class="kw">ON</span> s.class_id = c.class_id;</div>
+            </div>
+            <div class="card anim" style="--i:1;padding:18px 20px;background:#FFFCF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">写法二 · USING（同名列）</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> sname, cname
+<span class="kw">FROM</span> student s
+<span class="kw">JOIN</span> class c <span class="kw">USING</span>(class_id);</div>
+              <p class="small" style="margin-top:6px">USING 要求两表列名相同，结果里同名列只出现一次。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;padding:18px 20px;background:#EFFAF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">写法三 · WHERE（隐式连接）</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> s.sname, c.cname
+<span class="kw">FROM</span> student s, class c
+<span class="kw">WHERE</span> s.class_id = c.class_id;</div>
+              <p class="small" style="margin-top:6px">等价于内连接，但连接条件和过滤条件混在一起，表一多就难读。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#fff">
+              <div class="ico">🎯</div>
+              <p><b>内连接只输出匹配成功的行。</b>学生没有班级、或班级没有学生，这些行都会消失。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFF2C9">
+              <div class="ico">📝</div>
+              <p>考试写「查询每个学生的班级名」：用 <b>INNER JOIN</b> 或 <b>WHERE 等值</b> 都算对，写法统一更稳。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 49 外连接 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="LEFT / RIGHT JOIN 外连接">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">重点</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">外连接：没匹配上的，也要留下来</span></h2>
+          </div>
+          <div class="page-badge">SQL / 04</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0">
+              <div class="row" style="gap:24px;align-items:center">
+                <div class="venn">
+                  <div class="c c1"></div><div class="c c2"></div>
+                  <div class="lbl" style="left:22px">左表</div>
+                  <div class="lbl" style="right:22px">右表</div>
+                </div>
+                <div style="flex:1">
+                  <p class="body" style="font-size:20px"><b>LEFT JOIN</b>：左表全部保留<br>
+                  <b>RIGHT JOIN</b>：右表全部保留<br>
+                  没匹配的一方，列填 <b class="hl">NULL</b></p>
+                </div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:1;padding:18px 20px;background:#FFFCF3">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🎯 典型场景：找「没有选课的学生」</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> s.sname
+<span class="kw">FROM</span> student s
+<span class="kw">LEFT JOIN</span> sc <span class="kw">ON</span> s.sid = sc.sid
+<span class="kw">WHERE</span> sc.sid <span class="kw">IS NULL</span>;</div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF0EC">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">⚠️ 最容易错的坑</h3>
+              <p class="body" style="font-size:19px">左连接后，把右表的过滤条件写在 <b>WHERE</b> 里：</p>
+              <div class="sqlbox" style="margin-top:8px">-- 错：NULL 行被 WHERE 干掉，退化成内连接
+<span class="kw">WHERE</span> sc.grade &gt; 80</div>
+              <p class="body" style="font-size:19px;margin-top:8px">正确：条件写在 <b>ON</b> 里，左表仍然全保留。</p>
+              <div class="sqlbox" style="margin-top:6px">-- 对
+<span class="kw">LEFT JOIN</span> sc <span class="kw">ON</span> s.sid = sc.sid
+  <span class="kw">AND</span> sc.grade &gt; 80</div>
+            </div>
+            <div class="tip anim" style="--i:2">
+              <div class="ico">🧠</div>
+              <p>记法：<b>ON 决定「怎么连」，WHERE 决定「连完筛什么」</b>。外连接时，这个区别会改变结果。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 50 自连接与交叉连接 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="自连接与交叉连接">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">两个特殊连接</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">自己连自己，和「全都配一遍」</span></h2>
+          </div>
+          <div class="page-badge">SQL / 05</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="card anim" style="--i:0;background:#EFFAF3">
+            <div class="chip c-mint">自连接</div>
+            <h3 style="font-size:26px;font-weight:900;margin:8px 0">同一张表，取两个别名</h3>
+            <p class="body" style="font-size:20px">员工表里既有员工，又有他的经理。要查「谁比谁工资高」，就得把同一张表当成两张表用。</p>
+            <div class="sqlbox" style="margin-top:10px"><span class="kw">SELECT</span> a.ename, b.ename <span class="kw">AS</span> manager
+<span class="kw">FROM</span> emp a
+<span class="kw">JOIN</span> emp b <span class="kw">ON</span> a.mgr_id = b.emp_id;</div>
+            <p class="small" style="margin-top:8px">要点：<b>必须起别名</b>，否则数据库分不清是哪个「emp」。</p>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <div class="chip c-butter">交叉连接</div>
+              <h3 style="font-size:24px;font-weight:900;margin:8px 0">CROSS JOIN = 笛卡尔积</h3>
+              <p class="body" style="font-size:19px">不加任何条件，把两张表所有行两两组合。数据量大时非常危险。</p>
+              <div class="sqlbox" style="margin-top:8px"><span class="kw">SELECT</span> * <span class="kw">FROM</span> student
+<span class="kw">CROSS JOIN</span> class;</div>
+              <p class="small" style="margin-top:6px">真正用途：生成日期序列、排列组合、测试数据。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#fff">
+              <div class="ico">🤔</div>
+              <p>面试常问：<b>「自连接和外连接有什么区别？」</b> —— 自连接看的是「表来源」，外连接看的是「保留哪边」，两者不在一个维度。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 51 多表连接 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="三表及以上连接">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">进阶</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">三表连接：把「学生—选课—课程」串起来</span></h2>
+          </div>
+          <div class="page-badge">SQL / 06</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF6FC">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🔗 连接顺序：一条链往下接</h3>
+              <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">
+                <span class="chip c-sky" style="font-size:15px">student</span>
+                <span style="font-size:20px;font-weight:900">→</span>
+                <span class="chip c-mint" style="font-size:15px">sc</span>
+                <span style="font-size:20px;font-weight:900">→</span>
+                <span class="chip c-butter" style="font-size:15px">course</span>
+              </div>
+              <p class="body" style="font-size:19px;margin-top:10px">student 通过 sid 连 sc，sc 通过 course_id 连 course。<b>两个连接条件，一个都不能少。</b></p>
+            </div>
+            <div class="card anim" style="--i:1;padding:18px 20px">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">查询：每个学生的选课名和成绩</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> s.sname, c.cname, sc.grade
+<span class="kw">FROM</span> student s
+<span class="kw">JOIN</span> sc <span class="kw">ON</span> s.sid = sc.sid
+<span class="kw">JOIN</span> course c <span class="kw">ON</span> sc.course_id = c.course_id
+<span class="kw">ORDER BY</span> s.sname, c.cname;</div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="tip anim" style="--i:1;background:#FFF2C9">
+              <div class="ico">⚠️</div>
+              <p><b>少写一个 ON</b>，就会和第三张表做笛卡尔积。1000 名学生 × 50 门课 = 5 万行假数据。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF0EC">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:6px">🧩 加筛选也加在 WHERE</h3>
+              <div class="sqlbox">... <span class="kw">JOIN</span> course c <span class="kw">ON</span> ...
+<span class="kw">WHERE</span> c.credit &gt;= 3
+  <span class="kw">AND</span> sc.grade &gt;= 90;</div>
+              <p class="small" style="margin-top:6px">连接条件写 ON，业务筛选写 WHERE。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#EFFAF3">
+              <div class="ico">💡</div>
+              <p>表多时先画 ER 图，再顺着关系写 JOIN，比背 SQL 模板靠谱。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 52 子查询 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="子查询：标量、列、行">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">嵌套</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">子查询：先把「一个答案」算出来</span></h2>
+          </div>
+          <div class="page-badge">SQL / 07</div>
+        </div>
+
+        <div class="grid3 anim" style="--i:0;margin-top:4px">
+          <div class="card" style="background:#EFFAF3;padding:18px 20px">
+            <div class="chip c-mint">标量</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">返回 1 行 1 列</h3>
+            <p class="small" style="font-size:15px">可以当值用：= &gt; &lt; 加减乘除</p>
+            <div class="sqlbox" style="font-size:14px;padding:10px 12px;margin-top:8px">SELECT sname
+FROM student
+WHERE age &gt; (
+  SELECT AVG(age) FROM student
+);</div>
+          </div>
+          <div class="card" style="background:#FFF9E8;padding:18px 20px">
+            <div class="chip c-butter">列</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">返回一列多行</h3>
+            <p class="small" style="font-size:15px">配 IN / ANY / ALL 使用</p>
+            <div class="sqlbox" style="font-size:14px;padding:10px 12px;margin-top:8px">SELECT sname FROM student
+WHERE sid IN (
+  SELECT sid FROM sc
+  WHERE grade &gt;= 90
+);</div>
+          </div>
+          <div class="card" style="background:#F4EEFD;padding:18px 20px">
+            <div class="chip c-lilac">行</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">返回多列一行</h3>
+            <p class="small" style="font-size:15px">用 (a,b) = (子查询)</p>
+            <div class="sqlbox" style="font-size:14px;padding:10px 12px;margin-top:8px">SELECT * FROM sc
+WHERE (sid, course_id) = (
+  SELECT sid, course_id
+  FROM sc WHERE grade = 100
+);</div>
+          </div>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:20px;grid-template-columns:1fr 1fr">
+          <div class="card" style="background:#fff;padding:18px 22px">
+            <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">📌 子查询可以放三个位置</h3>
+            <p class="body" style="font-size:18px"><b>WHERE</b>（最常见）、<b>SELECT</b>（算列）、<b>FROM</b>（当临时表，需要别名）。</p>
+          </div>
+          <div class="tip" style="background:#FFF2C9">
+            <div class="ico">🧠</div>
+            <p><b>IN 和 = 的区别：</b>子查询返回多行时只能用 IN；返回单值才能用等号，否则报错「Subquery returns more than 1 row」。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 53 EXISTS ============ -->
+    <section class="slide" data-chapter="mysql" data-title="EXISTS 与 NOT EXISTS">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">相关子查询</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">EXISTS：只问「有没有」，不问「是多少」</span></h2>
+          </div>
+          <div class="page-badge">SQL / 08</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🔁 执行方式：外层每行问一次</h3>
+              <p class="body" style="font-size:19px">对 student 的每一行，拿它的 sid 去 sc 里找。找到第一条就返回 TRUE，<b>不再往下找</b> —— 所以通常比 IN 快。</p>
+            </div>
+            <div class="card anim" style="--i:1;padding:18px 20px">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">查询「至少选了一门课的学生」</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> sname <span class="kw">FROM</span> student s
+<span class="kw">WHERE EXISTS</span> (
+  <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> sc
+  <span class="kw">WHERE</span> sc.sid = s.sid
+);</div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;padding:18px 20px;background:#FFF0EC">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">查询「一门课都没选的学生」</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> sname <span class="kw">FROM</span> student s
+<span class="kw">WHERE NOT EXISTS</span> (
+  <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> sc
+  <span class="kw">WHERE</span> sc.sid = s.sid
+);</div>
+              <p class="small" style="margin-top:6px">子查询里写 <span class="code">SELECT 1</span> 就行，EXISTS 不关心选什么列。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">⚠️</div>
+              <p><b>NOT IN 有 NULL 陷阱：</b>子查询结果含 NULL 时，NOT IN 可能一行都不返回。找「没有」优先用 <b>NOT EXISTS</b> 或 <b>LEFT JOIN ... IS NULL</b>。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 54 派生表与 CTE ============ -->
+    <section class="slide" data-chapter="mysql" data-title="派生表与 CTE">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">可读性</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">派生表 &amp; CTE：给中间结果起个名字</span></h2>
+          </div>
+          <div class="page-badge">SQL / 09</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;padding:18px 20px">
+              <div class="chip c-mint">派生表</div>
+              <h3 style="font-size:21px;font-weight:900;margin:8px 0">FROM 里的子查询</h3>
+              <div class="sqlbox"><span class="kw">SELECT</span> cname, avg_grade
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> class_id, <span class="fn">AVG</span>(grade) <span class="kw">AS</span> avg_grade
+  <span class="kw">FROM</span> sc <span class="kw">JOIN</span> student <span class="kw">USING</span>(sid)
+  <span class="kw">GROUP BY</span> class_id
+) <span class="kw">AS</span> t
+<span class="kw">WHERE</span> avg_grade &gt; 80;</div>
+              <p class="small" style="margin-top:6px">必须给子查询起别名，否则 MySQL 报错。</p>
+            </div>
+            <div class="tip anim" style="--i:1;background:#EFFAF3">
+              <div class="ico">🧱</div>
+              <p>派生表 = <b>临时搭的脚手架</b>：用完就拆，只在当前这条 SQL 里有效。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;padding:18px 20px;background:#FFFCF3">
+              <div class="chip c-butter">CTE（MySQL 8.0+）</div>
+              <h3 style="font-size:21px;font-weight:900;margin:8px 0">WITH 先定义，再查询</h3>
+              <div class="sqlbox"><span class="kw">WITH</span> class_avg <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> class_id,
+         <span class="fn">AVG</span>(grade) <span class="kw">AS</span> avg_grade
+  <span class="kw">FROM</span> sc <span class="kw">JOIN</span> student <span class="kw">USING</span>(sid)
+  <span class="kw">GROUP BY</span> class_id
+)
+<span class="kw">SELECT</span> c.cname, t.avg_grade
+<span class="kw">FROM</span> class_avg t
+<span class="kw">JOIN</span> class c <span class="kw">USING</span>(class_id)
+<span class="kw">WHERE</span> t.avg_grade &gt; 80;</div>
+              <p class="small" style="margin-top:6px">复杂查询拆成「一步一块」，可读性大幅提升；还能被多次引用。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">🧠</div>
+              <p><b>递归 CTE</b> 用 <span class="code">WITH RECURSIVE</span>，可以查组织架构、菜单树、评论盖楼。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 55 UNION ============ -->
+    <section class="slide" data-chapter="mysql" data-title="UNION 合并结果集">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">纵向合并</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">UNION：把两个结果「上下摞起来」</span></h2>
+          </div>
+          <div class="page-badge">SQL / 10</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;padding:18px 20px">
+              <div class="sqlbox"><span class="kw">SELECT</span> sname <span class="kw">FROM</span> student
+<span class="kw">WHERE</span> class_id = 1
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> sname <span class="kw">FROM</span> student
+<span class="kw">WHERE</span> age &lt; 18;</div>
+              <div class="row" style="gap:10px;margin-top:10px">
+                <span class="chip c-mint">UNION</span><span class="small">自动去重，可能排序</span>
+              </div>
+              <div class="row" style="gap:10px;margin-top:6px">
+                <span class="chip c-butter">UNION ALL</span><span class="small">保留重复，更快</span>
+              </div>
+            </div>
+            <div class="tip anim" style="--i:1;background:#FFF2C9">
+              <div class="ico">⚡</div>
+              <p>能确定不会重复时，<b>优先 UNION ALL</b> —— 省掉去重的排序开销。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EFFAF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">📏 三条硬性规则</h3>
+              <ul class="list tight">
+                <li>两边<b>列数必须相同</b></li>
+                <li>对应列的<b>类型要兼容</b></li>
+                <li>列名以<b>第一条 SELECT</b> 为准</li>
+              </ul>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFFCF3">
+              <h3 style="font-size:22px;font-weight:900;margin-bottom:8px">🔀 和 JOIN 的区别</h3>
+              <p class="body" style="font-size:19px"><b>JOIN</b> 是左右拼列（变宽）；<br><b>UNION</b> 是上下拼行（变长）。</p>
+              <div style="display:flex;gap:10px;margin-top:10px">
+                <div style="flex:1;background:#fff;border:2px dashed rgba(46,41,37,.35);border-radius:10px;padding:8px;text-align:center;font-size:14px">JOIN<br>→ 列变多</div>
+                <div style="flex:1;background:#fff;border:2px dashed rgba(46,41,37,.35);border-radius:10px;padding:8px;text-align:center;font-size:14px">UNION<br>→ 行变多</div>
+              </div>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">📝</div>
+              <p>ORDER BY 只能写在<b>最后一条 SELECT 之后</b>，作用于合并后的整体。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 56 聚合与 HAVING ============ -->
+    <section class="slide" data-chapter="mysql" data-title="多表聚合与 HAVING">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">统计</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">连接 + 分组：一次算出每班平均分</span></h2>
+          </div>
+          <div class="page-badge">SQL / 11</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;padding:18px 20px">
+              <div class="sqlbox"><span class="kw">SELECT</span> c.cname,
+       <span class="fn">COUNT</span>(sc.sid)  <span class="kw">AS</span> 人数,
+       <span class="fn">AVG</span>(sc.grade)  <span class="kw">AS</span> 平均分,
+       <span class="fn">MAX</span>(sc.grade)  <span class="kw">AS</span> 最高分
+<span class="kw">FROM</span> class c
+<span class="kw">JOIN</span> student s <span class="kw">USING</span>(class_id)
+<span class="kw">JOIN</span> sc <span class="kw">USING</span>(sid)
+<span class="kw">GROUP BY</span> c.class_id, c.cname
+<span class="kw">HAVING</span> <span class="fn">AVG</span>(sc.grade) &gt;= 80
+<span class="kw">ORDER BY</span> 平均分 <span class="kw">DESC</span>;</div>
+            </div>
+            <div class="tip anim" style="--i:1;background:#EFFAF3">
+              <div class="ico">🧠</div>
+              <p><b>WHERE 在分组前筛行，HAVING 在分组后筛组。</b>聚合函数不能写在 WHERE 里。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔢 COUNT 的小陷阱</h3>
+              <p class="body" style="font-size:18px"><b>COUNT(*)</b>：数行数，NULL 也算<br>
+              <b>COUNT(列)</b>：跳过该列的 NULL<br>
+              <b>COUNT(DISTINCT 列)</b>：去重后数</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">📐 执行顺序（重点）</h3>
+              <p class="body" style="font-size:17px;line-height:1.7">FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFF0EC">
+              <div class="ico">⚠️</div>
+              <p>SELECT 里的别名，<b>WHERE 里不能用</b>，但 ORDER BY 里可以 —— 因为 ORDER BY 在 SELECT 之后执行。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 57 经典题型 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="经典题：分组 TopN 与第二高">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">考试高频</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">三道经典题，套路就这几招</span></h2>
+          </div>
+          <div class="page-badge">SQL / 12</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr;gap:26px">
+          <div class="stack">
+            <div class="card anim" style="--i:0;padding:16px 18px;background:#EFFAF3">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">① 每门课成绩最高的学生</h3>
+              <div class="sqlbox" style="font-size:14px;padding:10px 12px"><span class="kw">SELECT</span> sc.sid, sc.course_id, sc.grade
+<span class="kw">FROM</span> sc
+<span class="kw">WHERE</span> sc.grade = (
+  <span class="kw">SELECT</span> <span class="fn">MAX</span>(grade) <span class="kw">FROM</span> sc x
+  <span class="kw">WHERE</span> x.course_id = sc.course_id
+);</div>
+              <p class="small" style="font-size:14px;margin-top:6px">相关子查询：每门课单独算一次最高分。</p>
+            </div>
+            <div class="card anim" style="--i:1;padding:16px 18px;background:#FFF9E8">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">② 第二高的成绩</h3>
+              <div class="sqlbox" style="font-size:14px;padding:10px 12px"><span class="kw">SELECT</span> <span class="fn">MAX</span>(grade) <span class="kw">FROM</span> sc
+<span class="kw">WHERE</span> grade &lt; (
+  <span class="kw">SELECT</span> <span class="fn">MAX</span>(grade) <span class="kw">FROM</span> sc
+);</div>
+              <p class="small" style="font-size:14px;margin-top:6px">比「LIMIT 1 OFFSET 1」更稳：有并列最高分时也对。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;padding:16px 18px">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:6px">③ 每组 Top 3（MySQL 8.0 窗口函数）</h3>
+              <div class="sqlbox" style="font-size:14px;padding:10px 12px"><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> s.*, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> class_id
+    <span class="kw">ORDER BY</span> grade <span class="kw">DESC</span>
+  ) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> sc s
+) t <span class="kw">WHERE</span> rn &lt;= 3;</div>
+              <p class="small" style="font-size:14px;margin-top:6px">ROW_NUMBER 不并列；RANK 并列跳号；DENSE_RANK 并列不跳号。</p>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF0EC">
+              <div class="ico">🎯</div>
+              <p><b>万能思路：</b>先把「每组」用 PARTITION BY 划开，再在组内排序编号，最后筛编号。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 58 执行顺序与性能 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="执行顺序与性能优化">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">性能</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">SQL 不是按你写的顺序执行的</span></h2>
+          </div>
+          <div class="page-badge">SQL / 13</div>
+        </div>
+
+        <div class="card anim" style="--i:0;background:#EAF6FC;margin-top:4px;padding:18px 24px">
+          <div class="flow">
+            <div class="step" style="padding:10px 12px"><div class="n">1</div><h4 style="font-size:18px">FROM / JOIN</h4><p style="font-size:14px">先确定数据源</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px"><div class="n">2</div><h4 style="font-size:18px">ON</h4><p style="font-size:14px">连接条件</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px"><div class="n">3</div><h4 style="font-size:18px">WHERE</h4><p style="font-size:14px">筛行</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px;background:#FFF9E8"><div class="n">4</div><h4 style="font-size:18px">GROUP BY</h4><p style="font-size:14px">分组</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px;background:#FFF9E8"><div class="n">5</div><h4 style="font-size:18px">HAVING</h4><p style="font-size:14px">筛组</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px;background:#EFFAF3"><div class="n">6</div><h4 style="font-size:18px">SELECT</h4><p style="font-size:14px">算列</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px"><div class="n">7</div><h4 style="font-size:18px">ORDER BY</h4><p style="font-size:14px">排序</p></div>
+            <div class="arrow-v" style="width:26px;font-size:22px">→</div>
+            <div class="step" style="padding:10px 12px"><div class="n">8</div><h4 style="font-size:18px">LIMIT</h4><p style="font-size:14px">截断</p></div>
+          </div>
+        </div>
+
+        <div class="grid2" style="--i:1;margin-top:20px;grid-template-columns:1fr 1fr;gap:22px">
+          <div class="card" style="background:#EFFAF3">
+            <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🚀 优化四招</h3>
+            <ul class="list tight" style="font-size:19px">
+              <li><b>连接列建索引</b>（外键列尤其重要）</li>
+              <li><b>小表驱动大表</b>，减少外层循环次数</li>
+              <li><b>不要 SELECT *</b>，只拿需要的列</li>
+              <li>外连接条件写 <b>ON</b>，别写 WHERE</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#FFF2C9">
+            <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔍 用 EXPLAIN 看执行计划</h3>
+            <div class="sqlbox" style="font-size:14px;padding:10px 12px"><span class="kw">EXPLAIN</span> <span class="kw">SELECT</span> ...
+-- 重点看三列：
+-- type：ALL 全表扫描要警惕
+-- key ：实际用了哪个索引
+-- rows：预估扫描行数</div>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:14px">
+          <div class="tip" style="background:#FFF0EC"><div class="ico">💡</div><p>面试加分句：<b>「先看 EXPLAIN 的 type 和 rows，再决定加索引还是改 SQL；不要凭感觉优化。」</b></p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 59 MySQL 速记卡 ============ -->
+    <section class="slide" data-chapter="mysql" data-title="MySQL 多表查询速记卡">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-mint">考前一晚看这页</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#A9EBD2">多表查询 · 18 条速记</span></h2>
+          </div>
+          <div class="page-badge">SQL / 14</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:40px">
+          <div class="card anim" style="--i:0;padding:22px 26px">
+            <div class="chip c-mint" style="margin-bottom:12px">连接</div>
+            <ul class="list tight" style="gap:9px">
+              <li>连接本质：<b>笛卡尔积 + 条件筛选</b></li>
+              <li>N 张表至少 <b>N−1</b> 个连接条件</li>
+              <li>INNER JOIN 只保留<b>匹配行</b></li>
+              <li>LEFT JOIN 左表全保留，右表补 <b>NULL</b></li>
+              <li>外连接的条件写 <b>ON</b>，别写 WHERE</li>
+              <li>自连接<b>必须起两个别名</b></li>
+              <li>CROSS JOIN 就是笛卡尔积，慎用</li>
+              <li>USING 要求同名列，结果只留一列</li>
+            </ul>
+          </div>
+
+          <div class="card anim" style="--i:1;padding:22px 26px;background:#FFF9E8">
+            <div class="chip c-butter" style="margin-bottom:12px">子查询与统计</div>
+            <ul class="list tight" style="gap:9px">
+              <li>标量子查询返回 <b>1 行 1 列</b>，可配 = &gt; &lt;</li>
+              <li>列子查询配 <b>IN / ANY / ALL</b></li>
+              <li>EXISTS 只判断存在，<b>找到即停</b></li>
+              <li>找「没有」优先 <b>NOT EXISTS</b> 或 LEFT JOIN IS NULL</li>
+              <li>派生表必须<b>起别名</b>；CTE 用 <b>WITH</b></li>
+              <li>UNION <b>去重</b>，UNION ALL 不去重</li>
+              <li>WHERE 筛行，<b>HAVING 筛组</b></li>
+              <li>COUNT(*) 算行，COUNT(列) 跳 NULL</li>
+              <li>每组 TopN：<b>PARTITION BY + ROW_NUMBER</b></li>
+              <li>执行顺序：FROM→WHERE→GROUP→HAVING→SELECT→ORDER→LIMIT</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#EFFAF3"><div class="ico">✍️</div><p><b>大题高频：</b>三表连接 + 分组统计 + 每组最高分。</p></div>
+          <div class="tip" style="flex:1;background:#EAF6FC"><div class="ico">✅</div><p><b>选择题高频：</b>LEFT JOIN 的 NULL、ON 与 WHERE 区别、UNION 规则。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 60 面向对象章首 ============ -->
+    <section class="chapter" data-chapter="oo" data-title="PART 4 · 面向对象分析与设计" style="background:linear-gradient(135deg,#F6F0FE 0%,#DCC9F7 52%,#C7AEF2 100%)">
+      <div class="slide-inner" style="justify-content:center;padding:0 20px">
+        <div class="big-num">04</div>
+        <div style="position:relative;z-index:3">
+          <div class="c-tag anim" style="--i:0">PART 4 / 软件工程 · 核心章节</div>
+          <h1 class="anim" style="--i:1">面向对象分析与设计</h1>
+          <p class="lead anim" style="--i:2">需求是一堆人和事，代码却只能由一个个对象组成。<br>OOAD 就是把「人和事」<b>翻译成「类与关系」</b>的那座桥。</p>
+          <div class="row anim" style="--i:3;margin-top:36px;gap:12px">
+            <span class="chip" style="background:#fff">用例</span>
+            <span class="chip" style="background:#fff">类图</span>
+            <span class="chip" style="background:#fff">顺序图</span>
+            <span class="chip" style="background:#fff">GRASP</span>
+            <span class="chip" style="background:#fff">SOLID</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 61 OO 为什么 ============ -->
+    <section class="slide" data-chapter="oo" data-title="为什么转向面向对象">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">4.1 概述</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">为什么软件工程最后选了「对象」</span></h2>
+          </div>
+          <div class="page-badge">OO / 01</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="card anim" style="--i:0;background:#FFF0EC">
+            <div class="chip c-coral">结构化方法</div>
+            <h3 style="font-size:24px;font-weight:900;margin:8px 0">以「功能 / 过程」为中心</h3>
+            <ul class="list tight">
+              <li>先分解成函数、模块</li>
+              <li>数据与操作分离</li>
+              <li>需求一变，函数链路大改</li>
+              <li>复用粒度小，难跨项目</li>
+            </ul>
+            <p class="small" style="margin-top:8px">适合流程稳定、变化少的系统。</p>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#F4EEFD">
+            <div class="chip c-lilac">面向对象</div>
+            <h3 style="font-size:24px;font-weight:900;margin:8px 0">以「对象 / 职责」为中心</h3>
+            <ul class="list tight">
+              <li>先找业务里的名词 → 类</li>
+              <li>数据与操作封装在一起</li>
+              <li>用多态应对变化，改一处不动全身</li>
+              <li>类可复用、可继承、可替换</li>
+            </ul>
+            <p class="small" style="margin-top:8px">适合需求频繁演进的大型系统。</p>
+          </div>
+        </div>
+
+        <div class="grid3" style="--i:2;margin-top:22px">
+          <div class="tip" style="background:#EFFAF3"><div class="ico">🧩</div><p><b>更贴近人类思维</b>：现实世界就是由对象组成的，不是由函数组成的。</p></div>
+          <div class="tip" style="background:#EAF6FC"><div class="ico">🔁</div><p><b>更好应对变化</b>：新增一种支付方式，只加一个类，不改原来的调用代码。</p></div>
+          <div class="tip" style="background:#FFF2C9"><div class="ico">🛠️</div><p><b>更易维护复用</b>：封装边界清晰，团队可以并行开发不同类。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 62 核心概念 ============ -->
+    <section class="slide" data-chapter="oo" data-title="对象、类、封装、继承、多态、消息">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">4.2 基本概念</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">六个词，撑起整个面向对象</span></h2>
+          </div>
+          <div class="page-badge">OO / 02</div>
+        </div>
+
+        <div class="anim" style="--i:0;margin-top:4px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+          <div class="card" style="background:#EAF6FC;padding:18px 20px">
+            <div class="chip c-sky">对象</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">现实中的那个东西</h3>
+            <p class="small" style="font-size:16px">有<b>状态</b>（属性）和<b>行为</b>（方法）。<br>例如：张三、这张订单。</p>
+          </div>
+          <div class="card" style="background:#EFFAF3;padding:18px 20px">
+            <div class="chip c-mint">类</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">对象的「模板」</h3>
+            <p class="small" style="font-size:16px">描述一类对象共有的属性和方法。<br>类是抽象的，对象是具体的。</p>
+          </div>
+          <div class="card" style="background:#FFF2C9;padding:18px 20px">
+            <div class="chip c-butter">封装</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">把细节藏起来</h3>
+            <p class="small" style="font-size:16px">对外只暴露必要接口，内部实现随便改。<br>关键词：<b>信息隐藏</b>。</p>
+          </div>
+          <div class="card" style="background:#F4EEFD;padding:18px 20px">
+            <div class="chip c-lilac">继承</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">子承父业</h3>
+            <p class="small" style="font-size:16px">子类拥有父类的属性和方法，还能扩展。<br>表达 <b>is-a</b> 关系。</p>
+          </div>
+          <div class="card" style="background:#FFF0EC;padding:18px 20px">
+            <div class="chip c-coral">多态</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">同一个消息，不同反应</h3>
+            <p class="small" style="font-size:16px">父类引用指向子类对象，调用同名方法走子类实现。运行时绑定。</p>
+          </div>
+          <div class="card" style="background:#EAF6FB;padding:18px 20px">
+            <div class="chip c-sky">消息</div>
+            <h3 style="font-size:21px;font-weight:900;margin:8px 0 6px">对象之间怎么说话</h3>
+            <p class="small" style="font-size:16px">对象 A 调用对象 B 的方法，就是发一条消息：接收者 + 方法名 + 参数。</p>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:1;margin-top:20px">
+          <div class="tip" style="background:#FFF9E8">
+            <div class="ico">🧠</div>
+            <p><b>一句话串起来：</b>类定义模板 → 创建对象 → 对象封装状态 → 通过消息协作 → 继承复用代码 → 多态支持替换。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 63 UML 全景 ============ -->
+    <section class="slide" data-chapter="oo" data-title="UML 十四种图全景">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">4.3 UML</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">UML 全景：7 张结构图 + 7 张行为图</span></h2>
+          </div>
+          <div class="page-badge">OO / 03</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr;gap:24px">
+          <div class="card anim" style="--i:0;background:#EAF6FC">
+            <div class="chip c-sky">结构图 · 描述「有什么」</div>
+            <table class="tbl" style="box-shadow:none;margin-top:10px">
+              <thead><tr><th style="width:130px">图</th><th>用途</th></tr></thead>
+              <tbody>
+                <tr><td><b>类图</b></td><td>类、属性、方法、关系（最核心）</td></tr>
+                <tr><td><b>对象图</b></td><td>某一时刻的对象快照</td></tr>
+                <tr><td><b>包图</b></td><td>按包组织模型，管理依赖</td></tr>
+                <tr><td><b>组件图</b></td><td>可替换的软件组件及接口</td></tr>
+                <tr><td><b>部署图</b></td><td>软件在硬件节点上的部署</td></tr>
+                <tr><td><b>复合结构图</b></td><td>类内部结构</td></tr>
+                <tr><td><b>制品图</b></td><td>物理文件、构建产物</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#F4EEFD">
+            <div class="chip c-lilac">行为图 · 描述「怎么动」</div>
+            <table class="tbl" style="box-shadow:none;margin-top:10px">
+              <thead><tr><th style="width:130px">图</th><th>用途</th></tr></thead>
+              <tbody>
+                <tr><td><b>用例图</b></td><td>谁用系统做什么（需求）</td></tr>
+                <tr><td><b>活动图</b></td><td>业务流程 / 算法流程</td></tr>
+                <tr><td><b>状态机图</b></td><td>一个对象的状态变迁</td></tr>
+                <tr><td><b>顺序图</b></td><td>对象间消息的<b>时间顺序</b></td></tr>
+                <tr><td><b>通信图</b></td><td>对象间消息的<b>结构关系</b></td></tr>
+                <tr><td><b>定时图</b></td><td>状态随时间变化的精确时刻</td></tr>
+                <tr><td><b>交互概览图</b></td><td>多个交互图的组合</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:18px">
+          <div class="tip" style="background:#FFF2C9"><div class="ico">🎯</div><p><b>考试只认几种：</b>用例图、类图、顺序图、活动图、状态图。先把这 5 种画熟，其余知道名字即可。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 64 用例图 ============ -->
+    <section class="slide" data-chapter="oo" data-title="用例图：谁用系统做什么">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">需求建模</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">用例图：从用户视角画「能干什么」</span></h2>
+          </div>
+          <div class="page-badge">OO / 04</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.15fr .85fr">
+          <div class="card anim" style="--i:0;background:#fff;padding:16px">
+            <svg viewBox="0 0 700 440" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <rect x="240" y="20" width="240" height="400" rx="18" fill="#F4EEFD"/>
+                <text x="360" y="48" text-anchor="middle" font-size="16" font-weight="700" fill="#2E2925" stroke="none">选课系统</text>
+
+                <ellipse cx="360" cy="100" rx="86" ry="34" fill="#FFF2C9"/>
+                <text x="360" y="106" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">登录</text>
+                <ellipse cx="360" cy="200" rx="86" ry="34" fill="#FFF2C9"/>
+                <text x="360" y="206" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">选课</text>
+                <ellipse cx="360" cy="300" rx="86" ry="34" fill="#FFF2C9"/>
+                <text x="360" y="306" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">退课</text>
+                <ellipse cx="360" cy="380" rx="86" ry="30" fill="#FFE3DD"/>
+                <text x="360" y="386" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">查看成绩</text>
+
+                <!-- 学生 -->
+                <circle cx="80" cy="120" r="16" fill="#8AC9EE"/>
+                <path d="M56 156 h48 v44 h-48 z M80 172 v28" />
+                <text x="80" y="225" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">学生</text>
+                <path d="M96 130 H274" stroke-width="3.5"/>
+                <path d="M80 156 V200 H274" stroke-width="3.5"/>
+
+                <!-- 教师 -->
+                <circle cx="620" cy="300" r="16" fill="#8FDCB9"/>
+                <path d="M596 336 h48 v44 h-48 z M620 352 v28" />
+                <text x="620" y="405" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">教师</text>
+                <path d="M586 310 H446" stroke-width="3.5"/>
+
+                <!-- include -->
+                <path d="M360 234 V266" stroke-width="3" stroke-dasharray="7 6"/>
+                <text x="375" y="256" font-size="13" fill="#7B5FB0" stroke="none">«include»</text>
+                <path d="M360 134 V166" stroke-width="3" stroke-dasharray="7 6"/>
+                <text x="375" y="156" font-size="13" fill="#7B5FB0" stroke="none">«include»</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">👤 参与者（Actor）</h3>
+              <p class="body" style="font-size:18px">人、外部系统、定时器都算。画在系统框<b>外面</b>，用小人表示。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔗 四种关系</h3>
+              <div class="rel-row"><span class="sym">──</span><span class="nm">关联</span><p>参与者与用例之间的连线</p></div>
+              <div class="rel-row"><span class="sym">«include»</span><span class="nm">包含</span><p>一定会执行被包含的用例（如选课前必须登录）</p></div>
+              <div class="rel-row"><span class="sym">«extend»</span><span class="nm">扩展</span><p>满足条件才执行（如选课失败时「申请扩容」）</p></div>
+              <div class="rel-row"><span class="sym">△</span><span class="nm">泛化</span><p>参与者或用例的继承关系</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 65 用例描述 ============ -->
+    <section class="slide" data-chapter="oo" data-title="用例描述：把图写成可执行的规格">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">需求文档</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">一张图不够，还得把流程写清楚</span></h2>
+          </div>
+          <div class="page-badge">OO / 05</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="anim" style="--i:0">
+            <table class="tbl">
+              <thead><tr><th style="width:150px">字段</th><th>内容示例：学生选课</th></tr></thead>
+              <tbody>
+                <tr><td><b>用例名</b></td><td>选择课程（Select Course）</td></tr>
+                <tr><td><b>参与者</b></td><td>学生（主）、教务系统（辅）</td></tr>
+                <tr><td><b>前置条件</b></td><td>已登录、已完成选课注册</td></tr>
+                <tr><td><b>主事件流</b></td><td>1. 学生查询可选课程<br>2. 系统返回课程列表<br>3. 学生提交选课请求<br>4. 系统校验容量与冲突<br>5. 系统保存并提示成功</td></tr>
+                <tr><td><b>备选流</b></td><td>3a. 课程已满 → 提示并推荐替代<br>4a. 时间冲突 → 拒绝并说明原因</td></tr>
+                <tr><td><b>后置条件</b></td><td>选课记录已写入，课程名额减 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <div class="tip anim" style="--i:1;background:#EFFAF3">
+              <div class="ico">🧭</div>
+              <p><b>主事件流</b>是「一切顺利时的步骤」，<b>备选流</b>是「出岔子怎么办」。两者都要写，测试用例就靠它。</p>
+            </div>
+            <div class="card anim" style="--i:2">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">✍️ 写的三条标准</h3>
+              <ul class="list tight">
+                <li>用<b>用户语言</b>，不写数据库表名</li>
+                <li>每一步都<b>可观察、可验证</b></li>
+                <li>编号对应，备选流直接挂主流程步骤</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFF2C9">
+              <div class="ico">📝</div>
+              <p>考试给一个场景让你写用例描述：先把<b>主流程 5~7 步</b>写出来，再补两条备选流，分基本就满了。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 66 活动图 ============ -->
+    <section class="slide" data-chapter="oo" data-title="活动图：业务流程怎么走">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">行为建模</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">活动图：把流程画成一条河</span></h2>
+          </div>
+          <div class="page-badge">OO / 06</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="card anim" style="--i:0;background:#fff;padding:14px">
+            <svg viewBox="0 0 560 430" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <circle cx="280" cy="30" r="14" fill="#2E2925"/>
+                <path d="M280 44 V66"/>
+                <rect x="205" y="66" width="150" height="46" rx="10" fill="#FFF2C9"/>
+                <text x="280" y="95" text-anchor="middle" font-size="15" fill="#2E2925" stroke="none">提交选课</text>
+                <path d="M280 112 V140"/>
+
+                <path d="M280 140 L385 178 L280 216 L175 178 Z" fill="#EAF6FC"/>
+                <text x="280" y="175" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">容量够吗？</text>
+                <text x="280" y="194" text-anchor="middle" font-size="12" fill="#7A6E64" stroke="none">[是] / [否]</text>
+
+                <path d="M385 178 H470" stroke-width="4"/>
+                <text x="428" y="168" font-size="13" font-weight="700" fill="#2E2925" stroke="none">[是]</text>
+                <rect x="400" y="238" width="130" height="46" rx="10" fill="#8FDCB9"/>
+                <text x="465" y="267" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">写入选课记录</text>
+                <path d="M470 178 V238" stroke-width="4"/>
+
+                <path d="M175 178 H90" stroke-width="4"/>
+                <text x="120" y="168" font-size="13" font-weight="700" fill="#2E2925" stroke="none">[否]</text>
+                <rect x="40" y="238" width="130" height="46" rx="10" fill="#FFB7CA"/>
+                <text x="105" y="267" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">提示课程已满</text>
+                <path d="M105 178 V238" stroke-width="4"/>
+
+                <path d="M105 284 V330 H280" stroke-width="4"/>
+                <path d="M465 284 V330 H280" stroke-width="4"/>
+                <path d="M280 330 V352"/>
+
+                <rect x="215" y="352" width="130" height="42" rx="10" fill="#C7AEF2"/>
+                <text x="280" y="379" text-anchor="middle" font-size="14" fill="#2E2925" stroke="none">提示结果</text>
+                <path d="M280 394 V410"/>
+                <circle cx="280" cy="416" r="12" fill="#fff"/>
+                <circle cx="280" cy="416" r="7" fill="#2E2925"/>
+              </g>
+            </svg>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔷 记住符号</h3>
+              <ul class="list tight">
+                <li><b>实心圆</b>：开始；<b>牛眼</b>：结束</li>
+                <li><b>圆角矩形</b>：活动 / 动作</li>
+                <li><b>菱形</b>：判断 / 分支（要写监护条件）</li>
+                <li><b>粗黑线</b>：分叉（fork）/ 汇合（join）</li>
+                <li><b>泳道</b>：按角色划分职责</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:2;background:#EFFAF3">
+              <div class="ico">🌊</div>
+              <p>活动图强调<b>控制流</b>，顺序图强调<b>对象间消息</b>，状态图强调<b>单个对象的状态</b>。别画混。</p>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFF2C9">
+              <div class="ico">🎯</div>
+              <p>画泳道时，把「谁做」放在列上，动作放进对应列，责任一目了然。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 67 类图基础 ============ -->
+    <section class="slide" data-chapter="oo" data-title="类图基础：类、属性、方法、可见性">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">静态建模</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">类图：一个方框，三层信息</span></h2>
+          </div>
+          <div class="page-badge">OO / 07</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#fff;padding:18px">
+              <div class="uml-class" style="max-width:420px;margin:0 auto;font-size:18px">
+                <div class="cn">Student 学生</div>
+                <div class="attrs">- sid : String<br>- name : String<br>- age : int<br># classId : String</div>
+                <div class="ops">+ enroll(course) : boolean<br>+ drop(course) : void<br>- checkConflict() : boolean</div>
+              </div>
+              <p class="small" style="text-align:center;margin-top:10px">类名 / 属性 / 操作 三层，中间用横线隔开</p>
+            </div>
+            <div class="tip anim" style="--i:1;background:#FFF2C9">
+              <div class="ico">🔑</div>
+              <p>可见性：<b>+ public</b>　<b>- private</b>　<b># protected</b>　<b>~ package</b>。属性一般私有，方法按需公开。</p>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">✍️ 属性与方法写法</h3>
+              <div class="sqlbox" style="font-size:15px;background:#fff;color:var(--ink);border-color:rgba(46,41,37,.35);box-shadow:none">属性：可见性 名称 : 类型 [= 默认值]
+方法：可见性 名称(参数 : 类型) : 返回类型
+
++ name : String
+- age : int = 0
++ enroll(c : Course) : boolean</div>
+              <p class="small" style="margin-top:8px">下划线表示<b>静态成员</b>；斜体表示<b>抽象类 / 抽象方法</b>。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🎯 找类的三个来源</h3>
+              <ul class="list tight">
+                <li>用例描述里的<b>名词</b> → 候选类</li>
+                <li>业务领域里的<b>实体</b> → 实体类</li>
+                <li>系统要记录的<b>事件 / 角色</b> → 控制类、边界类</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 68 类间关系 ============ -->
+    <section class="slide" data-chapter="oo" data-title="类间六种关系与多重性">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">必考</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">六种关系：从「用到」到「就是」</span></h2>
+          </div>
+          <div class="page-badge">OO / 08</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="anim" style="--i:0">
+            <div class="card" style="padding:14px 20px">
+              <div class="rel-row"><span class="sym" style="color:#7B5FB0">- - →</span><span class="nm">依赖</span><p>临时使用，最弱。如「控制器」调用「服务」的某个方法</p></div>
+              <div class="rel-row"><span class="sym">──</span><span class="nm">关联</span><p>长期持有引用。如「学生」关联「班级」，可标多重性</p></div>
+              <div class="rel-row"><span class="sym">◇──</span><span class="nm">聚合</span><p>整体与部分，<b>部分可独立存在</b>。如「班级」聚合「学生」</p></div>
+              <div class="rel-row"><span class="sym">◆──</span><span class="nm">组合</span><p>强整体，<b>同生共死</b>。如「订单」组合「订单项」</p></div>
+              <div class="rel-row"><span class="sym">──▷</span><span class="nm">泛化</span><p>继承，<b>is-a</b>。如「研究生」继承「学生」</p></div>
+              <div class="rel-row"><span class="sym">- - ▷</span><span class="nm">实现</span><p>类实现接口，<b>can-do</b>。如「支付宝支付」实现「支付接口」</p></div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#FFF2C9">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🔢 多重性怎么写</h3>
+              <table class="tbl" style="box-shadow:none">
+                <thead><tr><th style="width:100px">写法</th><th>含义</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">1</td><td>恰好 1 个</td></tr>
+                  <tr><td class="mono">0..1</td><td>0 或 1 个</td></tr>
+                  <tr><td class="mono">1..*</td><td>至少 1 个</td></tr>
+                  <tr><td class="mono">*</td><td>0 到多个</td></tr>
+                  <tr><td class="mono">2..5</td><td>2 到 5 个</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tip anim" style="--i:2;background:#EFFAF3">
+              <div class="ico">🧠</div>
+              <p><b>聚合 vs 组合</b>只看一点：整体销毁时，部分能不能活。能 → 聚合（空心菱形）；不能 → 组合（实心菱形）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 69 顺序图 ============ -->
+    <section class="slide" data-chapter="oo" data-title="顺序图：消息按时间排队">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">动态建模</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">顺序图：一条竖线，就是一条时间轴</span></h2>
+          </div>
+          <div class="page-badge">OO / 09</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="card anim" style="--i:0;background:#fff;padding:14px">
+            <svg viewBox="0 0 680 430" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <rect x="40" y="20" width="130" height="42" rx="8" fill="#EAF6FC"/>
+                <text x="105" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">学生 : Actor</text>
+                <rect x="270" y="20" width="130" height="42" rx="8" fill="#FFF2C9"/>
+                <text x="335" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">选课界面</text>
+                <rect x="500" y="20" width="130" height="42" rx="8" fill="#EFFAF3"/>
+                <text x="565" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">课程服务</text>
+
+                <path d="M105 62 V420" stroke-dasharray="6 7" stroke-width="2.6"/>
+                <path d="M335 62 V420" stroke-dasharray="6 7" stroke-width="2.6"/>
+                <path d="M565 62 V420" stroke-dasharray="6 7" stroke-width="2.6"/>
+
+                <path d="M105 100 H335"/><path d="M325 94 L335 100 L325 106" fill="#2E2925"/>
+                <text x="220" y="92" text-anchor="middle" font-size="13" fill="#2E2925" stroke="none">1. 提交选课</text>
+
+                <rect x="333" y="118" width="8" height="140" fill="#FFD66E" stroke="none"/>
+                <path d="M335 135 H565"/><path d="M555 129 L565 135 L555 141" fill="#2E2925"/>
+                <text x="450" y="127" text-anchor="middle" font-size="13" fill="#2E2925" stroke="none">2. 校验容量与冲突</text>
+
+                <rect x="270" y="180" width="130" height="190" rx="6" fill="none" stroke="#7B5FB0" stroke-dasharray="5 5"/>
+                <text x="280" y="200" font-size="12" font-weight="700" fill="#7B5FB0" stroke="none">alt</text>
+                <text x="300" y="200" font-size="12" fill="#7B5FB0" stroke="none">[容量足够]</text>
+
+                <path d="M565 240 H335" stroke-dasharray="7 5"/><path d="M345 234 L335 240 L345 246" fill="#2E2925"/>
+                <text x="450" y="232" text-anchor="middle" font-size="13" fill="#2E2925" stroke="none">3. 返回成功</text>
+
+                <path d="M335 300 H105" stroke-dasharray="7 5"/><path d="M115 294 L105 300 L115 306" fill="#2E2925"/>
+                <text x="220" y="292" text-anchor="middle" font-size="13" fill="#2E2925" stroke="none">4. 显示选课成功</text>
+
+                <path d="M270 370 H400" stroke="#7B5FB0" stroke-dasharray="5 5"/>
+                <text x="280" y="388" font-size="12" font-weight="700" fill="#7B5FB0" stroke="none">[容量已满]</text>
+                <text x="420" y="388" font-size="12" fill="#7B5FB0" stroke="none">提示并推荐替代课程</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">📌 图上有什么</h3>
+              <ul class="list tight">
+                <li><b>生命线</b>：对象下方的虚线</li>
+                <li><b>激活条</b>：对象正在处理的时间段</li>
+                <li><b>同步消息</b>：实线实心箭头，要等返回</li>
+                <li><b>异步消息</b>：实线空心箭头，不等</li>
+                <li><b>返回消息</b>：虚线箭头</li>
+                <li><b>组合片段</b>：alt / loop / opt</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:2;background:#FFF2C9">
+              <div class="ico">⏱️</div>
+              <p>顺序图的纵轴是<b>时间</b>，从上往下。别把对象之间的调用画成并列。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 70 状态图 ============ -->
+    <section class="slide" data-chapter="oo" data-title="状态图：一个对象的一生">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">动态建模</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">状态图：订单从下单到完成</span></h2>
+          </div>
+          <div class="page-badge">OO / 10</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="card anim" style="--i:0;background:#fff;padding:14px">
+            <svg viewBox="0 0 680 430" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <circle cx="60" cy="60" r="13" fill="#2E2925"/>
+                <path d="M73 60 H112"/>
+                <rect x="112" y="34" width="120" height="52" rx="24" fill="#FFF2C9"/>
+                <text x="172" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">待支付</text>
+
+                <path d="M232 60 H320"/><path d="M310 54 L320 60 L310 66" fill="#2E2925"/>
+                <text x="275" y="48" text-anchor="middle" font-size="12" fill="#7A6E64" stroke="none">支付成功</text>
+
+                <rect x="320" y="34" width="120" height="52" rx="24" fill="#EFFAF3"/>
+                <text x="380" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">已支付</text>
+
+                <path d="M380 86 V140"/><path d="M374 130 L380 140 L386 130" fill="#2E2925"/>
+                <text x="405" y="120" font-size="12" fill="#7A6E64" stroke="none">商家发货</text>
+
+                <rect x="320" y="140" width="120" height="52" rx="24" fill="#EAF6FC"/>
+                <text x="380" y="172" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">已发货</text>
+
+                <path d="M380 192 V246"/><path d="M374 236 L380 246 L386 236" fill="#2E2925"/>
+                <text x="405" y="226" font-size="12" fill="#7A6E64" stroke="none">确认收货</text>
+
+                <rect x="320" y="246" width="120" height="52" rx="24" fill="#F4EEFD"/>
+                <text x="380" y="278" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">已完成</text>
+
+                <path d="M440 278 H500"/>
+                <circle cx="520" cy="278" r="12" fill="#fff"/>
+                <circle cx="520" cy="278" r="7" fill="#2E2925"/>
+
+                <path d="M172 86 V330 H240"/><path d="M232 324 L242 330 L232 336" fill="#2E2925"/>
+                <text x="200" y="320" text-anchor="middle" font-size="12" fill="#7A6E64" stroke="none">超时未付</text>
+                <rect x="242" y="304" width="120" height="52" rx="24" fill="#FFE3DD"/>
+                <text x="302" y="336" text-anchor="middle" font-size="15" font-weight="700" fill="#2E2925" stroke="none">已取消</text>
+                <path d="M362 330 H400"/>
+                <circle cx="420" cy="330" r="12" fill="#fff"/>
+                <circle cx="420" cy="330" r="7" fill="#2E2925"/>
+
+                <text x="380" y="400" text-anchor="middle" font-size="13" fill="#7A6E64" stroke="none">事件触发迁移，迁移上可写「事件 [监护] / 动作」</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🔁 迁移三要素</h3>
+              <p class="body" style="font-size:19px"><b>事件 [监护条件] / 动作</b><br>
+              例：<span class="code">支付成功 [金额 &gt; 0] / 生成订单</span></p>
+            </div>
+            <div class="card anim" style="--i:2;background:#EFFAF3">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🎯 什么时候用状态图</h3>
+              <ul class="list tight">
+                <li>对象有<b>明显生命周期</b>（订单、工单、账号）</li>
+                <li>状态不多但<b>迁移规则复杂</b></li>
+                <li>需要防止非法状态跳转</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:3;background:#FFF2C9">
+              <div class="ico">🧠</div>
+              <p>状态图 vs 活动图：状态图看<b>一个对象</b>的状态；活动图看<b>一个流程</b>的步骤。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 71 组件图与部署图 ============ -->
+    <section class="slide" data-chapter="oo" data-title="组件图与部署图">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">架构视图</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">组件图看「拼装」，部署图看「上机」</span></h2>
+          </div>
+          <div class="page-badge">OO / 11</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1fr 1fr;gap:26px">
+          <div class="card anim" style="--i:0;background:#EAF6FC;padding:18px">
+            <div class="chip c-sky">组件图</div>
+            <h3 style="font-size:22px;font-weight:900;margin:8px 0 10px">系统由哪些可替换零件组成</h3>
+            <svg viewBox="0 0 420 240" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linejoin="round" fill="none">
+                <rect x="20" y="40" width="150" height="70" rx="8" fill="#fff"/>
+                <rect x="30" y="52" width="22" height="26" fill="#FFD66E"/>
+                <text x="105" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">选课组件</text>
+                <rect x="250" y="40" width="150" height="70" rx="8" fill="#fff"/>
+                <rect x="260" y="52" width="22" height="26" fill="#8FDCB9"/>
+                <text x="335" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">课程组件</text>
+                <path d="M170 75 H240" stroke-dasharray="6 5"/>
+                <circle cx="248" cy="75" r="9" fill="#fff"/>
+                <text x="205" y="60" text-anchor="middle" font-size="11" fill="#7A6E64" stroke="none">«use»</text>
+                <rect x="120" y="160" width="180" height="60" rx="8" fill="#fff"/>
+                <text x="210" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">数据库访问组件</text>
+                <path d="M105 110 V160" stroke-dasharray="6 5"/>
+                <path d="M315 110 V160" stroke-dasharray="6 5"/>
+              </g>
+            </svg>
+            <p class="small" style="margin-top:4px">组件通过<b>接口</b>协作，可以独立替换、独立部署。</p>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#F4EEFD;padding:18px">
+            <div class="chip c-lilac">部署图</div>
+            <h3 style="font-size:22px;font-weight:900;margin:8px 0 10px">软件装在哪台机器上</h3>
+            <svg viewBox="0 0 420 240" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="4" stroke-linejoin="round" fill="none">
+                <path d="M30 40 L90 20 L150 40 L150 90 L90 110 L30 90 Z" fill="#fff"/>
+                <path d="M30 40 L90 60 L150 40 M90 60 V110" fill="none"/>
+                <text x="90" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#2E2925" stroke="none">浏览器</text>
+                <path d="M90 136 V170" stroke-dasharray="6 5"/>
+                <rect x="30" y="170" width="120" height="56" rx="8" fill="#EFFAF3"/>
+                <text x="90" y="202" text-anchor="middle" font-size="13" fill="#2E2925" stroke="none">Web 服务器</text>
+                <path d="M150 198 H250" stroke-dasharray="6 5"/>
+                <path d="M260 170 L320 150 L380 170 L380 220 L320 240 L260 220 Z" fill="#fff"/>
+                <path d="M260 170 L320 190 L380 170 M320 190 V240" fill="none"/>
+                <text x="320" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#2E2925" stroke="none">数据库服务器</text>
+              </g>
+            </svg>
+            <p class="small" style="margin-top:4px">节点 = 服务器 / 设备；连线 = 通信协议。</p>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px">
+          <div class="tip" style="background:#FFF2C9"><div class="ico">🧠</div><p><b>一句话区分：</b>组件图回答「软件怎么拆」，部署图回答「拆完装哪」。面试问架构图，先问对方想看逻辑还是物理。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 72 OOA 流程 ============ -->
+    <section class="slide" data-chapter="oo" data-title="面向对象分析 OOA：三步建模">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">分析阶段</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">OOA：先理解问题，再谈怎么实现</span></h2>
+          </div>
+          <div class="page-badge">OO / 12</div>
+        </div>
+
+        <div class="flow anim" style="--i:0;margin-top:8px">
+          <div class="step" style="background:#EAF6FC;padding:18px 20px"><div class="n">1</div><h4 style="font-size:21px">用例建模</h4><p style="font-size:16px">找参与者与用例，写用例描述，明确系统边界</p><div class="chip c-sky" style="margin-top:8px;font-size:13px">输出：用例图 + 用例规约</div></div>
+          <div class="arrow-v">→</div>
+          <div class="step" style="background:#EFFAF3;padding:18px 20px"><div class="n">2</div><h4 style="font-size:21px">概念建模</h4><p style="font-size:16px">从名词里找概念类，画类图，标关系与多重性</p><div class="chip c-mint" style="margin-top:8px;font-size:13px">输出：概念类图</div></div>
+          <div class="arrow-v">→</div>
+          <div class="step" style="background:#F4EEFD;padding:18px 20px"><div class="n">3</div><h4 style="font-size:21px">行为建模</h4><p style="font-size:16px">用顺序图、状态图、活动图描述对象如何协作</p><div class="chip c-lilac" style="margin-top:8px;font-size:13px">输出：交互图 + 状态图</div></div>
+        </div>
+
+        <div class="grid3" style="--i:1;margin-top:24px">
+          <div class="card">
+            <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🔍 找类的小技巧</h3>
+            <p class="small" style="font-size:16px">读用例描述，划出<b>名词</b>：学生、课程、选课记录 → 候选类；动词 → 候选方法。</p>
+          </div>
+          <div class="card" style="background:#FFF2C9">
+            <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🚫 别急着设计数据库</h3>
+            <p class="small" style="font-size:16px">OOA 阶段只建<b>问题域模型</b>，不要一上来就画表结构、加外键。</p>
+          </div>
+          <div class="card" style="background:#EFFAF3">
+            <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">✅ 模型要能追溯</h3>
+            <p class="small" style="font-size:16px">每个类、每个用例都应能追溯到一条需求，否则就是凭空加的。</p>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:18px">
+          <div class="tip" style="background:#FFF0EC"><div class="ico">🎯</div><p><b>考试套路：</b>给一段需求 → 画用例图 → 列候选类 → 画概念类图 → 补顺序图。按这四步写，层次最清楚。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 73 OOD 与 GRASP ============ -->
+    <section class="slide" data-chapter="oo" data-title="OOD 与 GRASP 职责分配">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">设计阶段</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">OOD：把职责分给合适的类</span></h2>
+          </div>
+          <div class="page-badge">OO / 13</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.1fr .9fr">
+          <div class="anim" style="--i:0">
+            <table class="tbl">
+              <thead><tr><th style="width:150px">GRASP 模式</th><th>一句话职责</th></tr></thead>
+              <tbody>
+                <tr><td><b>信息专家</b></td><td>谁拥有数据，谁就负责相关操作</td></tr>
+                <tr><td><b>创建者</b></td><td>谁聚合 / 包含它，谁负责创建它</td></tr>
+                <tr><td><b>控制器</b></td><td>接收系统事件，分派给领域对象</td></tr>
+                <tr><td><b>低耦合</b></td><td>类之间依赖越少越好</td></tr>
+                <tr><td><b>高内聚</b></td><td>一个类只做一件相关的事</td></tr>
+                <tr><td><b>多态</b></td><td>用接口屏蔽具体类型差异</td></tr>
+                <tr><td><b>纯虚构</b></td><td>为降耦合造出来的辅助类（如工具类）</td></tr>
+                <tr><td><b>间接</b></td><td>加中间层解耦（如服务层）</td></tr>
+                <tr><td><b>防止变异</b></td><td>把易变部分封装隔离</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EFFAF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">🧠 怎么用</h3>
+              <p class="body" style="font-size:18px">拿到一个类图，逐个问：<br>「这个操作应该放在哪个类？」<br>先用<b>信息专家</b>找数据主人，再用<b>低耦合 / 高内聚</b>检查是否合理。</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:8px">⚠️ 常见误区</h3>
+              <ul class="list tight">
+                <li>把逻辑全塞进「God Class」</li>
+                <li>界面类直接操作数据库</li>
+                <li>为了复用强行继承，导致耦合</li>
+              </ul>
+            </div>
+            <div class="tip anim" style="--i:3">
+              <div class="ico">🎯</div>
+              <p><b>OOA vs OOD：</b>分析回答「问题里有什么」，设计回答「软件里怎么放、怎么协作」。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 74 SOLID 与设计模式 ============ -->
+    <section class="slide" data-chapter="oo" data-title="SOLID 原则与设计模式">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">设计原则</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">SOLID：让代码「改得动」的五条铁律</span></h2>
+          </div>
+          <div class="page-badge">OO / 14</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:1.05fr .95fr">
+          <div class="anim" style="--i:0">
+            <table class="tbl">
+              <thead><tr><th style="width:130px">原则</th><th>含义</th><th>反例</th></tr></thead>
+              <tbody>
+                <tr><td><b>S</b> 单一职责</td><td>一个类只有一个变化原因</td><td>类里又算钱又发短信</td></tr>
+                <tr><td><b>O</b> 开闭原则</td><td>对扩展开放、对修改关闭</td><td>每加一种支付就改 if-else</td></tr>
+                <tr><td><b>L</b> 里氏替换</td><td>子类能无痛替换父类</td><td>子类重写后抛异常</td></tr>
+                <tr><td><b>I</b> 接口隔离</td><td>接口要小而专</td><td>一个接口塞 20 个方法</td></tr>
+                <tr><td><b>D</b> 依赖倒置</td><td>依赖抽象，不依赖实现</td><td>业务类直接 new 数据库驱动</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <div class="card anim" style="--i:1;background:#EFFAF3">
+              <h3 style="font-size:21px;font-weight:900;margin-bottom:10px">🧰 设计模式三大类</h3>
+              <div class="stack sm">
+                <div class="row" style="gap:10px;align-items:flex-start"><span class="chip c-mint" style="flex:none;font-size:14px">创建型</span><p class="small" style="font-size:16px">单例、工厂方法、抽象工厂、建造者、原型</p></div>
+                <div class="row" style="gap:10px;align-items:flex-start"><span class="chip c-sky" style="flex:none;font-size:14px">结构型</span><p class="small" style="font-size:16px">适配器、装饰器、代理、组合、外观、桥接</p></div>
+                <div class="row" style="gap:10px;align-items:flex-start"><span class="chip c-lilac" style="flex:none;font-size:14px">行为型</span><p class="small" style="font-size:16px">观察者、策略、模板方法、命令、状态、责任链</p></div>
+              </div>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9">
+              <h3 style="font-size:20px;font-weight:900;margin-bottom:8px">🎯 最常考的四个</h3>
+              <p class="body" style="font-size:18px"><b>单例</b>：全局唯一实例<br>
+              <b>工厂</b>：创建与使用分离<br>
+              <b>观察者</b>：一对多通知（发布-订阅）<br>
+              <b>策略</b>：把算法家族封装可替换</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 75 综合案例 ============ -->
+    <section class="slide" data-chapter="oo" data-title="综合案例：选课系统从需求到类图">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">综合</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">走一遍：需求 → 用例 → 类 → 顺序图</span></h2>
+          </div>
+          <div class="page-badge">OO / 15</div>
+        </div>
+
+        <div class="grid2" style="margin-top:4px;grid-template-columns:.9fr 1.1fr;gap:30px">
+          <div class="stack">
+            <div class="card anim" style="--i:0;background:#EAF6FC;padding:16px 18px">
+              <div class="chip c-sky" style="font-size:14px">需求</div>
+              <p class="body" style="font-size:17px;margin-top:6px">学生登录后可查询课程、选课、退课；课程有容量上限；教师可查看选课名单。</p>
+            </div>
+            <div class="card anim" style="--i:1;background:#EFFAF3;padding:16px 18px">
+              <div class="chip c-mint" style="font-size:14px">用例</div>
+              <p class="body" style="font-size:17px;margin-top:6px">学生：登录、查询课程、选课、退课<br>教师：查看名单<br>关系：选课 «include» 登录</p>
+            </div>
+            <div class="card anim" style="--i:2;background:#FFF2C9;padding:16px 18px">
+              <div class="chip c-butter" style="font-size:14px">候选类</div>
+              <p class="body" style="font-size:17px;margin-top:6px">Student、Teacher、Course、Enrollment（选课记录）、CourseCatalog（课程目录）</p>
+            </div>
+            <div class="card anim" style="--i:3;background:#F4EEFD;padding:16px 18px">
+              <div class="chip c-lilac" style="font-size:14px">关键关系</div>
+              <p class="body" style="font-size:17px;margin-top:6px">Student 1—* Enrollment；Course 1—* Enrollment（多对多拆中间类）</p>
+            </div>
+          </div>
+
+          <div class="card anim" style="--i:1;background:#fff;padding:14px">
+            <svg viewBox="0 0 640 470" width="100%" style="display:block">
+              <g stroke="#2E2925" stroke-width="3.5" stroke-linejoin="round" fill="none">
+                <rect x="30" y="30" width="180" height="110" rx="8" fill="#EAF6FC"/>
+                <text x="120" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">Student</text>
+                <line x1="30" y1="68" x2="210" y2="68"/>
+                <text x="42" y="90" font-size="12" fill="#2E2925" stroke="none">- sid : String</text>
+                <text x="42" y="110" font-size="12" fill="#2E2925" stroke="none">- name : String</text>
+                <text x="42" y="130" font-size="12" fill="#2E2925" stroke="none">+ enroll(c) : bool</text>
+
+                <rect x="430" y="30" width="180" height="110" rx="8" fill="#EFFAF3"/>
+                <text x="520" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">Course</text>
+                <line x1="430" y1="68" x2="610" y2="68"/>
+                <text x="442" y="90" font-size="12" fill="#2E2925" stroke="none">- cid : String</text>
+                <text x="442" y="110" font-size="12" fill="#2E2925" stroke="none">- capacity : int</text>
+                <text x="442" y="130" font-size="12" fill="#2E2925" stroke="none">+ isFull() : bool</text>
+
+                <rect x="220" y="230" width="200" height="120" rx="8" fill="#FFF2C9"/>
+                <text x="320" y="256" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">Enrollment</text>
+                <line x1="220" y1="268" x2="420" y2="268"/>
+                <text x="232" y="290" font-size="12" fill="#2E2925" stroke="none">- sid : String</text>
+                <text x="232" y="310" font-size="12" fill="#2E2925" stroke="none">- cid : String</text>
+                <text x="232" y="330" font-size="12" fill="#2E2925" stroke="none">- grade : double</text>
+
+                <path d="M120 140 V230 H220"/>
+                <text x="135" y="170" font-size="12" fill="#2E2925" stroke="none">1</text>
+                <text x="195" y="222" font-size="12" fill="#2E2925" stroke="none">*</text>
+                <path d="M520 140 V230 H420"/>
+                <text x="535" y="170" font-size="12" fill="#2E2925" stroke="none">1</text>
+                <text x="430" y="222" font-size="12" fill="#2E2925" stroke="none">*</text>
+
+                <rect x="220" y="390" width="200" height="60" rx="8" fill="#F4EEFD"/>
+                <text x="320" y="414" text-anchor="middle" font-size="14" font-weight="700" fill="#2E2925" stroke="none">CourseCatalog</text>
+                <text x="320" y="436" text-anchor="middle" font-size="12" fill="#2E2925" stroke="none">+ search(keyword)</text>
+                <path d="M320 390 V350" stroke-dasharray="6 5"/>
+                <text x="330" y="372" font-size="11" fill="#7B5FB0" stroke="none">«use»</text>
+              </g>
+            </svg>
+            <p class="small" style="text-align:center;margin-top:4px">多对多用中间类 Enrollment 拆开，顺便存成绩</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 76 OO 速记卡 ============ -->
+    <section class="slide" data-chapter="oo" data-title="面向对象速记卡">
+      <div class="slide-inner">
+        <div class="head">
+          <div class="head-left">
+            <div class="chip c-lilac">考前一晚看这页</div>
+            <h2 class="s-title"><span class="mark" style="--hl:#DCC7FA">OOAD · 18 条速记</span></h2>
+          </div>
+          <div class="page-badge">OO / 16</div>
+        </div>
+
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:40px">
+          <div class="card anim" style="--i:0;padding:22px 26px">
+            <div class="chip c-lilac" style="margin-bottom:12px">概念与 UML</div>
+            <ul class="list tight" style="gap:9px">
+              <li>对象 = 状态 + 行为；类是对象的模板</li>
+              <li>三大特性：<b>封装、继承、多态</b></li>
+              <li>多态 = 父类引用指向子类对象，运行时绑定</li>
+              <li>UML 结构图 7 种、行为图 7 种</li>
+              <li>用例图四关系：关联、<b>include</b>、<b>extend</b>、泛化</li>
+              <li>include 一定执行；extend 有条件才执行</li>
+              <li>类图三层：类名 / 属性 / 操作</li>
+              <li>可见性：+ 公开、- 私有、# 保护</li>
+              <li>关系强弱：依赖 &lt; 关联 &lt; 聚合 &lt; 组合</li>
+            </ul>
+          </div>
+
+          <div class="card anim" style="--i:1;padding:22px 26px;background:#FFF9E8">
+            <div class="chip c-butter" style="margin-bottom:12px">分析与设计</div>
+            <ul class="list tight" style="gap:9px">
+              <li>聚合：部分可独立活；组合：同生共死</li>
+              <li>泛化 is-a；实现 can-do</li>
+              <li>顺序图看<b>时间</b>，通信图看<b>结构</b></li>
+              <li>顺序图元素：生命线、激活条、同步/异步/返回消息</li>
+              <li>状态图迁移：<b>事件 [监护] / 动作</b></li>
+              <li>OOA 三步：用例建模 → 概念建模 → 行为建模</li>
+              <li>OOD 核心：职责分配 + 高内聚低耦合</li>
+              <li>GRASP：信息专家、创建者、控制器、低耦合、高内聚</li>
+              <li>SOLID：单一职责、开闭、里氏、接口隔离、依赖倒置</li>
+              <li>模式三类：创建型 / 结构型 / 行为型</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="anim" style="--i:2;margin-top:16px;display:flex;gap:12px">
+          <div class="tip" style="flex:1;background:#F4EEFD"><div class="ico">✍️</div><p><b>大题高频：</b>给需求画用例图 + 类图，解释聚合与组合区别。</p></div>
+          <div class="tip" style="flex:1;background:#EFFAF3"><div class="ico">✅</div><p><b>选择题高频：</b>UML 图分类、关系符号、SOLID 对应场景。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 77 四章串讲与结尾 ============ -->
+    <section class="chapter" data-chapter="end" data-title="四章串讲与复习路线" style="background:linear-gradient(135deg,#FFF6E4 0%,#FFF0C6 50%,#FFE39A 100%)">
+      <div class="slide-inner" style="justify-content:center;padding:0 20px">
+        <div class="blob" style="width:420px;height:420px;background:#8FDCB9;right:-100px;top:-120px;opacity:.45"></div>
+        <div class="blob ring" style="width:260px;height:260px;left:-70px;bottom:40px"></div>
+        <div style="position:relative;z-index:3;max-width:1640px">
+          <div class="chip c-butter anim" style="--i:0;margin-bottom:20px">🎓 收尾 · 四章其实是一件事</div>
+          <h1 class="anim" style="--i:1;font-family:'ZCOOL KuaiLe',cursive;font-size:62px;line-height:1.15;margin-bottom:14px">
+            送快递 · 开后厨 · 拼卡片 · 画图纸
+          </h1>
+          <p class="anim body" style="--i:2;font-size:23px;max-width:1480px;color:var(--ink-soft)">
+            四章看起来毫不相干，其实都在回答同一个问题：<b style="color:var(--ink)">面对复杂系统，怎么分层、分工、把变化隔离开。</b>
+          </p>
+
+          <div class="anim" style="--i:3;margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <div class="card" style="background:#EAF6FC;padding:16px 18px">
+              <div class="chip c-sky" style="font-size:13px">PART 1</div>
+              <h3 style="font-size:20px;font-weight:900;margin:7px 0 4px">网络层</h3>
+              <p class="small" style="font-size:15px;line-height:1.5">分层 + 转发 + 路由；可靠性交给端系统。</p>
+            </div>
+            <div class="card" style="background:#FFF0EC;padding:16px 18px">
+              <div class="chip c-coral" style="font-size:13px">PART 2</div>
+              <h3 style="font-size:20px;font-weight:900;margin:7px 0 4px">I/O 系统</h3>
+              <p class="small" style="font-size:15px;line-height:1.5">接口 + 中断 + DMA；CPU 只下命令。</p>
+            </div>
+            <div class="card" style="background:#EFFAF3;padding:16px 18px">
+              <div class="chip c-mint" style="font-size:13px">PART 3</div>
+              <h3 style="font-size:20px;font-weight:900;margin:7px 0 4px">多表查询</h3>
+              <p class="small" style="font-size:15px;line-height:1.5">连接 + 子查询 + 聚合；先想关系再写 SQL。</p>
+            </div>
+            <div class="card" style="background:#F4EEFD;padding:16px 18px">
+              <div class="chip c-lilac" style="font-size:13px">PART 4</div>
+              <h3 style="font-size:20px;font-weight:900;margin:7px 0 4px">OOAD</h3>
+              <p class="small" style="font-size:15px;line-height:1.5">用例 + 类图 + 职责；先建模再写代码。</p>
+            </div>
+          </div>
+
+          <div class="anim" style="--i:4;margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <span class="chip c-sky">① 先看每章速记卡</span>
             <span class="chip c-coral">② 动手算三道题</span>
             <span class="chip c-mint">③ 合上书讲一遍比喻</span>
             <span class="chip c-butter">④ 再回来看对比表</span>
           </div>
-          <p class="anim" style="--i:5;margin-top:26px;font-size:22px;font-weight:700;color:var(--ink-soft)">
+          <p class="anim" style="--i:5;margin-top:18px;font-size:20px;font-weight:700;color:var(--ink-soft)">
             学习愉快 · 考试顺利 · 按 <span class="code">M</span> 回目录，按 <span class="code">Home</span> 回封面
           </p>
-          <p class="anim" style="--i:5;margin-top:10px;font-size:17px;color:var(--ink-soft)">
+          <p class="anim" style="--i:5;margin-top:8px;font-size:16px;color:var(--ink-soft)">
             需要纸质版？浏览器里按 <span class="code">Ctrl / Cmd + P</span> 可直接导出 PDF（每页一张）。
           </p>
         </div>
@@ -3038,7 +4834,7 @@ body.force-landscape .landscape-ui{display:block}
 <div id="toc">
   <div class="toc-panel">
     <div class="toc-head">
-      <h2>整本小抄 · 45 页</h2>
+      <h2>整本小抄 · 77 页</h2>
       <button class="toc-close" id="tocClose">关闭 ✕</button>
     </div>
     <div id="tocBody"></div>
@@ -3079,7 +4875,9 @@ const chapterMap = {
   cover:{text:'封面 · 使用说明',color:'#FFD66E'},
   net:{text:'PART 1 · 网络层',color:'#8AC9EE'},
   io:{text:'PART 2 · 输入输出系统',color:'#FF8B79'},
-  end:{text:'复习收尾',color:'#8FDCB9'}
+  mysql:{text:'PART 3 · MySQL 多表查询',color:'#8FDCB9'},
+  oo:{text:'PART 4 · 面向对象分析与设计',color:'#C7AEF2'},
+  end:{text:'复习收尾',color:'#FFD66E'}
 };
 
 const pNow = document.getElementById('pNow');
@@ -3188,8 +4986,8 @@ const tocBtn = document.getElementById('tocBtn');
 const tocClose = document.getElementById('tocClose');
 
 function buildToc(){
-  const groups = {cover:'起点', net:'PART 1 · 网络层', io:'PART 2 · 输入输出系统', end:'收尾'};
-  const colors = {cover:'#FFD66E', net:'#8AC9EE', io:'#FF8B79', end:'#8FDCB9'};
+  const groups = {cover:'起点', net:'PART 1 · 网络层', io:'PART 2 · 输入输出系统', mysql:'PART 3 · MySQL 多表查询', oo:'PART 4 · 面向对象分析与设计', end:'收尾'};
+  const colors = {cover:'#FFD66E', net:'#8AC9EE', io:'#FF8B79', mysql:'#8FDCB9', oo:'#C7AEF2', end:'#FFD66E'};
   const html = Object.keys(groups).map(key => {
     const entries = slides.map((s,i) => ({s,i}))
       .filter(x => (x.s.dataset.chapter === key));
