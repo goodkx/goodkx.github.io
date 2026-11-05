@@ -487,6 +487,73 @@ body.force-landscape .landscape-ui{display:block}
   font-size:20px;font-weight:700;color:var(--ink-soft);white-space:nowrap;
 }
 
+/* === 练习作答与答案解锁 === */
+.quiz-item{
+  border:2.5px solid var(--ink);border-radius:16px;background:#fff;
+  padding:12px 16px;box-shadow:3px 4px 0 rgba(46,41,37,.16);
+}
+.quiz-item .qh{display:flex;gap:9px;align-items:flex-start}
+.quiz-item .qno{
+  flex:none;font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:700;font-size:14px;
+  background:var(--qcol,var(--butter));border:2px solid var(--ink);border-radius:8px;
+  padding:1px 8px;line-height:1.5;
+}
+.quiz-item .qt{font-size:17px;line-height:1.45;font-weight:500}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px}
+.qopts label{
+  display:flex;align-items:center;gap:7px;font-size:15px;font-weight:500;
+  padding:4px 9px;border:2px solid rgba(46,41,37,.22);border-radius:9px;
+  background:#FFFBF0;cursor:pointer;transition:.18s;
+}
+.qopts label:hover{border-color:rgba(46,41,37,.5)}
+.qopts label:has(input:checked){background:var(--qcol-l,#FFF0C9);border-color:var(--ink);box-shadow:2px 2px 0 rgba(46,41,37,.28)}
+.qopts input{accent-color:var(--ink);width:15px;height:15px;flex:none}
+.qtext{
+  width:100%;margin-top:8px;border:2px solid rgba(46,41,37,.28);border-radius:10px;
+  background:#FFFBF0;padding:7px 10px;font-family:inherit;font-size:15px;line-height:1.45;
+  resize:none;color:var(--ink);
+}
+.qtext:focus{outline:2.5px solid var(--qcol,var(--butter));background:#fff}
+.quiz-bar{
+  display:flex;align-items:center;gap:14px;margin-top:12px;
+  background:var(--paper-2);border:2.5px solid var(--ink);border-radius:16px;
+  padding:8px 14px;box-shadow:3px 4px 0 rgba(46,41,37,.16);
+}
+.quiz-progress{font-family:'Fredoka Variable','Fredoka',sans-serif;font-weight:600;font-size:17px;color:var(--ink-soft)}
+.quiz-submit{
+  margin-left:auto;font-family:inherit;font-size:17px;font-weight:900;color:var(--ink);
+  padding:9px 20px;border:2.5px solid var(--ink);border-radius:999px;
+  background:var(--qcol,var(--butter));box-shadow:3px 4px 0 rgba(46,41,37,.8);cursor:pointer;
+}
+.quiz-submit:active{transform:translateY(2px)}
+.quiz-reset{
+  font-family:inherit;font-size:15px;font-weight:700;color:var(--ink-soft);
+  padding:7px 14px;border:2px solid rgba(46,41,37,.35);border-radius:999px;background:#fff;cursor:pointer;
+}
+/* 答案页锁定 */
+.answer-page.locked .slide-inner > *:not(.lock-panel){
+  filter:blur(7px);opacity:.25;pointer-events:none;user-select:none;
+}
+.lock-panel{display:none;position:absolute;inset:0;z-index:20;align-items:center;justify-content:center;padding:40px}
+.answer-page.locked .lock-panel{display:flex}
+.lock-box{
+  background:var(--paper-2);border:3px solid var(--ink);border-radius:24px;
+  box-shadow:9px 9px 0 rgba(46,41,37,.85);padding:30px 44px;text-align:center;max-width:680px;
+}
+.lock-box .em{font-size:50px;line-height:1}
+.lock-box h3{font-family:'ZCOOL KuaiLe','Noto Sans SC Variable','Noto Sans SC',cursive;font-size:33px;margin:8px 0 6px}
+.lock-box p{font-size:17px;line-height:1.55;color:var(--ink-soft);font-weight:500}
+.lock-box .lock-go{
+  margin-top:16px;font-family:inherit;font-size:18px;font-weight:900;
+  padding:10px 24px;border:2.5px solid var(--ink);border-radius:999px;
+  background:var(--butter);box-shadow:3px 4px 0 rgba(46,41,37,.8);cursor:pointer;color:var(--ink);
+}
+.your-answer{
+  display:inline-block;font-size:13px;line-height:1.4;font-weight:700;color:var(--ink);
+  padding:2px 9px;border-radius:7px;margin-bottom:4px;background:#FFF6E4;
+  border:1.6px solid rgba(46,41,37,.32);
+}
+
 /* 轻提示 toast */
 #toast{
   position:fixed;left:50%;bottom:82px;transform:translate(-50%,14px);
@@ -2155,7 +2222,7 @@ body.force-landscape .landscape-ui{display:block}
     </section>
 
     <!-- ============ 29 网络层练习 ============ -->
-    <section class="slide" data-chapter="net" data-title="网络层 · 随堂练习（8 题）">
+    <section class="slide quiz-page" data-chapter="net" data-quiz="net" data-title="网络层 · 随堂练习（8 题）" style="--qcol:#BFE6FA;--qcol-l:#EAF7FF">
       <div class="slide-inner">
         <div class="head">
           <div class="head-left">
@@ -2165,73 +2232,75 @@ body.force-landscape .landscape-ui{display:block}
           <div class="page-badge">QUIZ / 01</div>
         </div>
 
-        <div class="grid2 anim" style="--i:0;margin-top:4px;grid-template-columns:1fr 1fr;gap:26px">
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">01</span>
-                <div><p class="body" style="font-size:18px">IPv4 首部固定部分的长度是多少字节？</p>
-                <p class="small" style="font-size:15px;margin-top:4px">A. 8　　B. 20　　C. 40　　D. 60</p></div>
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:22px">
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="1" data-type="choice" data-ans="B">
+              <div class="qh"><span class="qno">01</span><p class="qt">IPv4 首部固定部分的长度是多少字节？</p></div>
+              <div class="qopts">
+                <label><input type="radio" name="net-1" value="A"><span>A · 8 字节</span></label>
+                <label><input type="radio" name="net-1" value="B"><span>B · 20 字节</span></label>
+                <label><input type="radio" name="net-1" value="C"><span>C · 40 字节</span></label>
+                <label><input type="radio" name="net-1" value="D"><span>D · 60 字节</span></label>
               </div>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">02</span>
-                <div><p class="body" style="font-size:18px">分组每经过一个路由器，TTL 字段会怎样？它的作用是什么？</p>
-                <p class="small" style="font-size:15px;margin-top:4px">A. 加 1　B. 减 1　C. 不变　D. 清零</p></div>
+            <div class="quiz-item" data-q="2" data-type="choice" data-ans="B">
+              <div class="qh"><span class="qno">02</span><p class="qt">分组每经过一个路由器，TTL 字段会怎样变化？</p></div>
+              <div class="qopts">
+                <label><input type="radio" name="net-2" value="A"><span>A · 加 1</span></label>
+                <label><input type="radio" name="net-2" value="B"><span>B · 减 1</span></label>
+                <label><input type="radio" name="net-2" value="C"><span>C · 不变</span></label>
+                <label><input type="radio" name="net-2" value="D"><span>D · 清零</span></label>
               </div>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">03</span>
-                <div><p class="body" style="font-size:18px">把 <span class="code">192.168.10.0/26</span> 划分成若干子网：能分几个？每个子网可用主机多少台？第 2 个子网的可用地址范围？</p></div>
-              </div>
+            <div class="quiz-item" data-q="3" data-type="text">
+              <div class="qh"><span class="qno">03</span><p class="qt">192.168.10.0/26 能分几个子网？每个子网可用主机多少台？第 2 个子网的可用范围？</p></div>
+              <textarea class="qtext" name="net-3" rows="2" placeholder="写出子网数、主机数、第 2 个子网的网络地址/可用范围"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">04</span>
-                <div><p class="body" style="font-size:18px">一个总长 3600 字节的 IP 数据报（含 20 字节首部）经过 MTU=1500 的链路，要分成几片？每片的数据长度与片偏移是多少？</p></div>
-              </div>
+            <div class="quiz-item" data-q="4" data-type="text">
+              <div class="qh"><span class="qno">04</span><p class="qt">总长 3600 字节的 IP 数据报（首部 20 字节）过 MTU=1500 的链路，分几片？各片的长度与片偏移？</p></div>
+              <textarea class="qtext" name="net-4" rows="2" placeholder="片数 / 每片数据长度 / 片偏移 / MF"></textarea>
             </div>
           </div>
 
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">05</span>
-                <div><p class="body" style="font-size:18px">主机 A（192.168.1.2）要给 192.168.2.5 发数据。跨网段时，ARP 解析的是谁的地址？沿途源 / 目的 MAC 如何变化？IP 地址变吗？</p></div>
-              </div>
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="5" data-type="text">
+              <div class="qh"><span class="qno">05</span><p class="qt">A（192.168.1.2）发给 192.168.2.5。ARP 解析谁的地址？沿途 MAC 怎么变？IP 变吗？</p></div>
+              <textarea class="qtext" name="net-5" rows="2" placeholder="先判断是否同网段，再写 ARP 目标与帧的变化"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">06</span>
-                <div><p class="body" style="font-size:18px">RIP 的最大跳数是多少？数值 16 代表什么？为什么说它「坏消息传得慢」？</p></div>
-              </div>
+            <div class="quiz-item" data-q="6" data-type="text">
+              <div class="qh"><span class="qno">06</span><p class="qt">RIP 最大跳数是多少？16 代表什么？为什么说它「坏消息传得慢」？</p></div>
+              <textarea class="qtext" name="net-6" rows="2" placeholder="跳数 / 16 的含义 / 收敛慢的原因"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">07</span>
-                <div><p class="body" style="font-size:18px">从算法类型、度量方式、承载协议、收敛速度四方面，比较 RIP 与 OSPF。</p></div>
-              </div>
+            <div class="quiz-item" data-q="7" data-type="text">
+              <div class="qh"><span class="qno">07</span><p class="qt">从算法类型、度量、承载协议、收敛速度四方面比较 RIP 与 OSPF。</p></div>
+              <textarea class="qtext" name="net-7" rows="2" placeholder="一条一条对照写，共 4 点"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-sky" style="flex:none;font-size:14px;padding:3px 10px">08</span>
-                <div><p class="body" style="font-size:18px">路由表：<span class="code">10.0.0.0/8→A</span>、<span class="code">10.1.0.0/16→B</span>、<span class="code">10.1.2.0/24→C</span>、<span class="code">0.0.0.0/0→D</span>。目的地址 <b>10.1.2.77</b> 从哪个口转发？依据是什么？</p></div>
-              </div>
+            <div class="quiz-item" data-q="8" data-type="text">
+              <div class="qh"><span class="qno">08</span><p class="qt">路由表 10.0.0.0/8→A、10.1.0.0/16→B、10.1.2.0/24→C、0.0.0.0/0→D。目的 10.1.2.77 走哪个口？为什么？</p></div>
+              <textarea class="qtext" name="net-8" rows="2" placeholder="写出口 + 匹配依据"></textarea>
             </div>
           </div>
         </div>
 
-        <div class="anim" style="--i:1;margin-top:14px">
-          <div class="tip" style="background:#EAF7FF"><div class="ico">✍️</div><p>先合上书自己写，写完再翻下一页对答案。计算题一定要写出<b>过程</b>，考试按步骤给分。</p></div>
+        <div class="quiz-bar">
+          <span class="quiz-progress">已答 0 / 8</span>
+          <button class="quiz-reset" type="button">清空重做</button>
+          <button class="quiz-submit" type="button">提交答案 · 解锁解析 →</button>
         </div>
       </div>
     </section>
 
     <!-- ============ 30 网络层答案 ============ -->
-    <section class="slide" data-chapter="net" data-title="网络层 · 答案与解析">
+    <section class="slide answer-page locked" data-chapter="net" data-title="网络层 · 答案与解析" data-quiz-answer="net">
       <div class="slide-inner">
+        <div class="lock-panel">
+          <div class="lock-box">
+            <div class="em">🔒</div>
+            <h3>先做完，再看答案</h3>
+            <p>这一页的解析在提交练习后才会解锁。<br>回到练习页把 8 道题都写一遍吧。</p>
+            <button class="lock-go" type="button">去作答 →</button>
+          </div>
+        </div>
         <div class="head">
           <div class="head-left">
             <div class="chip c-mint">对答案</div>
@@ -3165,7 +3234,7 @@ body.force-landscape .landscape-ui{display:block}
     </section>
 
     <!-- ============ 45 I/O 练习 ============ -->
-    <section class="slide" data-chapter="io" data-title="输入输出系统 · 随堂练习（8 题）">
+    <section class="slide quiz-page" data-chapter="io" data-quiz="io" data-title="输入输出系统 · 随堂练习（8 题）" style="--qcol:#FFC2B7;--qcol-l:#FFF0EC">
       <div class="slide-inner">
         <div class="head">
           <div class="head-left">
@@ -3175,73 +3244,75 @@ body.force-landscape .landscape-ui{display:block}
           <div class="page-badge">QUIZ / 02</div>
         </div>
 
-        <div class="grid2 anim" style="--i:0;margin-top:4px;grid-template-columns:1fr 1fr;gap:26px">
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">01</span>
-                <div><p class="body" style="font-size:18px">下列哪一项<b>不是</b> CPU 响应中断的必要条件？</p>
-                <p class="small" style="font-size:15px;margin-top:4px">A. 有中断请求　B. CPU 开中断　C. 当前指令执行完　D. 中断服务程序已装入内存</p></div>
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:22px">
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="1" data-type="choice" data-ans="D">
+              <div class="qh"><span class="qno">01</span><p class="qt">下列哪项<b>不是</b> CPU 响应中断的必要条件？</p></div>
+              <div class="qopts">
+                <label><input type="radio" name="io-1" value="A"><span>A · 有中断请求</span></label>
+                <label><input type="radio" name="io-1" value="B"><span>B · CPU 开中断</span></label>
+                <label><input type="radio" name="io-1" value="C"><span>C · 当前指令执行完</span></label>
+                <label><input type="radio" name="io-1" value="D"><span>D · 服务程序已装入内存</span></label>
               </div>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">02</span>
-                <div><p class="body" style="font-size:18px">DMA 方式一次传送的数据单位是什么？</p>
-                <p class="small" style="font-size:15px;margin-top:4px">A. 一位　B. 一个字节　C. 一个字　D. 一个数据块</p></div>
+            <div class="quiz-item" data-q="2" data-type="choice" data-ans="D">
+              <div class="qh"><span class="qno">02</span><p class="qt">DMA 方式一次传送的数据单位是什么？</p></div>
+              <div class="qopts">
+                <label><input type="radio" name="io-2" value="A"><span>A · 一位</span></label>
+                <label><input type="radio" name="io-2" value="B"><span>B · 一个字节</span></label>
+                <label><input type="radio" name="io-2" value="C"><span>C · 一个字</span></label>
+                <label><input type="radio" name="io-2" value="D"><span>D · 一个数据块</span></label>
               </div>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">03</span>
-                <div><p class="body" style="font-size:18px">写出中断响应过程的四个步骤。</p></div>
-              </div>
+            <div class="quiz-item" data-q="3" data-type="text">
+              <div class="qh"><span class="qno">03</span><p class="qt">写出中断响应过程的四个步骤。</p></div>
+              <textarea class="qtext" name="io-3" rows="2" placeholder="按先后顺序写四步"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">04</span>
-                <div><p class="body" style="font-size:18px">DMA 有哪三种工作方式？各自的特点是什么？</p></div>
-              </div>
+            <div class="quiz-item" data-q="4" data-type="text">
+              <div class="qh"><span class="qno">04</span><p class="qt">DMA 有哪三种工作方式？各自特点是什么？</p></div>
+              <textarea class="qtext" name="io-4" rows="2" placeholder="三种方式 + 一句话特点"></textarea>
             </div>
           </div>
 
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">05</span>
-                <div><p class="body" style="font-size:18px">磁盘转速 7200 r/min，平均旋转延迟是多少毫秒？</p></div>
-              </div>
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="5" data-type="text">
+              <div class="qh"><span class="qno">05</span><p class="qt">磁盘转速 7200 r/min，平均旋转延迟是多少毫秒？</p></div>
+              <textarea class="qtext" name="io-5" rows="2" placeholder="写公式与结果"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">06</span>
-                <div><p class="body" style="font-size:18px">同上磁盘，每道 500 个扇区、每扇区 512 B，求数据传输率（MB/s）。</p></div>
-              </div>
+            <div class="quiz-item" data-q="6" data-type="text">
+              <div class="qh"><span class="qno">06</span><p class="qt">同上磁盘，每道 500 扇区、每扇区 512 B，求数据传输率（MB/s）。</p></div>
+              <textarea class="qtext" name="io-6" rows="2" placeholder="写计算过程"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">07</span>
-                <div><p class="body" style="font-size:18px">从传送是否经过 CPU、传送单位、请求对象三方面，比较 DMA 与中断方式。</p></div>
-              </div>
+            <div class="quiz-item" data-q="7" data-type="text">
+              <div class="qh"><span class="qno">07</span><p class="qt">从传送是否经过 CPU、传送单位、请求对象三方面比较 DMA 与中断。</p></div>
+              <textarea class="qtext" name="io-7" rows="2" placeholder="列三点对比"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-coral" style="flex:none;font-size:14px;padding:3px 10px">08</span>
-                <div><p class="body" style="font-size:18px">通道分为哪三类？各适合连接什么设备？</p></div>
-              </div>
+            <div class="quiz-item" data-q="8" data-type="text">
+              <div class="qh"><span class="qno">08</span><p class="qt">通道分为哪三类？各适合连接什么设备？</p></div>
+              <textarea class="qtext" name="io-8" rows="2" placeholder="三类 + 适用设备"></textarea>
             </div>
           </div>
         </div>
 
-        <div class="anim" style="--i:1;margin-top:14px">
-          <div class="tip" style="background:#FFF2C9"><div class="ico">✍️</div><p>计算题写公式再代数；对比题分点写，每点一句话，别写成一整段。</p></div>
+        <div class="quiz-bar">
+          <span class="quiz-progress">已答 0 / 8</span>
+          <button class="quiz-reset" type="button">清空重做</button>
+          <button class="quiz-submit" type="button">提交答案 · 解锁解析 →</button>
         </div>
       </div>
     </section>
 
     <!-- ============ 46 I/O 答案 ============ -->
-    <section class="slide" data-chapter="io" data-title="输入输出系统 · 答案与解析">
+    <section class="slide answer-page locked" data-chapter="io" data-title="输入输出系统 · 答案与解析" data-quiz-answer="io">
       <div class="slide-inner">
+        <div class="lock-panel">
+          <div class="lock-box">
+            <div class="em">🔒</div>
+            <h3>先做完，再看答案</h3>
+            <p>这一页的解析在提交练习后才会解锁。<br>计算题记得先写出过程。</p>
+            <button class="lock-go" type="button">去作答 →</button>
+          </div>
+        </div>
         <div class="head">
           <div class="head-left">
             <div class="chip c-mint">对答案</div>
@@ -4090,7 +4161,7 @@ WHERE (sid, course_id) = (
     </section>
 
     <!-- ============ 60 MySQL 练习 ============ -->
-    <section class="slide" data-chapter="mysql" data-title="MySQL 多表查询 · 随堂练习（8 题）">
+    <section class="slide quiz-page" data-chapter="mysql" data-quiz="mysql" data-title="MySQL 多表查询 · 随堂练习（8 题）" style="--qcol:#A9EBD2;--qcol-l:#EFFAF3">
       <div class="slide-inner">
         <div class="head">
           <div class="head-left">
@@ -4100,73 +4171,67 @@ WHERE (sid, course_id) = (
           <div class="page-badge">QUIZ / 03</div>
         </div>
 
-        <p class="small anim" style="--i:0;margin-bottom:8px">表结构：<span class="code">student(sid, sname, class_id)</span>　<span class="code">class(class_id, cname)</span>　<span class="code">course(course_id, cname, credit)</span>　<span class="code">sc(sid, course_id, grade)</span></p>
+        <p class="small" style="margin-bottom:8px">表结构：<span class="code">student(sid, sname, class_id)</span>　<span class="code">class(class_id, cname)</span>　<span class="code">course(course_id, cname, credit)</span>　<span class="code">sc(sid, course_id, grade)</span></p>
 
-        <div class="grid2 anim" style="--i:1;margin-top:2px;grid-template-columns:1fr 1fr;gap:22px">
-          <div class="stack" style="gap:11px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">01</span>
-                <p class="body" style="font-size:17px">写出 SQL：查询每个学生的姓名和所在班级名。</p>
-              </div>
+        <div class="grid2" style="margin-top:0;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="1" data-type="text">
+              <div class="qh"><span class="qno">01</span><p class="qt">查询每个学生的姓名和所在班级名。</p></div>
+              <textarea class="qtext" name="mysql-1" rows="2" placeholder="SELECT ... FROM ... JOIN ... ON ..."></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">02</span>
-                <p class="body" style="font-size:17px">写出 SQL：查询<b>一门课都没选</b>的学生姓名（至少两种写法）。</p>
-              </div>
+            <div class="quiz-item" data-q="2" data-type="text">
+              <div class="qh"><span class="qno">02</span><p class="qt">查询<b>一门课都没选</b>的学生姓名，写出两种写法。</p></div>
+              <textarea class="qtext" name="mysql-2" rows="2" placeholder="① LEFT JOIN ... IS NULL　② NOT EXISTS (...)"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">03</span>
-                <p class="body" style="font-size:17px">外连接时，把右表的过滤条件写在 <b>ON</b> 和写在 <b>WHERE</b>，结果有什么区别？</p>
-              </div>
+            <div class="quiz-item" data-q="3" data-type="text">
+              <div class="qh"><span class="qno">03</span><p class="qt">外连接时，右表的过滤条件写在 ON 和写在 WHERE，结果有什么不同？</p></div>
+              <textarea class="qtext" name="mysql-3" rows="2" placeholder="分别说明左表是否保留、NULL 行是否被过滤"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">04</span>
-                <p class="body" style="font-size:17px">写出 SQL：统计每门课的平均分，只显示平均分 ≥ 80 的课程，按平均分降序。</p>
-              </div>
+            <div class="quiz-item" data-q="4" data-type="text">
+              <div class="qh"><span class="qno">04</span><p class="qt">统计每门课平均分，只显示平均分 ≥ 80，按平均分降序。</p></div>
+              <textarea class="qtext" name="mysql-4" rows="2" placeholder="GROUP BY ... HAVING ... ORDER BY ..."></textarea>
             </div>
           </div>
 
-          <div class="stack" style="gap:11px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">05</span>
-                <p class="body" style="font-size:17px">写出 SQL：查询每门课成绩最高的学生（学号即可）。</p>
-              </div>
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="5" data-type="text">
+              <div class="qh"><span class="qno">05</span><p class="qt">查询每门课成绩最高的学生（学号即可）。</p></div>
+              <textarea class="qtext" name="mysql-5" rows="2" placeholder="相关子查询，或窗口函数"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">06</span>
-                <p class="body" style="font-size:17px">写出 SQL：查询全体成绩中<b>第二高</b>的分数（考虑并列最高分）。</p>
-              </div>
+            <div class="quiz-item" data-q="6" data-type="text">
+              <div class="qh"><span class="qno">06</span><p class="qt">查询全体成绩中<b>第二高</b>的分数（考虑并列最高分）。</p></div>
+              <textarea class="qtext" name="mysql-6" rows="2" placeholder="不要用 LIMIT 1 OFFSET 1 硬凑"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">07</span>
-                <p class="body" style="font-size:17px">UNION 与 UNION ALL 有什么区别？使用 UNION 有哪两条硬性要求？</p>
-              </div>
+            <div class="quiz-item" data-q="7" data-type="text">
+              <div class="qh"><span class="qno">07</span><p class="qt">UNION 与 UNION ALL 的区别？使用 UNION 的两条硬性要求？</p></div>
+              <textarea class="qtext" name="mysql-7" rows="2" placeholder="去重 / 列数 / 类型"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-mint" style="flex:none;font-size:14px;padding:3px 10px">08</span>
-                <p class="body" style="font-size:17px">按实际执行顺序排列：SELECT、FROM、WHERE、GROUP BY、HAVING、ORDER BY、LIMIT。</p>
-              </div>
+            <div class="quiz-item" data-q="8" data-type="text">
+              <div class="qh"><span class="qno">08</span><p class="qt">按实际执行顺序排列：SELECT、FROM、WHERE、GROUP BY、HAVING、ORDER BY、LIMIT。</p></div>
+              <textarea class="qtext" name="mysql-8" rows="2" placeholder="用 → 连接"></textarea>
             </div>
           </div>
         </div>
 
-        <div class="anim" style="--i:2;margin-top:12px">
-          <div class="tip" style="background:#EFFAF3"><div class="ico">✍️</div><p>写 SQL 先想清楚「要哪些列、从哪些表、怎么连、怎么筛」，再动手敲。</p></div>
+        <div class="quiz-bar">
+          <span class="quiz-progress">已答 0 / 8</span>
+          <button class="quiz-reset" type="button">清空重做</button>
+          <button class="quiz-submit" type="button">提交答案 · 解锁解析 →</button>
         </div>
       </div>
     </section>
 
     <!-- ============ 61 MySQL 答案 ============ -->
-    <section class="slide" data-chapter="mysql" data-title="MySQL 多表查询 · 答案与解析">
+    <section class="slide answer-page locked" data-chapter="mysql" data-title="MySQL 多表查询 · 答案与解析" data-quiz-answer="mysql">
       <div class="slide-inner">
+        <div class="lock-panel">
+          <div class="lock-box">
+            <div class="em">🔒</div>
+            <h3>先做完，再看答案</h3>
+            <p>SQL 题先自己写一遍，提交后再对照参考答案。<br>直接看答案，考试时手会不听话的。</p>
+            <button class="lock-go" type="button">去作答 →</button>
+          </div>
+        </div>
         <div class="head">
           <div class="head-left">
             <div class="chip c-mint">对答案</div>
@@ -5166,7 +5231,7 @@ WHERE (sid, course_id) = (
     </section>
 
     <!-- ============ 78 OO 练习 ============ -->
-    <section class="slide" data-chapter="oo" data-title="面向对象 · 随堂练习（8 题）">
+    <section class="slide quiz-page" data-chapter="oo" data-quiz="oo" data-title="面向对象 · 随堂练习（8 题）" style="--qcol:#DCC7FA;--qcol-l:#F4EEFD">
       <div class="slide-inner">
         <div class="head">
           <div class="head-left">
@@ -5176,71 +5241,65 @@ WHERE (sid, course_id) = (
           <div class="page-badge">QUIZ / 04</div>
         </div>
 
-        <div class="grid2 anim" style="--i:0;margin-top:4px;grid-template-columns:1fr 1fr;gap:26px">
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">01</span>
-                <div><p class="body" style="font-size:18px">聚合（Aggregation）与组合（Composition）的核心区别是什么？分别用什么符号表示？</p></div>
-              </div>
+        <div class="grid2" style="margin-top:2px;grid-template-columns:1fr 1fr;gap:22px">
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="1" data-type="text">
+              <div class="qh"><span class="qno">01</span><p class="qt">聚合与组合的核心区别是什么？分别用什么符号？</p></div>
+              <textarea class="qtext" name="oo-1" rows="2" placeholder="从「部分能否独立存活」说起，写出菱形符号"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">02</span>
-                <div><p class="body" style="font-size:18px">用例图中的 «include» 与 «extend» 有什么区别？各举一个例子。</p></div>
-              </div>
+            <div class="quiz-item" data-q="2" data-type="text">
+              <div class="qh"><span class="qno">02</span><p class="qt">用例图的 «include» 与 «extend» 有什么区别？各举一例。</p></div>
+              <textarea class="qtext" name="oo-2" rows="2" placeholder="必然执行 vs 条件触发"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">03</span>
-                <div><p class="body" style="font-size:18px">用一句话分别解释：封装、继承、多态，并各举一个例子。</p></div>
-              </div>
+            <div class="quiz-item" data-q="3" data-type="text">
+              <div class="qh"><span class="qno">03</span><p class="qt">用一句话分别解释封装、继承、多态，并各举一例。</p></div>
+              <textarea class="qtext" name="oo-3" rows="2" placeholder="3 句话 + 3 个例子"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">04</span>
-                <div><p class="body" style="font-size:18px">「图书借阅系统」中，找出至少 2 个参与者和 4 个用例。</p></div>
-              </div>
+            <div class="quiz-item" data-q="4" data-type="text">
+              <div class="qh"><span class="qno">04</span><p class="qt">「图书借阅系统」中找出至少 2 个参与者和 4 个用例。</p></div>
+              <textarea class="qtext" name="oo-4" rows="2" placeholder="参与者：读者、管理员… 用例：借书、还书…"></textarea>
             </div>
           </div>
 
-          <div class="stack" style="gap:14px">
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">05</span>
-                <div><p class="body" style="font-size:18px">学生与课程是多对多关系，类图里应该怎么建模？中间类通常放什么属性？</p></div>
-              </div>
+          <div class="stack" style="gap:10px">
+            <div class="quiz-item" data-q="5" data-type="text">
+              <div class="qh"><span class="qno">05</span><p class="qt">学生与课程是多对多，类图里怎么建模？中间类通常放什么属性？</p></div>
+              <textarea class="qtext" name="oo-5" rows="2" placeholder="中间类名 + 两端多重性 + 属性"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">06</span>
-                <div><p class="body" style="font-size:18px">顺序图和通信图都描述对象交互，它们的侧重点有什么不同？</p></div>
-              </div>
+            <div class="quiz-item" data-q="6" data-type="text">
+              <div class="qh"><span class="qno">06</span><p class="qt">顺序图和通信图都描述对象交互，侧重点有什么不同？</p></div>
+              <textarea class="qtext" name="oo-6" rows="2" placeholder="时间 vs 结构"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">07</span>
-                <div><p class="body" style="font-size:18px">GRASP 的「信息专家」是什么意思？举一个分配职责的例子。</p></div>
-              </div>
+            <div class="quiz-item" data-q="7" data-type="text">
+              <div class="qh"><span class="qno">07</span><p class="qt">GRASP 的「信息专家」是什么意思？举一个分配职责的例子。</p></div>
+              <textarea class="qtext" name="oo-7" rows="2" placeholder="谁拥有数据谁负责 + 例子"></textarea>
             </div>
-            <div class="card" style="padding:17px 20px;background:#fff">
-              <div class="row top" style="gap:10px">
-                <span class="chip c-lilac" style="flex:none;font-size:14px;padding:3px 10px">08</span>
-                <div><p class="body" style="font-size:18px">把场景与 SOLID 原则配对：<br>① 新增支付方式不改旧代码　② 子类能替换父类　③ 接口只保留必要方法</p></div>
-              </div>
+            <div class="quiz-item" data-q="8" data-type="text">
+              <div class="qh"><span class="qno">08</span><p class="qt">场景与 SOLID 配对：① 新增支付方式不改旧代码　② 子类能替换父类　③ 接口只保留必要方法</p></div>
+              <textarea class="qtext" name="oo-8" rows="2" placeholder="① ② ③ 分别对应哪条原则"></textarea>
             </div>
           </div>
         </div>
 
-        <div class="anim" style="--i:1;margin-top:14px">
-          <div class="tip" style="background:#F4EEFD"><div class="ico">✍️</div><p>画图题先在草稿上写「参与者 / 用例 / 类 / 关系」，再落笔，别一上来就画框。</p></div>
+        <div class="quiz-bar">
+          <span class="quiz-progress">已答 0 / 8</span>
+          <button class="quiz-reset" type="button">清空重做</button>
+          <button class="quiz-submit" type="button">提交答案 · 解锁解析 →</button>
         </div>
       </div>
     </section>
 
     <!-- ============ 79 OO 答案 ============ -->
-    <section class="slide" data-chapter="oo" data-title="面向对象 · 答案与解析">
+    <section class="slide answer-page locked" data-chapter="oo" data-title="面向对象 · 答案与解析" data-quiz-answer="oo">
       <div class="slide-inner">
+        <div class="lock-panel">
+          <div class="lock-box">
+            <div class="em">🔒</div>
+            <h3>先做完，再看答案</h3>
+            <p>先自己写要点、画关系，提交后再对照解析。<br>看懂了不等于写得出。</p>
+            <button class="lock-go" type="button">去作答 →</button>
+          </div>
+        </div>
         <div class="head">
           <div class="head-left">
             <div class="chip c-mint">对答案</div>
@@ -5471,6 +5530,11 @@ go(start);
 
 /* === 键盘 === */
 document.addEventListener('keydown', (e) => {
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
+    if (e.key === 'Escape') ae.blur();
+    return;
+  }
   if (document.body.classList.contains('editing')) {
     if (e.key === 'Escape') { e.preventDefault(); toggleEdit(false); }
     return;
@@ -5647,6 +5711,150 @@ window.addEventListener('orientationchange', () => {
 });
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && !document.body.classList.contains('force-landscape')) resetRotateBtn();
+});
+
+/* === 练习题：作答 · 提交 · 解锁答案 === */
+const QUIZ_KEY = 'netio-handbook-quiz-v1';
+let quizStore = {};
+try { quizStore = JSON.parse(localStorage.getItem(QUIZ_KEY) || '{}') || {}; } catch (e) { quizStore = {}; }
+function saveQuizStore(){
+  try { localStorage.setItem(QUIZ_KEY, JSON.stringify(quizStore)); } catch (e) {}
+}
+function getQuizPage(key){ return document.querySelector('.quiz-page[data-quiz="' + key + '"]'); }
+function getAnswerPage(key){ return document.querySelector('.answer-page[data-quiz-answer="' + key + '"]'); }
+
+function quizCount(key){
+  const page = getQuizPage(key);
+  if (!page) return {done: 0, total: 0};
+  const items = [...page.querySelectorAll('.quiz-item')];
+  let done = 0;
+  items.forEach(it => {
+    const q = it.dataset.q;
+    if (it.dataset.type === 'choice') {
+      if (page.querySelector('input[name="' + key + '-' + q + '"]:checked')) done++;
+    } else {
+      const ta = it.querySelector('textarea');
+      if (ta && ta.value.trim()) done++;
+    }
+  });
+  return {done, total: items.length};
+}
+function updateQuizProgress(key){
+  const page = getQuizPage(key); if (!page) return;
+  const {done, total} = quizCount(key);
+  const el = page.querySelector('.quiz-progress');
+  if (el) el.textContent = '已答 ' + done + ' / ' + total;
+}
+function collectQuiz(key){
+  const page = getQuizPage(key);
+  if (!page) return {answers: {}, done: 0, total: 0};
+  const answers = {};
+  [...page.querySelectorAll('.quiz-item')].forEach(it => {
+    const q = it.dataset.q;
+    if (it.dataset.type === 'choice') {
+      const sel = page.querySelector('input[name="' + key + '-' + q + '"]:checked');
+      answers[q] = sel ? sel.value : '';
+    } else {
+      const ta = it.querySelector('textarea');
+      answers[q] = ta ? ta.value.trim() : '';
+    }
+  });
+  return {answers, ...quizCount(key)};
+}
+function markChoiceAnswers(key, answers){
+  const ap = getAnswerPage(key);
+  const page = getQuizPage(key);
+  if (!ap || !page) return;
+  const cards = [...ap.querySelectorAll('.grid2 .card')];
+  cards.forEach((card, i) => {
+    const q = String(i + 1);
+    const item = page.querySelector('.quiz-item[data-q="' + q + '"]');
+    if (!item || item.dataset.type !== 'choice') return;
+    const user = answers[q] || '';
+    const ok = user && user === item.dataset.ans;
+    let badge = card.querySelector('.your-answer');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'your-answer';
+      card.prepend(badge);
+    }
+    badge.textContent = '你的选择 ' + (user || '—') + (ok ? ' · 正确 ✓' : ' · 再想想 ✗');
+    badge.style.background = ok ? '#DEF7EC' : '#FFE3DD';
+  });
+}
+function unlockAnswer(key, jump){
+  const ap = getAnswerPage(key); if (!ap) return;
+  ap.classList.remove('locked');
+  const rec = quizStore[key];
+  if (rec && rec.answers) markChoiceAnswers(key, rec.answers);
+  if (jump) {
+    const i = slides.indexOf(ap);
+    if (i >= 0) go(i);
+  }
+}
+function submitQuiz(key){
+  const {answers, done, total} = collectQuiz(key);
+  if (done < total) {
+    showToast('还有 ' + (total - done) + ' 题没作答，补完再提交 👀');
+    return;
+  }
+  quizStore[key] = {done: true, answers, at: Date.now()};
+  saveQuizStore();
+  unlockAnswer(key, true);
+  showToast('提交成功，答案已解锁 ✅');
+}
+function resetQuiz(key){
+  delete quizStore[key];
+  saveQuizStore();
+  const page = getQuizPage(key);
+  if (page) {
+    page.querySelectorAll('input[type="radio"]').forEach(i => { i.checked = false; });
+    page.querySelectorAll('textarea').forEach(t => { t.value = ''; });
+    updateQuizProgress(key);
+  }
+  const ap = getAnswerPage(key);
+  if (ap) {
+    ap.classList.add('locked');
+    ap.querySelectorAll('.your-answer').forEach(e => e.remove());
+  }
+  showToast('已清空，重新来过 ✍️');
+}
+
+['net','io','mysql','oo'].forEach(key => {
+  const page = getQuizPage(key);
+  const ap = getAnswerPage(key);
+  if (!page) return;
+  page.querySelectorAll('input[type="radio"], textarea').forEach(el => {
+    el.addEventListener('input', () => updateQuizProgress(key));
+    el.addEventListener('change', () => updateQuizProgress(key));
+  });
+  const sub = page.querySelector('.quiz-submit');
+  if (sub) sub.addEventListener('click', () => submitQuiz(key));
+  const rst = page.querySelector('.quiz-reset');
+  if (rst) rst.addEventListener('click', () => resetQuiz(key));
+  const goBtn = ap && ap.querySelector('.lock-go');
+  if (goBtn) goBtn.addEventListener('click', () => {
+    const i = slides.indexOf(page);
+    if (i >= 0) go(i);
+  });
+
+  const rec = quizStore[key];
+  if (rec && rec.done) {
+    Object.entries(rec.answers || {}).forEach(([q, val]) => {
+      const item = page.querySelector('.quiz-item[data-q="' + q + '"]');
+      if (!item) return;
+      if (item.dataset.type === 'choice') {
+        const r = page.querySelector('input[name="' + key + '-' + q + '"][value="' + val + '"]');
+        if (r) r.checked = true;
+      } else {
+        const ta = item.querySelector('textarea');
+        if (ta) ta.value = val;
+      }
+    });
+    if (ap) ap.classList.remove('locked');
+    markChoiceAnswers(key, rec.answers || {});
+  }
+  updateQuizProgress(key);
 });
 
 /* === 初始化目录 === */
