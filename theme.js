@@ -30,6 +30,7 @@
     { id: "paper",  name: "暖纸 · 印刷" },
     { id: "amber",  name: "墨金 · 鎏金" },
     { id: "deepseek", name: "深海鲸 · DeepSeek" },
+    { id: "tricolor", name: "蓝红白 · 浅色" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）
