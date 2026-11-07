@@ -89,7 +89,7 @@
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
-    <span class="badge">📊 report</span>
+    <span class="badge">report</span>
   </div>
 
   <h1 data-word="DATA">数据不会说谎，<span class="grad">但会整活</span></h1>
@@ -114,17 +114,17 @@
     </div>
 
     <div class="yr-chart">
-      <h3>📬 我的留言月度分布（<span id="yrYear2">2026</span>）</h3>
+      <h3>我的留言月度分布（<span id="yrYear2">2026</span>）</h3>
       <div class="bars" id="yrBars"></div>
     </div>
 
     <div class="yr-chart">
-      <h3>🎮 游戏成就</h3>
+      <h3>游戏成就</h3>
       <div class="yr-games" id="yrGames"></div>
     </div>
 
     <div class="yr-chart">
-      <h3>🌍 全站共同记录 · 与所有访客共享</h3>
+      <h3>全站共同记录 · 与所有访客共享</h3>
       <div class="yr-grid" style="margin-bottom: 12px;">
         <div class="yr-card"><span class="ico">🌐</span><b id="shVisits">…</b><span>总来访次数</span></div>
         <div class="yr-card"><span class="ico">🐟</span><b id="shCheckin">…</b><span>累计打卡人次</span></div>
@@ -203,7 +203,7 @@
       const memE = jget("memory-best-easy", null);
       const memH = jget("memory-best-hard", null);
       document.getElementById("yrGames").innerHTML =
-        `<div>🎮 2048 最高分<br /><b>${g2048 || "—"}</b></div>` +
+        `<div>2048 最高分<br /><b>${g2048 || "—"}</b></div>` +
         `<div>🐍 贪吃蛇最高分<br /><b>${gSnake || "—"}</b></div>` +
         `<div>🧠 翻牌 · 简单<br /><b>${memE ? memE.moves + " 步" : "—"}</b></div>` +
         `<div>🧠 翻牌 · 困难<br /><b>${memH ? memH.moves + " 步" : "—"}</b></div>`;
