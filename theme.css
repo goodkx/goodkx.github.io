@@ -546,12 +546,12 @@ html[data-theme="deepseek"] body::before {
 @keyframes vtOut { to { opacity: 0; transform: translateY(-8px); } }
 @keyframes vtIn { from { opacity: 0; transform: translateY(12px); } }
 ::view-transition-old(root) { animation: vtOut .18s ease both; }
-::view-transition-new(root) { animation: vtIn .3s cubic-bezier(.22,.68,.3,1) both; }
+::view-transition-new(root) { animation: vtIn .3s cubic-bezier(.22, 1, .36, 1) both; }
 
 /* 2) 首次进入的入场编排：主内容整体浮起（仅 from 关键帧，结束后无残留 transform） */
 @keyframes mainIn { from { opacity: 0; transform: translateY(14px); } }
 main, body .top, body h1, body .wrap {
-  animation: mainIn .55s cubic-bezier(.22,.68,.3,1) backwards;
+  animation: mainIn .55s cubic-bezier(.22, 1, .36, 1) backwards;
 }
 body h1 { animation-delay: .05s; }
 body .wrap { animation-delay: .08s; }
@@ -625,7 +625,7 @@ body .wrap { animation-delay: .08s; }
 
 /* 7) 相册画作悬停缓放 */
 .photo .art { overflow: hidden; }
-.photo .art svg { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.photo .art svg { transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
 .photo:hover .art svg { transform: scale(1.06); }
 
 /* 8) 页脚运行状态行（theme.js 注入） */
@@ -806,7 +806,7 @@ html p a:hover { background-size: 100% 1.5px; }
   border-top: 1px solid var(--border-hover);
   box-shadow: 0 -10px 32px rgba(0, 0, 0, .38);
   transform: translateY(100%);
-  transition: transform .45s cubic-bezier(.22, .68, .28, 1);
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
 }
 #noticeBar.show { transform: none; }
 #noticeBar .nb-icon { flex: none; }
@@ -854,7 +854,7 @@ html .spot:hover .ach-card .ic {
 }
 html .spot .page-icon,
 html .spot .ach-card .ic {
-  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
 }
 html .ach-card:hover .ic { transform: scale(1.1) rotate(-4deg); }
 
@@ -866,26 +866,21 @@ html main a:not(.btn):not(.page-card):not(.gbtn):not(.tbtn):hover {
   text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 42%, transparent);
 }
 html h2.section-title { transition: text-shadow .3s; }
-html h2.section-title .num { display: inline-block; transition: transform .3s cubic-bezier(.34, 1.56, .64, 1); }
+html h2.section-title .num { display: inline-block; transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
 html h2.section-title:hover { text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 32%, transparent); }
 html h2.section-title:hover .num { transform: translateY(-3px) rotate(-5deg); }
 html .icon-btn {
-  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), border-color .3s, background .3s, color .3s;
+  transition: transform .25s cubic-bezier(.22, 1, .36, 1), border-color .3s, background .3s, color .3s;
 }
 html .icon-btn:hover { transform: translateY(-2px) scale(1.1) rotate(-4deg); }
-html .badge { transition: transform .25s cubic-bezier(.34, 1.56, .64, 1); }
+html .badge { transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
 html .badge:hover { transform: scale(1.06); }
 html .btn:active, html .gbtn:active, html .tbtn:active, html .icon-btn:active { transform: scale(.95); }
 
 /* ═══ 真悬浮：02 技能卡 / 05 导航卡悬停离地飘起 ═══ */
-@keyframes cardBob {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -8px; }
-}
 html .skill-card:hover, html .page-card:hover {
     box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 36px color-mix(in srgb, var(--accent) 14%, transparent);
   }
-  html .skill-card:hover { animation: cardBob 2.6s ease-in-out infinite; }
   /* 导航卡在横向滚动容器里，呼吸动画+长过渡会又晃又拖影 → 快速干脆的跟随 */
   html .page-card { transition: transform .1s ease-out, border-color .3s, box-shadow .3s; }
 html .skill-card { transform-style: preserve-3d; }
