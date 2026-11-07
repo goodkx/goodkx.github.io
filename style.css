@@ -80,11 +80,17 @@ main, .nav, .footer { position: relative; z-index: 1; }
   width: 560px; height: 560px;
   top: -180px; right: -140px;
   background: var(--glow-1);
+  animation: drift 14s ease-in-out infinite alternate;
 }
 .bg-glow-2 {
   width: 620px; height: 620px;
   bottom: -240px; left: -180px;
   background: var(--glow-2);
+  animation: drift 18s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 40px) scale(1.12); }
 }
 
 #cursor-glow {
@@ -228,7 +234,7 @@ html .nav-links a::after {
 html .nav-links a:hover::after { opacity: .9; }
 .nav-links a:hover { color: var(--text); transform: translateY(-1px); }
 .nav-links a:hover .nav-num { opacity: 1; }
-.nav-links a.active { color: #06251a; font-weight: 500; }
+.nav-links a.active { color: #06251a; font-weight: 700; }
 .nav-links a.active .nav-num { color: #06251a; }
 
 .nav-toggle {
@@ -273,16 +279,21 @@ html .nav-links a:hover::after { opacity: .9; }
 .hero-hello {
   font-family: var(--mono);
   color: var(--accent);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .hero-title {
   font-size: clamp(2.4rem, 5.2vw, 3.6rem);
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.01em;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
-.grad-text { color: var(--accent); }
+.grad-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
 .hero-role {
   font-family: var(--mono);
   font-size: 1.25rem;
@@ -377,8 +388,12 @@ html .nav-links a:hover::after { opacity: .9; }
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(var(--accent-rgb), 0.06);
+  animation: float 6s ease-in-out infinite;
 }
-
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
 .terminal-header {
   display: flex;
   align-items: center;
@@ -418,10 +433,14 @@ html .nav-links a:hover::after { opacity: .9; }
   color: var(--muted);
   font-size: 1.2rem;
   text-decoration: none;
+  animation: bounce 2s infinite;
   opacity: 0.7;
 }
 .scroll-hint:hover { color: var(--accent); }
-
+@keyframes bounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 8px); }
+}
 
 /* ─────────── 通用 Section ─────────── */
 .section {
@@ -436,7 +455,7 @@ html .nav-links a:hover::after { opacity: .9; }
 }
 .section-title {
   font-size: clamp(1.6rem, 3vw, 2rem);
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
 }
 .section-title .num {
@@ -871,7 +890,7 @@ html .nav-links a:hover::after { opacity: .9; }
   transform: translateY(-1px);
 }
 .hscroll-toggle .arrow { transition: transform .3s; }
-.hscroll-toggle.is-open { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 500; }
+.hscroll-toggle.is-open { color: #06251a; background: var(--gradient); border-color: transparent; font-weight: 700; }
 .hscroll-toggle.is-open .arrow { transform: rotate(180deg); }
 
 /* 就地展开：横滑容器变为完整网格（再点一次收起） */
@@ -955,7 +974,13 @@ html .nav-links a:hover::after { opacity: .9; }
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 50px rgba(var(--accent-rgb), 0.08);
 }
 .contact-title { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 14px; }
-
+.wave { display: inline-block; animation: wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; }
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0); }
+  65% { transform: rotate(16deg); }
+  75% { transform: rotate(-10deg); }
+  85% { transform: rotate(12deg); }
+}
 .contact-desc { color: var(--muted); margin-bottom: 32px; }
 .contact-actions {
   display: flex;
@@ -1185,16 +1210,19 @@ html .nav-links a:hover::after { opacity: .9; }
 .glog-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  margin-bottom: 32px;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 .glog-stats .gs {
   font-family: var(--mono);
   font-size: .74rem;
   color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
 }
-.glog-stats .gs b { color: var(--accent); font-weight: 600; }
+.glog-stats .gs b { color: var(--accent); font-weight: 700; }
 
 .glog { display: flex; flex-direction: column; }
 .glog-item {
@@ -1277,7 +1305,7 @@ html .nav-links a:hover::after { opacity: .9; }
 @media (max-width: 640px) {
   .glog-item { grid-template-columns: 18px 1fr; gap: 0 12px; padding-bottom: 26px; }
   .glog-body { padding: 12px 14px; }
-  .glog-stats .gs { font-size: .7rem; }
+  .glog-stats .gs { padding: 5px 11px; font-size: .7rem; }
 }
 
 /* ═══ 02 技能：熟练度进度条（滚动驱动生长）+ 命令行刊头 ═══ */
