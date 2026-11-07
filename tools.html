@@ -7,14 +7,14 @@
   <meta name="description" content="工具箱 —— 一组开箱即用的浏览器小工具。" />
   <title>工具箱 | CCCAD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧰%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="subpage.css?v=1003" />
-  <link rel="stylesheet" href="theme.css?v=1003" />
-  <link rel="stylesheet" href="search.css?v=1003" />  <link rel="manifest" href="manifest.json?v=1003" />
+  <link rel="stylesheet" href="subpage.css?v=271" />
+  <link rel="stylesheet" href="theme.css?v=271" />
+  <link rel="stylesheet" href="search.css?v=271" />  <link rel="manifest" href="manifest.json?v=133" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <script>try{var __t=localStorage.getItem("site-theme")||"";if(__t)document.documentElement.setAttribute("data-theme",__t)}catch(e){}</script>
-  <script src="theme.js?v=1003" defer></script>
-  <script src="search.js?v=1003" defer></script>
-  <script src="achievements.js?v=1003" defer></script>
+  <script src="theme.js?v=271" defer></script>
+  <script src="search.js?v=271" defer></script>
+  <script src="achievements.js?v=271" defer></script>
   <style>
     .tools {
       display: grid;
@@ -209,13 +209,13 @@
 
     @media (max-width: 860px) { .tools { grid-template-columns: 1fr; } }
   </style>
-  <link rel="stylesheet" href="paper.css?v=1003" />
+  <link rel="stylesheet" href="paper.css?v=271" />
 </head>
 <body>
 
   <div class="top">
     <a class="back" href="index.html">← 返回首页</a>
-    <span class="badge">toolbox</span>
+    <span class="badge">🧰 toolbox</span>
   </div>
 
   <nav id="tToc" aria-label="工具目录"></nav>
@@ -225,7 +225,7 @@
   <div class="wrap tools">
 
     <section class="tool reveal" id="tc">
-      <h3>字数统计</h3>
+      <h3>🔤 字数统计</h3>
       <textarea id="tcIn" rows="4" placeholder="在此粘贴或输入文本……"></textarea>
       <div class="stat-row">
         <div><b id="tcChars">0</b><span>字符</span></div>
@@ -235,7 +235,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.05s" id="ts">
-      <h3>时间戳转换</h3>
+      <h3>⏱️ 时间戳转换</h3>
       <div class="row">
         <input type="number" id="tsIn" placeholder="1770000000" />
         <button class="tbtn" id="tsGo">转换为日期</button>
@@ -245,7 +245,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.1s" id="col">
-      <h3>颜色转换</h3>
+      <h3>🎨 颜色转换</h3>
       <div class="row">
         <input type="color" id="colIn" value="#00e5a0" />
         <div class="swatch" id="colSw"></div>
@@ -254,7 +254,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.15s" id="pw">
-      <h3>密码生成</h3>
+      <h3>🔐 密码生成</h3>
       <div class="row">
         <label>长度 <input type="number" id="pwLen" value="16" min="6" max="64" /></label>
         <button class="tbtn" id="pwGo">生成</button>
@@ -264,7 +264,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.2s" id="b64">
-      <h3>Base64 编解码</h3>
+      <h3>🔁 Base64 编解码</h3>
       <textarea id="b64In" rows="3" placeholder="输入要编码 / 解码的内容"></textarea>
       <div class="row">
         <button class="tbtn" id="b64Enc">编码 →</button>
@@ -274,14 +274,14 @@
     </section>
 
     <section class="tool reveal" style="--d:.25s" id="json">
-      <h3>JSON 格式化</h3>
+      <h3>🧾 JSON 格式化</h3>
       <textarea id="jsonIn" rows="3" placeholder='{"hello":"world"}'></textarea>
       <div class="row"><button class="tbtn" id="jsonGo">格式化</button></div>
       <pre class="out" id="jsonOut">—</pre>
     </section>
 
     <section class="tool reveal" style="--d:.3s" id="cd">
-      <h3>考研倒计时</h3>
+      <h3>🎯 考研倒计时</h3>
       <div class="cd-grid">
         <div><b id="cdD">—</b><span>天</span></div>
         <div><b id="cdH">—</b><span>时</span></div>
@@ -292,7 +292,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.35s" id="radix">
-      <h3>进制转换</h3>
+      <h3>🔢 进制转换</h3>
       <div class="row">
         <input type="text" id="rdIn" placeholder="输入数字，如 255" />
         <select id="rdBase">
@@ -306,7 +306,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.4s" id="regex">
-      <h3>正则测试</h3>
+      <h3>🔍 正则测试</h3>
       <div class="row">
         <input type="text" id="rxPat" placeholder="正则表达式，如 \d{2,}" />
         <input type="text" id="rxFlags" value="g" placeholder="标志" style="flex:none; width:70px" />
@@ -316,14 +316,14 @@
     </section>
 
     <section class="tool reveal" style="--d:.45s" id="diff">
-      <h3>文本对比</h3>
+      <h3>🧩 文本对比</h3>
       <textarea id="dfA" rows="4" placeholder="原始文本……"></textarea>
       <textarea id="dfB" rows="4" placeholder="修改后的文本……"></textarea>
       <output class="out" id="dfOut">两侧都输入后自动对比</output>
     </section>
 
     <section class="tool reveal" style="--d:.5s" id="uuid">
-      <h3>UUID 生成</h3>
+      <h3>🆔 UUID 生成</h3>
       <div class="row">
         <input type="number" id="uuN" value="5" min="1" max="50" style="flex:none; width:70px" />
         <button class="tbtn" id="uuGo">批量生成</button>
@@ -333,13 +333,13 @@
     </section>
 
     <section class="tool reveal" style="--d:.55s" id="md">
-      <h3>Markdown 预览</h3>
+      <h3>📄 Markdown 预览</h3>
       <textarea id="mdIn" rows="6" placeholder="# 标题&#10;**加粗** *斜体* `代码`&#10;- 列表项&#10;&gt; 引用"></textarea>
       <output class="out mdview" id="mdOut" data-empty="输入 Markdown 实时预览"></output>
     </section>
 
     <section class="tool reveal" style="--d:.6s" id="fish">
-      <h3>摸鱼日历 & 签到</h3>
+      <h3>🐟 摸鱼日历 & 签到</h3>
       <div class="cd-grid">
         <div><b id="fWk">-</b><span>今天周几</span></div>
         <div><b id="fWkd">-</b><span>距周末</span></div>
@@ -356,7 +356,7 @@
     </section>
 
     <section class="tool reveal" style="--d:.65s" id="speed">
-      <h3>网速测试</h3>
+      <h3>📶 网速测试</h3>
       <div class="sp-main">
         <div class="sp-big"><b id="spVal">--</b><span>Mbps 下载</span></div>
         <div class="sp-side">
@@ -906,7 +906,7 @@
       }
     });
   </script>
-  <script src="pet.js?v=1003" defer></script>
-  <script src="interactions.js?v=1003" defer></script>
+  <script src="pet.js?v=271" defer></script>
+  <script src="interactions.js?v=271" defer></script>
 </body>
 </html>

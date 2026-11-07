@@ -308,7 +308,11 @@ html :is(.terminal, .code-card, .contact-box) {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 24px 60px rgba(0, 0, 0, .35);
 }
 
-/* 5) 标题发光已移除（unslop 工艺）：纯色标题不发光 */
+/* 5) 渐变字标发光：hero 名字与子页大标题 */
+html .grad-text,
+html h1 .grad {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 30%, transparent));
+}
 
 /* 6) 章节顶部呼吸光晕：填充区块之间的留白 */
 html .section { position: relative; }
@@ -326,10 +330,10 @@ html .section::before {
     color-mix(in srgb, var(--accent) 7%, transparent), transparent 72%);
   pointer-events: none;
 }
-/* 区块节奏：96/72（4px 栅格） */
-html .section { padding: 96px 0; }
+/* 区块节奏收紧一点：110/86 → 92/70，留白不再空旷 */
+html .section { padding: 92px 0; }
 @media (max-width: 960px) {
-  html .section { padding: 72px 0; }
+  html .section { padding: 70px 0; }
 }
 
 /* 7) 导航底边渐变发丝线 */
@@ -347,8 +351,8 @@ html .nav::after {
 
 /* 8) 按钮糖霜：主按钮顶部高光 + 幽灵按钮微染色 */
 html .btn-primary {
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 14%, transparent),
-              inset 0 1px 0 rgba(255, 255, 255, .15);
+  box-shadow: 0 6px 26px color-mix(in srgb, var(--accent) 35%, transparent),
+              inset 0 1px 0 rgba(255, 255, 255, .4);
 }
 html .btn-ghost { background: color-mix(in srgb, var(--accent) 7%, transparent); }
 
@@ -422,6 +426,9 @@ html[data-theme="violet"] body::before {
 html[data-theme="violet"] {
   --accent-rgb: 167, 139, 250;
   --accent-2-rgb: 244, 114, 182; --card-radius: 10px; }
+html[data-theme="violet"] :is(.grad-text, h1 .grad) {
+  filter: drop-shadow(0 0 22px rgba(167, 139, 250, .55)) drop-shadow(0 0 7px rgba(244, 114, 182, .4));
+}
 html[data-theme="violet"] ::selection { background: rgba(244, 114, 182, .35); }
 
 /* ── 暖纸 · 印刷：衬线标题 + 印章红 + 纸边晕影 + 硬朗「铅版」卡片 ── */
@@ -450,7 +457,7 @@ html[data-theme="paper"] {
 html[data-theme="paper"] :is(h1, h2, h3, .section-title, .hero-title, .contact-title, .feat-main strong) {
   font-family: Georgia, "Times New Roman", "STZhongsong", "STSong", "Songti SC", "SimSun", serif;
 }
-html[data-theme="paper"] :is(.btn-primary, .hscroll-toggle.is-open) { color: #fff8ef; }
+html[data-theme="paper"] :is(.btn-primary, .feat-badge, .hscroll-toggle.is-open) { color: #fff8ef; }
 html[data-theme="paper"] :is(.skill-card, .project-card, .page-card, .hscroll-item, .contact-box,
     .post, .photo, .tool, .ai-card, .fcard, .yr-card, .yr-title-card, .prod, .gmsg, .topic, .score-box, .mini-shop) {
   box-shadow: 2.5px 3px 0 rgba(31, 41, 55, .08), inset 0 0 0 1px rgba(31, 41, 55, .05);
@@ -479,7 +486,17 @@ html[data-theme="amber"] :is(.section-title, h1, .contact-title, .hero-title) {
   font-family: Georgia, "Times New Roman", "STZhongsong", "STSong", "Songti SC", "SimSun", serif;
   letter-spacing: .02em;
 }
-html[data-theme="amber"] .section-title { color: #fbbf24; }
+html[data-theme="amber"] :is(.grad-text, h1 .grad) {
+  filter: drop-shadow(0 0 18px rgba(251, 191, 36, .35));
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html[data-theme="amber"] .section-title {
+    background: linear-gradient(115deg, #fde68a 10%, #fbbf24 45%, #d97706 85%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
+}
 html[data-theme="amber"] ::selection { background: rgba(251, 191, 36, .3); }
 
 /* ─────────── 🐋 深海鲸 · DeepSeek 主题 ─────────── */
@@ -505,6 +522,12 @@ html[data-theme="deepseek"] {
   --acc-soft-bd: rgba(91, 140, 255, 0.42);
 }
 html[data-theme="deepseek"] ::selection { background: rgba(91, 140, 255, .32); }
+html[data-theme="deepseek"] :is(.grad-text, h1 .grad) {
+  background: linear-gradient(120deg, #7d9bff 10%, #7dd3fc 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 html[data-theme="deepseek"] body::before {
   background-image:
     linear-gradient(rgba(125, 211, 252, .045) 1px, transparent 1px),
@@ -523,12 +546,12 @@ html[data-theme="deepseek"] body::before {
 @keyframes vtOut { to { opacity: 0; transform: translateY(-8px); } }
 @keyframes vtIn { from { opacity: 0; transform: translateY(12px); } }
 ::view-transition-old(root) { animation: vtOut .18s ease both; }
-::view-transition-new(root) { animation: vtIn .3s cubic-bezier(.22, 1, .36, 1) both; }
+::view-transition-new(root) { animation: vtIn .3s cubic-bezier(.22,.68,.3,1) both; }
 
 /* 2) 首次进入的入场编排：主内容整体浮起（仅 from 关键帧，结束后无残留 transform） */
 @keyframes mainIn { from { opacity: 0; transform: translateY(14px); } }
 main, body .top, body h1, body .wrap {
-  animation: mainIn .55s cubic-bezier(.22, 1, .36, 1) backwards;
+  animation: mainIn .55s cubic-bezier(.22,.68,.3,1) backwards;
 }
 body h1 { animation-delay: .05s; }
 body .wrap { animation-delay: .08s; }
@@ -536,9 +559,36 @@ body .wrap { animation-delay: .08s; }
   main, body .top, body h1, body .wrap { animation: none; }
 }
 
-/* 3) 渐变字流动已移除（unslop 工艺） */
+/* 3) 首屏渐变字缓慢流动（高级感核心细节） */
+.grad-text, h1 .grad {
+  background-size: 200% 200%;
+  animation: gradFlow 7s ease-in-out infinite;
+}
+@keyframes gradFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
 
-/* 4) 悬停划光已移除（unslop 工艺）：按钮悬停只做颜色/表面变化 */
+/* 4) 主按钮 / 推荐徽章：悬停划光扫过 */
+.btn-primary, .feat-badge {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after, .feat-badge::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 55%;
+  height: 100%;
+  transform: translateX(-160%) skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+  pointer-events: none;
+}
+.btn-primary:hover::after, .feat-badge:hover::after {
+  animation: btnShine .75s ease;
+}
+@keyframes btnShine { to { transform: translateX(340%) skewX(-18deg); } }
+
 /* 5) 桌面端导航：玻璃胶囊激活态 */
 @media (min-width: 961px) {
   .nav-links a {
@@ -568,12 +618,14 @@ body .wrap { animation-delay: .08s; }
     color-mix(in srgb, var(--accent-2) 12%, transparent) 55%,
     transparent 78%);
   filter: blur(34px);
+  animation: haloSpin 16s linear infinite;
   pointer-events: none;
 }
+@keyframes haloSpin { to { transform: rotate(360deg); } }
 
 /* 7) 相册画作悬停缓放 */
 .photo .art { overflow: hidden; }
-.photo .art svg { transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
+.photo .art svg { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
 .photo:hover .art svg { transform: scale(1.06); }
 
 /* 8) 页脚运行状态行（theme.js 注入） */
@@ -641,8 +693,10 @@ html :is(.skill-card, .project-card, .page-card, .post, .photo, .tool, .ai-card,
     transparent 115deg,
     color-mix(in srgb, var(--accent-2) 6%, transparent) 205deg,
     transparent 265deg);
+  animation: beamSpin 24s linear infinite;
   pointer-events: none;
 }
+@keyframes beamSpin { to { transform: rotate(360deg); } }
 
 /* 4) 页脚顶缘渐隐发丝线 */
 .footer { position: relative; }
@@ -752,7 +806,7 @@ html p a:hover { background-size: 100% 1.5px; }
   border-top: 1px solid var(--border-hover);
   box-shadow: 0 -10px 32px rgba(0, 0, 0, .38);
   transform: translateY(100%);
-  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+  transition: transform .45s cubic-bezier(.22, .68, .28, 1);
 }
 #noticeBar.show { transform: none; }
 #noticeBar .nb-icon { flex: none; }
@@ -788,7 +842,7 @@ html .spot {
 }
 html .spot:hover {
   border-color: var(--acc-soft-bd, rgba(0, 229, 160, .42));
-  box-shadow: 0 14px 34px rgba(0, 0, 0, .38), 0 0 14px color-mix(in srgb, var(--accent) 6%, transparent);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .38), 0 0 22px color-mix(in srgb, var(--accent) 13%, transparent);
 }
 html .spot:hover::before {
   background: radial-gradient(430px circle at var(--mx, 50%) var(--my, 50%),
@@ -800,7 +854,7 @@ html .spot:hover .ach-card .ic {
 }
 html .spot .page-icon,
 html .spot .ach-card .ic {
-  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 html .ach-card:hover .ic { transform: scale(1.1) rotate(-4deg); }
 
@@ -812,21 +866,26 @@ html main a:not(.btn):not(.page-card):not(.gbtn):not(.tbtn):hover {
   text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 42%, transparent);
 }
 html h2.section-title { transition: text-shadow .3s; }
-html h2.section-title .num { display: inline-block; transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
+html h2.section-title .num { display: inline-block; transition: transform .3s cubic-bezier(.34, 1.56, .64, 1); }
 html h2.section-title:hover { text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 32%, transparent); }
 html h2.section-title:hover .num { transform: translateY(-3px) rotate(-5deg); }
 html .icon-btn {
-  transition: transform .25s cubic-bezier(.22, 1, .36, 1), border-color .3s, background .3s, color .3s;
+  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), border-color .3s, background .3s, color .3s;
 }
 html .icon-btn:hover { transform: translateY(-2px) scale(1.1) rotate(-4deg); }
-html .badge { transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+html .badge { transition: transform .25s cubic-bezier(.34, 1.56, .64, 1); }
 html .badge:hover { transform: scale(1.06); }
 html .btn:active, html .gbtn:active, html .tbtn:active, html .icon-btn:active { transform: scale(.95); }
 
 /* ═══ 真悬浮：02 技能卡 / 05 导航卡悬停离地飘起 ═══ */
+@keyframes cardBob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
 html .skill-card:hover, html .page-card:hover {
-    box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 20px color-mix(in srgb, var(--accent) 7%, transparent);
+    box-shadow: 0 38px 70px -16px rgba(0, 0, 0, .6), 0 0 36px color-mix(in srgb, var(--accent) 14%, transparent);
   }
+  html .skill-card:hover { animation: cardBob 2.6s ease-in-out infinite; }
   /* 导航卡在横向滚动容器里，呼吸动画+长过渡会又晃又拖影 → 快速干脆的跟随 */
   html .page-card { transition: transform .1s ease-out, border-color .3s, box-shadow .3s; }
 html .skill-card { transform-style: preserve-3d; }

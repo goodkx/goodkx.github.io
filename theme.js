@@ -25,19 +25,17 @@
     if (b) b.style.display = "flex";
   });
   const THEMES = [
-    { id: "",       name: "深空绿 · 终端" },
-    { id: "violet", name: "紫夜 · 霓虹" },
-    { id: "paper",  name: "暖纸 · 印刷" },
-    { id: "amber",  name: "墨金 · 鎏金" },
-    { id: "deepseek", name: "深海鲸 · DeepSeek" },
+    { id: "paper",    name: "晨光 · 浅色" },
     { id: "tricolor", name: "蓝红白 · 浅色" },
+    { id: "deepseek", name: "墨黑 · 深色" },
+    { id: "legacy",   name: "深空绿 · 终端" },
   ];
 
   // 解析到本脚本时立即应用（此时正文尚未渲染）
   let saved = "";
   try { saved = localStorage.getItem(KEY); } catch (e) {}
   /* 默认主题 = 深海鲸 · DeepSeek（站长拍板）；老访客的已存选择不受影响 */
-  if (saved === null || saved === undefined || saved === "") saved = "deepseek";
+  if (saved !== "paper" && saved !== "tricolor" && saved !== "deepseek" && saved !== "legacy") saved = "paper";
   document.documentElement.dataset.theme = saved;
   /* 默认固定使用「深空绿 · 终端」：不再跟随系统深浅色 / 时段自动换肤。
      想换风格的访客点右下角 🎨 手动选择，选择会被记住。 */
@@ -67,8 +65,10 @@
       (t) =>
         `<button type="button" data-t="${t.id}"><span class="sw" data-c="${t.id}"></span>${t.name}</button>`
     ).join("") +
-      '<div class="pop-h">背景氛围</div>' +
-      '<button type="button" data-bg=""><span class="sw" data-c="bgdef"></span>🌌 默认氛围</button>' +
+      '<div class="pop-h">版本切换</div>' +
+      '<a class="pop-link" href="/">经典首页</a>' +
+      '<a class="pop-link" href="/v2/">v2 · 纸感编辑版</a>' +
+      '<a class="pop-link" href="/os/">典藏版 · 编辑式布局</a>';
 
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -84,6 +84,7 @@
     pop.addEventListener("click", (e) => {
       const b = e.target.closest("button[data-bg]");
       if (!b) return;
+      if (window.siteBg) window.siteBg(b.dataset.bg);
       if (window.ACH) ACH.unlock("rain");
       try { localStorage.setItem("site-bg", b.dataset.bg); } catch (err) {}
       pop.querySelectorAll("button[data-bg]").forEach((x) => x.classList.toggle("on", x === b));
@@ -233,9 +234,9 @@
     pop.querySelectorAll("button[data-t]").forEach((b) => {
       b.classList.toggle("on", b.dataset.t === cur);
     });
-    let bgCur = "rain";
+    let bgCur = "";
     try { bgCur = localStorage.getItem("site-bg"); } catch (e) {}
-    if (bgCur === null || bgCur === undefined) bgCur = "rain";
+    if (bgCur === null || bgCur === undefined) bgCur = "";
     pop.querySelectorAll("button[data-bg]").forEach((b) => {
       b.classList.toggle("on", (b.dataset.bg || "") === bgCur);
     });
@@ -358,7 +359,119 @@
   } catch (e) {}
 })();
 
-/* 数字雨已整体移除（站长裁定）。背景氛围=纯色/渐变，无 canvas 层。 */
+/* ─────────── 🌧️ 背景氛围：01 数字雨（site-bg 记忆；canvas z-1 垫底，风格同终端配色） ─────────── */
+(function () {
+  var canvas = null, timer = 0, cols = [];
+  var PAL = window.__themeRGB();
+  document.addEventListener("themechange", function () { PAL = window.__themeRGB(); });
+  function injectCss() {
+    if (document.getElementById("wpBgStyle")) return;
+    var st = document.createElement("style");
+    st.id = "wpBgStyle";
+    st.textContent =
+      "#bgRain{position:fixed;inset:0;z-index:-1;pointer-events:none}" +
+      "#themePop .pop-h{margin:6px 8px 2px;font-size:11px;color:var(--muted,#8aa39a);letter-spacing:1px;" +
+      "border-top:1px solid rgba(255,255,255,.08);padding-top:7px}" +
+      '.sw[data-c="bgdef"]{background:#101b17;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}' +
+      '.sw[data-c="bgrain"]{background:linear-gradient(135deg,#00e5a0 30%,#38bdf8)}';
+    document.head.appendChild(st);
+  }
+  function startRain() {
+    if (canvas) return;
+    injectCss();
+    canvas = document.createElement("canvas");
+    canvas.id = "bgRain";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext("2d");
+    var W = 0, H = 0, cell = 22, fs = 15, rows = 1;
+    function init() {
+      var n = Math.max(8, Math.floor(W / cell));
+      cols = [];
+      for (var i = 0; i < n; i++) cols.push(spawn(true));
+    }
+    function spawn(anywhere) {
+      return {
+        row: anywhere ? Math.random() * rows * 1.4 - 4 : -4 - Math.random() * 12,
+        v: 6 + Math.random() * 9,                 /* 行/秒 */
+        len: 8 + ((Math.random() * 14) | 0),
+        ci: Math.random() < 0.82 ? 0 : 1,   /* 调色板索引：主题色为主 · 点缀色 */
+        cells: []
+      };
+    }
+    function fit() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cell = W < 640 ? 18 : 22; fs = cell - 6;
+      rows = H / cell;
+      ctx.font = fs + 'px "ui-monospace","Cascadia Mono",Consolas,monospace';
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      init();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (var ci = 0; ci < cols.length; ci++) {
+        var c = cols[ci];
+        c.row += c.v * 0.05;                       /* 定时器 50ms 一拍 */
+        while (c.cells.length === 0 || c.cells[c.cells.length - 1].r < Math.floor(c.row)) {
+          c.cells.push({ r: Math.floor(c.row), ch: Math.random() < 0.5 ? "0" : "1" });
+          if (c.cells.length > c.len) c.cells.shift();
+        }
+        var x = (ci + 0.5) * cell;
+        for (var k = 0; k < c.cells.length; k++) {
+          var yy = c.cells[k].r * cell;
+          if (yy < -cell || yy > H + cell) continue;
+          var isHead = k === c.cells.length - 1;
+          ctx.fillStyle = isHead ? "#eaf2ff" : "rgb(" + PAL[c.ci] + ")";
+          ctx.globalAlpha = isHead ? 0.9 : Math.max(0.05, 0.5 * (1 - (c.cells.length - 1 - k) / c.len));
+          ctx.fillText(c.cells[k].ch, x, yy);
+        }
+        if ((c.row - c.len) * cell > H + 40) cols[ci] = spawn(false);
+      }
+      ctx.globalAlpha = 1;
+    }
+    var calm = false;
+    try { calm = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    fit();
+    if (calm) {                 /* 减弱动效：只画一帧静态散布 */
+      cols.forEach(function (c) {
+        c.row = Math.random() * rows;
+        c.cells = [];
+        for (var k = 0; k < c.len; k++) c.cells.push({ r: Math.floor(c.row) - k, ch: Math.random() < 0.5 ? "0" : "1" });
+      });
+      draw();
+      return;                   /* 不启动循环 */
+    }
+    timer = setInterval(function () { draw(); }, 50);
+    addEventListener("resize", function () {
+      if (!canvas) return;
+      fit();
+    });
+  }
+  function stopRain() {
+    if (timer) { clearInterval(timer); timer = 0; }
+    if (canvas) { canvas.remove(); canvas = null; cols = []; }
+  }
+  window.siteBg = function (id) {
+    if (id === "rain") { stopRain(); startRain(); }
+    else stopRain();
+  };
+  /* 默认背景 = 数字雨（站长拍板）；「🌌 默认氛围」= 显式关闭（存空串） */
+  var saved = "";
+  try { var raw = localStorage.getItem("site-bg"); if (raw !== null) saved = raw; } catch (e) {}
+  function boot() {
+    injectCss();
+    stopRain(); /* 数字雨已下线 */
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
 
 /* ═══ 💥 全站点击迸发：任意点击处粒子小爆炸（减弱动效跳过）═══ */
 (function () {

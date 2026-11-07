@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addEventListener("resize", fit);
     fit();
     morphT = performance.now();
-    /* 本项目实测：内嵌浏览器 rAF 可能不触发，用 setInterval 驱动 */
+    /* 本项目实测：内嵌浏览器 rAF 可能不触发（数字雨同款坑），用 setInterval 驱动 */
     setInterval(function () { frame(performance.now()); }, 33);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
